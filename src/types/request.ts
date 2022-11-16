@@ -4,3 +4,8 @@ export type Query = {
   limit: number;
   page: number;
 };
+
+export type LoginRequest = {
+  login_credentials: string;
+  password: string; 
+}
