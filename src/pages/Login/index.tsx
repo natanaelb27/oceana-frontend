@@ -28,7 +28,7 @@ const Login = () => {
               color='primary'
               name='username'
               onChange={formik.handleChange}
-              placeholder='Username'
+              placeholder='Email/Phone/Username'
               type='text'
               value={formik.values.username}
             />

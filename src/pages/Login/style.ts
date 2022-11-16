@@ -6,6 +6,7 @@ export const LoginContainer = tw.div<any>`
   flex
   justify-center
   items-center
+  bg-base-content
 `;
 
 export const FormContainer = tw.div<any>`
@@ -13,7 +14,13 @@ export const FormContainer = tw.div<any>`
   max-h-[480px]
   p-10
   rounded-3xl
-  bg-base-content
+  bg-gradient-to-br
+  from-transparent
+  via-white/20
+  to-transparent
+  border-4
+  border-slate-400
+  shadow-2xl
 
   md:w-[600px]
 `;
