@@ -16,7 +16,6 @@ export const FormContainer = tw.div<any>`
   bg-base-content
 
   md:w-[600px]
-  md:h-[480px]
 `;
 
 export const FormTitle = tw.h1`
@@ -36,6 +35,5 @@ export const FormErrorText = tw.p`
 export const InputGroup = tw.div<any>`
   flex
   flex-col
-  h-20
   mb-4
 `;

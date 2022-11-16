@@ -56,7 +56,10 @@ const Login = () => {
           </Button>
         </Form>
         <p className='mt-2 text-base-100'>
-          Need an account? <Link color='secondary'>Sign Up</Link>
+          Need an account?{' '}
+          <Link color='secondary' href='/register'>
+            Sign Up
+          </Link>
         </p>
       </FormContainer>
     </LoginContainer>
