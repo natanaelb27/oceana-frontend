@@ -10,23 +10,65 @@ import {
 } from './style';
 import { useLoginMutation } from '../../store/services/authService';
 import { toLoginRequest } from '../../utils/mapperDTO';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [login] = useLoginMutation();
+  const notifyLoginSuccess = () =>
+    toast.success('Login successful! Redirecting...', {
+      position: 'top-center',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'dark',
+      containerId: 'success',
+    });
+  const notifyInvalidCredentials = () =>
+    toast.error('Invalid login credentials', {
+      position: 'top-center',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'dark',
+      containerId: 'error',
+    });
   const formik = useFormik({
     initialValues: { loginCredentials: '', password: '' },
     validationSchema: Yup.object({
-      loginCredentials: Yup.string().required('Please enter your username'),
+      loginCredentials: Yup.string().required(
+        'Please enter your login credential'
+      ),
       password: Yup.string().required('Please enter your password'),
     }),
-    onSubmit: (values) => {
+    onSubmit: (values, { setFieldValue }) => {
       login(toLoginRequest(values.loginCredentials, values.password))
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
+        .unwrap()
+        .then(() => {
+          notifyLoginSuccess();
+          setTimeout(() => {
+            navigate('/');
+          }, 3000);
+        })
+        .catch(() => {
+          setFieldValue('loginCredentials', '');
+          setFieldValue('password', '');
+          notifyInvalidCredentials();
+        });
     },
   });
   return (
     <LoginContainer>
+      <ToastContainer containerId='success' />
+      <ToastContainer containerId='error' />
       <FormContainer>
         <FormTitle>Login</FormTitle>
         <Form onSubmit={formik.handleSubmit}>
