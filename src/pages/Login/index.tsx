@@ -1,20 +1,24 @@
-import { Form, Input, Button, Link } from 'react-daisyui';
 import { useFormik } from 'formik';
+import { gapi } from 'gapi-script';
+import { useEffect } from 'react';
+import { Button, Form, Input, Link } from 'react-daisyui';
+import { GoogleLogin } from 'react-google-login';
+import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import * as Yup from 'yup';
-import {
-  LoginContainer,
-  FormContainer,
-  FormTitle,
-  FormErrorText,
-  InputGroup,
-} from './style';
 import { useLoginMutation } from '../../store/services/authService';
 import { toLoginRequest } from '../../utils/mapperDTO';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+import {
+  FormContainer,
+  FormErrorText,
+  FormTitle,
+  InputGroup,
+  LoginContainer,
+} from './style';
 
 const Login = () => {
+  const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
   const navigate = useNavigate();
   const [login] = useLoginMutation();
   const notifyLoginSuccess = () =>
@@ -27,7 +31,6 @@ const Login = () => {
       draggable: true,
       progress: undefined,
       theme: 'dark',
-      containerId: 'success',
     });
   const notifyInvalidCredentials = () =>
     toast.error('Invalid login credentials', {
@@ -39,7 +42,6 @@ const Login = () => {
       draggable: true,
       progress: undefined,
       theme: 'dark',
-      containerId: 'error',
     });
   const formik = useFormik({
     initialValues: { loginCredentials: '', password: '' },
@@ -65,10 +67,20 @@ const Login = () => {
         });
     },
   });
+
+  useEffect(() => {
+    const initClient = () => {
+      gapi.client.init({
+        clientId,
+        scope: '',
+      });
+    };
+    gapi.load('client:auth2', initClient);
+  });
+
   return (
     <LoginContainer>
-      <ToastContainer containerId='success' />
-      <ToastContainer containerId='error' />
+      <ToastContainer />
       <FormContainer>
         <FormTitle>Login</FormTitle>
         <Form onSubmit={formik.handleSubmit}>
@@ -111,6 +123,18 @@ const Login = () => {
             Sign Up
           </Link>
         </p>
+        <span className='my-4 block text-xl text-center text-slate-400'>
+          ---OR---
+        </span>
+        <GoogleLogin
+          className='w-full flex justify-center'
+          clientId={String(clientId)}
+          buttonText='Sign in with Google'
+          onSuccess={notifyLoginSuccess}
+          onFailure={notifyInvalidCredentials}
+          cookiePolicy='single_host_origin'
+          isSignedIn={true}
+        />
       </FormContainer>
     </LoginContainer>
   );

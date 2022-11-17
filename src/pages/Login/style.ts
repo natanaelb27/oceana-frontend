@@ -10,8 +10,8 @@ export const LoginContainer = tw.div<any>`
 `;
 
 export const FormContainer = tw.div<any>`
-  max-w-[600px]
-  max-h-[480px]
+  max-w-[480px]
+  max-h-[640px]
   p-10
   rounded-3xl
   bg-gradient-to-br
@@ -22,7 +22,7 @@ export const FormContainer = tw.div<any>`
   border-slate-400
   shadow-2xl
 
-  md:w-[600px]
+  md:w-[640px]
 `;
 
 export const FormTitle = tw.h1`
