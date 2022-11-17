@@ -18,7 +18,7 @@ export const FormContainer = tw.div<any>`
   from-transparent
   via-white/20
   to-transparent
-  border-4
+  border-2
   border-slate-400
   shadow-2xl
 
