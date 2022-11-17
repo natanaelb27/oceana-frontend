@@ -8,15 +8,22 @@ import {
   FormErrorText,
   InputGroup,
 } from './style';
+import { useLoginMutation } from '../../store/services/authService';
+import { toLoginRequest } from '../../utils/mapperDTO';
 
 const Login = () => {
+  const [login] = useLoginMutation();
   const formik = useFormik({
-    initialValues: { username: '', password: '' },
+    initialValues: { loginCredentials: '', password: '' },
     validationSchema: Yup.object({
-      username: Yup.string().required('Please enter your username'),
+      loginCredentials: Yup.string().required('Please enter your username'),
       password: Yup.string().required('Please enter your password'),
     }),
-    onSubmit: (values) => console.log(values),
+    onSubmit: (values) => {
+      login(toLoginRequest(values.loginCredentials, values.password))
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+    },
   });
   return (
     <LoginContainer>
@@ -26,16 +33,17 @@ const Login = () => {
           <InputGroup>
             <Input
               color='primary'
-              name='username'
+              name='loginCredentials'
               onChange={formik.handleChange}
               placeholder='Email/Phone/Username'
               type='text'
-              value={formik.values.username}
+              value={formik.values.loginCredentials}
             />
 
-            {formik.touched.username && formik.errors.username ? (
-              <FormErrorText>{formik.errors.username}</FormErrorText>
-            ) : null}
+            {formik.touched.loginCredentials &&
+            formik.errors.loginCredentials ? (
+                <FormErrorText>{formik.errors.loginCredentials}</FormErrorText>
+              ) : null}
           </InputGroup>
           <InputGroup>
             <Input
