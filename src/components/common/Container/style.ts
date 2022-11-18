@@ -7,6 +7,7 @@ export const AuthContainer = tw.div<any>`
   justify-center
   items-center
   bg-base-content
+  overflow-auto
 `;
 
 export const GlassContainer = tw.div<any>`
