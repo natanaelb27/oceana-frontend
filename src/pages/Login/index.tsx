@@ -21,11 +21,6 @@ import {
   FormTitle,
   InputGroup,
 } from '../../components/common/Form';
-import { useLoginMutation } from '../../store/services/authService';
-import { setCredentials } from '../../store/slices/authSlice';
-import { useAppDispatch } from '../../store/store';
-import { Role } from '../../types/component';
-import { toLoginRequest } from '../../utils/mapperDTO';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
