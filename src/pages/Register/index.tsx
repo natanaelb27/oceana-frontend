@@ -91,7 +91,10 @@ const Register = () => {
     onSubmit: (values, { setFieldValue }) => {
       const { firstName, lastName, username, email, password, phoneNumber } =
         values;
-      const fullName = firstName.trim() + ' ' + lastName.trim();
+      const fullName =
+        capitalizeFirstLetter(firstName.trim().toLocaleLowerCase()) +
+        ' ' +
+        capitalizeFirstLetter(lastName.trim().toLocaleLowerCase());
 
       register(
         toRegisterRequest(fullName, username, email, password, phoneNumber)
