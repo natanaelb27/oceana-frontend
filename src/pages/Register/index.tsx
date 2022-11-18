@@ -55,6 +55,13 @@ const Register = () => {
       navigate('/login');
     }, 3000);
   };
+  const handleSignInGoogleSuccess = () => {
+    notifyRegisterSuccess();
+    
+    setTimeout(() => {
+      navigate('/');
+    }, 3000);
+  };
   const handleRegisterFailed = (
     message: string,
     setFieldValue: (
@@ -269,7 +276,7 @@ const Register = () => {
           className='w-full flex justify-center'
           clientId={String(clientId)}
           buttonText='Sign in with Google'
-          onSuccess={notifyRegisterSuccess}
+          onSuccess={handleSignInGoogleSuccess}
           onFailure={notifyRegisterFailed}
           cookiePolicy='single_host_origin'
           isSignedIn={true}
