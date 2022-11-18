@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import Routes from './routes';
 import { useLazyGetProfileQuery } from './store/services/profileService';
 import { selectRole, setCredentials } from './store/slices/authSlice';
@@ -12,7 +13,9 @@ const App = () => {
 
   useEffect(() => {
     // TODO: yarn add js-cookie and add conditional to check for cookies (i.e. accessToken & refreshToken)
-    if (!role) {
+    const accessToken = Cookies.get('access_token');
+    const refreshToken = Cookies.get('refresh_token');
+    if (accessToken && refreshToken && !role) {
       getProfile()
         .unwrap()
         .then((response) => {
