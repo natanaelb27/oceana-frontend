@@ -81,7 +81,7 @@ const Register = () => {
       username: Yup.string().required('Please enter a username'),
       email: Yup.string()
         .email('Invalid email address')
-        .required('Please enter a username'),
+        .required('Please enter your email'),
       phoneNumber: Yup.string().required('Please enter your phone number'),
       password: Yup.string().required('Please enter your password'),
       confirm: Yup.string()
