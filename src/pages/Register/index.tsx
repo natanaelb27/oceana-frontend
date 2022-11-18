@@ -17,6 +17,7 @@ import {
   InputGroup,
 } from '../../components/common/Form/style';
 import { useRegisterMutation } from '../../store/services/authService';
+import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toRegisterRequest } from '../../utils/mapperDTO';
 
 const Register = () => {
@@ -34,8 +35,8 @@ const Register = () => {
       progress: undefined,
       theme: 'dark',
     });
-  const notifyInvalidCredentials = () =>
-    toast.error('Invalid credentials', {
+  const notifyRegisterFailed = (message: string | null) =>
+    toast.error(message ? message : 'Sign up failed, please try again!', {
       position: 'top-center',
       autoClose: 3000,
       hideProgressBar: false,
@@ -53,6 +54,7 @@ const Register = () => {
     }, 3000);
   };
   const handleRegisterFailed = (
+    message: string,
     setFieldValue: (
       field: string,
       value: string,
@@ -61,7 +63,7 @@ const Register = () => {
   ) => {
     setFieldValue('password', '');
     setFieldValue('confirm', '');
-    notifyInvalidCredentials();
+    notifyRegisterFailed(message);
   };
   const formik = useFormik({
     initialValues: {
@@ -96,7 +98,13 @@ const Register = () => {
       )
         .unwrap()
         .then(() => handleRegisterSuccess())
-        .catch(() => handleRegisterFailed(setFieldValue));
+        .catch((err) => {
+          console.log(err);
+          const { data: errorResponse } = err;
+          const { message } = errorResponse;
+          const messageCapitalized = capitalizeFirstLetter(message);
+          handleRegisterFailed(messageCapitalized, setFieldValue);
+        });
     },
   });
 
@@ -234,7 +242,7 @@ const Register = () => {
           clientId={String(clientId)}
           buttonText='Sign in with Google'
           onSuccess={notifyRegisterSuccess}
-          onFailure={notifyInvalidCredentials}
+          onFailure={notifyRegisterFailed}
           cookiePolicy='single_host_origin'
           isSignedIn={true}
         />
