@@ -1,28 +1,26 @@
 import { useFormik } from 'formik';
 import { gapi } from 'gapi-script';
 import { useEffect } from 'react';
-import { Button, Form, Input, Link } from 'react-daisyui';
+import { Button, Form, Input, InputGroup, Link } from 'react-daisyui';
 import { GoogleLogin } from 'react-google-login';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Yup from 'yup';
-import {
-  AuthContainer,
-  GlassContainer,
-} from '../../components/common/Container';
-import {
-  FormErrorText,
-  FormTitle,
-  InputGroup,
-} from '../../components/common/Form/style';
+import { AuthContainer, GlassContainer } from '../../components/common/Container';
+import { FormErrorText, FormTitle } from '../../components/common/Form';
 import { useLoginMutation } from '../../store/services/authService';
+import { setCredentials } from '../../store/slices/authSlice';
+import { useAppDispatch } from '../../store/store';
+import { Role } from '../../types/component';
 import { toLoginRequest } from '../../utils/mapperDTO';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [login] = useLoginMutation();
+
   const notifyLoginSuccess = () =>
     toast.success('Login successful! Redirecting...', {
       position: 'top-center',
@@ -45,6 +43,26 @@ const Login = () => {
       progress: undefined,
       theme: 'dark',
     });
+
+  const handleLoginSuccess = () => {
+    notifyLoginSuccess();
+
+    setTimeout(() => {
+      navigate('/');
+    }, 3000);
+  };
+  const handleLoginFailed = (
+    setFieldValue: (
+      field: string,
+      value: string,
+      shouldValidate?: boolean | undefined
+    ) => void
+  ) => {
+    setFieldValue('loginCredentials', '');
+    setFieldValue('password', '');
+    notifyInvalidCredentials();
+  };
+
   const formik = useFormik({
     initialValues: { loginCredentials: '', password: '' },
     validationSchema: Yup.object({
@@ -56,17 +74,14 @@ const Login = () => {
     onSubmit: (values, { setFieldValue }) => {
       login(toLoginRequest(values.loginCredentials, values.password))
         .unwrap()
-        .then(() => {
-          notifyLoginSuccess();
-          setTimeout(() => {
-            navigate('/');
-          }, 3000);
+        .then((response) => {
+          // TODO: refactor handleLoginSuccess(response: LoginResponse) once sign-in with Google has a BE endpoint
+          const { data: loginResponseData } = response;
+          const { role } = loginResponseData as Role;
+          dispatch(setCredentials({ role }));
+          handleLoginSuccess();
         })
-        .catch(() => {
-          setFieldValue('loginCredentials', '');
-          setFieldValue('password', '');
-          notifyInvalidCredentials();
-        });
+        .catch(() => handleLoginFailed(setFieldValue));
     },
   });
 
@@ -132,7 +147,7 @@ const Login = () => {
           className='w-full flex justify-center'
           clientId={String(clientId)}
           buttonText='Sign in with Google'
-          onSuccess={notifyLoginSuccess}
+          onSuccess={handleLoginSuccess}
           onFailure={notifyInvalidCredentials}
           cookiePolicy='single_host_origin'
           isSignedIn={true}
