@@ -1,14 +1,14 @@
 import { useFormik } from 'formik';
 import { gapi } from 'gapi-script';
 import { useEffect } from 'react';
-import { Button, Form, Input, InputGroup, Link } from 'react-daisyui';
+import { Button, Form, Input, Link } from 'react-daisyui';
 import { GoogleLogin } from 'react-google-login';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Yup from 'yup';
 import { AuthContainer, GlassContainer } from '../../components/common/Container';
-import { FormErrorText, FormTitle } from '../../components/common/Form';
+import { FormErrorText, FormTitle, InputGroup } from '../../components/common/Form';
 import { useLoginMutation } from '../../store/services/authService';
 import { setCredentials } from '../../store/slices/authSlice';
 import { useAppDispatch } from '../../store/store';
