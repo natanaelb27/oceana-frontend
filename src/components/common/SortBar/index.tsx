@@ -14,6 +14,7 @@ import {
   SortLabel,
   SortBtn,
   SortBtnText,
+  SortBtnContainer,
 } from './style';
 
 type SortBarProps = {
@@ -30,7 +31,7 @@ const SortBar = ({ sort, onSortChange }: SortBarProps) => {
     <SortBarContainer>
       <SortContainer>
         <SortLabel>Sort By</SortLabel>
-        <div className='flex justify-end gap-2'>
+        <SortBtnContainer>
           <Tooltip message='Most Popular'>
             <SortBtn
               color={sort === Sort.MostPopular && 'secondary'}
@@ -58,7 +59,7 @@ const SortBar = ({ sort, onSortChange }: SortBarProps) => {
               <SortBtnText>Best Seller</SortBtnText>
             </SortBtn>
           </Tooltip>
-        </div>
+        </SortBtnContainer>
         <Dropdown className='col-span-2'>
           <Button
             endIcon={<AiOutlineDown />}

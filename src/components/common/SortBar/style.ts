@@ -39,6 +39,12 @@ export const SortBtn = tw(Button)<any>`
   md:rounded-lg
 `;
 
+export const SortBtnContainer = tw.div<any>`
+  flex
+  justify-end
+  gap-2
+`;
+
 export const SortBtnText = tw.p`
   hidden
   md:inline

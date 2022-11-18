@@ -70,15 +70,15 @@ export const GUEST_ROUTES = [
         path: '/shops/:shopID',
         element: <Shop />,
       },
-      {
-        path: '/login',
-        element: <Login />,
-      },
-      {
-        path: '/register',
-        element: <Register />,
-      },
     ],
+  },
+  {
+    path: '/login',
+    element: <Login />,
+  },
+  {
+    path: '/register',
+    element: <Register />,
   },
   {
     path: '*',
