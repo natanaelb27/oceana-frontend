@@ -3,6 +3,9 @@ import { createApi } from '@reduxjs/toolkit/dist/query/react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 import baseQueryInterceptor from './baseQuery';
+import { authApi } from './services/authService';
+import { profileApi } from './services/profileService';
+import authReducer from './slices/authSlice';
 
 export const baseApi = createApi({
   reducerPath: 'baseApi',
@@ -12,9 +15,18 @@ export const baseApi = createApi({
 });
 
 export const store = configureStore({
-  reducer: {},
+  reducer: {
+    [authApi.reducerPath]: authApi.reducer,
+    [baseApi.reducerPath]: baseApi.reducer,
+    [profileApi.reducerPath]: profileApi.reducer,
+    auth: authReducer,
+  },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({}).concat([baseApi.middleware]),
+    getDefaultMiddleware({}).concat([
+      authApi.middleware,
+      baseApi.middleware,
+      profileApi.middleware,
+    ]),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

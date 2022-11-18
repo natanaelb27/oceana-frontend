@@ -1,4 +1,4 @@
-import { Metadata, Role, User } from './component';
+import { Metadata, Profile, Role, User } from './component';
 
 export type GetRolesResponse = {
   data: User[] | null;
@@ -13,4 +13,13 @@ export type LoginResponse = {
   code: number;
   error: string | null;
   message: string;
-}
+  metadata: Metadata | null;
+};
+
+export type GetProfileResponse = {
+  data: Profile | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
