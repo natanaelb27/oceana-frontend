@@ -22,6 +22,7 @@ import { toRegisterRequest } from '../../utils/mapperDTO';
 
 const Register = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
+
   const navigate = useNavigate();
   const [register, { isLoading }] = useRegisterMutation();
   const notifyRegisterSuccess = () =>
@@ -65,6 +66,9 @@ const Register = () => {
     setFieldValue('confirm', '');
     notifyRegisterFailed(message);
   };
+
+  const phoneRegex =
+    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
   const formik = useFormik({
     initialValues: {
       firstName: '',
@@ -82,7 +86,9 @@ const Register = () => {
       email: Yup.string()
         .email('Invalid email address')
         .required('Please enter your email'),
-      phoneNumber: Yup.string().required('Please enter your phone number'),
+      phoneNumber: Yup.string()
+        .matches(phoneRegex, 'Invalid phone number')
+        .required('Please enter your phone number'),
       password: Yup.string().required('Please enter your password'),
       confirm: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
