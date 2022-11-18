@@ -7,15 +7,17 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Yup from 'yup';
-import { useLoginMutation } from '../../store/services/authService';
-import { toLoginRequest } from '../../utils/mapperDTO';
 import {
-  FormContainer,
+  AuthContainer,
+  GlassContainer,
+} from '../../components/common/Container';
+import {
   FormErrorText,
   FormTitle,
   InputGroup,
-  LoginContainer,
-} from './style';
+} from '../../components/common/Form/style';
+import { useLoginMutation } from '../../store/services/authService';
+import { toLoginRequest } from '../../utils/mapperDTO';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
@@ -79,9 +81,9 @@ const Login = () => {
   }, []);
 
   return (
-    <LoginContainer>
+    <AuthContainer>
       <ToastContainer />
-      <FormContainer>
+      <GlassContainer>
         <FormTitle>Login</FormTitle>
         <Form onSubmit={formik.handleSubmit}>
           <InputGroup>
@@ -135,8 +137,8 @@ const Login = () => {
           cookiePolicy='single_host_origin'
           isSignedIn={true}
         />
-      </FormContainer>
-    </LoginContainer>
+      </GlassContainer>
+    </AuthContainer>
   );
 };
 
