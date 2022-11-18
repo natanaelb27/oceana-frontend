@@ -23,7 +23,7 @@ import { toRegisterRequest } from '../../utils/mapperDTO';
 const Register = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
   const navigate = useNavigate();
-  const [register] = useRegisterMutation();
+  const [register, { isLoading }] = useRegisterMutation();
   const notifyRegisterSuccess = () =>
     toast.success('Sign up successful! Redirecting...', {
       position: 'top-center',
@@ -231,7 +231,12 @@ const Register = () => {
               <FormErrorText>{formik.errors.confirm}</FormErrorText>
             ) : null}
           </InputGroup>
-          <Button className='mt-2' color='primary' type='submit'>
+          <Button
+            className='mt-2'
+            color={!isLoading ? 'primary' : 'secondary'}
+            loading={isLoading}
+            type='submit'
+          >
             Sign Up
           </Button>
         </Form>

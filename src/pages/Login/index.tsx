@@ -7,8 +7,15 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Yup from 'yup';
-import { AuthContainer, GlassContainer } from '../../components/common/Container';
-import { FormErrorText, FormTitle, InputGroup } from '../../components/common/Form';
+import {
+  AuthContainer,
+  GlassContainer,
+} from '../../components/common/Container';
+import {
+  FormErrorText,
+  FormTitle,
+  InputGroup,
+} from '../../components/common/Form';
 import { useLoginMutation } from '../../store/services/authService';
 import { setCredentials } from '../../store/slices/authSlice';
 import { useAppDispatch } from '../../store/store';
@@ -19,7 +26,7 @@ const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [login] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const notifyLoginSuccess = () =>
     toast.success('Login successful! Redirecting...', {
@@ -130,7 +137,12 @@ const Login = () => {
               <FormErrorText>{formik.errors.password}</FormErrorText>
             ) : null}
           </InputGroup>
-          <Button className='mt-2' color='primary' type='submit'>
+          <Button
+            className='mt-2'
+            color={!isLoading ? 'primary' : 'secondary'}
+            loading={isLoading}
+            type='submit'
+          >
             Login
           </Button>
         </Form>
