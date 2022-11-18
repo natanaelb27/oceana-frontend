@@ -12,3 +12,14 @@ export interface User {
 export interface Role {
   role: string;
 }
+
+export interface Profile {
+  id: string;
+  full_name: string;
+  username: string;
+  email: string;
+  phone_number: string;
+  role: string;
+  created_at: string;
+  updated_at: string;
+}
