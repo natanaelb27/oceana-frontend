@@ -6,7 +6,7 @@ import {
 } from 'react-icons/ai';
 import { BsExclamationLg } from 'react-icons/bs';
 import { FaCrown } from 'react-icons/fa';
-import { Sort } from '../../../types/sort';
+import { ProductsSort } from '../../../types/sort';
 
 import {
   SortBarContainer,
@@ -18,13 +18,13 @@ import {
 } from './style';
 
 type SortBarProps = {
-  sort: Sort;
-  onSortChange: (sort: Sort) => void;
+  sort: ProductsSort;
+  onSortChange: (sort: ProductsSort) => void;
 };
 
 const SortBar = ({ sort, onSortChange }: SortBarProps) => {
-  const handleSortClick = (newSort: Sort) => {
-    onSortChange(newSort === sort ? Sort.Default : newSort);
+  const handleSortClick = (newSort: ProductsSort) => {
+    onSortChange(newSort === sort ? ProductsSort.Default : newSort);
   };
 
   return (
@@ -34,8 +34,8 @@ const SortBar = ({ sort, onSortChange }: SortBarProps) => {
         <SortBtnContainer>
           <Tooltip message='Most Popular'>
             <SortBtn
-              color={sort === Sort.MostPopular && 'secondary'}
-              onClick={() => handleSortClick(Sort.MostPopular)}
+              color={sort === ProductsSort.MostPopular && 'secondary'}
+              onClick={() => handleSortClick(ProductsSort.MostPopular)}
             >
               <FaCrown />
               <SortBtnText>Most Popular</SortBtnText>
@@ -43,8 +43,8 @@ const SortBar = ({ sort, onSortChange }: SortBarProps) => {
           </Tooltip>
           <Tooltip message='Newest'>
             <SortBtn
-              color={sort === Sort.Newest && 'secondary'}
-              onClick={() => handleSortClick(Sort.Newest)}
+              color={sort === ProductsSort.Newest && 'secondary'}
+              onClick={() => handleSortClick(ProductsSort.Newest)}
             >
               <BsExclamationLg />
               <SortBtnText>Newest</SortBtnText>
@@ -52,8 +52,8 @@ const SortBar = ({ sort, onSortChange }: SortBarProps) => {
           </Tooltip>
           <Tooltip message='Best Seller'>
             <SortBtn
-              color={sort === Sort.BestSeller && 'secondary'}
-              onClick={() => handleSortClick(Sort.BestSeller)}
+              color={sort === ProductsSort.BestSeller && 'secondary'}
+              onClick={() => handleSortClick(ProductsSort.BestSeller)}
             >
               <AiOutlineStock />
               <SortBtnText>Best Seller</SortBtnText>
@@ -66,23 +66,28 @@ const SortBar = ({ sort, onSortChange }: SortBarProps) => {
             tabIndex={0}
             className='btn w-full'
             color={
-              sort === Sort.HighestPrice || sort === Sort.LowestPrice
+              sort === ProductsSort.HighestPrice ||
+              sort === ProductsSort.LowestPrice
                 ? 'secondary'
                 : undefined
             }
           >
             <AiOutlineOrderedList />
-            {sort !== Sort.HighestPrice &&
-              sort !== Sort.LowestPrice &&
+            {sort !== ProductsSort.HighestPrice &&
+              sort !== ProductsSort.LowestPrice &&
               'Order By'}
-            {sort === Sort.HighestPrice && 'Highest Price'}
-            {sort === Sort.LowestPrice && 'Lowest Price'}
+            {sort === ProductsSort.HighestPrice && 'Highest Price'}
+            {sort === ProductsSort.LowestPrice && 'Lowest Price'}
           </Button>
           <Dropdown.Menu className='w-52'>
-            <Dropdown.Item onClick={() => handleSortClick(Sort.HighestPrice)}>
+            <Dropdown.Item
+              onClick={() => handleSortClick(ProductsSort.HighestPrice)}
+            >
               Price highest to lowest
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleSortClick(Sort.LowestPrice)}>
+            <Dropdown.Item
+              onClick={() => handleSortClick(ProductsSort.LowestPrice)}
+            >
               Price lowest to highest
             </Dropdown.Item>
           </Dropdown.Menu>
