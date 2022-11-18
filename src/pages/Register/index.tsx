@@ -36,7 +36,7 @@ const Register = () => {
       theme: 'dark',
     });
   const notifyRegisterFailed = (message: string | null) =>
-    toast.error(message ? message : 'Sign up failed, please try again!', {
+    toast.error(message || 'Sign up failed, please try again!', {
       position: 'top-center',
       autoClose: 3000,
       hideProgressBar: false,
@@ -124,7 +124,7 @@ const Register = () => {
       <GlassContainer className='max-h-[1080px] max-w-[720px] md:mt-0'>
         <FormTitle>Sign Up</FormTitle>
         <Form onSubmit={formik.handleSubmit}>
-          <div className='max-w-[300px] md:flex md:justify-between'>
+          <div className='md:flex md:justify-between'>
             <InputGroup className='md:inline'>
               <Input
                 className='input-sm md:input-md'
