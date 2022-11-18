@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import tw from 'tailwind-styled-components';
 
-export const LoginContainer = tw.div<any>`
+export const AuthContainer = tw.div<any>`
   h-screen
   flex
   justify-center
   items-center
   bg-base-content
+  overflow-auto
 `;
 
-export const FormContainer = tw.div<any>`
+export const GlassContainer = tw.div<any>`
   max-w-[480px]
   max-h-[640px]
   p-10
@@ -23,24 +24,4 @@ export const FormContainer = tw.div<any>`
   shadow-2xl
 
   md:w-[640px]
-`;
-
-export const FormTitle = tw.h1`
-  mb-12
-  text-center
-  text-6xl
-  font-bold
-  text-base-100
-`;
-
-export const FormErrorText = tw.p`
-  ml-3
-  text-lg
-  text-error
-`;
-
-export const InputGroup = tw.div<any>`
-  flex
-  flex-col
-  mb-4
 `;

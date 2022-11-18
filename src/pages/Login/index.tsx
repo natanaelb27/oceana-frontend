@@ -13,18 +13,20 @@ import { useAppDispatch } from '../../store/store';
 import { Role } from '../../types/component';
 import { toLoginRequest } from '../../utils/mapperDTO';
 import {
-  FormContainer,
+  AuthContainer,
+  GlassContainer,
+} from '../../components/common/Container';
+import {
   FormErrorText,
   FormTitle,
   InputGroup,
-  LoginContainer,
-} from './style';
+} from '../../components/common/Form';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [login] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const notifyLoginSuccess = () =>
     toast.success('Login successful! Redirecting...', {
@@ -101,9 +103,9 @@ const Login = () => {
   }, []);
 
   return (
-    <LoginContainer>
+    <AuthContainer>
       <ToastContainer />
-      <FormContainer>
+      <GlassContainer>
         <FormTitle>Login</FormTitle>
         <Form onSubmit={formik.handleSubmit}>
           <InputGroup>
@@ -135,7 +137,12 @@ const Login = () => {
               <FormErrorText>{formik.errors.password}</FormErrorText>
             ) : null}
           </InputGroup>
-          <Button className='mt-2' color='primary' type='submit'>
+          <Button
+            className='mt-2'
+            color={!isLoading ? 'primary' : 'secondary'}
+            loading={isLoading}
+            type='submit'
+          >
             Login
           </Button>
         </Form>
@@ -157,8 +164,8 @@ const Login = () => {
           cookiePolicy='single_host_origin'
           isSignedIn={true}
         />
-      </FormContainer>
-    </LoginContainer>
+      </GlassContainer>
+    </AuthContainer>
   );
 };
 
