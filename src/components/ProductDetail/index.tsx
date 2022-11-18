@@ -1,6 +1,7 @@
 import ProductCart from './ProductCart';
 import ProductDescription from './ProductDescription';
 import ProductMedia from './ProductMedia';
+import Reviews from './Reviews';
 import ReviewStatsAndFilter from './ReviewStatsAndFilter';
 
 const ProductDetail = () => {
@@ -20,9 +21,8 @@ const ProductDetail = () => {
           <div className='col-span-12 md:col-span-3'>
             <ReviewStatsAndFilter />
           </div>
-          <div className='col-span-12 md:col-span-6'></div>
-          <div className='col-span-12 md:col-span-3'>
-            <ReviewStatsAndFilter isLoading />
+          <div className='col-span-12 md:col-span-6'>
+            <Reviews />
           </div>
         </div>
       </div>
