@@ -121,12 +121,13 @@ const Register = () => {
   return (
     <AuthContainer>
       <ToastContainer />
-      <GlassContainer className='max-h-[1080px] max-w-[720px]'>
+      <GlassContainer className='max-h-[1080px] max-w-[720px] md:mt-0'>
         <FormTitle>Sign Up</FormTitle>
         <Form onSubmit={formik.handleSubmit}>
-          <div className='md:flex md:justify-between'>
+          <div className='max-w-[300px] md:flex md:justify-between'>
             <InputGroup className='md:inline'>
               <Input
+                className='input-sm md:input-md'
                 color='primary'
                 name='firstName'
                 onChange={formik.handleChange}
@@ -141,6 +142,7 @@ const Register = () => {
             </InputGroup>
             <InputGroup className='md:inline'>
               <Input
+                className='input-sm md:input-md'
                 color='primary'
                 name='lastName'
                 onChange={formik.handleChange}
@@ -156,6 +158,7 @@ const Register = () => {
           </div>
           <InputGroup>
             <Input
+              className='input-sm md:input-md'
               color='primary'
               name='username'
               onChange={formik.handleChange}
@@ -170,6 +173,7 @@ const Register = () => {
           </InputGroup>
           <InputGroup>
             <Input
+              className='input-sm md:input-md'
               color='primary'
               name='email'
               onChange={formik.handleChange}
@@ -184,6 +188,7 @@ const Register = () => {
           </InputGroup>
           <InputGroup>
             <Input
+              className='input-sm md:input-md'
               color='primary'
               name='phoneNumber'
               onChange={formik.handleChange}
@@ -198,6 +203,7 @@ const Register = () => {
           </InputGroup>
           <InputGroup>
             <Input
+              className='input-sm md:input-md'
               color='primary'
               name='password'
               onChange={formik.handleChange}
@@ -212,6 +218,7 @@ const Register = () => {
           </InputGroup>
           <InputGroup>
             <Input
+              className='input-sm md:input-md'
               color='primary'
               name='confirm'
               onChange={formik.handleChange}
