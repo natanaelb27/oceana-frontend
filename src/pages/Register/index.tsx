@@ -19,6 +19,7 @@ import {
 import { useRegisterMutation } from '../../store/services/authService';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toRegisterRequest } from '../../utils/mapperDTO';
+import { passwordInUsername } from '../../utils/validation';
 
 const Register = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
@@ -101,6 +102,12 @@ const Register = () => {
         capitalizeFirstLetter(firstName.trim().toLocaleLowerCase()) +
         ' ' +
         capitalizeFirstLetter(lastName.trim().toLocaleLowerCase());
+
+      // validate password does not contain username
+      if (passwordInUsername(username, password)) {
+        notifyRegisterFailed('Password must not contain username');
+        return;
+      }
 
       register(
         toRegisterRequest(fullName, username, email, password, phoneNumber)
