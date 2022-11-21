@@ -120,8 +120,8 @@ const Login = () => {
 
             {formik.touched.loginCredentials &&
             formik.errors.loginCredentials ? (
-                <FormErrorText>{formik.errors.loginCredentials}</FormErrorText>
-              ) : null}
+              <FormErrorText>{formik.errors.loginCredentials}</FormErrorText>
+            ) : null}
           </InputGroup>
           <InputGroup>
             <Input

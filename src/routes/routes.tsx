@@ -59,7 +59,7 @@ export const GUEST_ROUTES = [
         element: <Navigate to='/' />,
       },
       {
-        path: '/products/:product_id',
+        path: '/products/:productID',
         element: <Product />,
       },
       {
@@ -67,7 +67,7 @@ export const GUEST_ROUTES = [
         element: <Navigate to='/' />,
       },
       {
-        path: '/shops/:shop_id',
+        path: '/shops/:shopID',
         element: <Shop />,
       },
     ],
@@ -108,7 +108,7 @@ export const BUYER_ROUTES = [
         element: <Navigate to='/' />,
       },
       {
-        path: '/products/:product_id',
+        path: '/products/:productID',
         element: <Product />,
       },
       {
@@ -116,7 +116,7 @@ export const BUYER_ROUTES = [
         element: <Navigate to='/' />,
       },
       {
-        path: '/shops/:shop_id',
+        path: '/shops/:shopID',
         element: <Shop />,
       },
       {
@@ -205,7 +205,7 @@ export const SELLER_ROUTES = [
         element: <Navigate to='/' />,
       },
       {
-        path: '/products/:product_id',
+        path: '/products/:productID',
         element: <Product />,
       },
       {
@@ -213,7 +213,7 @@ export const SELLER_ROUTES = [
         element: <Navigate to='/' />,
       },
       {
-        path: '/shops/:shop_id',
+        path: '/shops/:shopID',
         element: <Shop />,
       },
       {

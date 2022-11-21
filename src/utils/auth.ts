@@ -1,6 +1,10 @@
 import { Role } from '../types/role';
 
-export const validateUserRole = (roleString: string) => {
+export const validateUserRole = (roleString: string | null) => {
+  if (!roleString) {
+    return Role.Guest;
+  }
+
   if (roleString.length !== 3) {
     return Role.Guest;
   }

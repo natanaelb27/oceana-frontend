@@ -18,4 +18,4 @@ export const profileApi = createApi({
   }),
 });
 
-export const { useLazyGetProfileQuery } = profileApi;
+export const { useGetProfileQuery, useLazyGetProfileQuery } = profileApi;

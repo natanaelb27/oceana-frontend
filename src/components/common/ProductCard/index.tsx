@@ -24,11 +24,11 @@ const ProductCard = ({ isLoading }: ProductCardProps) => {
           </svg>
         </div>
         <div className='pt-4 pb-4 px-4'>
-          <div className='h-4 bg-gray-200 rounded-full w-4/5 mb-4'></div>
-          <div className='h-4 bg-gray-200 rounded-full w-3/5 mb-4'></div>
-          <div className='h-2.5 bg-gray-200 rounded-full mb-2.5'></div>
-          <div className='h-2.5 bg-gray-200 rounded-full mb-2.5'></div>
-          <div className='h-2.5 bg-gray-200 rounded-full'></div>
+          <div className='h-4 bg-base-200 rounded-full w-4/5 mb-4'></div>
+          <div className='h-4 bg-base-200 rounded-full w-3/5 mb-4'></div>
+          <div className='h-2.5 bg-base-200 rounded-full mb-2.5'></div>
+          <div className='h-2.5 bg-base-200 rounded-full mb-2.5'></div>
+          <div className='h-2.5 bg-base-200 rounded-full'></div>
         </div>
       </Card>
     );
