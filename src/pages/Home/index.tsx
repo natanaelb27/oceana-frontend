@@ -1,8 +1,10 @@
-import { Button, Carousel } from 'react-daisyui';
+import { Button, Carousel, Divider } from 'react-daisyui';
+import { TfiLayoutPlaceholder } from 'react-icons/tfi';
+import { HomeCardContainer, HomeCardTitle, HomeStyledCarousel } from './style';
 
 const Home = () => {
   const buttonStyle = (value: string) => (
-    <Button className='btn btn-circle btn-sm text-neutral bg-base-300 md:btn-md'>
+    <Button className='hidden btn btn-circle btn-sm text-neutral bg-base-300 md:inline md:btn-md'>
       {value}
     </Button>
   );
@@ -25,6 +27,41 @@ const Home = () => {
           />
         </Carousel>
       </div>
+      <HomeCardContainer>
+        <HomeCardTitle>Category</HomeCardTitle>
+        <HomeStyledCarousel
+          display='slider'
+        >
+          {Array(20)
+            .fill(0)
+            .map((_, n) => (
+              <Carousel.Item key={n}>
+                <div className='flex flex-col items-center'>
+                  <TfiLayoutPlaceholder className='text-3xl md:text-8xl' />
+                  <h3 className='md:text-xl'>Kategori</h3>
+                </div>
+              </Carousel.Item>
+            ))}
+        </HomeStyledCarousel>
+      </HomeCardContainer>
+      <Divider className='w-[360px] self-center lg:w-[1080px]' />
+      <HomeCardContainer>
+        <HomeCardTitle>Recommended Products</HomeCardTitle>
+        <HomeStyledCarousel
+          display='slider'
+        >
+          {Array(20)
+            .fill(0)
+            .map((_, n) => (
+              <Carousel.Item key={n}>
+                <div className='flex flex-col items-center'>
+                  <TfiLayoutPlaceholder className='text-3xl md:text-8xl' />
+                  <h3 className='md:text-xl'>Product</h3>
+                </div>
+              </Carousel.Item>
+            ))}
+        </HomeStyledCarousel>
+      </HomeCardContainer>
     </div>
   );
 };
