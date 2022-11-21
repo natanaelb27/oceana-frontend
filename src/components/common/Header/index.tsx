@@ -1,14 +1,27 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { Button, Form, Input, InputGroup, Navbar } from 'react-daisyui';
+import { NavLink, useNavigate } from 'react-router-dom';
+import {
+  Button,
+  Dropdown,
+  Form,
+  Input,
+  InputGroup,
+  Navbar,
+} from 'react-daisyui';
 import { FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { GoPerson } from 'react-icons/go';
 import { HiMoon, HiSun } from 'react-icons/hi';
+import { CgLogOut, CgProfile } from 'react-icons/cg';
 
 import { useScrollPosition } from '../../../hooks';
+import { selectRole, unsetCredentials } from '../../../store/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '../../../store/store';
 
 const Header = () => {
+  const role = useAppSelector(selectRole);
   const scrollPosition = useScrollPosition();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [isDarkTheme, setIsDarkTheme] = useState(
     window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -27,6 +40,12 @@ const Header = () => {
     document.getElementsByTagName('html')[0].setAttribute('data-theme', theme);
 
     setIsDarkTheme(theme === 'dark');
+  };
+
+  const handleLogoutClick = async () => {
+    await dispatch(unsetCredentials());
+
+    navigate('/');
   };
 
   return (
@@ -88,12 +107,34 @@ const Header = () => {
                 <FaShoppingCart className='text-lg' />
               </Button>
             </NavLink>
-            <NavLink to='/login'>
-              <Button color='ghost'>Login</Button>
-            </NavLink>
-            <NavLink to='/register'>
-              <Button color='ghost'>Register</Button>
-            </NavLink>
+            {!role ? (
+              <>
+                <NavLink to='/login'>
+                  <Button color='ghost'>Login</Button>
+                </NavLink>
+                <NavLink to='/register'>
+                  <Button color='ghost'>Register</Button>
+                </NavLink>
+              </>
+            ) : (
+              <Dropdown horizontal='center' vertical='end'>
+                <Dropdown.Toggle color='ghost' size='sm'>
+                  <GoPerson className='text-lg' />
+                </Dropdown.Toggle>
+                <Dropdown.Menu className='w-52 text-base-content'>
+                  <NavLink to='user/account/profile'>
+                    <Dropdown.Item>
+                      <CgProfile className='text-xl' />
+                      <span>Profile</span>
+                    </Dropdown.Item>
+                  </NavLink>
+                  <Dropdown.Item onClick={handleLogoutClick}>
+                    <CgLogOut className='text-xl' />
+                    <span>Logout</span>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
           </div>
         </Navbar>
         <Navbar className='flex md:hidden'>
@@ -139,11 +180,33 @@ const Header = () => {
                 <FaShoppingCart className='text-lg' />
               </Button>
             </NavLink>
-            <NavLink to='/login'>
-              <Button shape='circle' color='ghost' size='sm'>
-                <GoPerson className='text-lg' />
-              </Button>
-            </NavLink>
+            {!role ? (
+              <>
+                <NavLink to='/login'>
+                  <Button shape='circle' color='ghost' size='sm'>
+                    <GoPerson className='text-lg' />
+                  </Button>
+                </NavLink>
+              </>
+            ) : (
+              <Dropdown horizontal='center' vertical='end'>
+                <Dropdown.Toggle color='ghost' size='sm'>
+                  <GoPerson className='text-lg' />
+                </Dropdown.Toggle>
+                <Dropdown.Menu className='w-52 text-base-content'>
+                  <NavLink to='user/account/profile'>
+                    <Dropdown.Item>
+                      <CgProfile className='text-xl' />
+                      <span>Profile</span>
+                    </Dropdown.Item>
+                  </NavLink>
+                  <Dropdown.Item onClick={handleLogoutClick}>
+                    <CgLogOut className='text-xl' />
+                    <span>Logout</span>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
           </div>
         </Navbar>
       </div>
