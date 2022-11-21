@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Carousel } from 'react-daisyui';
 import tw from 'tailwind-styled-components';
 
 export const HomeCardContainer = tw.div<any>`
   relative
   w-screen
   h-40
-  my-5
   p-5
   border
   border-sm
@@ -23,16 +21,4 @@ export const HomeCardTitle = tw.h2`
   text-xl
   font-bold
   lg:text-3xl
-`;
-
-export const HomeStyledCarousel = tw(Carousel)<any>`
-  carousel-center
-  w-full
-  p-4
-  space-x-10
-  border-sm
-  bg-base-300
-  rounded-box
-  
-  md:space-x-24
 `;

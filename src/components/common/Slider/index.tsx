@@ -10,10 +10,12 @@ type SliderProps = {
 
 const Slider = ({ children, id }: SliderProps) => {
   const handleClickPrev = () => {
-    document.getElementById(`slider-${id}`)!.scrollLeft -= SCROLL_SLIDER;
+    const slider = document.getElementById(`slider-${id}`);
+    if (slider) slider.scrollLeft -= SCROLL_SLIDER;
   };
   const handleClickNext = () => {
-    document.getElementById(`slider-${id}`)!.scrollLeft += SCROLL_SLIDER;
+    const slider = document.getElementById(`slider-${id}`);
+    if (slider) slider.scrollLeft += SCROLL_SLIDER;
   };
   return (
     <div className='relative'>
