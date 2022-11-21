@@ -58,7 +58,7 @@ const ProductDescription = ({ isLoading }: ProductDescriptionProps) => {
     return (
       <div className='animate-pulse'>
         <div className='h-6 bg-base-200 rounded-full w-4/5 mb-2.5'></div>
-        <div className='h-4 bg-base-2normal00 rounded-full w-3/5 mb-2.5'></div>
+        <div className='h-4 bg-base-200 rounded-full w-3/5 mb-2.5'></div>
         <div className='h-8 bg-base-200 rounded-full w-2/5 mb-2.5'></div>
         <div className='h-4 bg-base-200 rounded-full w-2/5 mb-2.5'></div>
         <Divider />
