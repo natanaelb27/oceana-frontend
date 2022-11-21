@@ -1,16 +1,9 @@
 import { Button, Carousel, Divider } from 'react-daisyui';
 import { TfiLayoutPlaceholder } from 'react-icons/tfi';
-import { GrNext, GrPrevious } from 'react-icons/gr';
-import { SCROLL_SLIDER } from '../../constants';
 import { HomeCardContainer, HomeCardTitle, HomeStyledCarousel } from './style';
+import { Slider } from '../../components/common';
 
 const Home = () => {
-  const handleClickPrev = () => {
-    document.getElementById('slider')!.scrollLeft -= SCROLL_SLIDER;
-  };
-  const handleClickNext = () => {
-    document.getElementById('slider')!.scrollLeft += SCROLL_SLIDER;
-  };
   const buttonStyle = (value: string) => (
     <Button className='hidden btn btn-circle btn-sm text-neutral bg-base-300 md:inline md:btn-md'>
       {value}
@@ -37,7 +30,7 @@ const Home = () => {
       </div>
       <HomeCardContainer>
         <HomeCardTitle>Category</HomeCardTitle>
-        <HomeStyledCarousel id='slider' display='slider'>
+        <Slider id='category'>
           {Array(20)
             .fill(0)
             .map((_, n) => (
@@ -48,26 +41,12 @@ const Home = () => {
                 </div>
               </Carousel.Item>
             ))}
-        </HomeStyledCarousel>
-        <div className='hidden md:inline'>
-          <button
-            className='absolute left-0 top-1/3 btn btn-xs btn-circle bg-base-300 text-black drop-shadow-lg border-none md:top-[40%] md:btn-md'
-            onClick={handleClickPrev}
-          >
-            <GrPrevious className='text-xs md:text-lg' />
-          </button>
-          <button
-            className='absolute right-0 top-1/3 btn btn-xs btn-circle bg-base-300 text-black drop-shadow-lg border-none md:top-[40%] md:btn-md'
-            onClick={handleClickNext}
-          >
-            <GrNext className='text-xs md:text-lg' />
-          </button>
-        </div>
+        </Slider>
       </HomeCardContainer>
       <Divider className='w-[360px] self-center lg:w-[1080px]' />
       <HomeCardContainer>
         <HomeCardTitle>Recommended Products</HomeCardTitle>
-        <HomeStyledCarousel display='slider'>
+        <Slider id='recommended'>
           {Array(20)
             .fill(0)
             .map((_, n) => (
@@ -78,7 +57,7 @@ const Home = () => {
                 </div>
               </Carousel.Item>
             ))}
-        </HomeStyledCarousel>
+        </Slider>
       </HomeCardContainer>
     </div>
   );
