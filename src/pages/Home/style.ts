@@ -3,6 +3,7 @@ import { Carousel } from 'react-daisyui';
 import tw from 'tailwind-styled-components';
 
 export const HomeCardContainer = tw.div<any>`
+  relative
   w-screen
   h-40
   my-5
@@ -18,7 +19,7 @@ export const HomeCardContainer = tw.div<any>`
 `;
 
 export const HomeCardTitle = tw.h2`
-  mb-2
+  mb-4
   text-xl
   font-bold
   lg:text-3xl
