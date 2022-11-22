@@ -18,9 +18,11 @@ const Home = () => {
             {resGetAllCategory?.data &&
               resGetAllCategory.data.map((category, n) => (
                 <Carousel.Item key={n}>
-                  <div className='flex flex-col items-center gap-2 md:gap-4'>
+                  <div className='max-w-[64px] flex flex-col items-center text-center gap-2 md:gap-4'>
                     <TfiLayoutPlaceholder className='text-3xl md:text-8xl' />
-                    <h3 className='md:text-xl'>{category.name}</h3>
+                    <h3 className='break-words leading-none md:text-xl'>
+                      {category.name}
+                    </h3>
                   </div>
                 </Carousel.Item>
               ))}

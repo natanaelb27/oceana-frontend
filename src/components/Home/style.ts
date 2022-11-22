@@ -4,17 +4,19 @@ import tw from 'tailwind-styled-components';
 export const HomeCardContainer = tw.div<any>`
   relative
   w-screen
-  h-40
+  max-h-48
   p-5
+  pt-3
   border
   border-sm
   border-base-300
   rounded-2xl
   shadow-md
   
-  lg:w-[1080px]
-  lg:h-72
-  lg:max-h-80
+  md:w-[1080px]
+  md:max-h-96
+  md:p-10
+  md:pt-5
 `;
 
 export const HomeCardTitle = tw.h2`

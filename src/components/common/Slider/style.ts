@@ -12,7 +12,7 @@ export const StyledCarousel = tw(Carousel)<any>`
   rounded-box
   
   md:space-x-24
-  md:px-10
+  md:px-12
 `;
 
 export const SliderNavBtn = tw.button<any>`
