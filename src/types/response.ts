@@ -22,9 +22,17 @@ export type RegisterResponse = {
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type GetProfileResponse = {
+  data: Profile | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type UpdateProfileResponse = {
   data: Profile | null;
   code: number;
   error: string | null;
