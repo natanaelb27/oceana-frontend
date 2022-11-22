@@ -22,6 +22,7 @@ export const SliderNavBtn = tw.button<any>`
   btn-circle
   bg-base-300
   text-base-content
+  hover:bg-base-200
   drop-shadow-lg
   border-none
   md:top-[40%]
