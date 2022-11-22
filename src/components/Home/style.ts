@@ -18,8 +18,10 @@ export const HomeCardContainer = tw.div<any>`
 `;
 
 export const HomeCardTitle = tw.h2`
-  mb-4
+  mb-2
   text-xl
   font-bold
-  lg:text-3xl
+
+  md:mb-4
+  md:text-3xl
 `;

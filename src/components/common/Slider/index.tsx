@@ -28,7 +28,7 @@ const Slider = ({ children, id }: SliderProps) => {
             .map((_, n) => (
               <Carousel.Item key={n}>
                 <div className='flex flex-col items-center gap-4 animate-pulse'>
-                  <div className='w-8 aspect-square bg-gray-300 rounded-3xl md:w-24' />
+                  <div className='w-8 aspect-w-1 aspect-h-1 bg-gray-300 rounded-3xl md:w-24 md:aspect-square' />
                   <div className='w-8 h-2 bg-gray-300 rounded-3xl md:w-20 md:h-4' />
                 </div>
               </Carousel.Item>
