@@ -53,9 +53,7 @@ const Login = () => {
   const handleLoginSuccess = () => {
     notifyLoginSuccess();
 
-    setTimeout(() => {
-      navigate('/');
-    }, 3000);
+    navigate('/');
   };
   const handleLoginFailed = (
     setFieldValue: (
