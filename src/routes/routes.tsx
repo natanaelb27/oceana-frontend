@@ -25,6 +25,7 @@ import {
   Shop,
   ShopAddProduct,
   ShopAddPromotion,
+  ShopAddress,
   ShopAddVoucher,
   ShopEditProduct,
   ShopEditPromotion,
@@ -69,6 +70,122 @@ export const GUEST_ROUTES = [
       {
         path: '/shops/:shopID',
         element: <Shop />,
+      },
+      {
+        path: '/user',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/user/account',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/user/account/profile',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/user/account/wallet',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/user/account/address',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/user/account/password',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/user/purchase',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/user/refund',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/cart',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/checkout',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/shop',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/registration',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/shop/profile',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/shop/address',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/products',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/products/list',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/products/add',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/products/edit',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/vouchers',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/vouchers/list',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/vouchers/add',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/vouchers/edit',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/promotions',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/promotions/list',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/promotions/add',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/marketing/promotions/edit',
+        element: <Navigate to='/' />,
+      },
+      {
+        path: '/seller/orders/',
+        element: <Navigate to='/' />,
       },
     ],
   },
@@ -172,8 +289,76 @@ export const BUYER_ROUTES = [
         element: <Navigate to='/seller/registration' />,
       },
       {
+        path: '/seller/shop',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
         path: '/seller/registration',
         element: <SellerRegistration />,
+      },
+      {
+        path: '/seller/shop/profile',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/shop/address',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/products',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/products/list',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/products/add',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/products/edit',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/vouchers',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/vouchers/list',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/vouchers/add',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/vouchers/edit',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/promotions',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/promotions/list',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/promotions/add',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/marketing/promotions/edit',
+        element: <Navigate to='/seller/registration' />,
+      },
+      {
+        path: '/seller/orders/',
+        element: <Navigate to='/seller/registration' />,
       },
     ],
   },
@@ -282,7 +467,7 @@ export const SELLER_ROUTES = [
       },
       {
         path: '/seller/shop/address',
-        element: <ShopProfile />,
+        element: <ShopAddress />,
       },
       {
         path: '/seller/marketing',
