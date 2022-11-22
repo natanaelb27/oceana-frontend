@@ -8,13 +8,32 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from 'react-share';
-import 'react-medium-image-zoom/dist/styles.css';
+import { IoCopyOutline } from 'react-icons/io5';
 import { Button } from 'react-daisyui';
 import { toCompact } from '../../utils/convert';
+import { toast, ToastContainer } from 'react-toastify';
 
 const ProductMedia = () => {
+  const notify = () =>
+    toast.info('Copied to clipboard!', {
+      position: 'top-center',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
+  const handleCopyClick = () => {
+    navigator.clipboard.writeText(window.location.href);
+
+    notify();
+  };
+
   return (
     <div>
+      <ToastContainer />
       <div className='mb-2'>
         <Zoom>
           <img
@@ -58,14 +77,22 @@ const ProductMedia = () => {
       <div className='flex justify-center items-center mb-2.5'>
         <span className='mr-2'>Share:</span>
         <FacebookShareButton url={window.location.href} className='mr-1'>
-          <FacebookIcon className='rounded-full h-8 w-8' />
+          <FacebookIcon className='rounded-full h-6 w-6' />
         </FacebookShareButton>
         <TwitterShareButton url={window.location.href} className='mr-1'>
-          <TwitterIcon className='rounded-full h-8 w-8' />
+          <TwitterIcon className='rounded-full h-6 w-6' />
         </TwitterShareButton>
-        <WhatsappShareButton url={window.location.href}>
-          <WhatsappIcon className='rounded-full h-8 w-8' />
+        <WhatsappShareButton url={window.location.href} className='mr-1'>
+          <WhatsappIcon className='rounded-full h-6 w-6' />
         </WhatsappShareButton>
+        <Button
+          shape='circle'
+          size='xs'
+          color='accent'
+          onClick={handleCopyClick}
+        >
+          <IoCopyOutline className='text-sm' />
+        </Button>
         <span className='mx-2'>|</span>
         <Button shape='circle' size='sm' color='ghost'>
           <HiHeart className='text-2xl text-secondary' />
