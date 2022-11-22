@@ -23,6 +23,7 @@ const ProductMedia = () => {
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
+      theme: 'dark',
     });
 
   const handleCopyClick = () => {

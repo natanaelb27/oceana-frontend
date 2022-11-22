@@ -41,6 +41,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
+      theme: 'dark',
     });
   const notifyUpdateProfileFailed = (message: string | null) =>
     toast.error(message || 'Update failed, please try again!', {
@@ -51,6 +52,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
+      theme: 'dark',
     });
 
   const [updateProfile, { isLoading: updateProfileIsLoading }] =
