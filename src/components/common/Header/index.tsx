@@ -42,6 +42,10 @@ const Header = () => {
     setIsDarkTheme(theme === 'dark');
   };
 
+  const handleProfileClick = () => {
+    navigate('/user/account/profile');
+  };
+
   const handleLogoutClick = async () => {
     await dispatch(unsetCredentials());
 
@@ -122,12 +126,10 @@ const Header = () => {
                   <GoPerson className='text-lg' />
                 </Dropdown.Toggle>
                 <Dropdown.Menu className='w-52 text-base-content'>
-                  <NavLink to='user/account/profile'>
-                    <Dropdown.Item>
-                      <CgProfile className='text-xl' />
-                      <span>Profile</span>
-                    </Dropdown.Item>
-                  </NavLink>
+                  <Dropdown.Item onClick={handleProfileClick}>
+                    <CgProfile className='text-xl' />
+                    <span>Profile</span>
+                  </Dropdown.Item>
                   <Dropdown.Item onClick={handleLogoutClick}>
                     <CgLogOut className='text-xl' />
                     <span>Logout</span>
@@ -194,12 +196,10 @@ const Header = () => {
                   <GoPerson className='text-lg' />
                 </Dropdown.Toggle>
                 <Dropdown.Menu className='w-52 text-base-content'>
-                  <NavLink to='user/account/profile'>
-                    <Dropdown.Item>
-                      <CgProfile className='text-xl' />
-                      <span>Profile</span>
-                    </Dropdown.Item>
-                  </NavLink>
+                  <Dropdown.Item onClick={handleProfileClick}>
+                    <CgProfile className='text-xl' />
+                    <span>Profile</span>
+                  </Dropdown.Item>
                   <Dropdown.Item onClick={handleLogoutClick}>
                     <CgLogOut className='text-xl' />
                     <span>Logout</span>
