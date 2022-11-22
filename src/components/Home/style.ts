@@ -4,7 +4,7 @@ import tw from 'tailwind-styled-components';
 export const HomeCardContainer = tw.div<any>`
   relative
   w-screen
-  max-h-48
+  max-h-max
   p-5
   pt-3
   border
@@ -14,7 +14,6 @@ export const HomeCardContainer = tw.div<any>`
   shadow-md
   
   md:w-[1080px]
-  md:max-h-96
   md:p-10
   md:pt-5
 `;

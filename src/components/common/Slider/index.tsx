@@ -7,9 +7,11 @@ import { SliderNavBtn, StyledCarousel } from './style';
 type SliderProps = {
   children: ReactNode;
   id: string;
+  gap?: number;
+  gapMobile?: number;
 };
 
-const Slider = ({ children, id }: SliderProps) => {
+const Slider = ({ children, id, gap, gapMobile }: SliderProps) => {
   const handleClickPrev = () => {
     const slider = document.getElementById(`slider-${id}`);
     if (slider) slider.scrollLeft -= SCROLL_SLIDER;
@@ -47,7 +49,12 @@ const Slider = ({ children, id }: SliderProps) => {
 
   return (
     <div className='relative'>
-      <StyledCarousel id={`slider-${id}`}>{children}</StyledCarousel>
+      <StyledCarousel
+        id={`slider-${id}`}
+        className={`gap-${gapMobile} md:gap-${gap}`}
+      >
+        {children}
+      </StyledCarousel>
       <div className='hidden md:inline'>
         <SliderNavBtn className='-left-6' onClick={handleClickPrev}>
           <MdNavigateBefore className='text-xs md:text-3xl' />

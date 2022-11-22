@@ -1,6 +1,6 @@
 import { Carousel, Divider } from 'react-daisyui';
 import { TfiLayoutPlaceholder } from 'react-icons/tfi';
-import { Slider } from '../../components/common';
+import { ProductCard, Slider } from '../../components/common';
 import { HomeCard, PromoBanner } from '../../components/Home';
 import { useGetAllCategoryQuery } from '../../store/services/categoryService';
 
@@ -29,10 +29,21 @@ const Home = () => {
           </Slider>
         </HomeCard>
       </div>
-      <Divider className='w-[360px] self-center lg:w-[1080px]' />
+      <Divider className='w-[360px] self-center md:w-[1080px]' />
       <div className='my-5'>
         <HomeCard title='Recommended Products'>
-          <Slider id='recommended'>{null}</Slider>
+          <Slider id='recommended' gap={20} gapMobile={10}>
+            {Array(10)
+              .fill(0)
+              .map((_, n) => (
+                <Carousel.Item
+                  key={n}
+                  className='max-w-[180px] md:max-w-[240px]'
+                >
+                  <ProductCard />
+                </Carousel.Item>
+              ))}
+          </Slider>
         </HomeCard>
       </div>
     </div>

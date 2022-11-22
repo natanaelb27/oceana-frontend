@@ -40,7 +40,7 @@ const ProductCard = ({ isLoading }: ProductCardProps) => {
         <figure>
           <img
             src='https://api.lorem.space/image/shoes?w=480&h=480'
-            className='object-cover h-64 w-full'
+            className='object-cover max-h-64 w-full'
           />
         </figure>
         <div className='pt-2.5 pb-4 px-4'>
