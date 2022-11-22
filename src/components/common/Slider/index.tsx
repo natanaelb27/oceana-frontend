@@ -7,10 +7,9 @@ import { SliderNavBtn, StyledCarousel } from './style';
 type SliderProps = {
   children: ReactNode;
   id: string;
-  isLoading?: boolean;
 };
 
-const Slider = ({ children, id, isLoading }: SliderProps) => {
+const Slider = ({ children, id }: SliderProps) => {
   const handleClickPrev = () => {
     const slider = document.getElementById(`slider-${id}`);
     if (slider) slider.scrollLeft -= SCROLL_SLIDER;
@@ -20,7 +19,7 @@ const Slider = ({ children, id, isLoading }: SliderProps) => {
     if (slider) slider.scrollLeft += SCROLL_SLIDER;
   };
 
-  if (isLoading)
+  if (!children)
     return (
       <div className='relative'>
         <StyledCarousel id={`slider-${id}`}>
