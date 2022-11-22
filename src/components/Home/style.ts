@@ -8,6 +8,7 @@ export const HomeCardContainer = tw.div<any>`
   p-5
   border
   border-sm
+  border-base-300
   rounded-2xl
   shadow-md
   

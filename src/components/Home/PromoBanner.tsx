@@ -2,7 +2,7 @@ import { Button, Carousel } from 'react-daisyui';
 
 export const PromoBanner = () => {
   const buttonStyle = (value: string) => (
-    <Button className='hidden btn btn-circle btn-sm text-neutral bg-base-300 md:inline md:btn-md'>
+    <Button className='hidden btn btn-circle btn-sm text-base-content bg-base-300 md:inline md:btn-md'>
       {value}
     </Button>
   );
