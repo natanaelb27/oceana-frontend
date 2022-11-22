@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Carousel } from 'react-daisyui';
 import { MdNavigateNext, MdNavigateBefore } from 'react-icons/md';
 import { SCROLL_SLIDER } from '../../../constants';
 import { SliderNavBtn, StyledCarousel } from './style';
@@ -6,9 +7,10 @@ import { SliderNavBtn, StyledCarousel } from './style';
 type SliderProps = {
   children: ReactNode;
   id: string;
+  isLoading?: boolean;
 };
 
-const Slider = ({ children, id }: SliderProps) => {
+const Slider = ({ children, id, isLoading }: SliderProps) => {
   const handleClickPrev = () => {
     const slider = document.getElementById(`slider-${id}`);
     if (slider) slider.scrollLeft -= SCROLL_SLIDER;
@@ -17,6 +19,33 @@ const Slider = ({ children, id }: SliderProps) => {
     const slider = document.getElementById(`slider-${id}`);
     if (slider) slider.scrollLeft += SCROLL_SLIDER;
   };
+
+  if (isLoading)
+    return (
+      <div className='relative'>
+        <StyledCarousel id={`slider-${id}`}>
+          {Array(10)
+            .fill(0)
+            .map((_, n) => (
+              <Carousel.Item key={n}>
+                <div className='flex flex-col items-center gap-4 animate-pulse'>
+                  <div className='w-8 aspect-square bg-gray-300 rounded-3xl md:w-24' />
+                  <div className='w-8 h-4 bg-gray-300 rounded-3xl md:w-20 md:h-4' />
+                </div>
+              </Carousel.Item>
+            ))}
+        </StyledCarousel>
+        <div className='hidden md:inline'>
+          <SliderNavBtn className='-left-6' onClick={handleClickPrev}>
+            <MdNavigateBefore className='text-xs md:text-3xl' />
+          </SliderNavBtn>
+          <SliderNavBtn className='-right-6' onClick={handleClickNext}>
+            <MdNavigateNext className='text-xs md:text-3xl' />
+          </SliderNavBtn>
+        </div>
+      </div>
+    );
+
   return (
     <div className='relative'>
       <StyledCarousel id={`slider-${id}`}>{children}</StyledCarousel>

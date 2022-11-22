@@ -7,7 +7,7 @@ export const StyledCarousel = tw(Carousel)<any>`
   w-full
   p-4
   space-x-10
-  bg-base-300
+  bg-base-200
   rounded-box
   
   md:space-x-24

@@ -21,12 +21,12 @@ const Home = () => {
       </div>
       <div className='my-5'>
         <HomeCard title='Category'>
-          <Slider id='category'>
+          <Slider id='category' isLoading>
             {Array(20)
               .fill(0)
               .map((_, n) => (
                 <Carousel.Item key={n}>
-                  <div className='flex flex-col items-center'>
+                  <div className='flex flex-col items-center gap-4'>
                     <TfiLayoutPlaceholder className='text-3xl md:text-8xl' />
                     <h3 className='md:text-xl'>Category</h3>
                   </div>
