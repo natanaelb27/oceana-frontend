@@ -19,6 +19,7 @@ export { default as SellerRegistration } from './buyer/SellerRegistration';
 
 export { default as ShopAddProduct } from './seller/ShopAddProduct';
 export { default as ShopAddPromotion } from './seller/ShopAddPromotion';
+export { default as ShopAddress } from './seller/ShopAddress';
 export { default as ShopAddVoucher } from './seller/ShopAddVoucher';
 export { default as ShopEditProduct } from './seller/ShopEditProduct';
 export { default as ShopEditPromotion } from './seller/ShopEditPromotion';
