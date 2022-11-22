@@ -5,12 +5,16 @@ module.exports = {
     'node_modules/daisyui/dist/**/*.js',
     'node_modules/react-daisyui/dist/**/*.js',
   ],
+  corePlugins: {
+    aspectRatio: false,
+  },
   theme: {
     extend: {},
   },
   plugins: [
-    require('daisyui'),
+    require('@tailwindcss/aspect-ratio'),
     require('@tailwindcss/typography'),
     require('@tailwindcss/line-clamp'),
+    require('daisyui'),
   ],
 };
