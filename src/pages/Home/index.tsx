@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Carousel, Divider } from 'react-daisyui';
 import { TfiLayoutPlaceholder } from 'react-icons/tfi';
 import { Slider } from '../../components/common';
@@ -7,10 +6,6 @@ import { useGetAllCategoryQuery } from '../../store/services/categoryService';
 
 const Home = () => {
   const { data: resGetAllCategory } = useGetAllCategoryQuery();
-
-  useEffect(() => {
-    console.log(resGetAllCategory);
-  }, [resGetAllCategory]);
 
   return (
     <div className='container mx-auto flex flex-col items-center'>
