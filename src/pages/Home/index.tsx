@@ -1,9 +1,19 @@
+import { useEffect } from 'react';
 import { Carousel, Divider } from 'react-daisyui';
 import { TfiLayoutPlaceholder } from 'react-icons/tfi';
 import { Slider } from '../../components/common';
 import { HomeCard, PromoBanner } from '../../components/Home';
+import { useLazyGetAllCategoryQuery } from '../../store/services/categoryService';
 
 const Home = () => {
+  const [getAllCategory] = useLazyGetAllCategoryQuery();
+
+  useEffect(() => {
+    getAllCategory()
+      .unwrap()
+      .then((res) => console.log(res));
+  }, []);
+
   return (
     <div className='container mx-auto flex flex-col items-center'>
       <div className='my-5'>

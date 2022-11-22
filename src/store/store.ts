@@ -4,6 +4,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 import baseQueryInterceptor from './baseQuery';
 import { authApi } from './services/authService';
+import { categoryApi } from './services/categoryService';
 import { profileApi } from './services/profileService';
 import authReducer from './slices/authSlice';
 
@@ -18,6 +19,7 @@ export const store = configureStore({
   reducer: {
     [authApi.reducerPath]: authApi.reducer,
     [baseApi.reducerPath]: baseApi.reducer,
+    [categoryApi.reducerPath]: categoryApi.reducer,
     [profileApi.reducerPath]: profileApi.reducer,
     auth: authReducer,
   },
@@ -25,6 +27,7 @@ export const store = configureStore({
     getDefaultMiddleware({}).concat([
       authApi.middleware,
       baseApi.middleware,
+      categoryApi.middleware,
       profileApi.middleware,
     ]),
 });
