@@ -36,7 +36,7 @@ const ProductCard = ({ isLoading }: ProductCardProps) => {
 
   return (
     <Link to='/'>
-      <Card className='md:h-[26rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'>
+      <Card className='md:max-h-[26rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'>
         <figure>
           <img
             src='https://api.lorem.space/image/shoes?w=480&h=480'

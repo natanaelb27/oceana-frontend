@@ -64,7 +64,7 @@ const SortBar = ({ sort, onSortChange }: SortBarProps) => {
           <Button
             endIcon={<AiOutlineDown />}
             tabIndex={0}
-            className='btn w-full'
+            className='btn w-full rounded-full'
             color={
               sort === ProductsSort.HighestPrice ||
               sort === ProductsSort.LowestPrice
