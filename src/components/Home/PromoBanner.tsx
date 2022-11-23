@@ -1,6 +1,6 @@
 import { Button, Carousel } from 'react-daisyui';
 
-export const PromoBanner = () => {
+const PromoBanner = () => {
   const buttonStyle = (value: string) => (
     <Button className='hidden btn btn-circle btn-sm text-base-content bg-base-300 hover:bg-base-200 md:inline md:btn-md'>
       {value}
@@ -24,3 +24,5 @@ export const PromoBanner = () => {
     </Carousel>
   );
 };
+
+export default PromoBanner;
