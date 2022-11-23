@@ -18,7 +18,7 @@ const FilterSidebar = () => {
       <FilterSidebarContainer id='filter-sidebar'>
         <div className='w-full py-4 flex justify-center items-center gap-2 text-lg font-bold'>
           <IoFilter />
-          <h5>FILTER</h5>
+          <h5>Filter</h5>
         </div>
         <Divider className='m-0' />
 
