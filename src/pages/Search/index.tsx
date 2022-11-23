@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { useSearchParams } from 'react-router-dom';
 import { Pager, ProductCard, SortBar } from '../../components/common';
 import { FilterSidebar } from '../../components/Search';
 import { ProductsSort } from '../../types/sort';
@@ -7,6 +8,7 @@ import { ProductsSort } from '../../types/sort';
 const Search = () => {
   const [sort, setSort] = useState(ProductsSort.Default);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams] = useSearchParams();
 
   return (
     <div className='mx-auto container'>
@@ -18,7 +20,10 @@ const Search = () => {
           <div className='product-list-header'>
             <div className='ml-2 flex items-center gap-2 text-lg'>
               <AiOutlineInfoCircle />
-              <p>{'Search results for  "___"'}</p>
+              <p>
+                Search results for &quot;
+                <strong>{searchParams.get('q')}</strong>&quot;
+              </p>
             </div>
             <div className='mt-6'>
               <SortBar sort={sort} onSortChange={setSort} />
