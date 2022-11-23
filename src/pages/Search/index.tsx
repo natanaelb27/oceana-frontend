@@ -1,19 +1,14 @@
 import { useState } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { IoFilter } from 'react-icons/io5';
 import { ProductCard, SortBar } from '../../components/common';
+import { FilterSidebar } from '../../components/Search';
 import { ProductsSort } from '../../types/sort';
 
 const Search = () => {
   const [sort, setSort] = useState(ProductsSort.Default);
   return (
     <div className='mx-auto my-6 container flex justify-center gap-6'>
-      <div className='hidden w-56 h-96 bg-base-200 rounded-full shadow-md md:inline'>
-        <div className='w-full my-8 flex justify-center items-center gap-2 text-lg font-bold'>
-          <IoFilter />
-          <h5>FILTER</h5>
-        </div>
-      </div>
+      <FilterSidebar />
       <div className='main flex flex-col'>
         <div className='product-list-header'>
           <div className='ml-2 mb-6 flex items-center gap-2 text-lg'>
