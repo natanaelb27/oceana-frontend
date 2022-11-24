@@ -32,7 +32,6 @@ const Search = () => {
   const q = searchParams.get('q');
 
   useEffect(() => {
-    console.log({ q });
     if (q === null) {
       return;
     }
@@ -42,6 +41,31 @@ const Search = () => {
       search: q,
     });
   }, [q]);
+
+  const handleSortChange = (productSort: ProductsSort) => {
+    let sortBy = '';
+    let sort = '';
+    if (productSort === ProductsSort.BestSeller) {
+      sortBy = 'best-seller';
+      sort = '';
+    } else if (productSort === ProductsSort.MostPopular) {
+      sortBy = 'recommended';
+      sort = '';
+    } else if (productSort === ProductsSort.HighestPrice) {
+      sortBy = 'price';
+      sort = 'desc';
+    } else if (productSort === ProductsSort.LowestPrice) {
+      sortBy = 'price';
+      sort = 'asc';
+    }
+
+    setSort(productSort);
+    setProductQuery({
+      ...productQuery,
+      sortBy,
+      sort,
+    });
+  };
 
   const handlePageChange = (n: number) => {
     setProductQuery({
@@ -70,7 +94,7 @@ const Search = () => {
                 </p>
               </div>
               <div className='mt-6'>
-                <SortBar sort={sort} onSortChange={setSort} />
+                <SortBar sort={sort} onSortChange={handleSortChange} />
               </div>
             </div>
             <div className='mt-6 flex flex-col items-center text-center text-error animate-pulse'>
@@ -101,7 +125,7 @@ const Search = () => {
               </p>
             </div>
             <div className='mt-6'>
-              <SortBar sort={sort} onSortChange={setSort} />
+              <SortBar sort={sort} onSortChange={handleSortChange} />
             </div>
             <div className='mt-6 flex justify-center'>
               <Pager
