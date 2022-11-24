@@ -25,6 +25,18 @@ export type UpdateProfileRequest = {
   birthdate?: string;
 };
 
-export type UpdateProfileEmail = {
+export type UpdateProfileEmailRequest = {
   email: string;
+};
+
+export type CreateAddressRequest = {
+  name: string;
+  detail: string;
+  sub_district_id: number;
+};
+
+export type UpdateAddressRequest = {
+  name: string;
+  detail: string;
+  sub_district_id: number;
 };
