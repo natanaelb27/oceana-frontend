@@ -1,14 +1,54 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { useSearchParams } from 'react-router-dom';
 import { Pager, ProductCard, SortBar } from '../../components/common';
 import { FilterSidebar } from '../../components/Search';
+import { useGetAllProductsQuery } from '../../store/services/productService';
+import { ProductQuery } from '../../types/query';
 import { ProductsSort } from '../../types/sort';
+import { toProductQuery } from '../../utils/mapperDTO';
 
 const Search = () => {
   const [sort, setSort] = useState(ProductsSort.Default);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [productQuery, setProductQuery] = useState<ProductQuery>({
+    search: '',
+    sort: '',
+    sortBy: '',
+    limit: 1,
+    page: 1,
+    merchantID: 0,
+    categoryID: 0,
+    priceMinimum: 0,
+    priceMaximum: 0,
+    merchantCities: [],
+    courierServices: [],
+  });
   const [searchParams] = useSearchParams();
+  const { data: resGetAllProducts } = useGetAllProductsQuery(
+    toProductQuery(productQuery)
+  );
+
+  const q = searchParams.get('q');
+
+  useEffect(() => {
+    if (!q) {
+      return;
+    }
+
+    setProductQuery({
+      ...productQuery,
+      search: q,
+    });
+  }, [q]);
+
+  const handlePageChange = (n: number) => {
+    setProductQuery({
+      ...productQuery,
+      page: n,
+    });
+  };
+
+  console.log({ resGetAllProducts });
 
   return (
     <div className='mx-auto container'>
@@ -30,9 +70,13 @@ const Search = () => {
             </div>
             <div className='mt-6 flex justify-center'>
               <Pager
-                page={currentPage}
-                totalPage={7}
-                onPageChange={setCurrentPage}
+                page={productQuery.page}
+                totalPage={
+                  resGetAllProducts?.metadata?.total_pages
+                    ? resGetAllProducts.metadata.total_pages
+                    : 0
+                }
+                onPageChange={handlePageChange}
               />
             </div>
           </div>
@@ -45,9 +89,13 @@ const Search = () => {
           </div>
           <div className='mt-6 flex justify-center'>
             <Pager
-              page={currentPage}
-              totalPage={7}
-              onPageChange={setCurrentPage}
+              page={productQuery.page}
+              totalPage={
+                resGetAllProducts?.metadata?.total_pages
+                  ? resGetAllProducts.metadata.total_pages
+                  : 0
+              }
+              onPageChange={handlePageChange}
             />
           </div>
         </div>
