@@ -1,15 +1,16 @@
 import { Badge, Card, Tooltip } from 'react-daisyui';
 import { HiLocationMarker, HiStar } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
+import { Product } from '../../../types/component';
 
 import { toCompact, toRupiah } from '../../../utils/convert';
 
 type ProductCardProps = {
-  isLoading?: boolean;
+  product?: Product;
 };
 
-const ProductCard = ({ isLoading }: ProductCardProps) => {
-  if (isLoading) {
+const ProductCard = ({ product }: ProductCardProps) => {
+  if (!product) {
     return (
       <Card role='status' className='md:h-[26rem] shadow animate-pulse'>
         <div className='flex justify-center items-center h-56 bg-base-200 rounded'>
@@ -44,28 +45,25 @@ const ProductCard = ({ isLoading }: ProductCardProps) => {
           />
         </figure>
         <div className='pt-2.5 pb-4 px-4'>
-          <p className='line-clamp-2 mb-2'>
-            Advan Tab VX 8GB / 128GB 10.4 inch Tiger T618 Advan Tab VX 8GB /
-            128GB 10.4 inch Tiger T618
-          </p>
+          <p className='line-clamp-2 mb-2'>{product.name}</p>
           <p className='font-bold mb-2.5 truncate text-ellipsis'>
-            {toRupiah(1169000)}
+            {toRupiah(product.price_minimum_after_discount)}
           </p>
           <div className='flex-items-center mb-2.5 text-sm'>
             <Tooltip message='Murah Lebay' color='success'>
               <Badge color='success' size='sm' className='truncate'>
-                10%
+                {product.discount}
               </Badge>
             </Tooltip>
             <span className='truncate text-ellipsis ml-2 line-through'>
-              {toRupiah(1169000)}
+              {toRupiah(product.price_minimum)}
             </span>
           </div>
           <div className='flex items-center mb-1 text-sm'>
             <Tooltip message='Location' className='mr-2' color='info'>
               <HiLocationMarker className='text-info' />
             </Tooltip>
-            <p className='truncate text-ellipsis'>Jakarta</p>
+            <p className='truncate text-ellipsis'>{product.merchant.city}</p>
           </div>
           <div className='flex items-center mb-1 text-sm'>
             <Tooltip message='Rating' className='mr-2' color='warning'>

@@ -14,7 +14,7 @@ const Search = () => {
     search: '',
     sort: '',
     sortBy: '',
-    limit: 1,
+    limit: 30,
     page: 1,
     merchantID: 0,
     categoryID: 0,
@@ -81,11 +81,9 @@ const Search = () => {
             </div>
           </div>
           <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
-            {Array(30)
-              .fill(0)
-              .map((_, n) => (
-                <ProductCard key={n} />
-              ))}
+            {resGetAllProducts?.data?.map((product, n) => (
+              <ProductCard key={n} product={product} />
+            ))}
           </div>
           <div className='mt-6 flex justify-center'>
             <Pager
