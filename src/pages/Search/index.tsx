@@ -32,7 +32,8 @@ const Search = () => {
   const q = searchParams.get('q');
 
   useEffect(() => {
-    if (!q) {
+    console.log({ q });
+    if (q === null) {
       return;
     }
 
