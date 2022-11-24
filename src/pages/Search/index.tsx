@@ -74,12 +74,16 @@ const Search = () => {
     });
   };
 
+  // render product not found
   if (resGetAllProducts?.data?.length === 0) {
     return (
       <div className='mx-auto container'>
         <div className='p-4 grid grid-cols-1 md:grid-cols-5 gap-4 md:py-10 md:gap-10'>
           <div className='col-span-1'>
-            <FilterSidebar />
+            <FilterSidebar
+              productQuery={productQuery}
+              setProductQuery={setProductQuery}
+            />
           </div>
           <div
             id='product-list-search-page'
@@ -113,7 +117,10 @@ const Search = () => {
     <div className='mx-auto container'>
       <div className='p-4 grid grid-cols-1 md:grid-cols-5 gap-4 md:py-10 md:gap-10'>
         <div className='col-span-1'>
-          <FilterSidebar />
+          <FilterSidebar
+            productQuery={productQuery}
+            setProductQuery={setProductQuery}
+          />
         </div>
         <div id='product-list-search-page' className='col-span-4 flex flex-col'>
           <div className='product-list-header'>

@@ -1,3 +1,4 @@
+import { FormEvent } from 'react';
 import {
   Button,
   Checkbox,
@@ -7,9 +8,18 @@ import {
   Input,
 } from 'react-daisyui';
 import { IoFilter } from 'react-icons/io5';
+import { ProductQuery } from '../../types/query';
 import { FilterSidebarContainer } from './style';
 
-const FilterSidebar = () => {
+type FilterSidebarProps = {
+  productQuery: ProductQuery;
+  setProductQuery: (query: ProductQuery) => void;
+};
+
+const FilterSidebar = ({
+  productQuery,
+  setProductQuery,
+}: FilterSidebarProps) => {
   const handleClickFilterToggle = () => {
     const filterSidebarEl = document.getElementById('filter-sidebar');
     filterSidebarEl?.classList.toggle('-left-full');
@@ -18,6 +28,22 @@ const FilterSidebar = () => {
       'product-list-search-page'
     );
     productListSearchPageEl?.classList.toggle('hidden');
+  };
+
+  const handleChangePriceMin = (e: FormEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+    setProductQuery({
+      ...productQuery,
+      priceMinimum: Number(target.value),
+    });
+  };
+
+  const handleChangePriceMax = (e: FormEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+    setProductQuery({
+      ...productQuery,
+      priceMaximum: Number(target.value),
+    });
   };
 
   return (
@@ -44,10 +70,16 @@ const FilterSidebar = () => {
           <Collapse.Content>
             <Form>
               <Form.Label title='Min'>
-                <Input className='w-full ml-2 focus:border-primary' />
+                <Input
+                  className='w-full ml-2 focus:border-primary'
+                  onChange={handleChangePriceMin}
+                />
               </Form.Label>
               <Form.Label title='Max'>
-                <Input className='w-full ml-2 focus:border-primary' />
+                <Input
+                  className='w-full ml-2 focus:border-primary'
+                  onChange={handleChangePriceMax}
+                />
               </Form.Label>
             </Form>
           </Collapse.Content>
