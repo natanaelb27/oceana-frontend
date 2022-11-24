@@ -1,12 +1,14 @@
 import { Profile } from '../../types/component';
+import { UserAccountContent } from '../../types/content';
 import Content from './Content';
 import Sidebar from './Sidebar';
 
 type UserAccountProps = {
-  profile: Profile;
+  profile: Profile | null | undefined;
+  content: UserAccountContent;
 };
 
-const UserAccount = ({ profile }: UserAccountProps) => {
+const UserAccount = ({ profile, content }: UserAccountProps) => {
   return (
     <div className='container mx-auto'>
       <div className='px-4 py-10'>
@@ -15,7 +17,7 @@ const UserAccount = ({ profile }: UserAccountProps) => {
             <Sidebar profile={profile} />
           </div>
           <div className='col-span-12 md:col-span-9'>
-            <Content profile={profile} />
+            <Content profile={profile} content={content} />
           </div>
         </div>
       </div>
