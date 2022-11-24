@@ -5,6 +5,7 @@ import Routes from './routes';
 import { useLazyGetProfileQuery } from './store/services/profileService';
 import { selectRole, setCredentials } from './store/slices/authSlice';
 import { useAppDispatch, useAppSelector } from './store/store';
+import { ToastContainer } from 'react-toastify';
 
 const App = () => {
   const role = useAppSelector(selectRole);
@@ -31,6 +32,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes />
+      <ToastContainer />
     </BrowserRouter>
   );
 };

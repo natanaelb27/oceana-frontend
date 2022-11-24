@@ -2,7 +2,6 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik';
 import moment from 'moment';
 import { Button, Card, Divider, Form, Input, Modal } from 'react-daisyui';
-import { toast, ToastContainer } from 'react-toastify';
 import * as Yup from 'yup';
 import { CgClose } from 'react-icons/cg';
 
@@ -15,9 +14,11 @@ import {
   toUpdateProfileImageRequest,
   toUpdateProfileRequest,
 } from '../../utils/mapperDTO';
+import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
+import { UpdateProfileResponse } from '../../types/response';
 
 type ProfileContentProps = {
-  profile: Profile;
+  profile: Profile | null | undefined;
 };
 
 type OpenProfileModal = {
@@ -32,31 +33,14 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
   });
   const photoFileInputRef = useRef<HTMLInputElement>(null);
 
-  const notifyUpdateProfileSuccess = () =>
-    toast.success('Profile updated!', {
-      position: 'top-center',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  const notifyUpdateProfileFailed = (message: string | null) =>
-    toast.error(message || 'Update failed, please try again!', {
-      position: 'top-center',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
-  const [updateProfile, { isLoading: updateProfileIsLoading }] =
-    useUpdateProfileMutation();
-  const [updateProfileImage, { isLoading: updateProfileImageIsLoading }] =
-    useUpdateProfileImageMutation();
+  const [
+    updateProfile,
+    { isLoading: updateProfileIsLoading, error: updateProfileError },
+  ] = useUpdateProfileMutation();
+  const [
+    updateProfileImage,
+    { isLoading: updateProfileImageIsLoading, error: updateProfileImageError },
+  ] = useUpdateProfileImageMutation();
 
   const editProfileFormik = useFormik({
     initialValues: {
@@ -75,11 +59,18 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       updateProfile(toUpdateProfileRequest(fullName, birthdate, gender))
         .unwrap()
         .then(() => {
-          notifyUpdateProfileSuccess();
+          notifySuccessToast('Profile updated!');
           setOpenModal({ editProfile: false, editEmail: false });
         })
         .catch((err) => {
-          notifyUpdateProfileFailed(err);
+          console.error(err);
+        })
+        .finally(() => {
+          if (updateProfileError && 'data' in updateProfileError) {
+            const response = updateProfileError.data as UpdateProfileResponse;
+
+            notifyErrorToast(response.message);
+          }
         });
     },
   });
@@ -99,6 +90,10 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
   });
 
   useEffect(() => {
+    if (!profile) {
+      return;
+    }
+
     editProfileFormik.setFieldValue('fullName', profile.full_name);
     editProfileFormik.setFieldValue(
       'birthdate',
@@ -127,11 +122,19 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
     updateProfileImage(toUpdateProfileImageRequest(e.target.files[0]))
       .unwrap()
       .then(() => {
-        notifyUpdateProfileSuccess();
+        notifySuccessToast('Profile updated!');
         setOpenModal({ editProfile: false, editEmail: false });
       })
       .catch((err) => {
-        notifyUpdateProfileFailed(err);
+        console.error(err);
+      })
+      .finally(() => {
+        if (updateProfileImageError && 'data' in updateProfileImageError) {
+          const response =
+            updateProfileImageError.data as UpdateProfileResponse;
+
+          notifyErrorToast(response.message);
+        }
       });
   };
 
@@ -149,20 +152,58 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
     });
   };
 
-  const handleCloseModal = () => {
+  const handleModalClose = () => {
     setOpenModal({
       editProfile: false,
       editEmail: false,
     });
   };
 
+  if (!profile) {
+    return (
+      <div className='p-4 md:p-10 animate-pulse'>
+        <div className='h-6 bg-base-200 rounded-full w-48 max-w-3/5'></div>
+        <Divider />
+        <div className='grid grid-cols-12 gap-4 md:gap-10'>
+          <div className='col-span-12 md:col-span-4'>
+            <Card className='shadow max-w-xs'>
+              <div className='h-64 w-full bg-base-200 rounded'></div>
+              <div className='p-4'>
+                <div className='h-12 w-full bg-base-200 rounded-full'></div>
+              </div>
+            </Card>
+          </div>
+          <div className='col-span-12 md:col-span-8'>
+            <div className='grid grid-col-12 gap-4 mb-10'>
+              <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+            </div>
+            <div className='grid grid-col-12 gap-4 mb-10'>
+              <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const { full_name, username, email, phone_number, gender, birthdate, photo } =
     profile;
 
   return (
-    <>
-      <ToastContainer />
-      <h5 className='font-bold text-xl text-primary'>Profile</h5>
+    <div className='p-4 md:p-10'>
+      <h5 className='font-bold text-2xl text-primary'>Profile</h5>
       <Divider />
       <div className='grid grid-cols-12 gap-4 md:gap-10'>
         <div className='col-span-12 md:col-span-4'>
@@ -202,8 +243,6 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
                 Edit
               </Button>
             </span>
-            <span className='col-span-3 text-sm font-light'>Username</span>
-            <span className='col-span-9 text-sm'>{username}</span>
             <span className='col-span-3 text-sm font-light'>Name</span>
             <span className='col-span-9 text-sm'>{full_name}</span>
             <span className='col-span-3 text-sm font-light'>Birthdate</span>
@@ -216,6 +255,18 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
           <div className='grid grid-col-12 gap-4'>
             <span className='col-span-12 font-medium mb-1'>
               Personal Information
+            </span>
+            <span className='col-span-3 text-sm font-light'>Username</span>
+            <span className='col-span-9 text-sm'>
+              {username}
+              <Button
+                variant='outline'
+                color='secondary'
+                size='xs'
+                className='ml-2.5 normal-case font-normal'
+              >
+                Edit
+              </Button>
             </span>
             <span className='col-span-3 text-sm font-light'>Email</span>
             <span className='col-span-9 text-sm'>
@@ -248,7 +299,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       </div>
       <Modal
         open={openModal.editProfile}
-        onClickBackdrop={handleCloseModal}
+        onClickBackdrop={handleModalClose}
         responsive
         className='max-w-sm'
       >
@@ -257,7 +308,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
           shape='circle'
           color='ghost'
           className='absolute right-2 top-2'
-          onClick={handleCloseModal}
+          onClick={handleModalClose}
         >
           <CgClose className='text-lg' />
         </Button>
@@ -337,7 +388,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
           </Form>
         </Modal.Body>
         <Modal.Actions>
-          <Button onClick={handleCloseModal}>Cancel</Button>
+          <Button onClick={handleModalClose}>Cancel</Button>
           <Button
             color='primary'
             type='submit'
@@ -350,7 +401,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       </Modal>
       <Modal
         open={openModal.editEmail}
-        onClickBackdrop={handleCloseModal}
+        onClickBackdrop={handleModalClose}
         responsive
         className='max-w-sm'
       >
@@ -359,7 +410,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
           shape='circle'
           color='ghost'
           className='absolute right-2 top-2'
-          onClick={handleCloseModal}
+          onClick={handleModalClose}
         >
           <CgClose className='text-lg' />
         </Button>
@@ -386,7 +437,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
           </Form>
         </Modal.Body>
         <Modal.Actions>
-          <Button onClick={handleCloseModal}>Cancel</Button>
+          <Button onClick={handleModalClose}>Cancel</Button>
           <Button
             color='primary'
             type='submit'
@@ -397,7 +448,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
           </Button>
         </Modal.Actions>
       </Modal>
-    </>
+    </div>
   );
 };
 

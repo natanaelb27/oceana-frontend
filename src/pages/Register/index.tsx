@@ -18,6 +18,7 @@ import {
 import { useRegisterMutation } from '../../store/services/authService';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toRegisterRequest } from '../../utils/mapperDTO';
+import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
 import { passwordInUsername } from '../../utils/validation';
 
 const Register = () => {
@@ -26,27 +27,9 @@ const Register = () => {
   const navigate = useNavigate();
   const [register, { isLoading }] = useRegisterMutation();
   const notifyRegisterSuccess = () =>
-    toast.success('Sign up successful! Redirecting...', {
-      position: 'top-center',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'dark',
-    });
+    notifySuccessToast('Sign up successful! Redirecting...');
   const notifyRegisterFailed = (message: string | null) =>
-    toast.error(message || 'Sign up failed, please try again!', {
-      position: 'top-center',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'dark',
-    });
+    notifyErrorToast(message || 'Sign up failed, please try again!');
   const handleRegisterSuccess = () => {
     notifyRegisterSuccess();
 
