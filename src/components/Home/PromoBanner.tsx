@@ -9,7 +9,7 @@ const PromoBanner = () => {
 
   return (
     <Carousel
-      className='max-w-[1080px] rounded-box'
+      className='md:max-w-[1280px] rounded-box'
       display='sequential'
       buttonStyle={buttonStyle}
     >

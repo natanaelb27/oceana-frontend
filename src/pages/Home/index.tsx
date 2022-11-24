@@ -8,7 +8,7 @@ const Home = () => {
   const { data: resGetAllCategory } = useGetAllCategoryQuery();
 
   return (
-    <div className='container mx-auto flex flex-col items-center'>
+    <div className='px-2 container mx-auto flex flex-col items-center'>
       <div className='my-5'>
         <PromoBanner />
       </div>
