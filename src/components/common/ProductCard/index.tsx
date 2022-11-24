@@ -12,7 +12,7 @@ type ProductCardProps = {
 const ProductCard = ({ product }: ProductCardProps) => {
   if (!product) {
     return (
-      <Card role='status' className='md:h-[26rem] shadow animate-pulse'>
+      <Card role='status' className='w-full md:h-[26rem] shadow animate-pulse'>
         <div className='flex justify-center items-center h-56 bg-base-200 rounded'>
           <svg
             className='w-12 h-12 text-base-content'

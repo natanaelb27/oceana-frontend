@@ -38,7 +38,7 @@ const Home = () => {
               .map((_, n) => (
                 <Carousel.Item
                   key={n}
-                  className='max-w-[180px] md:max-w-[240px]'
+                  className='max-w-[180px] md:max-w-[240px] w-full'
                 >
                   <ProductCard />
                 </Carousel.Item>
