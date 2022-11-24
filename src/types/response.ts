@@ -1,4 +1,4 @@
-import { Category, Metadata, Profile, Role, User } from './component';
+import { Category, Metadata, Product, Profile, Role, User } from './component';
 
 export type GetRolesResponse = {
   data: User[] | null;
@@ -42,6 +42,14 @@ export type UpdateProfileResponse = {
 
 export type GetAllCategoryResponse = {
   data: Category[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetAllProductsResponse = {
+  data: Product[] | null;
   code: number;
   error: string | null;
   message: string;
