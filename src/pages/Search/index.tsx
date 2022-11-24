@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { TbError404 } from 'react-icons/tb';
 import { useSearchParams } from 'react-router-dom';
 import { Pager, ProductCard, SortBar } from '../../components/common';
 import { FilterSidebar } from '../../components/Search';
@@ -48,7 +49,40 @@ const Search = () => {
     });
   };
 
-  console.log({ resGetAllProducts });
+  if (resGetAllProducts?.data?.length === 0) {
+    return (
+      <div className='mx-auto container'>
+        <div className='p-4 grid grid-cols-1 md:grid-cols-5 gap-4 md:py-10 md:gap-10'>
+          <div className='col-span-1'>
+            <FilterSidebar />
+          </div>
+          <div
+            id='product-list-search-page'
+            className='col-span-4 flex flex-col'
+          >
+            <div className='product-list-header'>
+              <div className='ml-2 flex items-center gap-2 text-lg'>
+                <AiOutlineInfoCircle />
+                <p>
+                  Search results for &quot;
+                  <strong>{searchParams.get('q')}</strong>&quot;
+                </p>
+              </div>
+              <div className='mt-6'>
+                <SortBar sort={sort} onSortChange={setSort} />
+              </div>
+            </div>
+            <div className='mt-6 flex flex-col items-center text-center text-error animate-pulse'>
+              <TbError404 className='text-9xl' />
+              <h3 className='text-3xl font-bold'>
+                Oof, product not found... Please try again!
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='mx-auto container'>
