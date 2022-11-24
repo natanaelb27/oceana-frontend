@@ -71,3 +71,35 @@ export interface Address {
   sub_district: SubDistrict;
   is_default: boolean;
 }
+export interface Category {
+  id: number;
+  name: string;
+  level: number;
+  category: Category[];
+}
+
+export interface Product {
+  id: number;
+  merchant_id: number;
+  category_id: number;
+  name: string;
+  description: string;
+  is_hazardous: boolean;
+  weight: number;
+  package_size: string;
+  condition: string;
+  product_status: string;
+  price_minimum: number;
+  price_maximum: number;
+  price_minimum_after_discount: number;
+  price_maximum_after_discount: number;
+  discount: number;
+  total_view_count: number;
+  merchant: {
+    id: number;
+    name: string;
+    city: string;
+  };
+  updated_at: string;
+  created_at: string;
+}
