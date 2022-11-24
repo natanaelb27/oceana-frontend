@@ -1,7 +1,8 @@
 export interface Metadata {
-  records_total: number;
-  records_filter: number;
+  limit: number;
   page: number;
+  total_pages: number;
+  total_rows: number;
 }
 
 export interface User {
