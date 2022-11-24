@@ -1,4 +1,4 @@
-import { Address, Metadata, Profile, Role, User } from './component';
+import { Address, Category, Metadata, Profile, Role, User } from './component';
 
 export type GetRolesResponse = {
   data: User[] | null;
@@ -90,6 +90,14 @@ export type DeleteAddressResponse = {
   data: {
     id: string;
   } | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetAllCategoryResponse = {
+  data: Category[] | null;
   code: number;
   error: string | null;
   message: string;

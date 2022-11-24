@@ -64,3 +64,9 @@ export interface Address {
   sub_district: SubDistrict;
   is_default: boolean;
 }
+export interface Category {
+  id: number;
+  name: string;
+  level: number;
+  category: Category[];
+}
