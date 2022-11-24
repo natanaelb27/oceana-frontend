@@ -95,6 +95,7 @@ export interface Product {
   price_minimum_after_discount: number;
   price_maximum_after_discount: number;
   discount: number;
+  discount_type: string;
   total_view_count: number;
   merchant: {
     id: number;

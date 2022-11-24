@@ -52,7 +52,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <div className='flex-items-center mb-2.5 text-sm'>
             <Tooltip message='Murah Lebay' color='success'>
               <Badge color='success' size='sm' className='truncate'>
-                {product.discount}
+                {product.discount_type === 'percentage'
+                  ? `${product.discount}%`
+                  : toRupiah(product.discount)}
               </Badge>
             </Tooltip>
             <span className='truncate text-ellipsis ml-2 line-through'>
