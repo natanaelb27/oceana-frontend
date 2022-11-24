@@ -20,6 +20,7 @@ import {
   FormTitle,
   InputGroup,
 } from '../../components/common/Form';
+import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
@@ -28,27 +29,9 @@ const Login = () => {
   const [login, { isLoading }] = useLoginMutation();
 
   const notifyLoginSuccess = () =>
-    toast.success('Login successful! Redirecting...', {
-      position: 'top-center',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'dark',
-    });
+    notifySuccessToast('Login successful! Redirecting...');
   const notifyInvalidCredentials = () =>
-    toast.error('Invalid login credentials', {
-      position: 'top-center',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'dark',
-    });
+    notifyErrorToast('Invalid login credentials');
 
   const handleLoginSuccess = () => {
     notifyLoginSuccess();
