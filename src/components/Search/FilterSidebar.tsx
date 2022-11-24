@@ -1,4 +1,11 @@
-import { Button, Checkbox, Collapse, Divider, Form } from 'react-daisyui';
+import {
+  Button,
+  Checkbox,
+  Collapse,
+  Divider,
+  Form,
+  Input,
+} from 'react-daisyui';
 import { IoFilter } from 'react-icons/io5';
 import { FilterSidebarContainer } from './style';
 
@@ -36,8 +43,11 @@ const FilterSidebar = () => {
           <Collapse.Title className='font-bold'>Price</Collapse.Title>
           <Collapse.Content>
             <Form>
-              <Form.Label title='Nothing to see here...'>
-                <Checkbox />
+              <Form.Label title='Min'>
+                <Input className='w-full ml-2 focus:border-primary' />
+              </Form.Label>
+              <Form.Label title='Max'>
+                <Input className='w-full ml-2 focus:border-primary' />
               </Form.Label>
             </Form>
           </Collapse.Content>
