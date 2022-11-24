@@ -1,20 +1,40 @@
 import { Card } from 'react-daisyui';
 import { Profile } from '../../types/component';
+import { UserAccountContent } from '../../types/content';
+import AddressContent from './AddressContent';
 
 import ProfileContent from './ProfileContent';
 
 type ContentProps = {
-  profile: Profile;
+  profile: Profile | null | undefined;
+  content: UserAccountContent;
 };
 
-const Content = ({ profile }: ContentProps) => {
-  return (
-    <Card className='shadow'>
-      <div className='p-4 md:p-10'>
-        <ProfileContent profile={profile} />
-      </div>
-    </Card>
-  );
+const Content = ({ profile, content }: ContentProps) => {
+  const renderContent = () => {
+    if (content === UserAccountContent.Profile) {
+      return <ProfileContent profile={profile} />;
+    }
+
+    if (content === UserAccountContent.Address) {
+      return <AddressContent />;
+    }
+
+    if (content === UserAccountContent.Wallet) {
+      return null;
+    }
+
+    if (content === UserAccountContent.Purchase) {
+      return null;
+    }
+
+    if (content === UserAccountContent.Refunds) {
+      return null;
+    }
+
+    return null;
+  };
+  return <Card className='shadow'>{renderContent()}</Card>;
 };
 
 export default Content;

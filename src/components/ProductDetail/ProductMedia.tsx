@@ -11,30 +11,17 @@ import {
 import { IoCopyOutline } from 'react-icons/io5';
 import { Button } from 'react-daisyui';
 import { toCompact } from '../../utils/convert';
-import { toast, ToastContainer } from 'react-toastify';
+import { notifyInfoToast } from '../../utils/toast';
 
 const ProductMedia = () => {
-  const notify = () =>
-    toast.info('Copied to clipboard!', {
-      position: 'top-center',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'dark',
-    });
-
   const handleCopyClick = () => {
     navigator.clipboard.writeText(window.location.href);
 
-    notify();
+    notifyInfoToast('Copied to clipboard');
   };
 
   return (
     <div>
-      <ToastContainer />
       <div className='mb-2'>
         <Zoom>
           <img
