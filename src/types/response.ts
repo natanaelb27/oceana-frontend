@@ -48,6 +48,14 @@ export type UpdateProfileResponse = {
   metadata: Metadata | null;
 };
 
+export type GetAllCategoryResponse = {
+  data: Category[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
 export type GetAddressesResponse = {
   data: Address[] | null;
   code: number;
@@ -98,14 +106,6 @@ export type DeleteAddressResponse = {
   data: {
     id: string;
   } | null;
-  code: number;
-  error: string | null;
-  message: string;
-  metadata: Metadata | null;
-};
-
-export type GetAllCategoryResponse = {
-  data: Category[] | null;
   code: number;
   error: string | null;
   message: string;

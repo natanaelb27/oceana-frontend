@@ -32,8 +32,12 @@ const Header = () => {
     setSearch(e.target.value);
   };
 
-  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    navigate({
+      pathname: '/search',
+      search: `?q=${search}`,
+    });
   };
 
   const handleThemeClick = (theme: string) => {
@@ -70,7 +74,7 @@ const Header = () => {
             </NavLink>
           </div>
           <div className='flex-1'>
-            <Form onSubmit={handleFormSubmit} className='w-full'>
+            <Form onSubmit={handleSearchSubmit} className='w-full'>
               <InputGroup>
                 <Input
                   type='text'
@@ -141,7 +145,7 @@ const Header = () => {
         </Navbar>
         <Navbar className='flex md:hidden'>
           <div className='flex-1'>
-            <Form onSubmit={handleFormSubmit} className='w-full'>
+            <Form onSubmit={handleSearchSubmit} className='w-full'>
               <InputGroup>
                 <Input
                   type='text'

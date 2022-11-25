@@ -1,16 +1,27 @@
 import { ReactNode } from 'react';
+import { Link } from 'react-daisyui';
 import { HomeCardContainer, HomeCardTitle } from './style';
 
 type HomeCardProps = {
   children: ReactNode;
   title: string;
+  navigateSeeAll?: string;
 };
 
-export const HomeCard = ({ title, children }: HomeCardProps) => {
+const HomeCard = ({ children, title, navigateSeeAll }: HomeCardProps) => {
   return (
     <HomeCardContainer>
-      <HomeCardTitle>{title}</HomeCardTitle>
+      <div className='flex items-start gap-2'>
+        <Link
+          href={navigateSeeAll}
+          className='hover:text-secondary hover:no-underline'
+        >
+          <HomeCardTitle>{title}</HomeCardTitle>
+        </Link>
+      </div>
       {children}
     </HomeCardContainer>
   );
 };
+
+export default HomeCard;
