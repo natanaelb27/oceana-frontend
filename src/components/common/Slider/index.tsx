@@ -21,7 +21,7 @@ const Slider = ({ children, id, gap, gapMobile }: SliderProps) => {
     if (slider) slider.scrollLeft += SCROLL_SLIDER;
   };
 
-  if (!children)
+  if (!children || (children as Array<ReactNode>).length === 0)
     return (
       <div className='relative'>
         <StyledCarousel id={`slider-${id}`}>

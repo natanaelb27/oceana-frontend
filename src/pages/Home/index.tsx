@@ -61,7 +61,7 @@ const Home = () => {
                     <ProductCard product={product} />
                   </Carousel.Item>
                 ))
-              : Array(10)
+              : Array(LIMIT_HOME_RECOMMENDED_PRODUCTS)
                   .fill(0)
                   .map((_, n) => (
                     <Carousel.Item
