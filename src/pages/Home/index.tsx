@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Carousel, Divider } from 'react-daisyui';
 import { ProductCard, Slider } from '../../components/common';
-import { HomeCard, PromoBanner } from '../../components/Home';
+import { CategoryCard, HomeCard, PromoBanner } from '../../components/Home';
 import { LIMIT_HOME_RECOMMENDED_PRODUCTS } from '../../constants';
 import { useGetAllCategoryQuery } from '../../store/services/categoryService';
 import { useGetAllProductsQuery } from '../../store/services/productService';
@@ -39,16 +39,7 @@ const Home = () => {
             {resGetAllCategory?.data &&
               resGetAllCategory.data.map((category, n) => (
                 <Carousel.Item key={n}>
-                  <div className='max-w-[64px] flex flex-col items-center text-center gap-2 md:gap-4'>
-                    <img
-                      src={category.image}
-                      alt={category.name}
-                      className='h-12 w-12 md:h-16 md:w-16'
-                    />
-                    <h3 className='break-words leading-none md:text-xl'>
-                      {category.name}
-                    </h3>
-                  </div>
+                  <CategoryCard category={category} to={'/'} />
                 </Carousel.Item>
               ))}
           </Slider>
@@ -61,16 +52,6 @@ const Home = () => {
           navigateSeeAll='/search?sort-by=recommended'
         >
           <Slider id='recommended' gap={20} gapMobile={10}>
-            {/* {Array(10)
-              .fill(0)
-              .map((_, n) => (
-                <Carousel.Item
-                  key={n}
-                  className='max-w-[180px] md:max-w-[240px] w-full'
-                >
-                  <ProductCard />
-                </Carousel.Item>
-              ))} */}
             {resGetRecommendedProducts?.data &&
               resGetRecommendedProducts.data.map((product, n) => (
                 <Carousel.Item

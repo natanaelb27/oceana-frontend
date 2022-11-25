@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Card } from 'react-daisyui';
 import tw from 'tailwind-styled-components';
 
 export const HomeCardContainer = tw.div<any>`
@@ -26,4 +27,23 @@ export const HomeCardTitle = tw.h2`
 
   md:mb-4
   md:text-3xl
+`;
+
+export const StyledCategoryCard = tw(Card)<any>`
+  w-[64px]
+  flex
+  flex-col 
+  items-center 
+  text-center 
+  gap-2 
+  border-none 
+  
+  md:gap-4 
+  md:max-h-[26rem] 
+  
+  transition 
+  transform 
+  hover:-translate-y-1 
+  motion-reduce:transition-none 
+  motion-reduce:hover:transform-none
 `;
