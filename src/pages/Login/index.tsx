@@ -136,7 +136,6 @@ const Login = () => {
           onSuccess={handleLoginSuccess}
           onFailure={notifyInvalidCredentials}
           cookiePolicy='single_host_origin'
-          isSignedIn={true}
         />
       </GlassContainer>
     </AuthContainer>
