@@ -32,13 +32,13 @@ const SortBar = ({ sort, onSortChange }: SortBarProps) => {
       <SortContainer>
         <SortLabel>Sort By</SortLabel>
         <SortBtnContainer>
-          <Tooltip message='Most Popular'>
+          <Tooltip message='Recommended'>
             <SortBtn
-              color={sort === ProductsSort.MostPopular && 'secondary'}
-              onClick={() => handleSortClick(ProductsSort.MostPopular)}
+              color={sort === ProductsSort.Recommended && 'secondary'}
+              onClick={() => handleSortClick(ProductsSort.Recommended)}
             >
               <FaCrown />
-              <SortBtnText>Most Popular</SortBtnText>
+              <SortBtnText>Recommended</SortBtnText>
             </SortBtn>
           </Tooltip>
           <Tooltip message='Newest'>
@@ -64,7 +64,7 @@ const SortBar = ({ sort, onSortChange }: SortBarProps) => {
           <Button
             endIcon={<AiOutlineDown />}
             tabIndex={0}
-            className='btn w-full'
+            className='btn w-full rounded-full'
             color={
               sort === ProductsSort.HighestPrice ||
               sort === ProductsSort.LowestPrice

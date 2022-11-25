@@ -1,7 +1,8 @@
 export interface Metadata {
-  records_total: number;
-  records_filter: number;
+  limit: number;
   page: number;
+  total_pages: number;
+  total_rows: number;
 }
 
 export interface User {
@@ -25,6 +26,13 @@ export interface Profile {
   role: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  level: number;
+  category: Category[];
 }
 
 export interface Province {
@@ -87,6 +95,7 @@ export interface Product {
   price_minimum_after_discount: number;
   price_maximum_after_discount: number;
   discount: number;
+  discount_type: string;
   total_view_count: number;
   merchant: {
     id: number;

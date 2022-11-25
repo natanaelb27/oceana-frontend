@@ -36,7 +36,6 @@ export const SortLabel = tw.label`
 
 export const SortBtn = tw(Button)<any>`
   rounded-full
-  md:rounded-lg
 `;
 
 export const SortBtnContainer = tw.div<any>`

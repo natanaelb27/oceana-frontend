@@ -8,7 +8,7 @@ const Home = () => {
   const { data: resGetAllCategory } = useGetAllCategoryQuery();
 
   return (
-    <div className='container mx-auto flex flex-col items-center'>
+    <div className='px-2 container mx-auto flex flex-col items-center'>
       <div className='my-5'>
         <PromoBanner />
       </div>
@@ -38,7 +38,7 @@ const Home = () => {
               .map((_, n) => (
                 <Carousel.Item
                   key={n}
-                  className='max-w-[180px] md:max-w-[240px]'
+                  className='max-w-[180px] md:max-w-[240px] w-full'
                 >
                   <ProductCard />
                 </Carousel.Item>

@@ -6,7 +6,7 @@ type HomeCardProps = {
   title: string;
 };
 
-export const HomeCard = ({ title, children }: HomeCardProps) => {
+const HomeCard = ({ title, children }: HomeCardProps) => {
   return (
     <HomeCardContainer>
       <HomeCardTitle>{title}</HomeCardTitle>
@@ -14,3 +14,5 @@ export const HomeCard = ({ title, children }: HomeCardProps) => {
     </HomeCardContainer>
   );
 };
+
+export default HomeCard;
