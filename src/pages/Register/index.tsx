@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { Button, Form, Input, Link } from 'react-daisyui';
 import { GoogleLogin } from 'react-google-login';
 import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
 import * as Yup from 'yup';
 import {
   AuthContainer,
@@ -27,15 +26,13 @@ const Register = () => {
   const navigate = useNavigate();
   const [register, { isLoading }] = useRegisterMutation();
   const notifyRegisterSuccess = () =>
-    notifySuccessToast('Sign up successful! Redirecting...');
+    notifySuccessToast('Sign up successful!', true);
   const notifyRegisterFailed = (message: string | null) =>
     notifyErrorToast(message || 'Sign up failed, please try again!');
   const handleRegisterSuccess = () => {
     notifyRegisterSuccess();
 
-    setTimeout(() => {
-      navigate('/login');
-    }, 3000);
+    navigate('/login');
   };
   const handleSignInGoogleSuccess = () => {
     notifyRegisterSuccess();
@@ -125,7 +122,6 @@ const Register = () => {
 
   return (
     <AuthContainer>
-      <ToastContainer />
       <GlassContainer className='max-h-[1080px] max-w-[720px] md:mt-0'>
         <FormTitle>Sign Up</FormTitle>
         <Form onSubmit={formik.handleSubmit}>

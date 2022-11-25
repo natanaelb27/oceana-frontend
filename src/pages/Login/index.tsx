@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { Button, Form, Input, Link } from 'react-daisyui';
 import { GoogleLogin } from 'react-google-login';
 import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
 import * as Yup from 'yup';
 import { useLoginMutation } from '../../store/services/authService';
 import { setCredentials } from '../../store/slices/authSlice';
@@ -20,7 +19,7 @@ import {
   FormTitle,
   InputGroup,
 } from '../../components/common/Form';
-import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
+import { notifyErrorToast } from '../../utils/toast';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
@@ -28,14 +27,10 @@ const Login = () => {
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
 
-  const notifyLoginSuccess = () =>
-    notifySuccessToast('Login successful! Redirecting...');
   const notifyInvalidCredentials = () =>
     notifyErrorToast('Invalid login credentials');
 
   const handleLoginSuccess = () => {
-    notifyLoginSuccess();
-
     navigate('/');
   };
   const handleLoginFailed = (
@@ -84,7 +79,6 @@ const Login = () => {
 
   return (
     <AuthContainer>
-      <ToastContainer />
       <GlassContainer>
         <FormTitle>Login</FormTitle>
         <Form onSubmit={formik.handleSubmit}>
