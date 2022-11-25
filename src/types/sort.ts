@@ -1,6 +1,6 @@
 export enum ProductsSort {
   Default = 0,
-  MostPopular,
+  Recommended,
   Newest,
   BestSeller,
   HighestPrice,

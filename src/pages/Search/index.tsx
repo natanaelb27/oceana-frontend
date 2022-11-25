@@ -34,7 +34,7 @@ const Search = () => {
 
   useEffect(() => {
     if (sortBy === 'recommended') {
-      handleSortChange(ProductsSort.MostPopular);
+      handleSortChange(ProductsSort.Recommended);
     }
 
     setProductQuery({
@@ -50,7 +50,7 @@ const Search = () => {
     if (productSort === ProductsSort.BestSeller) {
       sortBy = 'most-buy';
       sort = '';
-    } else if (productSort === ProductsSort.MostPopular) {
+    } else if (productSort === ProductsSort.Recommended) {
       sortBy = 'recommended';
       sort = '';
     } else if (productSort === ProductsSort.HighestPrice) {
