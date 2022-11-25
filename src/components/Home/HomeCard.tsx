@@ -5,7 +5,7 @@ import { HomeCardContainer, HomeCardTitle } from './style';
 type HomeCardProps = {
   children: ReactNode;
   title: string;
-  navigateSeeAll: string;
+  navigateSeeAll?: string;
 };
 
 const HomeCard = ({ children, title, navigateSeeAll }: HomeCardProps) => {
