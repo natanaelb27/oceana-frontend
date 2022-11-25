@@ -46,7 +46,7 @@ const Search = () => {
     let sortBy = '';
     let sort = '';
     if (productSort === ProductsSort.BestSeller) {
-      sortBy = 'best-seller';
+      sortBy = 'most-buy';
       sort = '';
     } else if (productSort === ProductsSort.MostPopular) {
       sortBy = 'recommended';
