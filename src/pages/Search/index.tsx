@@ -29,18 +29,20 @@ const Search = () => {
     toProductQuery(productQuery)
   );
 
-  const q = searchParams.get('q');
+  const q = searchParams.get('q') || '';
+  const sortBy = searchParams.get('sort-by') || '';
 
   useEffect(() => {
-    if (q === null) {
-      return;
+    if (sortBy === 'recommended') {
+      handleSortChange(ProductsSort.MostPopular);
     }
 
     setProductQuery({
       ...productQuery,
       search: q,
+      sortBy,
     });
-  }, [q]);
+  }, [q, sortBy]);
 
   const handleSortChange = (productSort: ProductsSort) => {
     let sortBy = '';
