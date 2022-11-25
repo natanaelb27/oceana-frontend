@@ -52,15 +52,25 @@ const Home = () => {
           navigateSeeAll='/search?sort-by=recommended'
         >
           <Slider id='recommended' gap={20} gapMobile={10}>
-            {resGetRecommendedProducts?.data &&
-              resGetRecommendedProducts.data.map((product, n) => (
-                <Carousel.Item
-                  key={n}
-                  className='max-w-[180px] md:max-w-[240px] w-full'
-                >
-                  <ProductCard product={product} />
-                </Carousel.Item>
-              ))}
+            {resGetRecommendedProducts?.data
+              ? resGetRecommendedProducts.data.map((product, n) => (
+                  <Carousel.Item
+                    key={n}
+                    className='max-w-[180px] md:max-w-[240px] w-full'
+                  >
+                    <ProductCard product={product} />
+                  </Carousel.Item>
+                ))
+              : Array(10)
+                  .fill(0)
+                  .map((_, n) => (
+                    <Carousel.Item
+                      key={n}
+                      className='max-w-[180px] md:max-w-[240px] w-full'
+                    >
+                      <ProductCard product={undefined} />
+                    </Carousel.Item>
+                  ))}
           </Slider>
         </HomeCard>
       </div>
