@@ -13,7 +13,7 @@ const Home = () => {
         <PromoBanner />
       </div>
       <div className='my-5'>
-        <HomeCard title='Category'>
+        <HomeCard title='Category' navigateSeeAll='/'>
           <Slider id='category'>
             {resGetAllCategory?.data &&
               resGetAllCategory.data.map((category, n) => (
@@ -31,7 +31,10 @@ const Home = () => {
       </div>
       <Divider className='w-[360px] self-center md:w-[1080px]' />
       <div className='my-5'>
-        <HomeCard title='Recommended Products'>
+        <HomeCard
+          title='Recommended Products'
+          navigateSeeAll='/search?sort-by=recommended'
+        >
           <Slider id='recommended' gap={20} gapMobile={10}>
             {Array(10)
               .fill(0)
