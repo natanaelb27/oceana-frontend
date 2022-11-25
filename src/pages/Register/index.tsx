@@ -37,9 +37,7 @@ const Register = () => {
   const handleSignInGoogleSuccess = () => {
     notifyRegisterSuccess();
 
-    setTimeout(() => {
-      navigate('/');
-    }, 3000);
+    navigate('/');
   };
   const handleRegisterFailed = (
     message: string,
@@ -257,7 +255,6 @@ const Register = () => {
           onSuccess={handleSignInGoogleSuccess}
           onFailure={notifyRegisterFailed}
           cookiePolicy='single_host_origin'
-          isSignedIn={true}
         />
       </GlassContainer>
     </AuthContainer>
