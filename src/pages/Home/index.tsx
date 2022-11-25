@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Carousel, Divider } from 'react-daisyui';
-import { TfiLayoutPlaceholder } from 'react-icons/tfi';
 import { ProductCard, Slider } from '../../components/common';
 import { HomeCard, PromoBanner } from '../../components/Home';
 import { LIMIT_HOME_RECOMMENDED_PRODUCTS } from '../../constants';
@@ -41,7 +40,11 @@ const Home = () => {
               resGetAllCategory.data.map((category, n) => (
                 <Carousel.Item key={n}>
                   <div className='max-w-[64px] flex flex-col items-center text-center gap-2 md:gap-4'>
-                    <TfiLayoutPlaceholder className='text-3xl md:text-8xl' />
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className='h-12 w-12 md:h-16 md:w-16'
+                    />
                     <h3 className='break-words leading-none md:text-xl'>
                       {category.name}
                     </h3>
