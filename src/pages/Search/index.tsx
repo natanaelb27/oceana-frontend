@@ -4,6 +4,7 @@ import { TbError404 } from 'react-icons/tb';
 import { useSearchParams } from 'react-router-dom';
 import { Pager, ProductCard, SortBar } from '../../components/common';
 import { FilterSidebar } from '../../components/Search';
+import { LIMIT_SEARCH_PRODUCTS_LIST } from '../../constants';
 import { useGetAllProductsQuery } from '../../store/services/productService';
 import { ProductQuery } from '../../types/query';
 import { ProductsSort } from '../../types/sort';
@@ -15,7 +16,7 @@ const Search = () => {
     search: '',
     sort: '',
     sortBy: '',
-    limit: 30,
+    limit: LIMIT_SEARCH_PRODUCTS_LIST,
     page: 1,
     merchantID: 0,
     categoryID: 0,
