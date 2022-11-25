@@ -30,19 +30,16 @@ const FilterSidebar = ({
     productListSearchPageEl?.classList.toggle('hidden');
   };
 
-  const handleChangePriceMin = (e: FormEvent<HTMLInputElement>) => {
-    const target = e.target as HTMLInputElement;
+  const handleSubmitFilterPrice = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const target = e.target as typeof e.target & {
+      priceMinimum: { value: string };
+      priceMaximum: { value: string };
+    };
     setProductQuery({
       ...productQuery,
-      priceMinimum: Number(target.value),
-    });
-  };
-
-  const handleChangePriceMax = (e: FormEvent<HTMLInputElement>) => {
-    const target = e.target as HTMLInputElement;
-    setProductQuery({
-      ...productQuery,
-      priceMaximum: Number(target.value),
+      priceMinimum: Number(target.priceMinimum.value),
+      priceMaximum: Number(target.priceMaximum.value),
     });
   };
 
@@ -68,19 +65,22 @@ const FilterSidebar = ({
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
           <Collapse.Title className='font-bold'>Price</Collapse.Title>
           <Collapse.Content>
-            <Form>
+            <Form onSubmit={handleSubmitFilterPrice}>
               <Form.Label title='Min'>
                 <Input
+                  name='priceMinimum'
+                  type='text'
                   className='w-full ml-2 focus:border-primary'
-                  onChange={handleChangePriceMin}
                 />
               </Form.Label>
               <Form.Label title='Max'>
                 <Input
+                  name='priceMaximum'
+                  type='text'
                   className='w-full ml-2 focus:border-primary'
-                  onChange={handleChangePriceMax}
                 />
               </Form.Label>
+              <Input type='submit' hidden />
             </Form>
           </Collapse.Content>
         </Collapse>
