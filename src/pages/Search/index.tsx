@@ -7,11 +7,15 @@ import { FilterSidebar } from '../../components/Search';
 import { LIMIT_SEARCH_PRODUCTS_LIST } from '../../constants';
 import { useGetAllProductsQuery } from '../../store/services/productService';
 import { ProductQuery } from '../../types/query';
-import { ProductsSort } from '../../types/sort';
+import {
+  ProductsSortString,
+  ProductsSortBy,
+  ProductsSortByString,
+} from '../../types/sort';
 import { toProductQuery } from '../../utils/mapperDTO';
 
 const Search = () => {
-  const [sort, setSort] = useState(ProductsSort.Default);
+  const [sort, setSort] = useState(ProductsSortBy.Default);
   const [productQuery, setProductQuery] = useState<ProductQuery>({
     search: '',
     sort: '',
@@ -34,8 +38,8 @@ const Search = () => {
   const sortBy = searchParams.get('sort-by') || '';
 
   useEffect(() => {
-    if (sortBy === 'recommended') {
-      handleSortChange(ProductsSort.Recommended);
+    if (sortBy === ProductsSortByString.Recommended) {
+      handleSortChange(ProductsSortBy.Recommended);
     }
 
     setProductQuery({
@@ -45,21 +49,21 @@ const Search = () => {
     });
   }, [q, sortBy]);
 
-  const handleSortChange = (productSort: ProductsSort) => {
+  const handleSortChange = (productSort: ProductsSortBy) => {
     let sortBy = '';
     let sort = '';
-    if (productSort === ProductsSort.BestSeller) {
-      sortBy = 'most-buy';
-      sort = '';
-    } else if (productSort === ProductsSort.Recommended) {
-      sortBy = 'recommended';
-      sort = '';
-    } else if (productSort === ProductsSort.HighestPrice) {
-      sortBy = 'price';
-      sort = 'desc';
-    } else if (productSort === ProductsSort.LowestPrice) {
-      sortBy = 'price';
-      sort = 'asc';
+    if (productSort === ProductsSortBy.BestSeller) {
+      sortBy = ProductsSortByString.BestSeller;
+      sort = ProductsSortByString.Default;
+    } else if (productSort === ProductsSortBy.Recommended) {
+      sortBy = ProductsSortByString.Recommended;
+      sort = ProductsSortByString.Default;
+    } else if (productSort === ProductsSortBy.HighestPrice) {
+      sortBy = ProductsSortByString.Price;
+      sort = ProductsSortString.HighestPrice;
+    } else if (productSort === ProductsSortBy.LowestPrice) {
+      sortBy = ProductsSortByString.Price;
+      sort = ProductsSortString.LowestPrice;
     }
 
     setSort(productSort);

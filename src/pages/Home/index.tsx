@@ -7,13 +7,14 @@ import { LIMIT_HOME_RECOMMENDED_PRODUCTS } from '../../constants';
 import { useGetAllCategoryQuery } from '../../store/services/categoryService';
 import { useGetAllProductsQuery } from '../../store/services/productService';
 import { ProductQuery } from '../../types/query';
+import { ProductsSortByString } from '../../types/sort';
 import { toProductQuery } from '../../utils/mapperDTO';
 
 const Home = () => {
   const [productQuery] = useState<ProductQuery>({
     search: '',
     sort: '',
-    sortBy: 'recommended',
+    sortBy: ProductsSortByString.Recommended,
     limit: LIMIT_HOME_RECOMMENDED_PRODUCTS,
     page: 1,
     merchantID: 0,
