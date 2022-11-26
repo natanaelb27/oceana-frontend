@@ -2,3 +2,4 @@
 export const SCROLL_SLIDER = 360;
 export const LIMIT_HOME_RECOMMENDED_PRODUCTS = 18;
 export const LIMIT_SEARCH_PRODUCTS_LIST = 30;
+export const TILE_SIZE = 100;

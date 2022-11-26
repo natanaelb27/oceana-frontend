@@ -9,7 +9,14 @@ module.exports = {
     aspectRatio: false,
   },
   theme: {
-    extend: {},
+    extend: {
+      gridTemplateColumns: {
+        tiles: 'repeat(var(--columns), 1fr)',
+      },
+      gridTemplateRows: {
+        tiles: 'repeat(var(--rows), 1fr)',
+      },
+    },
   },
   plugins: [
     require('@tailwindcss/aspect-ratio'),
