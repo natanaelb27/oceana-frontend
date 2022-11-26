@@ -11,4 +11,24 @@ export const TilesContainer = tw.div<any>`
   grid
   grid-cols-tiles
   grid-rows-tiles
+
+  bg-gradient-to-r
+  from-primary
+  via-secondary
+  to-primary
+  overflow-hidden
+  bg-[size:200%]
+  animate-background-pan
+  
+`;
+
+export const StyledTile = tw.div<any>`
+  relative
+  cursor-pointer
+
+  before:bg-base-content
+  before:content-[""]
+  before:absolute
+  before:inset-px
+  before:hover:bg-base-content/80
 `;

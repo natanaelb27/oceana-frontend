@@ -7,7 +7,6 @@ export const AuthContainer = tw.div<any>`
   justify-center
   items-center
   bg-none
-  -z-10
   overflow-auto
 `;
 

@@ -1,17 +1,18 @@
 import { ReactNode, useEffect, useState } from 'react';
 import anime from 'animejs/lib/anime.es.js';
 import { DELAY_ANIMATION, TILE_SIZE } from '../../constants';
-import { TilesContainer } from './style';
+import { StyledTile, TilesContainer } from './style';
 
-const colors = [
-  'rgb(229, 57, 53)',
-  'rgb(253, 216, 53)',
-  'rgb(244, 81, 30)',
-  'rgb(76, 175, 80)',
-  'rgb(33, 150, 243)',
-  'rgb(156, 39, 176)',
-];
-let count = -1;
+// const colors = [
+//   'rgb(229, 57, 53)',
+//   'rgb(253, 216, 53)',
+//   'rgb(244, 81, 30)',
+//   'rgb(76, 175, 80)',
+//   'rgb(33, 150, 243)',
+//   'rgb(156, 39, 176)',
+// ];
+// let count = -1;
+let toggled = false;
 
 type TileProps = {
   index: number;
@@ -21,11 +22,13 @@ type TileProps = {
 };
 const Tile = ({ index, columns, rows, size }: TileProps) => {
   const handleClick = (index: number) => {
-    count = count + 1;
+    toggled = !toggled;
+    // count = count + 1;
 
     anime({
       targets: '.tile',
-      backgroundColor: colors[count & (colors.length - 1)],
+      // backgroundColor: colors[count & (colors.length - 1)],
+      opacity: toggled ? 0 : 1,
       delay: anime.stagger(DELAY_ANIMATION, {
         grid: [columns, rows],
         from: index,
@@ -33,15 +36,15 @@ const Tile = ({ index, columns, rows, size }: TileProps) => {
     });
   };
   return (
-    <div
-      className={`tile w-[${size}px] h-[${size}px] bg-accent`}
+    <StyledTile
+      className={`tile w-[${size}px] h-[${size}px]`}
       onClick={() => handleClick(index)}
     />
   );
 };
 
 type TilesProps = {
-  children: ReactNode;
+  children?: ReactNode;
 };
 const Tiles = ({ children }: TilesProps) => {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
