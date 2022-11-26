@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import {
   AuthContainer,
-  GlassContainer,
+  FormContainer,
 } from '../../components/common/Container';
 import {
   FormErrorText,
@@ -120,7 +120,7 @@ const Register = () => {
 
   return (
     <AuthContainer>
-      <GlassContainer className='max-h-[1080px] max-w-[720px] md:mt-0'>
+      <FormContainer className='max-h-[1080px] max-w-[720px] md:mt-0'>
         <FormTitle>Sign Up</FormTitle>
         <Form onSubmit={formik.handleSubmit}>
           <div className='md:flex md:justify-between'>
@@ -232,7 +232,7 @@ const Register = () => {
           </InputGroup>
           <Button
             className='mt-2'
-            color={!isLoading ? 'primary' : 'secondary'}
+            color={!isLoading ? 'secondary' : 'accent'}
             loading={isLoading}
             type='submit'
           >
@@ -256,7 +256,7 @@ const Register = () => {
           onFailure={notifyRegisterFailed}
           cookiePolicy='single_host_origin'
         />
-      </GlassContainer>
+      </FormContainer>
     </AuthContainer>
   );
 };

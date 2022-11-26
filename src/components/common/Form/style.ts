@@ -5,8 +5,8 @@ export const FormTitle = tw.h1`
 mb-12
 text-center
 text-6xl
-font-bold
 text-base-100
+font-bold
 `;
 
 export const FormErrorText = tw.p`

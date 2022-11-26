@@ -12,7 +12,7 @@ import { Role } from '../../types/component';
 import { toLoginRequest } from '../../utils/mapperDTO';
 import {
   AuthContainer,
-  GlassContainer,
+  FormContainer,
 } from '../../components/common/Container';
 import {
   FormErrorText,
@@ -79,7 +79,7 @@ const Login = () => {
 
   return (
     <AuthContainer>
-      <GlassContainer>
+      <FormContainer>
         <FormTitle>Login</FormTitle>
         <Form onSubmit={formik.handleSubmit}>
           <InputGroup>
@@ -113,7 +113,7 @@ const Login = () => {
           </InputGroup>
           <Button
             className='mt-2'
-            color={!isLoading ? 'primary' : 'secondary'}
+            color={!isLoading ? 'secondary' : 'accent'}
             loading={isLoading}
             type='submit'
           >
@@ -126,7 +126,7 @@ const Login = () => {
             Sign Up
           </Link>
         </p>
-        <span className='my-4 block text-xl text-center text-slate-400'>
+        <span className='my-4 block text-xl text-center text-base-100'>
           ---OR---
         </span>
         <GoogleLogin
@@ -137,7 +137,7 @@ const Login = () => {
           onFailure={notifyInvalidCredentials}
           cookiePolicy='single_host_origin'
         />
-      </GlassContainer>
+      </FormContainer>
     </AuthContainer>
   );
 };
