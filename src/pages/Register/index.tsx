@@ -5,6 +5,7 @@ import { Button, Form, Input, Link } from 'react-daisyui';
 import { GoogleLogin } from 'react-google-login';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import { Tiles } from '../../components/common';
 import {
   AuthContainer,
   FormContainer,
@@ -119,145 +120,147 @@ const Register = () => {
   }, []);
 
   return (
-    <AuthContainer>
-      <FormContainer className='max-h-[1080px] max-w-[720px] md:mt-0'>
-        <FormTitle>Sign Up</FormTitle>
-        <Form onSubmit={formik.handleSubmit}>
-          <div className='md:flex md:justify-between'>
-            <InputGroup className='md:inline'>
+    <Tiles>
+      <AuthContainer>
+        <FormContainer className='max-h-[1080px] max-w-[720px] md:mt-0'>
+          <FormTitle>Sign Up</FormTitle>
+          <Form onSubmit={formik.handleSubmit}>
+            <div className='md:flex md:justify-between'>
+              <InputGroup className='md:inline'>
+                <Input
+                  className='input-sm md:input-md'
+                  color='primary'
+                  name='firstName'
+                  onChange={formik.handleChange}
+                  placeholder='First Name'
+                  type='text'
+                  value={formik.values.firstName}
+                />
+
+                {formik.touched.firstName && formik.errors.firstName ? (
+                  <FormErrorText>{formik.errors.firstName}</FormErrorText>
+                ) : null}
+              </InputGroup>
+              <InputGroup className='md:inline'>
+                <Input
+                  className='input-sm md:input-md'
+                  color='primary'
+                  name='lastName'
+                  onChange={formik.handleChange}
+                  placeholder='Last Name'
+                  type='text'
+                  value={formik.values.lastName}
+                />
+
+                {formik.touched.lastName && formik.errors.lastName ? (
+                  <FormErrorText>{formik.errors.lastName}</FormErrorText>
+                ) : null}
+              </InputGroup>
+            </div>
+            <InputGroup>
               <Input
                 className='input-sm md:input-md'
                 color='primary'
-                name='firstName'
+                name='username'
                 onChange={formik.handleChange}
-                placeholder='First Name'
+                placeholder='Username'
                 type='text'
-                value={formik.values.firstName}
+                value={formik.values.username}
               />
 
-              {formik.touched.firstName && formik.errors.firstName ? (
-                <FormErrorText>{formik.errors.firstName}</FormErrorText>
+              {formik.touched.username && formik.errors.username ? (
+                <FormErrorText>{formik.errors.username}</FormErrorText>
               ) : null}
             </InputGroup>
-            <InputGroup className='md:inline'>
+            <InputGroup>
               <Input
                 className='input-sm md:input-md'
                 color='primary'
-                name='lastName'
+                name='email'
                 onChange={formik.handleChange}
-                placeholder='Last Name'
+                placeholder='Email'
                 type='text'
-                value={formik.values.lastName}
+                value={formik.values.email}
               />
 
-              {formik.touched.lastName && formik.errors.lastName ? (
-                <FormErrorText>{formik.errors.lastName}</FormErrorText>
+              {formik.touched.email && formik.errors.email ? (
+                <FormErrorText>{formik.errors.email}</FormErrorText>
               ) : null}
             </InputGroup>
-          </div>
-          <InputGroup>
-            <Input
-              className='input-sm md:input-md'
-              color='primary'
-              name='username'
-              onChange={formik.handleChange}
-              placeholder='Username'
-              type='text'
-              value={formik.values.username}
-            />
+            <InputGroup>
+              <Input
+                className='input-sm md:input-md'
+                color='primary'
+                name='phoneNumber'
+                onChange={formik.handleChange}
+                placeholder='Phone Number'
+                type='text'
+                value={formik.values.phoneNumber}
+              />
 
-            {formik.touched.username && formik.errors.username ? (
-              <FormErrorText>{formik.errors.username}</FormErrorText>
-            ) : null}
-          </InputGroup>
-          <InputGroup>
-            <Input
-              className='input-sm md:input-md'
-              color='primary'
-              name='email'
-              onChange={formik.handleChange}
-              placeholder='Email'
-              type='text'
-              value={formik.values.email}
-            />
+              {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
+                <FormErrorText>{formik.errors.phoneNumber}</FormErrorText>
+              ) : null}
+            </InputGroup>
+            <InputGroup>
+              <Input
+                className='input-sm md:input-md'
+                color='primary'
+                name='password'
+                onChange={formik.handleChange}
+                placeholder='Password'
+                type='password'
+                value={formik.values.password}
+              />
 
-            {formik.touched.email && formik.errors.email ? (
-              <FormErrorText>{formik.errors.email}</FormErrorText>
-            ) : null}
-          </InputGroup>
-          <InputGroup>
-            <Input
-              className='input-sm md:input-md'
-              color='primary'
-              name='phoneNumber'
-              onChange={formik.handleChange}
-              placeholder='Phone Number'
-              type='text'
-              value={formik.values.phoneNumber}
-            />
+              {formik.touched.password && formik.errors.password ? (
+                <FormErrorText>{formik.errors.password}</FormErrorText>
+              ) : null}
+            </InputGroup>
+            <InputGroup>
+              <Input
+                className='input-sm md:input-md'
+                color='primary'
+                name='confirm'
+                onChange={formik.handleChange}
+                placeholder='Confirm Password'
+                type='password'
+                value={formik.values.confirm}
+              />
 
-            {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
-              <FormErrorText>{formik.errors.phoneNumber}</FormErrorText>
-            ) : null}
-          </InputGroup>
-          <InputGroup>
-            <Input
-              className='input-sm md:input-md'
-              color='primary'
-              name='password'
-              onChange={formik.handleChange}
-              placeholder='Password'
-              type='password'
-              value={formik.values.password}
-            />
-
-            {formik.touched.password && formik.errors.password ? (
-              <FormErrorText>{formik.errors.password}</FormErrorText>
-            ) : null}
-          </InputGroup>
-          <InputGroup>
-            <Input
-              className='input-sm md:input-md'
-              color='primary'
-              name='confirm'
-              onChange={formik.handleChange}
-              placeholder='Confirm Password'
-              type='password'
-              value={formik.values.confirm}
-            />
-
-            {formik.touched.confirm && formik.errors.confirm ? (
-              <FormErrorText>{formik.errors.confirm}</FormErrorText>
-            ) : null}
-          </InputGroup>
-          <Button
-            className='mt-2'
-            color={!isLoading ? 'secondary' : 'accent'}
-            loading={isLoading}
-            type='submit'
-          >
-            Sign Up
-          </Button>
-        </Form>
-        <p className='mt-2 text-base-100'>
-          Already have an account?{' '}
-          <Link color='secondary' href='/login'>
-            Login
-          </Link>
-        </p>
-        <span className='my-4 block text-xl text-center text-slate-400'>
-          ---OR---
-        </span>
-        <GoogleLogin
-          className='w-full flex justify-center'
-          clientId={String(clientId)}
-          buttonText='Sign in with Google'
-          onSuccess={handleSignInGoogleSuccess}
-          onFailure={notifyRegisterFailed}
-          cookiePolicy='single_host_origin'
-        />
-      </FormContainer>
-    </AuthContainer>
+              {formik.touched.confirm && formik.errors.confirm ? (
+                <FormErrorText>{formik.errors.confirm}</FormErrorText>
+              ) : null}
+            </InputGroup>
+            <Button
+              className='mt-2'
+              color={!isLoading ? 'secondary' : 'accent'}
+              loading={isLoading}
+              type='submit'
+            >
+              Sign Up
+            </Button>
+          </Form>
+          <p className='mt-2 text-base-100'>
+            Already have an account?{' '}
+            <Link color='secondary' href='/login'>
+              Login
+            </Link>
+          </p>
+          <span className='my-4 block text-xl text-center text-slate-400'>
+            ---OR---
+          </span>
+          <GoogleLogin
+            className='w-full flex justify-center'
+            clientId={String(clientId)}
+            buttonText='Sign in with Google'
+            onSuccess={handleSignInGoogleSuccess}
+            onFailure={notifyRegisterFailed}
+            cookiePolicy='single_host_origin'
+          />
+        </FormContainer>
+      </AuthContainer>
+    </Tiles>
   );
 };
 

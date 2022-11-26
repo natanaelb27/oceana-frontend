@@ -20,7 +20,7 @@ import {
   InputGroup,
 } from '../../components/common/Form';
 import { notifyErrorToast } from '../../utils/toast';
-import { Tiles } from '../../components/Login';
+import { Tiles } from '../../components/common';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;

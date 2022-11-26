@@ -6,3 +6,4 @@ export { default as Pager } from './Pager';
 export { default as ProductCard } from './ProductCard';
 export { default as SortBar } from './SortBar';
 export { default as Slider } from './Slider';
+export { default as Tiles } from './Tiles';
