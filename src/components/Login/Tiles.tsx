@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import anime from 'animejs/lib/anime.es.js';
-import { DELAY_ANIMATION, TILE_SIZE } from '../../constants';
+import { DELAY_ANIMATION, MOBILE_WIDTH, TILE_SIZE } from '../../constants';
 import { StyledTile, TilesContainer } from './style';
 
 // const colors = [
@@ -49,14 +49,16 @@ type TilesProps = {
 const Tiles = ({ children }: TilesProps) => {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState<number>(window.innerHeight);
-  const columns = Math.floor(windowWidth / TILE_SIZE);
-  const rows = Math.floor(windowHeight / TILE_SIZE);
+  const size = windowWidth > MOBILE_WIDTH ? TILE_SIZE : TILE_SIZE / 2;
+  const columns = Math.floor(windowWidth / size);
+  const rows = Math.floor(windowHeight / size);
   const quantity = columns * rows;
-  const container = document.getElementById('container');
-  container?.style.setProperty('--columns', String(columns));
-  container?.style.setProperty('--rows', String(rows));
 
   useEffect(() => {
+    const container = document.getElementById('container');
+    container?.style.setProperty('--columns', String(columns));
+    container?.style.setProperty('--rows', String(rows));
+
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
       setWindowHeight(window.innerHeight);
@@ -78,7 +80,7 @@ const Tiles = ({ children }: TilesProps) => {
             index={index}
             columns={columns}
             rows={rows}
-            size={TILE_SIZE}
+            size={size}
           />
         ))}
       </TilesContainer>
