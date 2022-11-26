@@ -6,13 +6,21 @@ import { useLazyGetProfileQuery } from './store/services/profileService';
 import { selectRole, setCredentials } from './store/slices/authSlice';
 import { useAppDispatch, useAppSelector } from './store/store';
 import { ToastContainer } from 'react-toastify';
+import { useLocalStorage } from './hooks';
 
 const App = () => {
   const role = useAppSelector(selectRole);
   const dispatch = useAppDispatch();
   const [getProfile] = useLazyGetProfileQuery();
 
+  const [theme] = useLocalStorage<string>(
+    'theme',
+    window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  );
+
   useEffect(() => {
+    document.getElementsByTagName('html')[0].setAttribute('data-theme', theme);
+
     // TODO: yarn add js-cookie and add conditional to check for cookies (i.e. accessToken & refreshToken)
     const accessToken = Cookies.get('access_token');
     const refreshToken = Cookies.get('refresh_token');
