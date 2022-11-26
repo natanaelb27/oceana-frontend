@@ -7,6 +7,7 @@ export const AuthContainer = tw.div<any>`
   justify-center
   items-center
   bg-none
+  -z-10
   overflow-auto
 `;
 
@@ -14,6 +15,7 @@ export const FormContainer = tw.div<any>`
   max-w-[480px]
   max-h-[640px]
   p-10
+  z-10
   bg-primary
   rounded-3xl
   shadow-2xl

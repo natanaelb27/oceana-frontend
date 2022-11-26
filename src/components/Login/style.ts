@@ -7,7 +7,6 @@ export const TilesContainer = tw.div<any>`
   left-0
   h-screen
   w-screen
-  -z-10
 
   grid
   grid-cols-tiles

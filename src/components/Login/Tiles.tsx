@@ -1,18 +1,43 @@
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+import anime from 'animejs/lib/anime.es.js';
 import { TILE_SIZE } from '../../constants';
 import { TilesContainer } from './style';
 
+const colors = [
+  'rgb(229, 57, 53)',
+  'rgb(253, 216, 53)',
+  'rgb(244, 81, 30)',
+  'rgb(76, 175, 80)',
+  'rgb(33, 150, 243)',
+  'rgb(156, 39, 176)',
+];
+let count = -1;
+
 type TileProps = {
-  // index: number;
+  index: number;
   size: number;
 };
-const Tile = ({ size }: TileProps) => (
-  <div
-    className={`w-[${size}px] h-[${size}px] border border-base-100 bg-accent`}
-  />
-);
+const Tile = ({ index, size }: TileProps) => {
+  const handleClick = (index: number) => {
+    count = count + 1;
 
-const Tiles = () => {
+    anime({
+      targets: '.tile',
+      backgroundColor: colors[count & (colors.length - 1)],
+    });
+  };
+  return (
+    <div
+      className={`tile w-[${size}px] h-[${size}px] border border-base-100 bg-accent`}
+      onClick={() => handleClick(index)}
+    />
+  );
+};
+
+type TilesProps = {
+  children: ReactNode;
+};
+const Tiles = ({ children }: TilesProps) => {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState<number>(window.innerHeight);
   const columns = Math.floor(windowWidth / TILE_SIZE);
@@ -36,11 +61,14 @@ const Tiles = () => {
   });
 
   return (
-    <TilesContainer id='container'>
-      {Array.from(Array(quantity)).map((_, index) => (
-        <Tile key={index} size={TILE_SIZE} />
-      ))}
-    </TilesContainer>
+    <>
+      <TilesContainer id='container'>
+        {Array.from(Array(quantity)).map((_, index) => (
+          <Tile key={index} index={index} size={TILE_SIZE} />
+        ))}
+      </TilesContainer>
+      {children}
+    </>
   );
 };
 

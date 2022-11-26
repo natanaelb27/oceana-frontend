@@ -79,8 +79,7 @@ const Login = () => {
   }, []);
 
   return (
-    <>
-      <Tiles />
+    <Tiles>
       <AuthContainer>
         <FormContainer>
           <FormTitle>Login</FormTitle>
@@ -142,7 +141,7 @@ const Login = () => {
           />
         </FormContainer>
       </AuthContainer>
-    </>
+    </Tiles>
   );
 };
 
