@@ -21,7 +21,7 @@ type TileProps = {
   size: number;
 };
 const Tile = ({ index, columns, rows, size }: TileProps) => {
-  const handleClick = (index: number) => {
+  const handleClickStaggerTile = (index: number) => {
     toggled = !toggled;
     // count = count + 1;
 
@@ -38,7 +38,7 @@ const Tile = ({ index, columns, rows, size }: TileProps) => {
   return (
     <StyledTile
       className={`tile w-[${size}px] h-[${size}px]`}
-      onClick={() => handleClick(index)}
+      onClick={() => handleClickStaggerTile(index)}
     />
   );
 };

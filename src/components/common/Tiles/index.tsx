@@ -16,9 +16,9 @@ const Tiles = ({ children }: TilesProps) => {
   const quantity = columns * rows;
 
   useEffect(() => {
-    const container = document.getElementById('container');
-    container?.style.setProperty('--columns', String(columns));
-    container?.style.setProperty('--rows', String(rows));
+    const containerTiles = document.getElementById('container-tiles');
+    containerTiles?.style.setProperty('--columns', String(columns));
+    containerTiles?.style.setProperty('--rows', String(rows));
 
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -34,7 +34,7 @@ const Tiles = ({ children }: TilesProps) => {
 
   return (
     <>
-      <TilesContainer id='container'>
+      <TilesContainer id='container-tiles'>
         {Array.from(Array(quantity)).map((_, index) => (
           <Tile
             key={index}

@@ -24,11 +24,10 @@ export const TilesContainer = tw.div<any>`
 
 export const StyledTile = tw.div<any>`
   relative
-  cursor-pointer
 
   before:bg-gray-800
   before:content-[""]
   before:absolute
-  before:inset-px
-  before:hover:bg-base-content/80
+  before:inset-[.5px]
+  before:hover:bg-gray-800/80
 `;
