@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import anime from 'animejs/lib/anime.es.js';
-import { TILE_SIZE } from '../../constants';
+import { DELAY_ANIMATION, TILE_SIZE } from '../../constants';
 import { TilesContainer } from './style';
 
 const colors = [
@@ -15,20 +15,26 @@ let count = -1;
 
 type TileProps = {
   index: number;
+  columns: number;
+  rows: number;
   size: number;
 };
-const Tile = ({ index, size }: TileProps) => {
+const Tile = ({ index, columns, rows, size }: TileProps) => {
   const handleClick = (index: number) => {
     count = count + 1;
 
     anime({
       targets: '.tile',
       backgroundColor: colors[count & (colors.length - 1)],
+      delay: anime.stagger(DELAY_ANIMATION, {
+        grid: [columns, rows],
+        from: index,
+      }),
     });
   };
   return (
     <div
-      className={`tile w-[${size}px] h-[${size}px] border border-base-100 bg-accent`}
+      className={`tile w-[${size}px] h-[${size}px] bg-accent`}
       onClick={() => handleClick(index)}
     />
   );
@@ -64,7 +70,13 @@ const Tiles = ({ children }: TilesProps) => {
     <>
       <TilesContainer id='container'>
         {Array.from(Array(quantity)).map((_, index) => (
-          <Tile key={index} index={index} size={TILE_SIZE} />
+          <Tile
+            key={index}
+            index={index}
+            columns={columns}
+            rows={rows}
+            size={TILE_SIZE}
+          />
         ))}
       </TilesContainer>
       {children}
