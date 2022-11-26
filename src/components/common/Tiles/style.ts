@@ -26,7 +26,7 @@ export const StyledTile = tw.div<any>`
   relative
   cursor-pointer
 
-  before:bg-base-content
+  before:bg-gray-800
   before:content-[""]
   before:absolute
   before:inset-px

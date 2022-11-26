@@ -11,9 +11,11 @@ import {
   FormContainer,
 } from '../../components/common/Container';
 import {
+  FormCTA,
   FormErrorText,
   FormTitle,
   InputGroup,
+  StyledDivider,
 } from '../../components/common/Form/style';
 import { useRegisterMutation } from '../../store/services/authService';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
@@ -241,15 +243,13 @@ const Register = () => {
               Sign Up
             </Button>
           </Form>
-          <p className='mt-2 text-base-100'>
+          <FormCTA>
             Already have an account?{' '}
             <Link color='secondary' href='/login'>
               Login
             </Link>
-          </p>
-          <span className='my-4 block text-xl text-center text-slate-400'>
-            ---OR---
-          </span>
+          </FormCTA>
+          <StyledDivider>---OR---</StyledDivider>
           <GoogleLogin
             className='w-full flex justify-center'
             clientId={String(clientId)}
