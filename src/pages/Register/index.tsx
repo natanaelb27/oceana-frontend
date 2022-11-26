@@ -124,7 +124,7 @@ const Register = () => {
   return (
     <Tiles>
       <AuthContainer>
-        <FormContainer className='max-h-[1080px] max-w-[720px] md:mt-0'>
+        <FormContainer className='max-h-[1080px] md:max-w-[580px] md:mt-0'>
           <FormTitle>Sign Up</FormTitle>
           <Form onSubmit={formik.handleSubmit}>
             <div className='md:flex md:justify-between'>
