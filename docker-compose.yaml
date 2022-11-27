@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  frontend:
+    build: .
+    container_name: oceana_c
+    ports:
+      - '3000:3000'
+    # start container in interactive mode whi we need to do for react, that is the opposite of detached mode
+    stdin_open: true
+    tty: true
