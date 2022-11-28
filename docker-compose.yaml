@@ -1,12 +1,9 @@
 version: "3.8"
 services:
   frontend:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     container_name: oceana_c
     ports:
-      - '3000:3000'
-    expose:
-      - 3000
-    # start container in interactive mode which is we should do for react, that is the opposite of detached mode
-    stdin_open: true
-    tty: true
+      - 3000:80
