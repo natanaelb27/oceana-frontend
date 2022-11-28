@@ -4,11 +4,17 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn
 COPY . .
-CMD ["yarn", "build"]
+RUN yarn build
 
 # production
+# Use NgInx alpine image 
 FROM nginx:stable-alpine
+# Remove default nginx website
+RUN rm -rf /usr/share/nginx/html/*
+# Copy dist folder fro build stage to nginx public folder
 COPY --from=build /app/build /usr/share/nginx/html
+# Copy nginx config file
 COPY --from=build /app/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
+# Start NgInx service
 CMD ["nginx","-g","daemon off;"]
