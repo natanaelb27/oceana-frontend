@@ -45,7 +45,7 @@ const Home = () => {
           </Slider>
         </HomeCard>
       </div>
-      <Divider className='w-[360px] self-center md:w-[1080px]' />
+      <Divider className='w-[360px] self-center md:w-[640px] lg:w-[800px] xl:w-[1080px]' />
       <div className='my-5'>
         <HomeCard
           title='Recommended Products'
