@@ -37,7 +37,11 @@ const App = () => {
         .unwrap()
         .then((response) => {
           const { data: getProfileData } = response;
-          dispatch(setCredentials({ role: getProfileData?.role as string }));
+          dispatch(
+            setCredentials({
+              role: getProfileData?.role ? getProfileData.role : null,
+            })
+          );
         })
         .catch((err) => {
           console.log(err);
