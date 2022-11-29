@@ -34,6 +34,13 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: '/logout',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
   }),
 });
 
@@ -42,4 +49,5 @@ export const {
   useLazyGetProfileQuery,
   useUpdateProfileMutation,
   useUpdateProfileImageMutation,
+  useLogoutMutation,
 } = profileApi;
