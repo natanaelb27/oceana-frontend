@@ -293,10 +293,6 @@ export const BUYER_ROUTES = [
         element: <Navigate to='/seller/registration' />,
       },
       {
-        path: '/seller/registration',
-        element: <SellerRegistration />,
-      },
-      {
         path: '/seller/shop/profile',
         element: <Navigate to='/seller/registration' />,
       },
@@ -361,6 +357,10 @@ export const BUYER_ROUTES = [
         element: <Navigate to='/seller/registration' />,
       },
     ],
+  },
+  {
+    path: '/seller/registration',
+    element: <SellerRegistration />,
   },
   {
     path: '*',

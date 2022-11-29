@@ -66,7 +66,7 @@ const Header = () => {
       }`}
     >
       <div className='container mx-auto'>
-        {!role && <NavLink to="/seller">Seller Center</NavLink>}
+        {role && <NavLink to="/seller/registration">Seller Center</NavLink>}
         <Navbar className='hidden md:flex'>
           <div className='flex-none mr-4'>
             <NavLink to='/'>
