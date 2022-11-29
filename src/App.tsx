@@ -8,6 +8,7 @@ import { ToastContainer } from 'react-toastify';
 import { useLocalStorage } from './hooks';
 import { doesHttpOnlyCookieExist } from './utils/auth';
 import { Loading } from './components/common';
+import Cookies from 'js-cookie';
 
 const App = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -28,11 +29,10 @@ const App = () => {
     // const accessToken = Cookies.get('access_token');
     // const refreshToken = Cookies.get('refresh_token');
 
-    const accessToken = doesHttpOnlyCookieExist('access_token');
     const refreshToken = doesHttpOnlyCookieExist('refresh_token');
+    const accessTokenVerifier = Cookies.get('access_token_verifier');
 
-    console.log({ accessToken, refreshToken, role });
-    if (accessToken && refreshToken && !role) {
+    if (accessTokenVerifier === '' && !role) {
       getProfile()
         .unwrap()
         .then((response) => {
@@ -47,6 +47,7 @@ const App = () => {
         });
     } else if (refreshToken && !role) {
       // TODO integrate BE: fetch refresh token
+      setLoading(false);
     } else {
       setLoading(false);
     }
