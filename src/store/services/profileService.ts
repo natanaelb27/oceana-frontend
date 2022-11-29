@@ -36,7 +36,7 @@ export const profileApi = baseApi.injectEndpoints({
     }),
     logout: builder.mutation<void, void>({
       query: () => ({
-        url: '/logout',
+        url: '/profile/logout',
         method: 'POST',
       }),
       invalidatesTags: ['Profile'],
