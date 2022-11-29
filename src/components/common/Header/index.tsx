@@ -54,6 +54,7 @@ const Header = () => {
 
   const handleLogoutClick = async () => {
     await dispatch(unsetCredentials());
+    // TODO integrate BE: Logout, remove cookies
 
     navigate('/');
   };
