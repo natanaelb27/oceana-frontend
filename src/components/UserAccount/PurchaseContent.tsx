@@ -1,12 +1,21 @@
 import { useState } from 'react';
-import { Badge, Button, Card, Divider } from 'react-daisyui';
-import { HiOutlineShoppingBag } from 'react-icons/hi';
+import { Badge, Button, Card, Divider, Modal, Steps } from 'react-daisyui';
+import {
+  HiOutlineChevronDown,
+  HiOutlineChevronUp,
+  HiOutlineChevronRight,
+  HiOutlineShoppingBag,
+} from 'react-icons/hi';
 import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../constants';
 import { TransactionHistoryQuery } from '../../types/query';
-import { useGetAllTransactionHistoryQuery } from '../../store/services/orderService';
+import {
+  useGetAllTransactionHistoryQuery,
+  useGetOrderDetailsQuery,
+} from '../../store/services/orderService';
 import { toTransactionHistoryQuery } from '../../utils/mapperDTO';
-import { toRupiah, toStringDate } from '../../utils/convert';
-import { limitString } from '../../utils/limitString';
+import { toRupiah, toStringDate, toStringDatetime } from '../../utils/convert';
+import { CgClose } from 'react-icons/cg';
+import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 
 const PurchaseContent = () => {
   const [transactionHistoryQuery] = useState<TransactionHistoryQuery>({
@@ -25,6 +34,11 @@ const PurchaseContent = () => {
     toTransactionHistoryQuery(transactionHistoryQuery)
   );
 
+  const [orderID, setOrderID] = useState<string>('');
+
+  const { data: getOrderDetailsData, isLoading: getOrderDetailsLoading } =
+    useGetOrderDetailsQuery(orderID);
+
   const getBadgeColor = (orderStatus: string) => {
     if (orderStatus.toLowerCase() === DELIVERY_STATUS.COMPLETED.toLowerCase()) {
       return 'success';
@@ -40,6 +54,22 @@ const PurchaseContent = () => {
     }
 
     return 'warning';
+  };
+
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openOrderTracking, setOpenOrderTracking] = useState<boolean>(false);
+
+  const handleViewDetailsClick = (orderID: string) => {
+    setOrderID(orderID);
+    setOpenModal(true);
+  };
+
+  const handleModalClose = () => {
+    setOpenModal(false);
+  };
+
+  const handleViewOrderTrackingClick = () => {
+    setOpenOrderTracking(!openOrderTracking);
   };
 
   return (
@@ -66,10 +96,10 @@ const PurchaseContent = () => {
                   className='col-span-12 shadow border-r-0 border-b-4 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
                   key={n}
                 >
-                  <div className='p-4 cursor-pointer lg:cursor-default'>
+                  <div className='p-4'>
                     <div className='flex items-center mb-2.5 gap-3'>
                       <HiOutlineShoppingBag className='text-info text-xl' />
-                      <span>
+                      <span className='font-light text-sm'>
                         {toStringDate(transactionHistory.transaction_datetime)}
                       </span>
                       <Badge
@@ -79,6 +109,9 @@ const PurchaseContent = () => {
                       >
                         {transactionHistory.order_status}
                       </Badge>
+                      <span className='font-light text-sm'>
+                        {transactionHistory?.invoice_number}
+                      </span>
                     </div>
                     <div className='mb-1'>
                       <span className='font-bold'>
@@ -93,9 +126,14 @@ const PurchaseContent = () => {
                           className='h-12 w-12 md:h-20 md:w-20'
                         />
                       </div>
-                      <div className='flex flex-col w-[70%]'>
-                        <span className='font-bold'>
-                          {limitString(firstProduct?.product_name || '')}
+                      <div
+                        className='flex flex-col w-[70%] cursor-pointer'
+                        onClick={() =>
+                          handleViewDetailsClick(transactionHistory.order_id)
+                        }
+                      >
+                        <span className='font-bold line-clamp-2 md:line-clamp-1'>
+                          {firstProduct?.product_name || ''}
                         </span>
                         <span className='font-light text-sm'>
                           {firstProduct?.quantity} item
@@ -125,7 +163,12 @@ const PurchaseContent = () => {
                       </div>
                     </div>
                     <div className='flex mt-3 gap-3 items-center justify-between lg:justify-end'>
-                      <span className='hidden text-primary font-medium text-sm cursor-pointer lg:block'>
+                      <span
+                        className='hidden text-primary font-medium text-sm cursor-pointer lg:block'
+                        onClick={() =>
+                          handleViewDetailsClick(transactionHistory.order_id)
+                        }
+                      >
                         View Transaction Details
                       </span>
                       <div className='flex flex-col lg:hidden'>
@@ -149,6 +192,271 @@ const PurchaseContent = () => {
             }
           )}
       </div>
+      <Modal
+        open={openModal}
+        responsive
+        className='md:w-9/12 md:max-w-2xl px-0'
+        onClickBackdrop={handleModalClose}
+      >
+        <Button
+          size='sm'
+          shape='circle'
+          color='ghost'
+          className='absolute right-2 top-2'
+          onClick={handleModalClose}
+        >
+          <CgClose className='text-lg' />
+        </Button>
+        <Modal.Header className='text-center font-bold'>
+          Transaction Detail
+        </Modal.Header>
+        <Modal.Body>
+          {getOrderDetailsLoading && (
+            <Card className='col-span-12 shadow animate-pulse'>
+              <div className='p-4'>
+                <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+              </div>
+            </Card>
+          )}
+          {getOrderDetailsData?.data && (
+            <div className='flex flex-col gap-2'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+                <div className='flex justify-between items-center'>
+                  <span className='font-bold'>
+                    {capitalizeFirstLetter(
+                      getOrderDetailsData?.data.order_status
+                    )}
+                  </span>
+                  <div
+                    className='flex cursor-pointer text-primary items-center gap-1'
+                    onClick={handleViewOrderTrackingClick}
+                  >
+                    <span className='text-sm'>
+                      {openOrderTracking ? 'Hide' : 'View Detail'}
+                    </span>
+                    {openOrderTracking ? (
+                      <HiOutlineChevronUp className='text-sm' />
+                    ) : (
+                      <HiOutlineChevronDown className='text-sm' />
+                    )}
+                  </div>
+                </div>
+                {openOrderTracking ? (
+                  <div className='border-solid border-2 rounded p-3'>
+                    <Steps vertical={true}>
+                      {getOrderDetailsData?.data.order_tracking_history.map(
+                        (history, n) => (
+                          <Steps.Step value='' key={n} color='primary'>
+                            <div className='flex flex-col'>
+                              <span className='text-sm font-bold text-left'>
+                                {history.title}
+                              </span>
+                              <span className='text-sm font-light text-left'>
+                                {toStringDatetime(history.datetime)}
+                              </span>
+                              <span className='text-sm text-left'>
+                                {history.description}
+                              </span>
+                            </div>
+                          </Steps.Step>
+                        )
+                      )}
+                    </Steps>
+                  </div>
+                ) : null}
+                <Divider className='m-0'></Divider>
+                <div className='flex justify-between items-center'>
+                  <span className='text-sm'>No. Invoice</span>
+                  <span className='text-sm text-primary cursor-pointer'>
+                    {getOrderDetailsData?.data.invoice_number}
+                  </span>
+                </div>
+                <div className='flex justify-between items-center'>
+                  <span className='text-sm'>Purchase Date</span>
+                  <span className='text-sm'>
+                    {toStringDatetime(
+                      getOrderDetailsData?.data.transaction_datetime
+                    )}
+                  </span>
+                </div>
+              </div>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+                <div className='flex justify-between items-center'>
+                  <span className='font-bold'>Product Details</span>
+                  <div className='flex items-center gap-1 cursor-pointer hover:text-primary'>
+                    <span className='font-bold text-sm'>
+                      {getOrderDetailsData?.data.shop_name}
+                    </span>
+                    <HiOutlineChevronRight className='text-sm' />
+                  </div>
+                </div>
+                <div className='flex flex-col gap-4'>
+                  {getOrderDetailsData?.data.order_details.map(
+                    (orderDetail, n) => {
+                      return (
+                        <Card
+                          className='flex gap-3 p-4 shadow border-r-0 border-b-4 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
+                          key={n}
+                        >
+                          <div className='grid grid-cols-5 md:grid-cols-8'>
+                            <div className='mr-5 col-span-1'>
+                              <img
+                                src={orderDetail.product_image || ''}
+                                alt={orderDetail.product_name || ''}
+                                className='h-12 w-12 md:h-18 md:w-18'
+                              />
+                            </div>
+                            <div className='flex flex-col col-span-4'>
+                              <span className='font-bold line-clamp-2 md:line-clamp-1'>
+                                {orderDetail.product_name || ''}
+                              </span>
+                              <span className='font-light text-sm line-clamp-2 md:line-clamp-1'>
+                                {orderDetail.product_variations || ''}
+                              </span>
+                              <span className='font-light text-sm'>
+                                {orderDetail.quantity} &times;{' '}
+                                {toRupiah(orderDetail.price || 0)}
+                              </span>
+                            </div>
+                            <div className='hidden md:flex items-center justify-end md:col-span-3'>
+                              <div className='divider divider-horizontal'></div>
+                              <div className='flex flex-col gap-2'>
+                                <div className='flex flex-col text-right'>
+                                  <span className='font-light text-sm'>
+                                    Total Amount
+                                  </span>
+                                  <span className='font-bold'>
+                                    {toRupiah(
+                                      Math.round(orderDetail.total_price)
+                                    )}
+                                  </span>
+                                </div>
+                                <Button
+                                  className='normal-case md:w-auto'
+                                  color='primary'
+                                >
+                                  Repurchase
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                          <div className='flex md:hidden items-center justify-between'>
+                            <div className='flex flex-col text-right'>
+                              <span className='font-light text-sm'>
+                                Total Amount
+                              </span>
+                              <span className='font-bold'>
+                                {toRupiah(Math.round(orderDetail.total_price))}
+                              </span>
+                            </div>
+                            <Button
+                              className='normal-case md:w-auto'
+                              color='primary'
+                            >
+                              Repurchase
+                            </Button>
+                          </div>
+                        </Card>
+                      );
+                    }
+                  )}
+                </div>
+              </div>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+                <span className='font-bold'>Shipping Info</span>
+                <div className='flex flex-col gap-2'>
+                  <div className='grid grid-cols-10'>
+                    <span className='text-sm col-span-1'>Courier</span>
+                    <span className='text-sm col-span-1 text-right mr-2'>
+                      :
+                    </span>
+                    <span className='text-sm col-span-8'>
+                      {getOrderDetailsData?.data.courier_description}
+                    </span>
+                  </div>
+                  <div className='grid grid-cols-10'>
+                    <span className='text-sm col-span-1'>Address</span>
+                    <span className='text-sm col-span-1 text-right mr-2'>
+                      :
+                    </span>
+                    <span className='text-sm col-span-8'>
+                      {getOrderDetailsData?.data.address.detail} <br />
+                      {getOrderDetailsData?.data.address.city}
+                      {', '}
+                      {getOrderDetailsData?.data.address.district}
+                      {', '}
+                      {getOrderDetailsData?.data.address.province}
+                      {', '}
+                      {getOrderDetailsData?.data.address.zip_code}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-col gap-2 p-5'>
+                <span className='font-bold'>Payment Details</span>
+                <div>
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Payment Method</span>
+                    <span className='text-sm'>
+                      {capitalizeFirstLetter(
+                        getOrderDetailsData?.data.payment_method
+                      )}
+                    </span>
+                  </div>
+                  <Divider className='m-0'></Divider>
+                  <div className='flex flex-col gap-2'>
+                    <div className='flex justify-between items-center'>
+                      <span className='text-sm'>Total Price</span>
+                      <span className='text-sm'>
+                        {toRupiah(
+                          getOrderDetailsData?.data.total_price_before_discount
+                        )}
+                      </span>
+                    </div>
+                    <div className='flex justify-between items-center'>
+                      <span className='text-sm'>Total Shipping Fee</span>
+                      <span className='text-sm'>
+                        {toRupiah(getOrderDetailsData?.data.shipping_fee)}
+                      </span>
+                    </div>
+                    {getOrderDetailsData?.data
+                      .total_merchant_promotion_discount +
+                      getOrderDetailsData?.data
+                        .total_merchant_voucher_discount +
+                      getOrderDetailsData?.data
+                        .total_marketplace_voucher_discount >
+                    0 ? (
+                      <div className='flex justify-between items-center'>
+                        <span className='text-sm'>Total Discount</span>
+                        <span className='text-sm'>
+                          -
+                          {toRupiah(
+                            getOrderDetailsData?.data
+                              .total_merchant_promotion_discount +
+                              getOrderDetailsData?.data
+                                .total_merchant_voucher_discount +
+                              getOrderDetailsData?.data
+                                .total_marketplace_voucher_discount
+                          )}
+                        </span>
+                      </div>
+                    ) : null}
+                  </div>
+                  <Divider className='m-0'></Divider>
+                  <div className='flex justify-between items-center'>
+                    <span className='font-bold'>Total Payment</span>
+                    <span className='text-sm'>
+                      {toRupiah(getOrderDetailsData?.data.total_payment)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
