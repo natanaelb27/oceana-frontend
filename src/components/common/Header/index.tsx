@@ -16,6 +16,8 @@ import { CgLogOut, CgProfile } from 'react-icons/cg';
 import { useLocalStorage, useScrollPosition } from '../../../hooks';
 import { selectRole, unsetCredentials } from '../../../store/slices/authSlice';
 import { useAppDispatch, useAppSelector } from '../../../store/store';
+import { validateUserRole } from '../../../utils/auth';
+import { Role } from '../../../types/role';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -66,7 +68,7 @@ const Header = () => {
       }`}
     >
       <div className='container mx-auto'>
-        {role && <NavLink to="/seller/registration">Seller Center</NavLink>}
+        {validateUserRole(role) === Role.Buyer && <NavLink to="/seller/registration">Seller Center</NavLink>}
         <Navbar className='hidden md:flex'>
           <div className='flex-none mr-4'>
             <NavLink to='/'>
