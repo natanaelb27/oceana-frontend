@@ -1,3 +1,4 @@
+import { number } from 'yup';
 import {
   Address,
   Category,
@@ -6,6 +7,7 @@ import {
   Profile,
   Role,
   User,
+  CartGroupedByMerchant,
 } from './component';
 
 export type GetRolesResponse = {
@@ -55,6 +57,14 @@ export type GetAllCategoryResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type GetUserCartResponse = {
+  data: CartGroupedByMerchant[] | null; 
+  code: number; 
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+}
 
 export type GetAddressesResponse = {
   data: Address[] | null;
@@ -119,3 +129,10 @@ export type GetAllProductsResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type UpdateUserCartResponse = {
+  id: number;
+  product_item_id: number;
+  user_id: string;
+  quantity: number;
+}

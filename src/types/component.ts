@@ -106,3 +106,18 @@ export interface Product {
   updated_at: string;
   created_at: string;
 }
+
+export interface CartProduct {
+  carts_id: number;
+  product_id: number;
+  product_item_id: number;
+  product_name: string;
+  quantity: number;
+  price: number;
+  price_after_discount: number;
+}
+export interface CartGroupedByMerchant {
+  merchant_id: number;
+  name: string;
+  products: CartProduct[];
+}
