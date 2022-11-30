@@ -14,10 +14,12 @@ export const HomeCardContainer = tw.div<any>`
   rounded-2xl
   shadow-md
  
-  md:max-w-screen-xl
-  md:w-[1280px]
+  md:max-w-[720px]
   md:p-10
   md:pt-5
+  
+  lg:max-w-[960px]
+  xl:max-w-[1080px]
 `;
 
 export const HomeCardTitle = tw.h2`

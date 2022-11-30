@@ -12,14 +12,17 @@ import { Role } from '../../types/component';
 import { toLoginRequest } from '../../utils/mapperDTO';
 import {
   AuthContainer,
-  GlassContainer,
+  FormContainer,
 } from '../../components/common/Container';
 import {
+  FormCTA,
   FormErrorText,
   FormTitle,
   InputGroup,
+  StyledDivider,
 } from '../../components/common/Form';
 import { notifyErrorToast } from '../../utils/toast';
+import { Tiles } from '../../components/common';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
@@ -78,67 +81,67 @@ const Login = () => {
   }, []);
 
   return (
-    <AuthContainer>
-      <GlassContainer>
-        <FormTitle>Login</FormTitle>
-        <Form onSubmit={formik.handleSubmit}>
-          <InputGroup>
-            <Input
-              color='primary'
-              name='loginCredentials'
-              onChange={formik.handleChange}
-              placeholder='Email/Phone/Username'
-              type='text'
-              value={formik.values.loginCredentials}
-            />
+    <Tiles>
+      <AuthContainer>
+        <FormContainer>
+          <FormTitle>Login</FormTitle>
+          <Form onSubmit={formik.handleSubmit}>
+            <InputGroup>
+              <Input
+                color='primary'
+                name='loginCredentials'
+                onChange={formik.handleChange}
+                placeholder='Email/Phone/Username'
+                type='text'
+                value={formik.values.loginCredentials}
+              />
 
-            {formik.touched.loginCredentials &&
-            formik.errors.loginCredentials ? (
-              <FormErrorText>{formik.errors.loginCredentials}</FormErrorText>
-            ) : null}
-          </InputGroup>
-          <InputGroup>
-            <Input
-              color='primary'
-              name='password'
-              onChange={formik.handleChange}
-              placeholder='Password'
-              type='password'
-              value={formik.values.password}
-            />
+              {formik.touched.loginCredentials &&
+              formik.errors.loginCredentials ? (
+                <FormErrorText>{formik.errors.loginCredentials}</FormErrorText>
+              ) : null}
+            </InputGroup>
+            <InputGroup>
+              <Input
+                color='primary'
+                name='password'
+                onChange={formik.handleChange}
+                placeholder='Password'
+                type='password'
+                value={formik.values.password}
+              />
 
-            {formik.touched.password && formik.errors.password ? (
-              <FormErrorText>{formik.errors.password}</FormErrorText>
-            ) : null}
-          </InputGroup>
-          <Button
-            className='mt-2'
-            color={!isLoading ? 'primary' : 'secondary'}
-            loading={isLoading}
-            type='submit'
-          >
-            Login
-          </Button>
-        </Form>
-        <p className='mt-2 text-base-100'>
-          Need an account?{' '}
-          <Link color='secondary' href='/register'>
-            Sign Up
-          </Link>
-        </p>
-        <span className='my-4 block text-xl text-center text-slate-400'>
-          ---OR---
-        </span>
-        <GoogleLogin
-          className='w-full flex justify-center'
-          clientId={String(clientId)}
-          buttonText='Sign in with Google'
-          onSuccess={handleLoginSuccess}
-          onFailure={notifyInvalidCredentials}
-          cookiePolicy='single_host_origin'
-        />
-      </GlassContainer>
-    </AuthContainer>
+              {formik.touched.password && formik.errors.password ? (
+                <FormErrorText>{formik.errors.password}</FormErrorText>
+              ) : null}
+            </InputGroup>
+            <Button
+              className='mt-2'
+              color={!isLoading ? 'secondary' : 'accent'}
+              loading={isLoading}
+              type='submit'
+            >
+              Login
+            </Button>
+          </Form>
+          <FormCTA>
+            Need an account?{' '}
+            <Link color='secondary' href='/register'>
+              Sign Up
+            </Link>
+          </FormCTA>
+          <StyledDivider>---OR---</StyledDivider>
+          <GoogleLogin
+            className='w-full flex justify-center'
+            clientId={String(clientId)}
+            buttonText='Sign in with Google'
+            onSuccess={handleLoginSuccess}
+            onFailure={notifyInvalidCredentials}
+            cookiePolicy='single_host_origin'
+          />
+        </FormContainer>
+      </AuthContainer>
+    </Tiles>
   );
 };
 
