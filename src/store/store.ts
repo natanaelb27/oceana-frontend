@@ -10,7 +10,7 @@ export const baseApi = createApi({
   reducerPath: 'baseApi',
   baseQuery: baseQueryInterceptor,
   endpoints: () => ({}),
-  tagTypes: ['Category', 'Product', 'Profile'],
+  tagTypes: ['Category', 'Product', 'Profile', 'Cart'],
 });
 
 export const store = configureStore({
