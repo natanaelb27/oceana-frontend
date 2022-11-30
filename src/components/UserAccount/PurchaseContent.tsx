@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { Badge, Button, Card, Divider, Modal, Steps } from 'react-daisyui';
 import {
   HiOutlineChevronDown,
@@ -13,19 +13,27 @@ import {
   useGetOrderDetailsQuery,
 } from '../../store/services/orderService';
 import { toTransactionHistoryQuery } from '../../utils/mapperDTO';
-import { toRupiah, toStringDate, toStringDatetime } from '../../utils/convert';
+import {
+  toRupiah,
+  toLongStringDatetime,
+  toStringDate,
+  toStringDatetime,
+} from '../../utils/convert';
 import { CgClose } from 'react-icons/cg';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import DatePicker, { CalendarContainer } from 'react-datepicker';
+import moment from 'moment';
 
 const PurchaseContent = () => {
-  const [transactionHistoryQuery] = useState<TransactionHistoryQuery>({
-    limit: LIMIT_TRANSACTION_HISTORY,
-    page: 1,
-    filterOrderStatus: 'all',
-    filterOngoingOrderStatus: '',
-    filterStartTransactionDate: '',
-    filterEndTransactionDate: '',
-  });
+  const [transactionHistoryQuery, setTransactionHistoryQuery] =
+    useState<TransactionHistoryQuery>({
+      limit: LIMIT_TRANSACTION_HISTORY,
+      page: 1,
+      filterOrderStatus: 'all',
+      filterOngoingOrderStatus: '',
+      filterStartTransactionDate: '',
+      filterEndTransactionDate: '',
+    });
 
   const {
     data: getAllTransactionHistoryData,
@@ -72,10 +80,88 @@ const PurchaseContent = () => {
     setOpenOrderTracking(!openOrderTracking);
   };
 
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
+    null,
+    null,
+  ]);
+
+  const [startDate, endDate] = dateRange;
+
+  const handleFilterDateChange = (update: [Date | null, Date | null]) => {
+    setDateRange(update);
+  };
+
+  const handleResetFilterDate = () => {
+    setDateRange([null, null]);
+    setTransactionHistoryQuery({
+      ...transactionHistoryQuery,
+      filterStartTransactionDate: '',
+      filterEndTransactionDate: '',
+    });
+  };
+
+  const handleApplyFilterDate = () => {
+    setTransactionHistoryQuery({
+      ...transactionHistoryQuery,
+      filterStartTransactionDate: moment(startDate).format('YYYY-MM-DD'),
+      filterEndTransactionDate: moment(endDate).format('YYYY-MM-DD'),
+    });
+  };
+
+  type DateContainerProps = {
+    className: string;
+    children: ReactNode;
+  };
+
+  const DateContainer = ({ className, children }: DateContainerProps) => {
+    return (
+      <div className='p-3 bg-base-300'>
+        <CalendarContainer className={className}>
+          <div className='relative'>{children}</div>
+        </CalendarContainer>
+        <Divider className='m-0'></Divider>
+        <div className='flex gap-3 justify-end'>
+          <Button
+            className='normal-case md:w-auto md:px-5 md:py-0'
+            color='secondary'
+            onClick={handleResetFilterDate}
+          >
+            Reset
+          </Button>
+          <Button
+            className='normal-case md:w-auto md:px-5 md:py-0'
+            color='primary'
+            onClick={handleApplyFilterDate}
+          >
+            Apply
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className='p-4 md:p-10'>
       <h5 className='font-bold text-2xl text-primary'>Transaction History</h5>
       <Divider />
+      <div className='flex items-center gap-5'>
+        <span className='font-bold'>Status</span>
+        <Button>ONGOING</Button>
+        <div className='text-center'>
+          <DatePicker
+            selectsRange={true}
+            startDate={startDate}
+            endDate={endDate}
+            dateFormat='dd MMM yyyy'
+            maxDate={new Date()}
+            calendarContainer={DateContainer}
+            shouldCloseOnSelect={false}
+            placeholderText='Choose Transaction Date'
+            className='border-2 rounded-lg p-2 text-center'
+            onChange={(update) => handleFilterDateChange(update)}
+          />
+        </div>
+      </div>
       <div className='grid grid-cols-12 gap-4'>
         {getAllTransactionHistoryLoading && (
           <Card className='col-span-12 shadow animate-pulse'>
@@ -97,11 +183,15 @@ const PurchaseContent = () => {
                   key={n}
                 >
                   <div className='p-4'>
-                    <div className='flex items-center mb-2.5 gap-3'>
-                      <HiOutlineShoppingBag className='text-info text-xl' />
-                      <span className='font-light text-sm'>
-                        {toStringDate(transactionHistory.transaction_datetime)}
-                      </span>
+                    <div className='flex items-center mb-2.5 gap-3 justify-between md:justify-start'>
+                      <div className='flex gap-3 items-center'>
+                        <HiOutlineShoppingBag className='text-info text-xl' />
+                        <span className='font-light text-sm'>
+                          {toStringDate(
+                            transactionHistory.transaction_datetime
+                          )}
+                        </span>
+                      </div>
                       <Badge
                         color={getBadgeColor(transactionHistory.order_status)}
                         size='sm'
@@ -109,7 +199,7 @@ const PurchaseContent = () => {
                       >
                         {transactionHistory.order_status}
                       </Badge>
-                      <span className='font-light text-sm'>
+                      <span className='font-light text-sm hidden md:block'>
                         {transactionHistory?.invoice_number}
                       </span>
                     </div>
@@ -210,7 +300,7 @@ const PurchaseContent = () => {
         <Modal.Header className='text-center font-bold'>
           Transaction Detail
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className='max-h-[48rem] overflow-y-scroll'>
           {getOrderDetailsLoading && (
             <Card className='col-span-12 shadow animate-pulse'>
               <div className='p-4'>
@@ -248,7 +338,12 @@ const PurchaseContent = () => {
                     <Steps vertical={true}>
                       {getOrderDetailsData?.data.order_tracking_history.map(
                         (history, n) => (
-                          <Steps.Step value='' key={n} color='primary'>
+                          <Steps.Step
+                            value=''
+                            key={n}
+                            color='primary'
+                            className='h-[5rem]'
+                          >
                             <div className='flex flex-col'>
                               <span className='text-sm font-bold text-left'>
                                 {history.title}
@@ -276,7 +371,7 @@ const PurchaseContent = () => {
                 <div className='flex justify-between items-center'>
                   <span className='text-sm'>Purchase Date</span>
                   <span className='text-sm'>
-                    {toStringDatetime(
+                    {toLongStringDatetime(
                       getOrderDetailsData?.data.transaction_datetime
                     )}
                   </span>
@@ -398,7 +493,7 @@ const PurchaseContent = () => {
                 <span className='font-bold'>Payment Details</span>
                 <div>
                   <div className='flex justify-between items-center'>
-                    <span className='text-sm'>Payment Method</span>
+                    <span className='text-sm font-light'>Payment Method</span>
                     <span className='text-sm'>
                       {capitalizeFirstLetter(
                         getOrderDetailsData?.data.payment_method
@@ -408,7 +503,7 @@ const PurchaseContent = () => {
                   <Divider className='m-0'></Divider>
                   <div className='flex flex-col gap-2'>
                     <div className='flex justify-between items-center'>
-                      <span className='text-sm'>Total Price</span>
+                      <span className='text-sm font-light'>Total Price</span>
                       <span className='text-sm'>
                         {toRupiah(
                           getOrderDetailsData?.data.total_price_before_discount
@@ -416,7 +511,9 @@ const PurchaseContent = () => {
                       </span>
                     </div>
                     <div className='flex justify-between items-center'>
-                      <span className='text-sm'>Total Shipping Fee</span>
+                      <span className='text-sm font-light'>
+                        Total Shipping Fee
+                      </span>
                       <span className='text-sm'>
                         {toRupiah(getOrderDetailsData?.data.shipping_fee)}
                       </span>
@@ -429,7 +526,9 @@ const PurchaseContent = () => {
                         .total_marketplace_voucher_discount >
                     0 ? (
                       <div className='flex justify-between items-center'>
-                        <span className='text-sm'>Total Discount</span>
+                        <span className='text-sm font-light'>
+                          Total Discount
+                        </span>
                         <span className='text-sm'>
                           -
                           {toRupiah(
