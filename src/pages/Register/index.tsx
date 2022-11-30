@@ -14,6 +14,7 @@ import {
   FormCTA,
   FormErrorText,
   FormTitle,
+  FormTitleContainer,
   InputGroup,
   StyledDivider,
 } from '../../components/common/Form/style';
@@ -125,7 +126,9 @@ const Register = () => {
     <Tiles>
       <AuthContainer>
         <FormContainer className='max-h-[1080px] md:max-w-[580px] md:mt-0'>
-          <FormTitle>Sign Up</FormTitle>
+          <FormTitleContainer>
+            <FormTitle to='/'>Oceana</FormTitle>
+          </FormTitleContainer>
           <Form onSubmit={formik.handleSubmit}>
             <div className='md:flex md:justify-between'>
               <InputGroup className='md:inline'>

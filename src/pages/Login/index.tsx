@@ -18,6 +18,7 @@ import {
   FormCTA,
   FormErrorText,
   FormTitle,
+  FormTitleContainer,
   InputGroup,
   StyledDivider,
 } from '../../components/common/Form';
@@ -84,7 +85,9 @@ const Login = () => {
     <Tiles>
       <AuthContainer>
         <FormContainer>
-          <FormTitle>Login</FormTitle>
+          <FormTitleContainer>
+            <FormTitle to='/'>Oceana</FormTitle>
+          </FormTitleContainer>
           <Form onSubmit={formik.handleSubmit}>
             <InputGroup>
               <Input
