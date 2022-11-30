@@ -2,6 +2,7 @@ import {
   Address,
   Category,
   Metadata,
+  OrderList,
   Product,
   Profile,
   Role,
@@ -114,6 +115,16 @@ export type DeleteAddressResponse = {
 
 export type GetAllProductsResponse = {
   data: Product[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetAllTransactionHistoryResponse = {
+  data: {
+    order_list: OrderList[]
+  } | null;
   code: number;
   error: string | null;
   message: string;

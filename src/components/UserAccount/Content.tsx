@@ -2,7 +2,7 @@ import { Card } from 'react-daisyui';
 import { Profile } from '../../types/component';
 import { UserAccountContent } from '../../types/content';
 import AddressContent from './AddressContent';
-
+import PurchaseContent from './PurchaseContent';
 import ProfileContent from './ProfileContent';
 
 type ContentProps = {
@@ -25,7 +25,7 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === UserAccountContent.Purchase) {
-      return null;
+      return <PurchaseContent />;
     }
 
     if (content === UserAccountContent.Refunds) {

@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const toCompact = (n: number) => {
   const formatter = Intl.NumberFormat('en', {
     notation: 'compact',
@@ -7,3 +9,5 @@ export const toCompact = (n: number) => {
 };
 
 export const toRupiah = (n: number) => `Rp ${n.toLocaleString()}`;
+
+export const toStringDate = (d: string) => moment(d).format('DD MMM YYYY');

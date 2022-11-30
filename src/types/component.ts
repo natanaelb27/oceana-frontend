@@ -106,3 +106,24 @@ export interface Product {
   updated_at: string;
   created_at: string;
 }
+
+export interface OrderDetail {
+  order_detail_id: string;
+  product_image: string | null;
+  product_name: string;
+  product_variation: string;
+  quantity: number;
+  price: number;
+  total_price: number;
+}
+
+export interface OrderList {
+  transaction_id: string;
+  order_id: string;
+  merchant_id: number;
+  shop_name: string;
+  order_details: OrderDetail[];
+  transaction_datetime: string;
+  order_status: string;
+  total_price: number;
+}

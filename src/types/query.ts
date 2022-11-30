@@ -14,3 +14,12 @@ export type ProductQuery = {
   merchantCities: string[];
   courierServices: string[];
 } & Query;
+
+export type TransactionHistoryQuery = {
+  filterOrderStatus: string;
+  filterOngoingOrderStatus: string;
+  filterStartTransactionDate: string;
+  filterEndTransactionDate: string;
+  limit: number;
+  page: number;
+}
