@@ -1,14 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import Routes from './routes';
 import { useLazyGetProfileQuery } from './store/services/profileService';
 import { selectRole, setCredentials } from './store/slices/authSlice';
 import { useAppDispatch, useAppSelector } from './store/store';
 import { ToastContainer } from 'react-toastify';
 import { useLocalStorage } from './hooks';
+import { doesHttpOnlyCookieExist } from './utils/auth';
+import { Loading } from './components/common';
+import Cookies from 'js-cookie';
 
 const App = () => {
+  const [loading, setLoading] = useState<boolean>(true);
   const role = useAppSelector(selectRole);
   const dispatch = useAppDispatch();
   const [getProfile] = useLazyGetProfileQuery();
@@ -19,26 +22,44 @@ const App = () => {
   );
 
   useEffect(() => {
+    setLoading(true);
     document.getElementsByTagName('html')[0].setAttribute('data-theme', theme);
 
     // TODO: yarn add js-cookie and add conditional to check for cookies (i.e. accessToken & refreshToken)
-    const accessToken = Cookies.get('access_token');
-    const refreshToken = Cookies.get('refresh_token');
-    if (accessToken && refreshToken && !role) {
+    // const accessToken = Cookies.get('access_token');
+    // const refreshToken = Cookies.get('refresh_token');
+
+    const refreshToken = doesHttpOnlyCookieExist('refresh_token');
+    const accessTokenVerifier = Cookies.get('access_token_verifier');
+
+    if (accessTokenVerifier === '' && !role) {
       getProfile()
         .unwrap()
         .then((response) => {
           const { data: getProfileData } = response;
-          dispatch(setCredentials({ role: getProfileData?.role as string }));
+          dispatch(
+            setCredentials({
+              role: getProfileData?.role ? getProfileData.role : null,
+            })
+          );
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          setLoading(false);
         });
+    } else if (refreshToken && !role) {
+      // TODO integrate BE: fetch refresh token
+      setLoading(false);
+    } else {
+      setLoading(false);
     }
   }, []);
 
   return (
     <BrowserRouter>
+      <Loading isLoading={loading} />
       <Routes />
       <ToastContainer />
     </BrowserRouter>

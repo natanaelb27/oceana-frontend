@@ -11,7 +11,7 @@ const slice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      { payload: { role } }: PayloadAction<{ role: string }>
+      { payload: { role } }: PayloadAction<{ role: string | null }>
     ) => {
       state.role = role;
     },

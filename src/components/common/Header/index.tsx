@@ -18,12 +18,14 @@ import { selectRole, unsetCredentials } from '../../../store/slices/authSlice';
 import { useAppDispatch, useAppSelector } from '../../../store/store';
 import { validateUserRole } from '../../../utils/auth';
 import { Role } from '../../../types/role';
+import { useLogoutMutation } from '../../../store/services/profileService';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
   const scrollPosition = useScrollPosition();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [logout] = useLogoutMutation();
 
   const [theme, setTheme] = useLocalStorage<string>(
     'theme',
@@ -55,7 +57,11 @@ const Header = () => {
   };
   const handleLogoutClick = async () => {
     await dispatch(unsetCredentials());
-
+    logout().unwrap().then((res) => {
+      console.log(res);
+    }).catch((err) => {
+      console.log(err);
+    });
     navigate('/');
   };
 
