@@ -151,6 +151,7 @@ const BuyerCart = () => {
     const target = e.target as HTMLInputElement;
     const merchantID = Number(target.parentElement?.parentElement?.id);
     const newSelectedItems = { ...selectedItems };
+    let selectedMerchants = 0;
     newSelectedItems.selectItem.map((merchant) => {
       if (merchant.merchantID === merchantID) {
         merchant.selectAll = !merchant.selectAll;
@@ -159,8 +160,16 @@ const BuyerCart = () => {
           selectItem: !product.selectItem,
         }));
       }
+      if (merchant.selectAll) {
+        selectedMerchants += 1;
+      }
       return merchant;
     });
+    if (newSelectedItems.selectItem.length === selectedMerchants) {
+      newSelectedItems.selectAll = true;
+    } else {
+      newSelectedItems.selectAll = false;
+    }
     setSelectedItems(newSelectedItems);
   };
 
@@ -169,6 +178,7 @@ const BuyerCart = () => {
     const merchantID = Number(
       target.parentElement?.parentElement?.parentElement?.id
     );
+    let selectedProducts = 0;
     const productID = Number(target.parentElement?.parentElement?.id);
     const newSelectedItems = { ...selectedItems };
     newSelectedItems.selectItem.map((merchant) => {
@@ -177,10 +187,18 @@ const BuyerCart = () => {
           if (product.productID === productID) {
             product.selectItem = !product.selectItem;
           }
+          if (product.selectItem) {
+            selectedProducts += 1;
+          }
           return product;
         });
-        return merchant;
+        if (merchant.selectItem.length === selectedProducts) {
+          merchant.selectAll = true;
+        } else {
+          merchant.selectAll = false;
+        }
       }
+      return merchant;
     });
     setSelectedItems(newSelectedItems);
   };
