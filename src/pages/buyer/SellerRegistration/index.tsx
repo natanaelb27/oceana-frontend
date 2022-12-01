@@ -1,10 +1,11 @@
 import { FormContainer, GlassContainer } from '../../../components/common/Container';
-import { FormTitle, InputGroup } from '../../../components/common/Form';
+import { FormErrorText, FormTitle, InputGroup } from '../../../components/common/Form';
 import {
   useGetAddressesQuery,
 } from '../../../store/services/addressService';
 import { Button, Form, Input, Link } from 'react-daisyui';
 import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
 import { useCreateMerchantMutation } from '../../../store/services/merchantService';
 import { useFormik } from 'formik';
 import { toRegisterMerchantRequest } from '../../../utils/mapperDTO';
@@ -48,6 +49,10 @@ const SellerRegistration = () => {
       name: '',
       addressID: '',
     },
+    validationSchema: Yup.object({
+      name: Yup.string().required('Please enter your shop name'),
+      addressID: Yup.string().required('Please select your shop address')
+    }),
     onSubmit: (values, { setFieldValue }) => {
       const { name, addressID } = values;
 
@@ -71,15 +76,18 @@ const SellerRegistration = () => {
             <div className="flex flex-col mb-2">
               <label className='text-white mb-1'>Shop Name</label>
               <Input className='input-sm md:input-md' placeholder='Enter your shop name here' name="name" onChange={formik.handleChange} value={formik.values.name} type="text"/>
+
+              {formik.touched.name && formik.errors.name ? (<FormErrorText>{formik.errors.name}</FormErrorText>) :  null}
             </div>
             <div className="flex flex-col mb-2">
               <label className='text-white mb-1'>Shop Default Address</label>
               <select name="addressID" value={formik.values.addressID} onChange={formik.handleChange} className="select w-full">
-                <option disabled selected>Select your address</option>
+                <option selected>Select your address</option>
                 {getAddressesData?.data?.map((data) => {
                   return <option key={data.id} value={data.id}>{data.name} - {data.detail}</option>;
                 })}
               </select>
+              {formik.touched.addressID && formik.errors.addressID ? (<FormErrorText>{formik.errors.addressID}</FormErrorText>) :  null}
             </div>
           </InputGroup>
           <Button className='mt-2' type='submit' color='secondary'>Register My Shop</Button>
