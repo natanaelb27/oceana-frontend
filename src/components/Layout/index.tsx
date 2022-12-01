@@ -4,14 +4,14 @@ import { Footer, Header, Loading } from '../common';
 
 const Layout = () => {
   return (
-    <>
+    <div className='bg-base-300 min-h-screen'>
       <Header />
-      <main>
+      <main className='bg-base-100'>
         <Outlet />
       </main>
       <Loading />
       <Footer />
-    </>
+    </div>
   );
 };
 

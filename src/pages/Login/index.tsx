@@ -17,7 +17,9 @@ import {
 import {
   FormCTA,
   FormErrorText,
+  FormFooter,
   FormTitle,
+  FormTitleContainer,
   InputGroup,
   StyledDivider,
 } from '../../components/common/Form';
@@ -84,7 +86,9 @@ const Login = () => {
     <Tiles>
       <AuthContainer>
         <FormContainer>
-          <FormTitle>Login</FormTitle>
+          <FormTitleContainer>
+            <FormTitle to='/'>Oceana</FormTitle>
+          </FormTitleContainer>
           <Form onSubmit={formik.handleSubmit}>
             <InputGroup>
               <Input
@@ -139,6 +143,7 @@ const Login = () => {
             onFailure={notifyInvalidCredentials}
             cookiePolicy='single_host_origin'
           />
+          <FormFooter />
         </FormContainer>
       </AuthContainer>
     </Tiles>
