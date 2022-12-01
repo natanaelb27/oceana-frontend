@@ -6,6 +6,7 @@ import {
   ReactNode,
   Ref,
   useState,
+  useRef,
 } from 'react';
 import {
   Badge,
@@ -16,8 +17,11 @@ import {
   Input,
   InputGroup,
   Modal,
+  Radio,
   Steps,
 } from 'react-daisyui';
+import { useOutsideAlerter } from '../../hooks';
+import { Pager } from '../../components/common';
 import {
   HiOutlineCalendar,
   HiOutlineClock,
@@ -44,14 +48,15 @@ import { CgClose } from 'react-icons/cg';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
 import moment from 'moment';
+import NoData from '../common/NoData';
 
 const PurchaseContent = () => {
   const [transactionHistoryQuery, setTransactionHistoryQuery] =
     useState<TransactionHistoryQuery>({
       limit: LIMIT_TRANSACTION_HISTORY,
       page: 1,
-      search: 'budi',
-      filterOrderStatus: 'all',
+      search: '',
+      filterOrderStatus: DELIVERY_STATUS.ALL,
       filterOngoingOrderStatus: '',
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
@@ -87,6 +92,7 @@ const PurchaseContent = () => {
   };
 
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openStatusModal, setOpenStatusModal] = useState<boolean>(false);
   const [openOrderTracking, setOpenOrderTracking] = useState<boolean>(false);
 
   const handleViewDetailsClick = (orderID: string) => {
@@ -96,6 +102,15 @@ const PurchaseContent = () => {
 
   const handleModalClose = () => {
     setOpenModal(false);
+    setOpenOrderTracking(false);
+  };
+
+  const handleFilterStatusClick = () => {
+    setOpenStatusModal(true);
+  };
+
+  const handleStatusModalClose = () => {
+    setOpenStatusModal(false);
   };
 
   const handleViewOrderTrackingClick = () => {
@@ -113,6 +128,7 @@ const PurchaseContent = () => {
 
     setTransactionHistoryQuery({
       ...transactionHistoryQuery,
+      page: 1,
       search: search,
     });
   };
@@ -120,9 +136,12 @@ const PurchaseContent = () => {
   const handleSearchClick = () => {
     setTransactionHistoryQuery({
       ...transactionHistoryQuery,
+      page: 1,
       search: search,
     });
   };
+
+  const [isDateOpen, setisDateOpen] = useState<boolean>(false);
 
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
     null,
@@ -145,17 +164,21 @@ const PurchaseContent = () => {
     setDateRange([null, null]);
     setTransactionHistoryQuery({
       ...transactionHistoryQuery,
+      page: 1,
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
     });
+    setisDateOpen(false);
   };
 
   const handleApplyFilterDate = () => {
     setTransactionHistoryQuery({
       ...transactionHistoryQuery,
+      page: 1,
       filterStartTransactionDate: moment(startDate).format('YYYY-MM-DD'),
       filterEndTransactionDate: moment(endDate).format('YYYY-MM-DD'),
     });
+    setisDateOpen(false);
   };
 
   type DateContainerProps = {
@@ -221,14 +244,48 @@ const PurchaseContent = () => {
     value: string;
   };
 
+  const dateWrapperRef = useRef<HTMLDivElement>(null);
+
+  const handleDateOutsideClick = () => {
+    if (
+      transactionHistoryQuery.filterStartTransactionDate === '' &&
+      transactionHistoryQuery.filterEndTransactionDate === ''
+    ) {
+      setDateRange([null, null]);
+      setTransactionHistoryQuery({
+        ...transactionHistoryQuery,
+        page: 1,
+        filterStartTransactionDate: '',
+        filterEndTransactionDate: '',
+      });
+    } else {
+      setDateRange([
+        moment(
+          transactionHistoryQuery.filterStartTransactionDate,
+          'YYYY-MM-DD'
+        ).toDate(),
+        moment(
+          transactionHistoryQuery.filterEndTransactionDate,
+          'YYYY-MM-DD'
+        ).toDate(),
+      ]);
+    }
+    setisDateOpen(false);
+  };
+
+  useOutsideAlerter(dateWrapperRef, handleDateOutsideClick);
+
   const DateCustomInput = (
     { onClick, value }: DateCustomInputProps,
     ref: Ref<HTMLButtonElement>
   ) => {
     return (
       <Button
-        className='normal-case flex gap-2 w-[100%] md:w-auto md:pl-7 md:pr-7 btn-outline'
-        onClick={onClick}
+        className='normal-case flex gap-2 w-[100%] md:w-auto md:pl-7 md:pr-7 btn-outline no-animation'
+        onClick={() => {
+          onClick;
+          setisDateOpen(!isDateOpen);
+        }}
         ref={ref}
       >
         <HiOutlineCalendar className='text-lg' />
@@ -237,10 +294,12 @@ const PurchaseContent = () => {
     );
   };
 
-  const [activeStatusButton, setStatusActiveButton] = useState<string>('all');
+  const [activeStatusButton, setStatusActiveButton] = useState<string>(
+    DELIVERY_STATUS.ALL
+  );
 
   const [activeOngoingStatusButton, setActiveOngoingStatusButton] =
-    useState<string>('all');
+    useState<string>('');
 
   const handleStatusClick = (status: string) => {
     setStatusActiveButton(status);
@@ -248,6 +307,7 @@ const PurchaseContent = () => {
 
     setTransactionHistoryQuery({
       ...transactionHistoryQuery,
+      page: 1,
       filterOrderStatus: status,
       filterOngoingOrderStatus: '',
     });
@@ -259,8 +319,60 @@ const PurchaseContent = () => {
 
     setTransactionHistoryQuery({
       ...transactionHistoryQuery,
+      page: 1,
       filterOrderStatus: DELIVERY_STATUS.ONGOING,
       filterOngoingOrderStatus: status,
+    });
+  };
+
+  const handleModalFilterStatusClick = (status: string) => {
+    setStatusActiveButton(status);
+    setActiveOngoingStatusButton('');
+
+    setTransactionHistoryQuery({
+      ...transactionHistoryQuery,
+      page: 1,
+      filterOrderStatus: status,
+      filterOngoingOrderStatus: '',
+    });
+
+    setOpenStatusModal(false);
+  };
+
+  const handleModalFilterOngoingStatusClick = (status: string) => {
+    setStatusActiveButton(DELIVERY_STATUS.ONGOING);
+    setActiveOngoingStatusButton(status);
+
+    setTransactionHistoryQuery({
+      ...transactionHistoryQuery,
+      page: 1,
+      filterOrderStatus: DELIVERY_STATUS.ONGOING,
+      filterOngoingOrderStatus: status,
+    });
+
+    setOpenStatusModal(false);
+  };
+
+  const handleResetFilterClick = () => {
+    setSearch('');
+    setDateRange([null, null]);
+    handleStatusClick(DELIVERY_STATUS.ALL);
+
+    setTransactionHistoryQuery({
+      limit: LIMIT_TRANSACTION_HISTORY,
+      page: 1,
+      search: '',
+      filterOrderStatus: DELIVERY_STATUS.ALL,
+      filterOngoingOrderStatus: '',
+      filterStartTransactionDate: '',
+      filterEndTransactionDate: '',
+    });
+  };
+
+  const handlePageChange = (n: number) => {
+    setTransactionHistoryQuery({
+      ...transactionHistoryQuery,
+      page: n,
     });
   };
 
@@ -284,22 +396,25 @@ const PurchaseContent = () => {
               </Button>
             </InputGroup>
           </Form>
-          <DatePicker
-            selectsRange={true}
-            startDate={startDate}
-            endDate={endDate}
-            dateFormat='dd MMM yyyy'
-            maxDate={new Date()}
-            calendarContainer={DateContainer}
-            shouldCloseOnSelect={false}
-            className='border-2 rounded-lg p-2 text-center'
-            onChange={(update) => handleFilterDateChange(update)}
-            customInput={createElement(forwardRef(DateCustomInput))}
-          />
+          <div ref={dateWrapperRef} className='w-[100%] md:w-auto'>
+            <DatePicker
+              selectsRange={true}
+              startDate={startDate}
+              endDate={endDate}
+              dateFormat='dd MMM yyyy'
+              maxDate={new Date()}
+              calendarContainer={DateContainer}
+              open={isDateOpen}
+              shouldCloseOnSelect={false}
+              className='border-2 rounded-lg p-2 text-center'
+              onChange={(update) => handleFilterDateChange(update)}
+              customInput={createElement(forwardRef(DateCustomInput))}
+            />
+          </div>
         </div>
-        <div className='flex items-center gap-5'>
-          <span className='font-bold'>Status</span>
-          <div className='flex items-center gap-5 overflow-x-auto overflow-y-hidden'>
+        <div className='flex items-center gap-2'>
+          <span className='font-bold hidden md:block'>Status</span>
+          <div className='hidden md:flex items-center gap-2 overflow-x-auto overflow-y-hidden'>
             <Button
               className={
                 'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
@@ -343,12 +458,25 @@ const PurchaseContent = () => {
               Canceled
             </Button>
           </div>
+          <Button
+            className='normal-case flex flex-row gap-1 justify-between btn-outline min-w-[30%] md:hidden'
+            onClick={handleFilterStatusClick}
+          >
+            {activeOngoingStatusButton || activeStatusButton}{' '}
+            <HiOutlineChevronDown className='text-sm' />
+          </Button>
+          <Button
+            className='normal-case text-sm btn-outline btn-primary'
+            onClick={handleResetFilterClick}
+          >
+            Reset Filter
+          </Button>
         </div>
         <div
           className={
             activeStatusButton !== DELIVERY_STATUS.ONGOING
               ? 'hidden'
-              : 'flex gap-5 overflow-x-auto overflow-y-hidden'
+              : 'hidden md:flex gap-2 overflow-x-auto overflow-y-hidden'
           }
         >
           <Button
@@ -376,6 +504,17 @@ const PurchaseContent = () => {
             }
           >
             Waiting for Confirmation
+          </Button>
+          <Button
+            className={
+              'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
+              (activeOngoingStatusButton === DELIVERY_STATUS.ON_PROCESS
+                ? 'btn-active'
+                : '')
+            }
+            onClick={() => handleOngoingStatusClick(DELIVERY_STATUS.ON_PROCESS)}
+          >
+            On Process
           </Button>
           <Button
             className={
@@ -414,7 +553,7 @@ const PurchaseContent = () => {
           </Button>
         </div>
       </div>
-      <div className='grid grid-cols-12 gap-4'>
+      <div className=''>
         {getAllTransactionHistoryLoading && (
           <Card className='col-span-12 shadow animate-pulse'>
             <div className='p-4'>
@@ -425,6 +564,7 @@ const PurchaseContent = () => {
           </Card>
         )}
         {getAllTransactionHistoryData?.data &&
+        getAllTransactionHistoryData?.data.order_list.length > 0 ? (
           getAllTransactionHistoryData?.data.order_list.map(
             (transactionHistory, n) => {
               const productCount = transactionHistory.order_details.length;
@@ -460,21 +600,21 @@ const PurchaseContent = () => {
                         {transactionHistory.shop_name}
                       </span>
                     </div>
-                    <div className='flex'>
+                    <div
+                      className='flex cursor-pointer'
+                      onClick={() =>
+                        handleViewDetailsClick(transactionHistory.order_id)
+                      }
+                    >
                       <div className='mr-5'>
                         <img
                           src={firstProduct?.product_image || ''}
                           alt={firstProduct?.product_name || ''}
-                          className='h-12 w-12 md:h-20 md:w-20'
+                          className='h-12 w-12 md:h-20 md:w-20 rounded-md'
                         />
                       </div>
-                      <div
-                        className='flex flex-col w-[70%] cursor-pointer'
-                        onClick={() =>
-                          handleViewDetailsClick(transactionHistory.order_id)
-                        }
-                      >
-                        <span className='font-bold line-clamp-2 md:line-clamp-1'>
+                      <div className='flex flex-col w-[70%]'>
+                        <span className='font-bold line-clamp-2 md:line-clamp-1 mt-0'>
                           {firstProduct?.product_name || ''}
                         </span>
                         <span className='font-light text-sm'>
@@ -525,15 +665,164 @@ const PurchaseContent = () => {
                         className='normal-case md:w-auto md:pl-7 md:pr-7'
                         color='primary'
                       >
-                        Repurchase
+                        Buy Again
                       </Button>
                     </div>
                   </div>
                 </Card>
               );
             }
-          )}
+          )
+        ) : (
+          <NoData
+            title='Oops, there are no transactions that match the filter'
+            description='Try resetting or changing your filter'
+          ></NoData>
+        )}
       </div>
+      <div className='mt-6 flex justify-center'>
+        <Pager
+          page={transactionHistoryQuery.page}
+          totalPage={
+            getAllTransactionHistoryData?.metadata?.total_pages
+              ? getAllTransactionHistoryData.metadata.total_pages
+              : 0
+          }
+          onPageChange={handlePageChange}
+        />
+      </div>
+      <Modal
+        open={openStatusModal}
+        responsive
+        className='md:w-9/12 md:max-w-2xl px-0'
+        onClickBackdrop={handleStatusModalClose}
+      >
+        <Button
+          size='sm'
+          shape='circle'
+          color='ghost'
+          className='absolute right-2 top-2'
+          onClick={handleStatusModalClose}
+        >
+          <CgClose className='text-lg' />
+        </Button>
+        <Modal.Header className='text-center font-bold'>
+          Filter Status
+        </Modal.Header>
+        <Modal.Body>
+          <div className='flex flex-col px-4'>
+            <label
+              className='flex flex-row justify-between label cursor-pointer'
+              onClick={() => handleModalFilterStatusClick(DELIVERY_STATUS.ALL)}
+            >
+              <span className='font-bold'>All Transactions</span>
+              <Radio size='md' color='primary' name='filter-status' />
+            </label>
+            <Divider className='m-0'></Divider>
+            <label
+              className='flex flex-row justify-between label cursor-pointer'
+              onClick={() =>
+                handleModalFilterStatusClick(DELIVERY_STATUS.ONGOING)
+              }
+            >
+              <span className='font-bold'>All Ongoing Transactions</span>
+              <Radio size='md' color='primary' name='filter-status' />
+            </label>
+            <Divider className='m-0'></Divider>
+            <div className='flex flex-col'>
+              <label
+                className='flex flex-row justify-between label cursor-pointer ml-6'
+                onClick={() =>
+                  handleModalFilterOngoingStatusClick(
+                    DELIVERY_STATUS.PENDING_PAYMENT
+                  )
+                }
+              >
+                <span className='font-light'>Pending Payment</span>
+                <Radio size='md' color='primary' name='filter-status' />
+              </label>
+              <Divider className='m-0'></Divider>
+              <label
+                className='flex flex-row justify-between label cursor-pointer ml-6'
+                onClick={() =>
+                  handleModalFilterOngoingStatusClick(
+                    DELIVERY_STATUS.PENDING_SELLER
+                  )
+                }
+              >
+                <span className='font-light'>Waiting for Confirmation</span>
+                <Radio size='md' color='primary' name='filter-status' />
+              </label>
+              <Divider className='m-0'></Divider>
+              <label
+                className='flex flex-row justify-between label cursor-pointer ml-6'
+                onClick={() =>
+                  handleModalFilterOngoingStatusClick(
+                    DELIVERY_STATUS.ON_PROCESS
+                  )
+                }
+              >
+                <span className='font-light'>On Process</span>
+                <Radio size='md' color='primary' name='filter-status' />
+              </label>
+              <Divider className='m-0'></Divider>
+              <label
+                className='flex flex-row justify-between label cursor-pointer ml-6'
+                onClick={() =>
+                  handleModalFilterOngoingStatusClick(
+                    DELIVERY_STATUS.OUT_FOR_DELIVERY
+                  )
+                }
+              >
+                <span className='font-light'>Out for Delivery</span>
+                <Radio size='md' color='primary' name='filter-status' />
+              </label>
+              <Divider className='m-0'></Divider>
+              <label
+                className='flex flex-row justify-between label cursor-pointer ml-6'
+                onClick={() =>
+                  handleModalFilterOngoingStatusClick(DELIVERY_STATUS.DELIVERED)
+                }
+              >
+                <span className='font-light'>Delivered</span>
+                <Radio size='md' color='primary' name='filter-status' />
+              </label>
+              <Divider className='m-0'></Divider>
+              <label
+                className='flex flex-row justify-between label cursor-pointer ml-6'
+                onClick={() =>
+                  handleModalFilterOngoingStatusClick(
+                    DELIVERY_STATUS.COMPLAINED
+                  )
+                }
+              >
+                <span className='font-light'>Complained</span>
+                <Radio size='md' color='primary' name='filter-status' />
+              </label>
+              <Divider className='m-0'></Divider>
+              <label
+                className='flex flex-row justify-between label cursor-pointer'
+                onClick={() =>
+                  handleModalFilterOngoingStatusClick(DELIVERY_STATUS.COMPLETED)
+                }
+              >
+                <span className='font-bold'>Completed</span>
+                <Radio size='md' color='primary' name='filter-status' />
+              </label>
+              <Divider className='m-0'></Divider>
+              <label
+                className='flex flex-row justify-between label cursor-pointer'
+                onClick={() =>
+                  handleModalFilterOngoingStatusClick(DELIVERY_STATUS.CANCELED)
+                }
+              >
+                <span className='font-bold'>Canceled</span>
+                <Radio size='md' color='primary' name='filter-status' />
+              </label>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
       <Modal
         open={openModal}
         responsive
@@ -652,11 +941,11 @@ const PurchaseContent = () => {
                               <img
                                 src={orderDetail.product_image || ''}
                                 alt={orderDetail.product_name || ''}
-                                className='h-12 w-12 md:h-18 md:w-18'
+                                className='h-12 w-12 md:h-18 md:w-18 rounded-md'
                               />
                             </div>
                             <div className='flex flex-col col-span-4'>
-                              <span className='font-bold line-clamp-2 md:line-clamp-1'>
+                              <span className='font-bold line-clamp-2 md:line-clamp-1  cursor-pointer'>
                                 {orderDetail.product_name || ''}
                               </span>
                               <span className='font-light text-sm line-clamp-2 md:line-clamp-1'>
@@ -684,7 +973,7 @@ const PurchaseContent = () => {
                                   className='normal-case md:w-auto'
                                   color='primary'
                                 >
-                                  Repurchase
+                                  Buy Again
                                 </Button>
                               </div>
                             </div>
@@ -758,7 +1047,10 @@ const PurchaseContent = () => {
                       <span className='text-sm font-light'>Total Price</span>
                       <span className='text-sm'>
                         {toRupiah(
-                          getOrderDetailsData?.data.total_price_before_discount
+                          Math.round(
+                            getOrderDetailsData?.data
+                              .total_price_before_discount
+                          )
                         )}
                       </span>
                     </div>
@@ -767,7 +1059,9 @@ const PurchaseContent = () => {
                         Total Shipping Fee
                       </span>
                       <span className='text-sm'>
-                        {toRupiah(getOrderDetailsData?.data.shipping_fee)}
+                        {toRupiah(
+                          Math.round(getOrderDetailsData?.data.shipping_fee)
+                        )}
                       </span>
                     </div>
                     {getOrderDetailsData?.data
@@ -784,12 +1078,14 @@ const PurchaseContent = () => {
                         <span className='text-sm'>
                           -
                           {toRupiah(
-                            getOrderDetailsData?.data
-                              .total_merchant_promotion_discount +
+                            Math.round(
                               getOrderDetailsData?.data
-                                .total_merchant_voucher_discount +
-                              getOrderDetailsData?.data
-                                .total_marketplace_voucher_discount
+                                .total_merchant_promotion_discount +
+                                getOrderDetailsData?.data
+                                  .total_merchant_voucher_discount +
+                                getOrderDetailsData?.data
+                                  .total_marketplace_voucher_discount
+                            )
                           )}
                         </span>
                       </div>
@@ -799,7 +1095,9 @@ const PurchaseContent = () => {
                   <div className='flex justify-between items-center'>
                     <span className='font-bold'>Total Payment</span>
                     <span className='text-sm'>
-                      {toRupiah(getOrderDetailsData?.data.total_payment)}
+                      {toRupiah(
+                        Math.round(getOrderDetailsData?.data.total_payment)
+                      )}
                     </span>
                   </div>
                 </div>
