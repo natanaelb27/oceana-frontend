@@ -2,6 +2,7 @@ import moment from 'moment';
 import { ProductQuery } from '../types/query';
 import {
   LoginRequest,
+  MerchantCreateRequest,
   RegisterRequest,
   UpdateProfileRequest,
 } from '../types/request';
@@ -37,6 +38,14 @@ export const toUpdateProfileRequest = (
   full_name: fullName,
   birthdate: moment(birthdate).toISOString(),
   gender,
+});
+
+export const toRegisterMerchantRequest = (
+  name: string,
+  addressID: string
+) : MerchantCreateRequest => ({
+    name,
+    address_id: addressID
 });
 
 export const toUpdateProfileImageRequest = (photo: File) => {

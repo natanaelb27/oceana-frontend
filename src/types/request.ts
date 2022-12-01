@@ -33,3 +33,8 @@ export type UpdateAddressRequest = {
   detail: string;
   sub_district_id: number;
 };
+
+export type MerchantCreateRequest = {
+  name: string;
+  address_id: string
+}

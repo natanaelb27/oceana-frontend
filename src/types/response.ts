@@ -1,3 +1,4 @@
+import { number } from 'yup';
 import {
   Address,
   Category,
@@ -119,3 +120,16 @@ export type GetAllProductsResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type MerchantCreateResponse = {
+  data: {
+    id: number;
+    user_id: string;
+    name: string;
+    address_id: string;
+  } | null
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+}
