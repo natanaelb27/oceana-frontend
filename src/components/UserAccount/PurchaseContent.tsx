@@ -676,7 +676,7 @@ const PurchaseContent = () => {
         ) : (
           <NoData
             title='Oops, there are no transactions that match the filter'
-            description='Try resetting or changing your filter'
+            description='Try to reset or change your filter'
           ></NoData>
         )}
       </div>
