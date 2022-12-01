@@ -3,6 +3,7 @@ import {
   Category,
   Metadata,
   Product,
+  ProductDetail,
   Profile,
   Role,
   User,
@@ -119,3 +120,11 @@ export type GetAllProductsResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type GetProductDetailsResponse = {
+  data: ProductDetail | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+}

@@ -106,3 +106,44 @@ export interface Product {
   updated_at: string;
   created_at: string;
 }
+
+interface ProductModel {
+  product_item_id: number;
+  sku: string;
+  stock_quantity: number;
+  price: number;
+  price_after_discount: number | null;
+  variation_index: number[];
+}
+
+interface ProductVariation {
+  name: string;
+  options: string[];
+  image: string[];
+  summed_stocks: number[];
+}
+
+export interface ProductDetail {
+  name: string;
+  is_hazardous: boolean;
+  weight: number;
+  package_size: string;
+  condition: string;
+  category: string;
+  images: string[];
+  description: string;
+  total_stock: number;
+  like_count: number;
+  rating_count: number;
+  rating_star: number;
+  discount_type: string | null;
+  discount: number | null;
+  price: number;
+  price_after_discount: number | null;
+  price_max: number;
+  price_max_after_discount: number | null;
+  price_min: number;
+  price_min_after_discount: number | null;
+  product_model: ProductModel[];
+  product_variation: ProductVariation[];
+}

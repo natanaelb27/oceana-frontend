@@ -1,4 +1,7 @@
-import { GetAllProductsResponse } from '../../types/response';
+import {
+  GetAllProductsResponse,
+  GetProductDetailsResponse,
+} from '../../types/response';
 import { baseApi } from '../store';
 
 export const productApi = baseApi.injectEndpoints({
@@ -10,8 +13,18 @@ export const productApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Product'],
     }),
+    getProductDetail: builder.query<GetProductDetailsResponse, string | undefined>({
+      query: (id) => ({
+        url: `/products/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['Product'],
+    }),
   }),
 });
 
-export const { useGetAllProductsQuery, useLazyGetAllProductsQuery } =
-  productApi;
+export const {
+  useGetAllProductsQuery,
+  useLazyGetAllProductsQuery,
+  useGetProductDetailQuery,
+} = productApi;
