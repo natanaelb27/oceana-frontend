@@ -1,8 +1,5 @@
 import moment from 'moment';
-import { 
-  ProductQuery,
-  TransactionHistoryQuery,
-} from '../types/query';
+import { ProductQuery, TransactionHistoryQuery } from '../types/query';
 
 import {
   LoginRequest,
@@ -78,9 +75,11 @@ export const toTransactionHistoryQuery = (query: TransactionHistoryQuery) => {
 
   result += 'limit=' + query.limit;
   result += '&page=' + query.page;
+  result += '&search=' + query.search;
   result += '&filter-order-status=' + query.filterOrderStatus;
   result += '&filter-ongoing-order-status=' + query.filterOngoingOrderStatus;
-  result += '&filter-start-transaction-date=' + query.filterStartTransactionDate;
+  result +=
+    '&filter-start-transaction-date=' + query.filterStartTransactionDate;
   result += '&filter-end-transaction-date=' + query.filterEndTransactionDate;
 
   return result;

@@ -1,10 +1,31 @@
-import { useState, ReactNode } from 'react';
-import { Badge, Button, Card, Divider, Modal, Steps } from 'react-daisyui';
 import {
+  ChangeEvent,
+  createElement,
+  forwardRef,
+  FormEvent,
+  ReactNode,
+  Ref,
+  useState,
+} from 'react';
+import {
+  Badge,
+  Button,
+  Card,
+  Divider,
+  Form,
+  Input,
+  InputGroup,
+  Modal,
+  Steps,
+} from 'react-daisyui';
+import {
+  HiOutlineCalendar,
+  HiOutlineClock,
   HiOutlineChevronDown,
   HiOutlineChevronUp,
   HiOutlineChevronRight,
   HiOutlineShoppingBag,
+  HiSearch,
 } from 'react-icons/hi';
 import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../constants';
 import { TransactionHistoryQuery } from '../../types/query';
@@ -29,6 +50,7 @@ const PurchaseContent = () => {
     useState<TransactionHistoryQuery>({
       limit: LIMIT_TRANSACTION_HISTORY,
       page: 1,
+      search: 'budi',
       filterOrderStatus: 'all',
       filterOngoingOrderStatus: '',
       filterStartTransactionDate: '',
@@ -80,6 +102,28 @@ const PurchaseContent = () => {
     setOpenOrderTracking(!openOrderTracking);
   };
 
+  const [search, setSearch] = useState<string>('');
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setTransactionHistoryQuery({
+      ...transactionHistoryQuery,
+      search: search,
+    });
+  };
+
+  const handleSearchClick = () => {
+    setTransactionHistoryQuery({
+      ...transactionHistoryQuery,
+      search: search,
+    });
+  };
+
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
     null,
     null,
@@ -89,6 +133,12 @@ const PurchaseContent = () => {
 
   const handleFilterDateChange = (update: [Date | null, Date | null]) => {
     setDateRange(update);
+  };
+
+  const handlePriorDateClick = (days: number) => {
+    const today = new Date();
+    const lastNDays = new Date(new Date().setDate(today.getDate() - days));
+    setDateRange([lastNDays, today]);
   };
 
   const handleResetFilterDate = () => {
@@ -115,10 +165,36 @@ const PurchaseContent = () => {
 
   const DateContainer = ({ className, children }: DateContainerProps) => {
     return (
-      <div className='p-3 bg-base-300'>
-        <CalendarContainer className={className}>
-          <div className='relative'>{children}</div>
-        </CalendarContainer>
+      <div className='p-3 bg-base-100 border-2 shadow-lg'>
+        <div className='flex gap-3'>
+          <div className='hidden md:flex flex-col gap-3'>
+            <Button
+              className='normal-case flex gap-2 md:w-auto md:px-5 md:py-0 btn-outline'
+              onClick={() => handlePriorDateClick(7)}
+            >
+              <HiOutlineClock className='text-lg' />
+              Last 7 Days
+            </Button>
+            <Button
+              className='normal-case flex gap-2 md:w-auto md:px-5 md:py-0 btn-outline'
+              onClick={() => handlePriorDateClick(30)}
+            >
+              <HiOutlineClock className='text-lg' />
+              Last 30 Days
+            </Button>
+            <Button
+              className='normal-case flex gap-2 md:w-auto md:px-5 md:py-0 btn-outline'
+              onClick={() => handlePriorDateClick(60)}
+            >
+              <HiOutlineClock className='text-lg' />
+              Last 60 Days
+            </Button>
+          </div>
+          <div className='divider divider-horizontal hidden md:flex'></div>
+          <CalendarContainer className={className}>
+            <div className='relative'>{children}</div>
+          </CalendarContainer>
+        </div>
         <Divider className='m-0'></Divider>
         <div className='flex gap-3 justify-end'>
           <Button
@@ -140,14 +216,74 @@ const PurchaseContent = () => {
     );
   };
 
+  type DateCustomInputProps = {
+    onClick: () => void;
+    value: string;
+  };
+
+  const DateCustomInput = (
+    { onClick, value }: DateCustomInputProps,
+    ref: Ref<HTMLButtonElement>
+  ) => {
+    return (
+      <Button
+        className='normal-case flex gap-2 w-[100%] md:w-auto md:pl-7 md:pr-7 btn-outline'
+        onClick={onClick}
+        ref={ref}
+      >
+        <HiOutlineCalendar className='text-lg' />
+        {value ? value : 'Choose Transaction Date'}
+      </Button>
+    );
+  };
+
+  const [activeStatusButton, setStatusActiveButton] = useState<string>('all');
+
+  const [activeOngoingStatusButton, setActiveOngoingStatusButton] =
+    useState<string>('all');
+
+  const handleStatusClick = (status: string) => {
+    setStatusActiveButton(status);
+    setActiveOngoingStatusButton('');
+
+    setTransactionHistoryQuery({
+      ...transactionHistoryQuery,
+      filterOrderStatus: status,
+      filterOngoingOrderStatus: '',
+    });
+  };
+
+  const handleOngoingStatusClick = (status: string) => {
+    setStatusActiveButton(DELIVERY_STATUS.ONGOING);
+    setActiveOngoingStatusButton(status);
+
+    setTransactionHistoryQuery({
+      ...transactionHistoryQuery,
+      filterOrderStatus: DELIVERY_STATUS.ONGOING,
+      filterOngoingOrderStatus: status,
+    });
+  };
+
   return (
     <div className='p-4 md:p-10'>
       <h5 className='font-bold text-2xl text-primary'>Transaction History</h5>
       <Divider />
-      <div className='flex items-center gap-5'>
-        <span className='font-bold'>Status</span>
-        <Button>ONGOING</Button>
-        <div className='text-center'>
+      <div className='flex flex-col gap-3 mb-5'>
+        <div className='flex flex-col md:flex-row gap-3 items-center'>
+          <Form onSubmit={handleFormSubmit} className='w-full md:w-auto'>
+            <InputGroup>
+              <Input
+                type='text'
+                placeholder='Search...'
+                className='w-full md:max-w-xs'
+                value={search}
+                onChange={handleSearchChange}
+              />
+              <Button onClick={handleSearchClick}>
+                <HiSearch className='text-lg' />
+              </Button>
+            </InputGroup>
+          </Form>
           <DatePicker
             selectsRange={true}
             startDate={startDate}
@@ -156,10 +292,126 @@ const PurchaseContent = () => {
             maxDate={new Date()}
             calendarContainer={DateContainer}
             shouldCloseOnSelect={false}
-            placeholderText='Choose Transaction Date'
             className='border-2 rounded-lg p-2 text-center'
             onChange={(update) => handleFilterDateChange(update)}
+            customInput={createElement(forwardRef(DateCustomInput))}
           />
+        </div>
+        <div className='flex items-center gap-5'>
+          <span className='font-bold'>Status</span>
+          <div className='flex items-center gap-5 overflow-x-auto overflow-y-hidden'>
+            <Button
+              className={
+                'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
+                (activeStatusButton === DELIVERY_STATUS.ALL ? 'btn-active' : '')
+              }
+              onClick={() => handleStatusClick(DELIVERY_STATUS.ALL)}
+            >
+              All
+            </Button>
+            <Button
+              className={
+                'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
+                (activeStatusButton === DELIVERY_STATUS.ONGOING
+                  ? 'btn-active'
+                  : '')
+              }
+              onClick={() => handleStatusClick(DELIVERY_STATUS.ONGOING)}
+            >
+              Ongoing
+            </Button>
+            <Button
+              className={
+                'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
+                (activeStatusButton === DELIVERY_STATUS.COMPLETED
+                  ? 'btn-active'
+                  : '')
+              }
+              onClick={() => handleStatusClick(DELIVERY_STATUS.COMPLETED)}
+            >
+              Completed
+            </Button>
+            <Button
+              className={
+                'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
+                (activeStatusButton === DELIVERY_STATUS.CANCELED
+                  ? 'btn-active'
+                  : '')
+              }
+              onClick={() => handleStatusClick(DELIVERY_STATUS.CANCELED)}
+            >
+              Canceled
+            </Button>
+          </div>
+        </div>
+        <div
+          className={
+            activeStatusButton !== DELIVERY_STATUS.ONGOING
+              ? 'hidden'
+              : 'flex gap-5 overflow-x-auto overflow-y-hidden'
+          }
+        >
+          <Button
+            className={
+              'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
+              (activeOngoingStatusButton === DELIVERY_STATUS.PENDING_PAYMENT
+                ? 'btn-active'
+                : '')
+            }
+            onClick={() =>
+              handleOngoingStatusClick(DELIVERY_STATUS.PENDING_PAYMENT)
+            }
+          >
+            Waiting for Payment
+          </Button>
+          <Button
+            className={
+              'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
+              (activeOngoingStatusButton === DELIVERY_STATUS.PENDING_SELLER
+                ? 'btn-active'
+                : '')
+            }
+            onClick={() =>
+              handleOngoingStatusClick(DELIVERY_STATUS.PENDING_SELLER)
+            }
+          >
+            Waiting for Confirmation
+          </Button>
+          <Button
+            className={
+              'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
+              (activeOngoingStatusButton === DELIVERY_STATUS.OUT_FOR_DELIVERY
+                ? 'btn-active'
+                : '')
+            }
+            onClick={() =>
+              handleOngoingStatusClick(DELIVERY_STATUS.OUT_FOR_DELIVERY)
+            }
+          >
+            Out for Delivery
+          </Button>
+          <Button
+            className={
+              'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
+              (activeOngoingStatusButton === DELIVERY_STATUS.DELIVERED
+                ? 'btn-active'
+                : '')
+            }
+            onClick={() => handleOngoingStatusClick(DELIVERY_STATUS.DELIVERED)}
+          >
+            Delivered
+          </Button>
+          <Button
+            className={
+              'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
+              (activeOngoingStatusButton === DELIVERY_STATUS.COMPLAINED
+                ? 'btn-active'
+                : '')
+            }
+            onClick={() => handleOngoingStatusClick(DELIVERY_STATUS.COMPLAINED)}
+          >
+            Complained
+          </Button>
         </div>
       </div>
       <div className='grid grid-cols-12 gap-4'>
@@ -238,7 +490,7 @@ const PurchaseContent = () => {
                           </span>
                         ) : null}
                       </div>
-                      <div className='hidden lg:flex items-center'>
+                      <div className='hidden md:flex items-center'>
                         <div className='divider divider-horizontal'></div>
                         <div className='flex flex-col'>
                           <span className='font-light text-sm'>
@@ -252,16 +504,16 @@ const PurchaseContent = () => {
                         </div>
                       </div>
                     </div>
-                    <div className='flex mt-3 gap-3 items-center justify-between lg:justify-end'>
+                    <div className='flex mt-3 gap-3 items-center justify-between md:justify-end'>
                       <span
-                        className='hidden text-primary font-medium text-sm cursor-pointer lg:block'
+                        className='hidden text-primary font-medium text-sm cursor-pointer md:block'
                         onClick={() =>
                           handleViewDetailsClick(transactionHistory.order_id)
                         }
                       >
                         View Transaction Details
                       </span>
-                      <div className='flex flex-col lg:hidden'>
+                      <div className='flex flex-col md:hidden'>
                         <span className='font-light text-sm'>Total Amount</span>
                         <span className='font-bold'>
                           {toRupiah(
