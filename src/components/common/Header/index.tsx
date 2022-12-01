@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/store';
 import { validateUserRole } from '../../../utils/auth';
 import { Role } from '../../../types/role';
 import { useLogoutMutation } from '../../../store/services/profileService';
+import { BsShop } from 'react-icons/bs';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -65,6 +66,10 @@ const Header = () => {
     navigate('/');
   };
 
+  const handleShopClick = () => {
+    navigate('/seller/registration');
+  };
+
   return (
     <header
       className={`sticky top-0 z-30 w-full component-preview items-center justify-center gap-2 font-sans transition-all duration-100 ${
@@ -74,7 +79,6 @@ const Header = () => {
       }`}
     >
       <div className='container mx-auto'>
-        {validateUserRole(role) === Role.Buyer && <NavLink to="/seller/registration">Seller Center</NavLink>}
         <Navbar className='hidden md:flex'>
           <div className='flex-none mr-4'>
             <NavLink to='/'>
@@ -143,6 +147,10 @@ const Header = () => {
                   <Dropdown.Item onClick={handleProfileClick}>
                     <CgProfile className='text-xl' />
                     <span>Profile</span>
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleShopClick}>
+                    <BsShop className='text-xl' />
+                    <span>My Shop</span>
                   </Dropdown.Item>
                   <Dropdown.Item onClick={handleLogoutClick}>
                     <CgLogOut className='text-xl' />

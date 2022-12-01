@@ -1,4 +1,4 @@
-import { FormContainer } from '../../../components/common/Container';
+import { FormContainer, GlassContainer } from '../../../components/common/Container';
 import { FormTitle, InputGroup } from '../../../components/common/Form';
 import {
   useGetAddressesQuery,
@@ -10,8 +10,8 @@ const SellerRegistration = () => {
   
   return (
     <div className='h-screen w-screen flex justify-center items-center'>
-      <FormContainer>
-        <FormTitle className="text-white text-2xl">Register Your Shop</FormTitle>
+      <GlassContainer className="bg-primary">
+        <div className="text-white text-2xl text-center mb-3 font-bold">Register Your Shop</div>
         <Form>
           <InputGroup className="md:inline">
             <div className="flex flex-col mb-2">
@@ -23,17 +23,16 @@ const SellerRegistration = () => {
               <select className="select w-full">
                 <option disabled selected>Select your address</option>
                 {getAddressesData?.data?.map((data) => {
-                  return <option key={data.id} value={data.id}>{data.name} - {data.detail}</option>
+                  return <option key={data.id} value={data.id}>{data.name} - {data.detail}</option>;
                 })}
               </select>
             </div>
           </InputGroup>
           <Button className='mt-2' type='submit' color='secondary'>Register My Shop</Button>
         </Form>
-      </FormContainer>
-
+      </GlassContainer>
     </div>
-  )
+  );
 };
 
 export default SellerRegistration;
