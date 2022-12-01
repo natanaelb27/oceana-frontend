@@ -9,6 +9,7 @@ import { titleCase } from '../../../utils/titleCase';
 
 type SelectItem = {
   productID: number;
+  productItemID: string;
   selectItem: boolean;
   quantity: number;
 };
@@ -102,6 +103,7 @@ const BuyerCart = () => {
       value.products.forEach((product) => {
         selectedItems.push({
           productID: product.product_id,
+          productItemID: product.product_item_id,
           selectItem: false,
           quantity: product.quantity,
         });
@@ -155,6 +157,14 @@ const BuyerCart = () => {
     newSelectedItems.selectItem.map((merchant) => {
       if (merchant.merchantID === merchantID) {
         merchant.selectAll = !merchant.selectAll;
+        merchant.selectItem.forEach((product) => {
+          if (product.selectItem === true) {
+            product.selectItem = false;
+          }
+        });
+        if (!merchant.selectAll === true) {
+          return;
+        }
         merchant.selectItem = merchant.selectItem.map((product) => ({
           ...product,
           selectItem: !product.selectItem,
@@ -179,6 +189,7 @@ const BuyerCart = () => {
       target.parentElement?.parentElement?.parentElement?.id
     );
     let selectedProducts = 0;
+    let selectedMerchants = 0;
     const productID = Number(target.parentElement?.parentElement?.id);
     const newSelectedItems = { ...selectedItems };
     newSelectedItems.selectItem.map((merchant) => {
@@ -186,6 +197,9 @@ const BuyerCart = () => {
         merchant.selectItem = merchant.selectItem.map((product) => {
           if (product.productID === productID) {
             product.selectItem = !product.selectItem;
+            if (product.selectItem === false) {
+              newSelectedItems.selectAll = false;
+            }
           }
           if (product.selectItem) {
             selectedProducts += 1;
@@ -201,6 +215,16 @@ const BuyerCart = () => {
       return merchant;
     });
     setSelectedItems(newSelectedItems);
+    selectedItems.selectItem.forEach((merchant) => {
+      if (merchant.selectAll === true) {
+        selectedMerchants += 1;
+      }
+    });
+    if (selectedMerchants === selectedItems.selectItem.length) {
+      const updatedSelectedItems = { ...selectedItems };
+      updatedSelectedItems.selectAll = true;
+      setSelectedItems(updatedSelectedItems);
+    }
   };
 
   return (
