@@ -1,5 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { LoginRequest, RegisterRequest } from '../../types/request';
+import {
+  LoginRequest,
+  LoginWithGoogleRequest,
+  RegisterRequest,
+} from '../../types/request';
 import { LoginResponse, RegisterResponse } from '../../types/response';
 
 export const authApi = createApi({
@@ -16,6 +20,13 @@ export const authApi = createApi({
         body: request,
       }),
     }),
+    loginWithGoogle: builder.mutation<LoginResponse, LoginWithGoogleRequest>({
+      query: (request) => ({
+        url: '/auth/login-google',
+        method: 'POST',
+        body: request,
+      }),
+    }),
     register: builder.mutation<RegisterResponse, RegisterRequest>({
       query: (request) => ({
         url: '/auth/register',
@@ -26,4 +37,8 @@ export const authApi = createApi({
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const {
+  useLoginMutation,
+  useLoginWithGoogleMutation,
+  useRegisterMutation,
+} = authApi;

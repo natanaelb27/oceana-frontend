@@ -2,6 +2,7 @@ import moment from 'moment';
 import { ProductQuery } from '../types/query';
 import {
   LoginRequest,
+  LoginWithGoogleRequest,
   RegisterRequest,
   UpdateProfileRequest,
 } from '../types/request';
@@ -12,6 +13,12 @@ export const toLoginRequest = (
 ): LoginRequest => ({
   login_credentials: loginCredentials,
   password: password,
+});
+
+export const toLoginWithGoogleRequest = (
+  googleId: string
+): LoginWithGoogleRequest => ({
+  google_id: googleId,
 });
 
 export const toRegisterRequest = (

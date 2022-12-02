@@ -2,14 +2,24 @@ import { useFormik } from 'formik';
 import { gapi } from 'gapi-script';
 import { useEffect } from 'react';
 import { Button, Form, Input, Link } from 'react-daisyui';
-import { GoogleLogin } from 'react-google-login';
+import {
+  GoogleLogin,
+  GoogleLoginResponse,
+  GoogleLoginResponseOffline,
+} from 'react-google-login';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { useLoginMutation } from '../../store/services/authService';
+import {
+  useLoginMutation,
+  useLoginWithGoogleMutation,
+} from '../../store/services/authService';
 import { setCredentials } from '../../store/slices/authSlice';
 import { useAppDispatch } from '../../store/store';
 import { Role } from '../../types/component';
-import { toLoginRequest } from '../../utils/mapperDTO';
+import {
+  toLoginRequest,
+  toLoginWithGoogleRequest,
+} from '../../utils/mapperDTO';
 import {
   AuthContainer,
   FormContainer,
@@ -31,14 +41,28 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
+  const [loginWithGoogle] = useLoginWithGoogleMutation();
 
   const notifyInvalidCredentials = () =>
     notifyErrorToast('Invalid login credentials');
 
-  const handleLoginSuccess = () => {
+  const handleSuccessGoogleLogin = (
+    res: GoogleLoginResponse | GoogleLoginResponseOffline
+  ) => {
+    const resGoogleLogin = res as GoogleLoginResponse;
+    const googleId = resGoogleLogin.getBasicProfile().getId();
+    loginWithGoogle(toLoginWithGoogleRequest(googleId))
+      .unwrap()
+      .then((response) => {
+        const { data: loginResponseData } = response;
+        const { role } = loginResponseData as Role;
+        dispatch(setCredentials({ role }));
+        navigate('/');
+      })
+      .catch(() => notifyErrorToast('Sign in with Google failed'));
     navigate('/');
   };
-  const handleLoginFailed = (
+  const handleFailedLogin = (
     setFieldValue: (
       field: string,
       value: string,
@@ -62,13 +86,12 @@ const Login = () => {
       login(toLoginRequest(values.loginCredentials, values.password))
         .unwrap()
         .then((response) => {
-          // TODO: refactor handleLoginSuccess(response: LoginResponse) once sign-in with Google has a BE endpoint
           const { data: loginResponseData } = response;
           const { role } = loginResponseData as Role;
           dispatch(setCredentials({ role }));
-          handleLoginSuccess();
+          navigate('/');
         })
-        .catch(() => handleLoginFailed(setFieldValue));
+        .catch(() => handleFailedLogin(setFieldValue));
     },
   });
 
@@ -139,7 +162,7 @@ const Login = () => {
             className='w-full flex justify-center'
             clientId={String(clientId)}
             buttonText='Sign in with Google'
-            onSuccess={handleLoginSuccess}
+            onSuccess={handleSuccessGoogleLogin}
             onFailure={notifyInvalidCredentials}
             cookiePolicy='single_host_origin'
           />

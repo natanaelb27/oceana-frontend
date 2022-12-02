@@ -3,6 +3,10 @@ export type LoginRequest = {
   password: string;
 };
 
+export type LoginWithGoogleRequest = {
+  google_id: string;
+};
+
 export type RegisterRequest = {
   full_name: string;
   username: string;
