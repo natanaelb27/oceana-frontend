@@ -27,19 +27,28 @@ import {
   useDeleteAddressMutation,
   useGetAddressesQuery,
   useSetAddressDefaultMutation,
+  useSetShopAddressMutation,
 } from '../../store/services/addressService';
-import { UpdateAddressResponse } from '../../types/response';
+import { UpdateAddressResponse, UpdateMerchantResponse } from '../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
+import { selectRole } from '../../store/slices/authSlice';
+import { useAppSelector } from '../../store/store';
 import { ConfirmationModal } from '../common';
+import { validateUserRole } from '../../utils/auth';
+import { Role } from '../../types/role';
 
 type OpenAddressModal = {
   add: boolean;
   edit: boolean;
   delete: boolean;
   default: boolean;
+  shopAddress: boolean;
 };
 
 const AddressContent = () => {
+  const roleCode = useAppSelector(selectRole);
+  const role = validateUserRole(roleCode);
+  
   const { data: getAddressesData, isLoading: getAddressesIsLoading } =
     useGetAddressesQuery();
   const [
@@ -50,12 +59,17 @@ const AddressContent = () => {
     setAddressDefault,
     { isLoading: setAddressDefaultIsLoading, error: setAddressDefaultError },
   ] = useSetAddressDefaultMutation();
+  const [
+    setShopAddress,
+    { isLoading: setShopAddressIsLoading, error: setShopAddressError },
+  ] = useSetShopAddressMutation();
   const [addressID, setAddressID] = useState<string | null>(null);
   const [openModal, setOpenModal] = useState<OpenAddressModal>({
     add: false,
     edit: false,
     delete: false,
     default: false,
+    shopAddress: false,
   });
   const [search, setSearch] = useState<string>('');
 
@@ -123,6 +137,7 @@ const AddressContent = () => {
       edit: false,
       delete: false,
       default: false,
+      shopAddress: false,
     });
     setAddressID(null);
   };
@@ -133,6 +148,7 @@ const AddressContent = () => {
       edit: true,
       delete: false,
       default: false,
+      shopAddress: false,
     });
     setAddressID(id);
   };
@@ -143,6 +159,7 @@ const AddressContent = () => {
       edit: false,
       delete: true,
       default: false,
+      shopAddress: false,
     });
     setAddressID(id);
   };
@@ -153,6 +170,18 @@ const AddressContent = () => {
       edit: false,
       delete: false,
       default: true,
+      shopAddress: false,
+    });
+    setAddressID(id);
+  };
+
+  const handleSetShopAddressClick = (id: string) => {
+    setOpenModal({
+      add: false,
+      edit: false,
+      delete: false,
+      default: false,
+      shopAddress: true,
     });
     setAddressID(id);
   };
@@ -163,6 +192,7 @@ const AddressContent = () => {
       edit: false,
       delete: false,
       default: false,
+      shopAddress: false,
     });
     setAddressID(null);
   };
@@ -173,6 +203,7 @@ const AddressContent = () => {
       edit: false,
       delete: false,
       default: false,
+      shopAddress: false,
     });
 
     if (!addressID) {
@@ -204,6 +235,7 @@ const AddressContent = () => {
       edit: false,
       delete: false,
       default: false,
+      shopAddress: false,
     });
 
     if (!addressID) {
@@ -223,6 +255,38 @@ const AddressContent = () => {
 
         if (setAddressDefaultError && 'data' in setAddressDefaultError) {
           const response = setAddressDefaultError.data as UpdateAddressResponse;
+
+          notifyErrorToast(response.message);
+        }
+      });
+  };
+
+  const handleSetShopAddress = () => {
+    setOpenModal({
+      add: false,
+      edit: false,
+      delete: false,
+      default: false,
+      shopAddress: false,
+    });
+
+    if (!addressID) {
+      return;
+    }
+
+    setShopAddress(addressID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Shop address has been changed!');
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        setAddressID(null);
+
+        if (setShopAddressError && 'data' in setShopAddressError) {
+          const response = setShopAddressError.data as UpdateMerchantResponse;
 
           notifyErrorToast(response.message);
         }
@@ -328,14 +392,13 @@ const AddressContent = () => {
                         >
                           Edit
                         </Button>
-                        {!is_shop_address ? (
+                        {role === Role.Seller && !is_shop_address ? (
                           <Button
                             size='sm'
                             color='accent'
                             className='normal-case font-medium w-full md:w-auto'
                             startIcon={<HiCheck />}
-                            onClick={() =>
-                              console.log('updated to shop address')
+                            onClick={() => handleSetShopAddressClick(id)
                             }
                           >
                             Set as Shop Pickup Address
@@ -384,16 +447,18 @@ const AddressContent = () => {
                         >
                           Edit
                         </Button>
-                        <Button
-                          variant='outline'
-                          size='sm'
-                          color='ghost'
-                          className='normal-case font-medium w-full md:w-auto'
-                          startIcon={<HiTrash />}
-                          onClick={() => handleDeleteAddressClick(id)}
-                        >
-                          Delete
-                        </Button>
+                        {!is_shop_address ? (
+                          <Button
+                            variant='outline'
+                            size='sm'
+                            color='ghost'
+                            className='normal-case font-medium w-full md:w-auto'
+                            startIcon={<HiTrash />}
+                            onClick={() => handleDeleteAddressClick(id)}
+                          >
+                            Delete
+                          </Button>
+                        ) : null}
                         <Button
                           size='sm'
                           color='secondary'
@@ -403,14 +468,13 @@ const AddressContent = () => {
                         >
                           Set as Default
                         </Button>
-                        {!is_shop_address ? (
+                        {role === Role.Seller && !is_shop_address ? (
                           <Button
                             size='sm'
                             color='accent'
                             className='normal-case font-medium w-full md:w-auto'
                             startIcon={<HiCheck />}
-                            onClick={() =>
-                              console.log('updated to shop address')
+                            onClick={() => handleSetShopAddressClick(id)
                             }
                           >
                             Set as Shop Pickup Address
@@ -588,6 +652,14 @@ const AddressContent = () => {
         loading={setAddressDefaultIsLoading}
         onClose={handleModalClose}
         onAccepted={handleSetAddressDefault}
+      />
+      <ConfirmationModal
+        open={openModal.shopAddress}
+        title='Are you sure?'
+        message='Your shop address will be changed.'
+        loading={setShopAddressIsLoading}
+        onClose={handleModalClose}
+        onAccepted={handleSetShopAddress}
       />
     </div>
   );

@@ -114,3 +114,11 @@ export interface Product {
   updated_at: string;
   created_at: string;
 }
+
+export interface Merchant {
+  id: string;
+  user_id: string;
+  name: string;
+  address_id: string;
+  photo: string;
+}

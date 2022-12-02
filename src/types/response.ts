@@ -1,6 +1,7 @@
 import {
   Address,
   Category,
+  Merchant,
   Metadata,
   Product,
   Profile,
@@ -114,6 +115,22 @@ export type DeleteAddressResponse = {
 
 export type GetAllProductsResponse = {
   data: Product[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type UpdateMerchantResponse = {
+  data: Merchant | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetMerchantResponse = {
+  data: Merchant | null;
   code: number;
   error: string | null;
   message: string;

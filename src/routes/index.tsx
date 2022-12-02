@@ -36,6 +36,7 @@ import {
   ShopProductList,
   ShopProfile,
   ShopPromotionList,
+  ShopShipmentSetting,
   ShopVoucherList,
 } from '../pages';
 import { selectRole } from '../store/slices/authSlice';
@@ -245,6 +246,10 @@ const Routes = () => {
                 {
                   path: '/seller/orders/',
                   element: <ShopOrder />,
+                },
+                {
+                  path: '/seller/settings/shipment/',
+                  element: <ShopShipmentSetting />,
                 },
               ],
             },
