@@ -104,7 +104,6 @@ const Register = () => {
         .unwrap()
         .then(() => handleRegisterSuccess())
         .catch((err) => {
-          console.log(err);
           const { data: errorResponse } = err;
           const { message } = errorResponse;
           const messageCapitalized = capitalizeFirstLetter(message);
