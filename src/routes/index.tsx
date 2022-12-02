@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
 import { Layout } from '../components';
@@ -40,12 +41,11 @@ import {
 import { selectRole } from '../store/slices/authSlice';
 import { useAppSelector } from '../store/store';
 import { Role } from '../types/role';
-import { doesHttpOnlyCookieExist } from '../utils/auth';
 import ProtectedRoute from './ProtectedRoute';
 
 const Routes = () => {
   const roleCode = useAppSelector(selectRole);
-  const isRefreshTokenExist = doesHttpOnlyCookieExist('refresh_token');
+  const isTokenExist = Cookies.get('access_token_verifier') === '';
 
   return useRoutes([
     {
@@ -53,7 +53,7 @@ const Routes = () => {
       element: (
         <ProtectedRoute
           roleCode={roleCode}
-          isTokenExist={isRefreshTokenExist}
+          isTokenExist={isTokenExist}
           allowedRoles={[Role.Guest, Role.Buyer, Role.Seller]}
           redirectTo='/admin'
         >
@@ -94,7 +94,7 @@ const Routes = () => {
           element: (
             <ProtectedRoute
               roleCode={roleCode}
-              isTokenExist={isRefreshTokenExist}
+              isTokenExist={isTokenExist}
               allowedRoles={[Role.Buyer, Role.Seller]}
               redirectTo='/login'
             >
@@ -147,7 +147,7 @@ const Routes = () => {
               element: (
                 <ProtectedRoute
                   roleCode={roleCode}
-                  isTokenExist={isRefreshTokenExist}
+                  isTokenExist={isTokenExist}
                   allowedRoles={[Role.Buyer]}
                   redirectTo='/'
                 >
@@ -166,7 +166,7 @@ const Routes = () => {
               element: (
                 <ProtectedRoute
                   roleCode={roleCode}
-                  isTokenExist={isRefreshTokenExist}
+                  isTokenExist={isTokenExist}
                   allowedRoles={[Role.Seller]}
                   redirectTo='/seller/registration'
                 >
@@ -257,7 +257,7 @@ const Routes = () => {
       element: (
         <ProtectedRoute
           roleCode={roleCode}
-          isTokenExist={isRefreshTokenExist}
+          isTokenExist={isTokenExist}
           allowedRoles={[Role.Admin]}
           redirectTo='/'
         >
@@ -296,7 +296,7 @@ const Routes = () => {
       element: (
         <ProtectedRoute
           roleCode={roleCode}
-          isTokenExist={isRefreshTokenExist}
+          isTokenExist={isTokenExist}
           allowedRoles={[Role.Guest]}
           redirectTo='/'
         >
@@ -309,7 +309,7 @@ const Routes = () => {
       element: (
         <ProtectedRoute
           roleCode={roleCode}
-          isTokenExist={isRefreshTokenExist}
+          isTokenExist={isTokenExist}
           allowedRoles={[Role.Guest]}
           redirectTo='/'
         >
