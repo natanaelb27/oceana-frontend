@@ -44,13 +44,16 @@ const SellerRegistration = () => {
     notifyRegisterMerchantFailed(message);
   };
 
+  // eslint-disable-next-line no-useless-escape
+  const charsRegex = /[^`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+
   const formik = useFormik({
     initialValues: {
       name: '',
       addressID: '',
     },
     validationSchema: Yup.object({
-      name: Yup.string().required('Please enter your shop name'),
+      name: Yup.string().matches(charsRegex, 'Should not contain special characters').required('Please enter your shop name'),
       addressID: Yup.string().required('Please select your shop address')
     }),
     onSubmit: (values, { setFieldValue }) => {

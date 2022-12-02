@@ -10,7 +10,7 @@ export const merchantApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: request,
             }),
-            invalidatesTags: ['Merchant'],
+            invalidatesTags: ['Merchant', 'Profile'],
         })
     })
 });
