@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useGetUserCartQuery } from '../../../store/services/cartService';
+import {
+  useGetUserCartQuery,
+  useUpdateUserCartMutation,
+} from '../../../store/services/cartService';
 import { GetUserCartResponse } from '../../../types/response';
-import { notifyErrorToast } from '../../../utils/toast';
-import { Divider, Input } from 'react-daisyui';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import { Button, Divider, Input } from 'react-daisyui';
 import { BiTrash } from 'react-icons/bi';
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { titleCase } from '../../../utils/titleCase';
 
 type SelectItem = {
   productID: number;
-  productItemID: string;
+  productItemID: number;
   selectItem: boolean;
   quantity: number;
 };
@@ -27,6 +30,7 @@ type SelectCartItems = {
 
 const BuyerCart = () => {
   const { data, error } = useGetUserCartQuery();
+  const [updateUserCart, { isLoading }] = useUpdateUserCartMutation();
   const [selectedItems, setSelectedItems] = useState<SelectCartItems>({
     selectAll: false,
     selectItem: [],
@@ -38,67 +42,12 @@ const BuyerCart = () => {
     notifyErrorToast(response.message);
   }
 
-  const dummyData = {
-    data: [
-      {
-        merchant_id: 123,
-        name: 'Test Shop 123',
-        products: [
-          {
-            carts_id: '123',
-            product_id: 1,
-            product_item_id: '123120',
-            product_name: 'test product 1',
-            quantity: 1,
-            price: 100000,
-            price_after_discount: 9000,
-          },
-          {
-            carts_id: '123',
-            product_id: 2,
-            product_item_id: '123120',
-            product_name: 'test product 2',
-            quantity: 1,
-            price: 150000,
-            price_after_discount: 9000,
-          },
-        ],
-      },
-      {
-        merchant_id: 456,
-        name: 'Test Shop 456',
-        products: [
-          {
-            carts_id: '123',
-            product_id: 3,
-            product_item_id: '123120',
-            product_name: 'test product 1',
-            quantity: 1,
-            price: 100000,
-            price_after_discount: 9000,
-          },
-          {
-            carts_id: '123',
-            product_id: 4,
-            product_item_id: '123120',
-            product_name: 'test product 2',
-            quantity: 1,
-            price: 150000,
-            price_after_discount: 9000,
-          },
-        ],
-      },
-    ],
-    code: 200,
-    error: null,
-    message: 'sucess',
-    metadata: null,
-  };
-
   useEffect(() => {
-    // if (!data?.data) return;
     const selectedMerchantItems: SelectMerchantItems[] = [];
-    dummyData.data.forEach((value) => {
+    if (!data?.data) {
+      return;
+    }
+    data.data.forEach((value) => {
       const selectedItems: SelectItem[] = [];
       value.products.forEach((product) => {
         selectedItems.push({
@@ -119,7 +68,7 @@ const BuyerCart = () => {
       selectAll: false,
       selectItem: selectedMerchantItems,
     });
-  }, []);
+  }, [data]);
 
   const handleClickAll = () => {
     const newSelectedItems = { ...selectedItems };
@@ -152,6 +101,7 @@ const BuyerCart = () => {
   const handleClickMerchant = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLInputElement;
     const merchantID = Number(target.parentElement?.parentElement?.id);
+    console.log(merchantID);
     const newSelectedItems = { ...selectedItems };
     let selectedMerchants = 0;
     newSelectedItems.selectItem.map((merchant) => {
@@ -188,14 +138,14 @@ const BuyerCart = () => {
     const merchantID = Number(
       target.parentElement?.parentElement?.parentElement?.id
     );
+    const productItemID = Number(target.parentElement?.parentElement?.id);
     let selectedProducts = 0;
     let selectedMerchants = 0;
-    const productID = Number(target.parentElement?.parentElement?.id);
     const newSelectedItems = { ...selectedItems };
     newSelectedItems.selectItem.map((merchant) => {
       if (merchant.merchantID === merchantID) {
         merchant.selectItem = merchant.selectItem.map((product) => {
-          if (product.productID === productID) {
+          if (product.productItemID === productItemID) {
             product.selectItem = !product.selectItem;
             if (product.selectItem === false) {
               newSelectedItems.selectAll = false;
@@ -227,6 +177,99 @@ const BuyerCart = () => {
     }
   };
 
+  const handleClickAddQuantity = (e: React.SyntheticEvent) => {
+    const target = e.target as HTMLInputElement;
+    const newSelectedItems = { ...selectedItems };
+    const merchantID = Number(
+      target.parentElement?.parentElement?.parentElement?.id
+    );
+    const productItemID = Number(target.parentElement?.parentElement?.id);
+    newSelectedItems.selectItem.map((merchant) => {
+      if (merchant.merchantID === merchantID) {
+        merchant.selectItem = merchant.selectItem.map((product) => {
+          if (product.productItemID === productItemID) {
+            // call endpoint to add quantity using product item id
+            product.quantity += 1;
+            updateUserCart({
+              product_item_id: product.productItemID,
+              quantity: product.quantity,
+            }).unwrap().then(() => {
+              notifySuccessToast('1 Item has been added to cart');
+            }).catch((err) => {
+              product.quantity -= 1;
+              notifyErrorToast(err.data.message);
+              console.error(err);
+            });
+          }
+          return product;
+        });
+      }
+      return merchant;
+    });
+    setSelectedItems(newSelectedItems);
+  };
+
+  const handleClickDecreaseQuantity = (e: React.SyntheticEvent) => {
+    const target = e.target as HTMLInputElement;
+    const newSelectedItems = { ...selectedItems };
+    const merchantID = Number(
+      target.parentElement?.parentElement?.parentElement?.id
+    );
+    const productItemID = Number(target.parentElement?.parentElement?.id);
+    newSelectedItems.selectItem.map((merchant) => {
+      if (merchant.merchantID === merchantID) {
+        merchant.selectItem = merchant.selectItem.map((product) => {
+          if (product.productItemID === productItemID) {
+            if (product.quantity > 0) {
+              // call endpoint to decrease quantity using product item id
+              product.quantity -= 1;
+              updateUserCart({
+                product_item_id: product.productItemID,
+                quantity: product.quantity,
+              });
+            }
+          }
+          return product;
+        });
+      }
+      return merchant;
+    });
+    setSelectedItems(newSelectedItems);
+  };
+
+  const handleChangeQuantity = (e: React.SyntheticEvent) => {
+    const target = e.target as HTMLTextAreaElement;
+    const newSelectedItems = { ...selectedItems };
+    const merchantID = Number(
+      target.parentElement?.parentElement?.parentElement?.id
+    );
+    const productItemID = Number(target.parentElement?.parentElement?.id);
+    const quantity = parseInt(target.value, 10);
+    newSelectedItems.selectItem.map((merchant) => {
+      if (merchant.merchantID === merchantID) {
+        merchant.selectItem = merchant.selectItem.map((product) => {
+          if (product.productItemID === productItemID) {
+            product.quantity = quantity;
+            setTimeout(() => {
+              console.log('delayed for 400ms');
+              updateUserCart({
+                product_item_id: product.productItemID,
+                quantity: product.quantity,
+              });
+            }, 3000);
+          }
+          return product;
+        });
+      }
+      return merchant;
+    });
+    setSelectedItems(newSelectedItems);
+  };
+
+  if (!data?.data) {
+    return null;
+  }
+
   return (
     <div className='px-2 container mx-auto flex flex-col'>
       <h5 className='font-bold text-2xl text-primary'>Cart</h5>
@@ -235,19 +278,19 @@ const BuyerCart = () => {
           type='checkbox'
           className='checkbox checkbox-success'
           onChange={handleClickAll}
-          checked={selectedItems.selectAll}
+          checked={selectedItems?.selectAll || false}
         />{' '}
         <div className='pl-2'>Select All</div>
       </div>
       <Divider className='border-none' />
-      {dummyData.data.map((merchant, merchantIndex) => (
+      {data.data.map((merchant, merchantIndex) => (
         <div id={merchant.merchant_id.toString()} key={merchant.merchant_id}>
           <div className='flex items-center'>
             <input
               type='checkbox'
               className='checkbox checkbox-success'
               onChange={handleClickMerchant}
-              checked={selectedItems?.selectItem[merchantIndex]?.selectAll}
+              checked={selectedItems?.selectItem[merchantIndex]?.selectAll || false}
             />
             <div className='flex flex-col pl-2'>
               <div className='font-bold'>{merchant.name}</div>
@@ -256,7 +299,10 @@ const BuyerCart = () => {
           </div>
           {merchant.products.map((product, productIndex) => {
             return (
-              <div id={product.product_id.toString()} key={product.product_id}>
+              <div
+                id={product.product_item_id.toString()}
+                key={product.product_item_id}
+              >
                 <Divider className='m-0 p-0' />
                 <div className='flex items-center py-3'>
                   <input
@@ -265,7 +311,7 @@ const BuyerCart = () => {
                     checked={
                       selectedItems?.selectItem[merchantIndex]?.selectItem[
                         productIndex
-                      ]?.selectItem
+                      ]?.selectItem || false
                     }
                     onChange={handleClickProduct}
                   />
@@ -287,9 +333,27 @@ const BuyerCart = () => {
                 </div>
                 <div className='flex justify-end'>
                   <BiTrash size='1.5em' className='text-error mr-12' />
-                  <AiOutlineMinusCircle size='1.5em' className='text-primary' />
-                  <Input size='xs' className='w-12 border-primary' />
-                  <AiOutlinePlusCircle size='1.5em' className='text-primary' />
+                  <AiOutlineMinusCircle
+                    size='1.5em'
+                    className='text-primary cursor-pointer'
+                    onClick={handleClickDecreaseQuantity}
+                  />
+                  <Input
+                    type='number'
+                    size='xs'
+                    className='w-10 text-center border-primary'
+                    value={
+                      selectedItems?.selectItem[merchantIndex]?.selectItem[
+                        productIndex
+                      ]?.quantity || ''
+                    }
+                    onChange={handleChangeQuantity}
+                  />
+                  <AiOutlinePlusCircle
+                    size='1.5em'
+                    className='text-primary cursor-pointer'
+                    onClick={handleClickAddQuantity}
+                  />
                 </div>
               </div>
             );
