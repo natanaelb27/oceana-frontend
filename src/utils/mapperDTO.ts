@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { ProductQuery } from '../types/query';
+import { MerchantVoucherQuery, ProductQuery } from '../types/query';
 import {
   LoginRequest,
   RegisterRequest,
@@ -65,6 +65,20 @@ export const toProductQuery = (query: ProductQuery) => {
   result += '&price-maximum=' + query.priceMaximum;
   result += '&merchant-cities=' + query.merchantCities.join(',');
   result += '&courier-services=' + query.courierServices.join(',');
+
+  return result;
+};
+
+export const toMerchantVoucherQuery = (query: MerchantVoucherQuery) => {
+  let result = '';
+
+  result += 'sort-by=' + query.sortBy;
+  result += '&sort=' + query.sort;
+  result += '&limit=' + query.limit;
+  result += '&page=' + query.page;
+  result += '&search-voucher-code=' + query.searchVoucherCode;
+  result += '&filter-voucher-status=' + query.filterVoucherStatus;
+  result += '&merchant-id=' + query.merchantID;
 
   return result;
 };

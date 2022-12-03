@@ -2,6 +2,7 @@ import {
   Address,
   Category,
   Merchant,
+  MerchantVoucher,
   Metadata,
   Product,
   Profile,
@@ -130,7 +131,17 @@ export type UpdateMerchantResponse = {
 };
 
 export type GetMerchantResponse = {
-  data: Merchant | null;
+  data: Merchant;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetMerchantVoucherResponse = {
+  data: {
+    merchant_voucher: MerchantVoucher[];
+  };
   code: number;
   error: string | null;
   message: string;

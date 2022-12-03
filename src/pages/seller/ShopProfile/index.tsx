@@ -13,12 +13,9 @@ const ShopProfile = () => {
     notifyErrorToast(response.message);
   }
 
-  return (
-    <SellerAccount
-      profile={data?.data}
-      content={SellerAccountContent.Profile}
-    />
-  );
+  return data ? (
+    <SellerAccount profile={data.data} content={SellerAccountContent.Profile} />
+  ) : null;
 };
 
 export default ShopProfile;

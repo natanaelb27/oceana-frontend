@@ -20,7 +20,7 @@ import { NavLink } from 'react-router-dom';
 import { Merchant } from '../../types/component';
 
 type SidebarProps = {
-  profile: Merchant | null | undefined;
+  profile: Merchant;
 };
 
 const Sidebar = ({ profile }: SidebarProps) => {

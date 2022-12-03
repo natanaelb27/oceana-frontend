@@ -14,3 +14,13 @@ export type ProductQuery = {
   merchantCities: string[];
   courierServices: string[];
 } & Query;
+
+export type MerchantVoucherQuery = {
+  limit: number;
+  page: number;
+  sortBy: string;
+  sort: string;
+  searchVoucherCode: string;
+  filterVoucherStatus: string;
+  merchantID: number;
+};

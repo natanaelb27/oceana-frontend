@@ -4,10 +4,9 @@ import { baseApi } from '../store';
 export const myShopApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getMyShopProfile: builder.query<GetMerchantResponse, void>({
-      query: (request) => ({
+      query: () => ({
         url: '/my-shop/profile',
         method: 'GET',
-        body: request,
       }),
       providesTags: ['MyShop'],
     }),
