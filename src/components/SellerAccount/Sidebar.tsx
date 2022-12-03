@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Avatar, Card, Collapse, Divider, Menu } from 'react-daisyui';
+import { Avatar, Card, Divider, Menu } from 'react-daisyui';
 import { CgProfile } from 'react-icons/cg';
 import { GoHome } from 'react-icons/go';
 import {
@@ -10,6 +9,11 @@ import {
   HiOutlineTag,
   HiOutlineTruck,
 } from 'react-icons/hi';
+import {
+  selectSidebar,
+  setMarketingSidebar,
+} from '../../store/slices/sellerSidebarSlice';
+import { useAppDispatch, useAppSelector } from '../../store/store';
 
 import { NavLink } from 'react-router-dom';
 
@@ -20,7 +24,12 @@ type SidebarProps = {
 };
 
 const Sidebar = ({ profile }: SidebarProps) => {
-  const [openMarketingCentre, setOpenMarketingCentre] = useState<boolean>(true);
+  const dispatch = useAppDispatch();
+  const sidebar = useAppSelector(selectSidebar);
+
+  const handleMarketingSidebarClick = () => {
+    dispatch(setMarketingSidebar({ marketingSidebar: !sidebar.marketing }));
+  };
 
   if (!profile) {
     return (
@@ -77,15 +86,11 @@ const Sidebar = ({ profile }: SidebarProps) => {
               Product
             </NavLink>
           </Menu.Item>
-          <Menu.Item
-            onClick={() => {
-              setOpenMarketingCentre(!openMarketingCentre);
-            }}
-          >
+          <Menu.Item onClick={handleMarketingSidebarClick}>
             <a>
               <HiOutlineTag />
               Marketing
-              {openMarketingCentre ? (
+              {sidebar.marketing ? (
                 <HiOutlineChevronUp className='absolute right-3' />
               ) : (
                 <HiOutlineChevronDown className='absolute right-3' />
@@ -95,7 +100,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           <div
             className={
               'ml-7 transition duration-300 ease-in-out ' +
-              (!openMarketingCentre ? 'hidden' : '')
+              (!sidebar.marketing ? 'hidden' : '')
             }
           >
             <Menu.Item>

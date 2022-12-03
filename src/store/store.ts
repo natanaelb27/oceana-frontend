@@ -5,6 +5,7 @@ import baseQueryInterceptor from './baseQuery';
 
 import { authApi } from './services/authService';
 import authReducer from './slices/authSlice';
+import sellerSidebarReducer from './slices/sellerSidebarSlice';
 
 export const baseApi = createApi({
   reducerPath: 'baseApi',
@@ -18,6 +19,7 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [baseApi.reducerPath]: baseApi.reducer,
     auth: authReducer,
+    sellerSidebar: sellerSidebarReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([authApi.middleware, baseApi.middleware]),
