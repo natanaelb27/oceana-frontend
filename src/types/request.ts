@@ -5,6 +5,9 @@ export type LoginRequest = {
 
 export type LoginWithGoogleRequest = {
   google_id: string;
+  email: string;
+  full_name: string;
+  image_url: string;
 };
 
 export type RegisterRequest = {

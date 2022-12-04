@@ -50,8 +50,15 @@ const Login = () => {
     res: GoogleLoginResponse | GoogleLoginResponseOffline
   ) => {
     const resGoogleLogin = res as GoogleLoginResponse;
-    const googleId = resGoogleLogin.getBasicProfile().getId();
-    loginWithGoogle(toLoginWithGoogleRequest(googleId))
+    const basicProfile = resGoogleLogin.getBasicProfile();
+    loginWithGoogle(
+      toLoginWithGoogleRequest(
+        basicProfile.getId(),
+        basicProfile.getEmail(),
+        basicProfile.getName(),
+        basicProfile.getImageUrl()
+      )
+    )
       .unwrap()
       .then((response) => {
         const { data: loginResponseData } = response;

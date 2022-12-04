@@ -16,9 +16,15 @@ export const toLoginRequest = (
 });
 
 export const toLoginWithGoogleRequest = (
-  googleId: string
+  googleId: string,
+  email: string,
+  fullName: string,
+  imageUrl: string
 ): LoginWithGoogleRequest => ({
   google_id: googleId,
+  email,
+  full_name: fullName,
+  image_url: imageUrl,
 });
 
 export const toRegisterRequest = (
