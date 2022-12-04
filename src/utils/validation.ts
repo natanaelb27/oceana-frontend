@@ -19,6 +19,6 @@ export const passwordInUsername = (
     : passwordLetters.includes(usernameLetters);
 };
 
-export const stringComparison = (string1: string, string2: string): boolean => {
+export const stringCompare = (string1: string, string2: string): boolean => {
   return string1.toLowerCase() === string2.toLowerCase();
 };

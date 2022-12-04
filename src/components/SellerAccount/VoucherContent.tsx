@@ -29,7 +29,7 @@ import { Merchant } from '../../types/component';
 import { useGetAllMerchantVoucherQuery } from '../../store/services/shopService';
 import { toMerchantVoucherQuery } from '../../utils/mapperDTO';
 import { Pager } from '../../components/common';
-import { stringComparison } from '../../utils/validation';
+import { stringCompare } from '../../utils/validation';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toRupiah } from '../../utils/convert';
 
@@ -179,12 +179,10 @@ const VoucherContent = ({ profile }: ContentProps) => {
                   voucher_status,
                 }) => {
                   const getBadgeColor = (voucherStatus: string) => {
-                    if (
-                      stringComparison(voucherStatus, VOUCHER_STATUS.UPCOMING)
-                    ) {
+                    if (stringCompare(voucherStatus, VOUCHER_STATUS.UPCOMING)) {
                       return 'success';
                     } else if (
-                      stringComparison(voucherStatus, VOUCHER_STATUS.ONGOING)
+                      stringCompare(voucherStatus, VOUCHER_STATUS.ONGOING)
                     ) {
                       return 'warning';
                     }
@@ -194,17 +192,14 @@ const VoucherContent = ({ profile }: ContentProps) => {
                   return (
                     <Table.Row key={id}>
                       <div className='flex items-center space-x-3'>
-                        {stringComparison(
-                          discount_type,
-                          DISCOUNT_TYPE.NOMINAL
-                        ) ? (
+                        {stringCompare(discount_type, DISCOUNT_TYPE.NOMINAL) ? (
                           <HiOutlineCurrencyDollar className='text-white bg-accent h-12 w-12 md:h-15 md:w-15 rounded-md' />
                         ) : (
                           <CgMathPercent className='text-white bg-secondary h-12 w-12 md:h-15 md:w-15 rounded-md' />
                         )}
                         <div>
                           <div className='font-bold text-sm'>{code}</div>
-                          {stringComparison(
+                          {stringCompare(
                             discount_type,
                             DISCOUNT_TYPE.NOMINAL
                           ) ? (
@@ -246,7 +241,7 @@ const VoucherContent = ({ profile }: ContentProps) => {
                         </Badge>
                       </div>
                       <div className='flex gap-1 justify-center'>
-                        {stringComparison(
+                        {stringCompare(
                           voucher_status,
                           VOUCHER_STATUS.UPCOMING
                         ) ? (
@@ -264,7 +259,7 @@ const VoucherContent = ({ profile }: ContentProps) => {
                               />
                             </Tooltip>
                           </div>
-                        ) : stringComparison(
+                        ) : stringCompare(
                             voucher_status,
                             VOUCHER_STATUS.ONGOING
                           ) ? (
