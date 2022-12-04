@@ -4,6 +4,7 @@ import {
   LoginRequest,
   LoginWithGoogleRequest,
   RegisterRequest,
+  RegisterWithGoogleRequest,
   UpdateProfileRequest,
 } from '../types/request';
 
@@ -13,18 +14,6 @@ export const toLoginRequest = (
 ): LoginRequest => ({
   login_credentials: loginCredentials,
   password: password,
-});
-
-export const toLoginWithGoogleRequest = (
-  googleId: string,
-  email: string,
-  fullName: string,
-  imageUrl: string
-): LoginWithGoogleRequest => ({
-  google_id: googleId,
-  email,
-  full_name: fullName,
-  image_url: imageUrl,
 });
 
 export const toRegisterRequest = (
@@ -40,6 +29,37 @@ export const toRegisterRequest = (
   password,
   phone_number: phoneNumber,
   role: '001',
+});
+
+export const toLoginWithGoogleRequest = (
+  googleId: string,
+  fullName: string,
+  email: string,
+  imageUrl: string
+): LoginWithGoogleRequest => ({
+  google_id: googleId,
+  full_name: fullName,
+  email,
+  image_url: imageUrl,
+});
+
+export const toRegisterWithGoogleRequest = (
+  googleId: string,
+  fullName: string,
+  username: string,
+  email: string,
+  password: string,
+  phoneNumber: string,
+  imageUrl: string
+): RegisterWithGoogleRequest => ({
+  google_id: googleId,
+  full_name: fullName,
+  username,
+  email,
+  password,
+  phone_number: phoneNumber,
+  role: '001',
+  image_url: imageUrl,
 });
 
 export const toUpdateProfileRequest = (
