@@ -49,6 +49,7 @@ import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
 import moment from 'moment';
 import NoData from '../common/NoData';
+import { stringCompare } from '../../utils/validation';
 
 const PurchaseContent = () => {
   const [transactionHistoryQuery, setTransactionHistoryQuery] =
@@ -75,15 +76,13 @@ const PurchaseContent = () => {
     useGetOrderDetailsQuery(orderID);
 
   const getBadgeColor = (orderStatus: string) => {
-    if (orderStatus.toLowerCase() === DELIVERY_STATUS.COMPLETED.toLowerCase()) {
+    if (stringCompare(orderStatus, DELIVERY_STATUS.COMPLETED)) {
       return 'success';
     }
 
     if (
-      orderStatus.toLowerCase() ===
-        DELIVERY_STATUS.CANCELED_BUYER.toLowerCase() ||
-      orderStatus.toLowerCase() ===
-        DELIVERY_STATUS.CANCELED_SELLER.toLowerCase()
+      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_BUYER) ||
+      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SELLER)
     ) {
       return 'error';
     }
@@ -414,7 +413,7 @@ const PurchaseContent = () => {
         </div>
         <div className='flex items-center gap-2'>
           <span className='font-bold hidden md:block'>Status</span>
-          <div className='hidden md:flex items-center gap-2 overflow-x-auto overflow-y-hidden'>
+          <div className='hidden md:flex items-center gap-2 overflow-x-auto overflow-y-hidden p-1'>
             <Button
               className={
                 'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
@@ -476,7 +475,7 @@ const PurchaseContent = () => {
           className={
             activeStatusButton !== DELIVERY_STATUS.ONGOING
               ? 'hidden'
-              : 'hidden md:flex gap-2 overflow-x-auto overflow-y-hidden'
+              : 'hidden md:flex gap-2 overflow-x-auto overflow-y-hidden px-1'
           }
         >
           <Button
@@ -553,7 +552,7 @@ const PurchaseContent = () => {
           </Button>
         </div>
       </div>
-      <div className=''>
+      <div className='grid grid-cols-12 gap-4'>
         {getAllTransactionHistoryLoading && (
           <Card className='col-span-12 shadow animate-pulse'>
             <div className='p-4'>
@@ -662,10 +661,19 @@ const PurchaseContent = () => {
                         </span>
                       </div>
                       <Button
-                        className='normal-case md:w-auto md:pl-7 md:pr-7'
+                        className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
                         color='primary'
                       >
                         Buy Again
+                      </Button>
+                      <Button
+                        className='normal-case md:w-auto md:pl-7 md:pr-7 flex md:hidden'
+                        color='primary'
+                        onClick={() =>
+                          handleViewDetailsClick(transactionHistory.order_id)
+                        }
+                      >
+                        View Details
                       </Button>
                     </div>
                   </div>
@@ -673,11 +681,22 @@ const PurchaseContent = () => {
               );
             }
           )
+        ) : stringCompare(activeStatusButton, DELIVERY_STATUS.ALL) &&
+          dateRange.at(0) === null &&
+          dateRange.at(1) === null &&
+          search === '' ? (
+          <div className='col-span-12'>
+            <NoData title='Oops, it seems that you have never made a purchase'></NoData>
+          </div>
         ) : (
-          <NoData
-            title='Oops, there are no transactions that match the filter'
-            description='Try to reset or change your filter'
-          ></NoData>
+          <div className='col-span-12'>
+            <NoData
+              title='Oops, there are no transactions that match the filter'
+              message='Try to reset or change your filter'
+              buttonMessage='Reset Filter'
+              buttonHandleClick={handleResetFilterClick}
+            ></NoData>
+          </div>
         )}
       </div>
       <div className='mt-6 flex justify-center'>
@@ -991,7 +1010,7 @@ const PurchaseContent = () => {
                               className='normal-case md:w-auto'
                               color='primary'
                             >
-                              Repurchase
+                              Buy Again
                             </Button>
                           </div>
                         </Card>
