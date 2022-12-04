@@ -184,13 +184,13 @@ const VoucherContent = ({ profile }: ContentProps) => {
                 }) => {
                   const getBadgeColor = (voucherStatus: string) => {
                     if (stringCompare(voucherStatus, VOUCHER_STATUS.UPCOMING)) {
-                      return 'success';
+                      return undefined;
                     } else if (
                       stringCompare(voucherStatus, VOUCHER_STATUS.ONGOING)
                     ) {
                       return 'warning';
                     }
-                    return 'error';
+                    return 'success';
                   };
 
                   return (
@@ -230,7 +230,7 @@ const VoucherContent = ({ profile }: ContentProps) => {
                             <span className='font-bold'>
                               {toStringDate(start_datetime)}
                             </span>
-                            <span className='text-sm opacity-50'>
+                            <span className='text-sm opacity-50 opacity-50'>
                               {toStringTime(start_datetime)}
                             </span>
                           </div>

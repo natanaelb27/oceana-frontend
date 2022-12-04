@@ -147,3 +147,11 @@ export type GetMerchantVoucherResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type GetMerchantVoucherDetailsResponse = {
+  data: MerchantVoucher;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
