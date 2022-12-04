@@ -5,3 +5,13 @@ export enum UserAccountContent {
   Purchase,
   Refunds,
 }
+
+export enum SellerAccountContent {
+  Profile = 0,
+  Address,
+  Product,
+  Voucher,
+  Promotion,
+  Order,
+  ShipmentSetting,
+}
