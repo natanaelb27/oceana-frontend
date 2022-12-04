@@ -38,6 +38,7 @@ import {
   ShopPromotionList,
   ShopShipmentSetting,
   ShopVoucherList,
+  ShopVoucherDetail,
 } from '../pages';
 import { selectRole } from '../store/slices/authSlice';
 import { useAppSelector } from '../store/store';
@@ -218,6 +219,14 @@ const Routes = () => {
                 {
                   path: '/seller/marketing/vouchers/list',
                   element: <ShopVoucherList />,
+                },
+                {
+                  path: '/seller/marketing/vouchers/detail',
+                  element: <Navigate to='/seller/marketing/vouchers/list' />,
+                },
+                {
+                  path: '/seller/marketing/vouchers/detail/:voucherID',
+                  element: <ShopVoucherDetail />,
                 },
                 {
                   path: '/seller/marketing/vouchers/add',

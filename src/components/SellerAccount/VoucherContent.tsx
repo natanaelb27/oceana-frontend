@@ -1,4 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Badge,
   Button,
@@ -31,13 +32,14 @@ import { toMerchantVoucherQuery } from '../../utils/mapperDTO';
 import { Pager } from '../../components/common';
 import { stringCompare } from '../../utils/validation';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
-import { toRupiah } from '../../utils/convert';
+import { toRupiah, toStringDate, toStringTime } from '../../utils/convert';
 
 type ContentProps = {
   profile: Merchant;
 };
 
 const VoucherContent = ({ profile }: ContentProps) => {
+  const navigate = useNavigate();
   const [filterStatus, setFilterStatus] = useState<string>(VOUCHER_STATUS.ALL);
 
   const [search, setSearch] = useState<string>('');
@@ -103,8 +105,10 @@ const VoucherContent = ({ profile }: ContentProps) => {
     console.log('cancel');
   };
 
-  const handleDetailVoucherClick = () => {
-    console.log('detail');
+  const handleDetailVoucherClick = (voucherID: number) => {
+    navigate(`/seller/marketing/vouchers/detail/${voucherID}`, {
+      replace: true,
+    });
   };
 
   return (
@@ -203,11 +207,11 @@ const VoucherContent = ({ profile }: ContentProps) => {
                             discount_type,
                             DISCOUNT_TYPE.NOMINAL
                           ) ? (
-                            <div className='text-sm opacity-50 cursor-pointer'>
+                            <div className='text-sm opacity-50'>
                               Discount {toRupiah(discount)}
                             </div>
                           ) : (
-                            <div className='text-sm opacity-50 cursor-pointer'>
+                            <div className='text-sm opacity-50'>
                               Discount {discount}% till{' '}
                               {toRupiah(maximum_discount_amount)}
                             </div>
@@ -220,16 +224,24 @@ const VoucherContent = ({ profile }: ContentProps) => {
                           {current_quota}/{maximum_quota}
                         </span>
                       </div>
-                      <div className='flex flex-col'>
-                        <div className='flex gap-2 items-center text-sm'>
+                      <div className='flex flex-col gap-2'>
+                        <div className='flex gap-3 items-center text-sm'>
                           <div className='flex flex-col'>
-                            <span className='font-bold'>{start_datetime}</span>
-                            <span>{start_datetime}</span>
+                            <span className='font-bold'>
+                              {toStringDate(start_datetime)}
+                            </span>
+                            <span className='text-sm opacity-50'>
+                              {toStringTime(start_datetime)}
+                            </span>
                           </div>
-                          <span>-</span>
+                          <div className='w-2 border-t border-black'></div>
                           <div className='flex flex-col'>
-                            <span className='font-bold'>{end_datetime}</span>
-                            <span>{end_datetime}</span>
+                            <span className='font-bold'>
+                              {toStringDate(end_datetime)}
+                            </span>
+                            <span className='text-sm opacity-50'>
+                              {toStringTime(end_datetime)}
+                            </span>
                           </div>
                         </div>
                         <Badge
@@ -240,7 +252,7 @@ const VoucherContent = ({ profile }: ContentProps) => {
                           {capitalizeFirstLetter(voucher_status)}
                         </Badge>
                       </div>
-                      <div className='flex gap-1 justify-center'>
+                      <div className='flex gap-1 justify-left'>
                         {stringCompare(
                           voucher_status,
                           VOUCHER_STATUS.UPCOMING
@@ -248,14 +260,22 @@ const VoucherContent = ({ profile }: ContentProps) => {
                           <div className='flex gap-1'>
                             <Tooltip message='Edit'>
                               <HiOutlinePencil
-                                className='bg-[#e4ebf5] h-7 w-7 p-1 rounded-md cursor-pointer'
+                                className='bg-warning text-white h-7 w-7 p-1 rounded-md cursor-pointer'
                                 onClick={handleEditVoucherClick}
                               />
                             </Tooltip>
                             <Tooltip message='Cancel'>
                               <HiOutlineXCircle
-                                className='bg-[#e4ebf5] h-7 w-7 p-1 rounded-md cursor-pointer'
+                                className='bg-error text-white h-7 w-7 p-1 rounded-md cursor-pointer'
                                 onClick={handleCancelVoucherClick}
+                              />
+                            </Tooltip>
+                            <Tooltip message='Detail'>
+                              <HiOutlineClipboardList
+                                className='bg-primary text-white h-7 w-7 p-1 rounded-md cursor-pointer'
+                                onClick={() => {
+                                  handleDetailVoucherClick(id);
+                                }}
                               />
                             </Tooltip>
                           </div>
@@ -263,19 +283,37 @@ const VoucherContent = ({ profile }: ContentProps) => {
                             voucher_status,
                             VOUCHER_STATUS.ONGOING
                           ) ? (
-                          <Tooltip message='Edit'>
-                            <HiOutlinePencil
-                              className='bg-[#e4ebf5] h-7 w-7 p-1 rounded-md cursor-pointer'
-                              onClick={handleEditVoucherClick}
-                            />
-                          </Tooltip>
-                        ) : null}
-                        <Tooltip message='Detail'>
-                          <HiOutlineClipboardList
-                            className='bg-[#e4ebf5] h-7 w-7 p-1 rounded-md cursor-pointer'
-                            onClick={handleDetailVoucherClick}
-                          />
-                        </Tooltip>
+                          <div className='flex gap-1'>
+                            <Tooltip message='Edit'>
+                              <HiOutlinePencil
+                                className='bg-warning text-white h-7 w-7 p-1 rounded-md cursor-pointer'
+                                onClick={handleEditVoucherClick}
+                              />
+                            </Tooltip>
+                            <HiOutlineXCircle className='bg-base-300 h-7 w-7 p-1 rounded-md' />
+                            <Tooltip message='Detail'>
+                              <HiOutlineClipboardList
+                                className='bg-primary text-white h-7 w-7 p-1 rounded-md cursor-pointer'
+                                onClick={() => {
+                                  handleDetailVoucherClick(id);
+                                }}
+                              />
+                            </Tooltip>
+                          </div>
+                        ) : (
+                          <div className='flex gap-1'>
+                            <HiOutlinePencil className='bg-base-300 h-7 w-7 p-1 rounded-md' />
+                            <HiOutlineXCircle className='bg-base-300 h-7 w-7 p-1 rounded-md' />
+                            <Tooltip message='Detail'>
+                              <HiOutlineClipboardList
+                                className='bg-primary text-white h-7 w-7 p-1 rounded-md cursor-pointer'
+                                onClick={() => {
+                                  handleDetailVoucherClick(id);
+                                }}
+                              />
+                            </Tooltip>
+                          </div>
+                        )}
                       </div>
                     </Table.Row>
                   );

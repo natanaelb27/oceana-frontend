@@ -11,6 +11,7 @@ export enum SellerAccountContent {
   Address,
   Product,
   Voucher,
+  VoucherDetail,
   Promotion,
   Order,
   ShipmentSetting,

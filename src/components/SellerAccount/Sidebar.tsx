@@ -15,15 +15,21 @@ import {
 } from '../../store/slices/sellerSidebarSlice';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 import { Merchant } from '../../types/component';
+import { SellerAccountContent } from '../../types/content';
 
 type SidebarProps = {
   profile: Merchant;
 };
 
 const Sidebar = ({ profile }: SidebarProps) => {
+  const location = useLocation();
+  const { pathname } = location;
+  console.log(pathname);
+  const splitLocation = pathname.split('/');
+
   const dispatch = useAppDispatch();
   const sidebar = useAppSelector(selectSidebar);
 
@@ -104,7 +110,17 @@ const Sidebar = ({ profile }: SidebarProps) => {
             }
           >
             <Menu.Item>
-              <NavLink to='/seller/marketing/vouchers/list'>Voucher</NavLink>
+              <NavLink
+                to='/seller/marketing/vouchers/list'
+                className={
+                  splitLocation.slice(0, 4).join('/') ===
+                  '/seller/marketing/vouchers'
+                    ? 'active'
+                    : ''
+                }
+              >
+                Voucher
+              </NavLink>
             </Menu.Item>
             <Menu.Item>
               <NavLink to='/seller/marketing/promotions/list'>
@@ -121,7 +137,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           <Menu.Item>
             <NavLink to='/seller/settings/shipment'>
               <HiOutlineTruck />
-              Shipment Setting
+              Shipment
             </NavLink>
           </Menu.Item>
         </Menu>

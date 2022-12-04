@@ -3,6 +3,7 @@ import { Merchant } from '../../types/component';
 import { SellerAccountContent } from '../../types/content';
 import AddressContent from './AddressContent';
 import VoucherContent from './VoucherContent';
+import VoucherDetailContent from './VoucherDetailContent';
 
 // import ProfileContent from './ProfileContent';
 
@@ -27,6 +28,10 @@ const Content = ({ profile, content }: ContentProps) => {
 
     if (content === SellerAccountContent.Voucher) {
       return <VoucherContent profile={profile} />;
+    }
+
+    if (content === SellerAccountContent.VoucherDetail) {
+      return <VoucherDetailContent profile={profile} />;
     }
 
     if (content === SellerAccountContent.Promotion) {
