@@ -5,7 +5,7 @@ import {
 } from '../../../store/services/cartService';
 import { GetUserCartResponse } from '../../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
-import { Button, Divider, Input } from 'react-daisyui';
+import { Divider, Input, Modal, Alert } from 'react-daisyui';
 import { BiTrash } from 'react-icons/bi';
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { titleCase } from '../../../utils/titleCase';
@@ -28,12 +28,23 @@ type SelectCartItems = {
   selectItem: SelectMerchantItems[];
 };
 
+type ModalInformation = {
+  open: boolean;
+  merchantID: number;
+  productItemID: number;
+};
+
 const BuyerCart = () => {
   const { data, error } = useGetUserCartQuery();
   const [updateUserCart, { isLoading }] = useUpdateUserCartMutation();
   const [selectedItems, setSelectedItems] = useState<SelectCartItems>({
     selectAll: false,
     selectItem: [],
+  });
+  const [modal, setModal] = useState<ModalInformation>({
+    open: false,
+    merchantID: 0,
+    productItemID: 0,
   });
 
   if (error && 'data' in error) {
@@ -193,13 +204,16 @@ const BuyerCart = () => {
             updateUserCart({
               product_item_id: product.productItemID,
               quantity: product.quantity,
-            }).unwrap().then(() => {
-              notifySuccessToast('1 Item has been added to cart');
-            }).catch((err) => {
-              product.quantity -= 1;
-              notifyErrorToast(err.data.message);
-              console.error(err);
-            });
+            })
+              .unwrap()
+              .then(() => {
+                notifySuccessToast('1 Item has been added to cart');
+              })
+              .catch((err) => {
+                product.quantity -= 1;
+                notifyErrorToast(err.data.message);
+                console.error(err);
+              });
           }
           return product;
         });
@@ -220,8 +234,13 @@ const BuyerCart = () => {
       if (merchant.merchantID === merchantID) {
         merchant.selectItem = merchant.selectItem.map((product) => {
           if (product.productItemID === productItemID) {
-            if (product.quantity > 0) {
-              // call endpoint to decrease quantity using product item id
+            if (product.quantity === 1) {
+              setModal({
+                open: true,
+                merchantID: merchant.merchantID,
+                productItemID: product.productItemID,
+              });
+            } else if (product.quantity > 1) {
               product.quantity -= 1;
               updateUserCart({
                 product_item_id: product.productItemID,
@@ -266,13 +285,64 @@ const BuyerCart = () => {
     setSelectedItems(newSelectedItems);
   };
 
-  if (!data?.data) {
+  const handleClickDelete = (e: React.SyntheticEvent) => {
+    const target = e.target as HTMLTextAreaElement;
+    const merchantID = Number(
+      target.parentElement?.parentElement?.parentElement?.id
+    );
+    const productItemID = Number(target.parentElement?.parentElement?.id);
+    setModal({
+      open: true,
+      merchantID: merchantID,
+      productItemID: productItemID,
+    });
+  };
+
+  const handleClickConfirmModal = () => {
+    const newSelectedItems = { ...selectedItems };
+    newSelectedItems.selectItem.map((merchant) => {
+      if (merchant.merchantID === modal.merchantID) {
+        merchant.selectItem = merchant.selectItem.map((product) => {
+          if (product.productItemID === modal.productItemID) {
+            product.quantity -= 1;
+          }
+          return product;
+        });
+      }
+      return merchant;
+    });
+    setSelectedItems(newSelectedItems);
+    updateUserCart({
+      product_item_id: modal.productItemID,
+      quantity: 0,
+    })
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Item was succesfully deleted from cart');
+      })
+      .catch((err) => {
+        notifyErrorToast('Error deleting item from cart');
+        console.error(err);
+      })
+      .finally(() => {
+        setModal({
+          open: false,
+          merchantID: 0,
+          productItemID: 0,
+        });
+      });
+  };
+
+  if (!data?.data || data?.data?.length === 0) {
     return null;
   }
 
   return (
     <div className='px-2 container mx-auto flex flex-col'>
       <h5 className='font-bold text-2xl text-primary'>Cart</h5>
+      <Alert className='bg-red-100 border-2 border-red-300 my-2'>
+        :( There was 1 item that could not be processed
+      </Alert>
       <div className='flex'>
         <input
           type='checkbox'
@@ -290,11 +360,13 @@ const BuyerCart = () => {
               type='checkbox'
               className='checkbox checkbox-success'
               onChange={handleClickMerchant}
-              checked={selectedItems?.selectItem[merchantIndex]?.selectAll || false}
+              checked={
+                selectedItems?.selectItem[merchantIndex]?.selectAll || false
+              }
             />
             <div className='flex flex-col pl-2'>
               <div className='font-bold'>{merchant.name}</div>
-              <div className='text-xs'>Merchant Location</div>
+              <div className='text-xs'>{merchant.merchant_province}</div>
             </div>
           </div>
           {merchant.products.map((product, productIndex) => {
@@ -325,14 +397,19 @@ const BuyerCart = () => {
                     <div className='justify-start'>
                       {titleCase(product.product_name)}
                     </div>
-                    <div className='text-sm mt-0.5'>Test Product Variation</div>
+                    <div className='text-sm mt-0.5'>
+                      {titleCase(product.product_variation)}
+                    </div>
                     <div className='text-base font-bold mt-3'>
                       Rp{product.price.toLocaleString('id-ID')}
                     </div>
                   </div>
                 </div>
                 <div className='flex justify-end'>
-                  <BiTrash size='1.5em' className='text-error mr-12' />
+                  <BiTrash
+                    size='1.5em'
+                    className='text-error mr-12 cursor-pointer'
+                  />
                   <AiOutlineMinusCircle
                     size='1.5em'
                     className='text-primary cursor-pointer'
@@ -359,6 +436,20 @@ const BuyerCart = () => {
             );
           })}
           <Divider />
+          <Modal open={modal.open}>
+            <div className='font-bold text-primary mb-2'>Warning</div>
+            <div>
+              Are you sure you want to delete this product from your cart?
+            </div>
+            <div className='modal-action'>
+              <button
+                className='btn bg-primary border-0'
+                onClick={handleClickConfirmModal}
+              >
+                Confirm
+              </button>
+            </div>
+          </Modal>
         </div>
       ))}
     </div>
