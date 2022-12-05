@@ -1,4 +1,4 @@
-export const tagTypes = [
+export const TAG_TYPES = [
   'Category',
   'MyShop',
   'Order',

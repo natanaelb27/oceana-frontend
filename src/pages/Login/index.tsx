@@ -25,7 +25,7 @@ import {
 } from '../../components/common/Form';
 import { notifyErrorToast } from '../../utils/toast';
 import { Tiles } from '../../components/common';
-import { tagTypes } from '../../constants/tags';
+import { TAG_TYPES } from '../../constants/tags';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
@@ -67,7 +67,7 @@ const Login = () => {
           const { data: loginResponseData } = response;
           const { role } = loginResponseData as Role;
           dispatch(setCredentials({ role }));
-          dispatch(baseApi.util.invalidateTags(tagTypes));
+          dispatch(baseApi.util.invalidateTags(TAG_TYPES));
           handleLoginSuccess();
         })
         .catch(() => handleLoginFailed(setFieldValue));
