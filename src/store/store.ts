@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createApi } from '@reduxjs/toolkit/dist/query/react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { TAG_TYPES } from '../constants/tags';
 import baseQueryInterceptor from './baseQuery';
 
 import { authApi } from './services/authService';
@@ -12,15 +13,7 @@ export const baseApi = createApi({
   reducerPath: 'baseApi',
   baseQuery: baseQueryInterceptor,
   endpoints: () => ({}),
-  tagTypes: [
-    'Category',
-    'MyShop',
-    'Order',
-    'OrderDetails',
-    'Product',
-    'Profile',
-    'Cart',
-  ],
+  tagTypes: TAG_TYPES,
 });
 
 export const store = configureStore({

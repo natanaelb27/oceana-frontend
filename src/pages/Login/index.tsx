@@ -14,7 +14,7 @@ import {
   useLoginWithGoogleMutation,
 } from '../../store/services/authService';
 import { setCredentials } from '../../store/slices/authSlice';
-import { useAppDispatch } from '../../store/store';
+import { baseApi, useAppDispatch } from '../../store/store';
 import { Role } from '../../types/component';
 import {
   toLoginRequest,
@@ -35,6 +35,7 @@ import {
 } from '../../components/common/Form';
 import { notifyErrorToast } from '../../utils/toast';
 import { Tiles } from '../../components/common';
+import { TAG_TYPES } from '../../constants/tags';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
@@ -96,6 +97,7 @@ const Login = () => {
           const { data: loginResponseData } = response;
           const { role } = loginResponseData as Role;
           dispatch(setCredentials({ role }));
+          dispatch(baseApi.util.invalidateTags(TAG_TYPES));
           navigate('/');
         })
         .catch(() => handleFailedLogin(setFieldValue));
