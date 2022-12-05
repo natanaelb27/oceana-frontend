@@ -19,3 +19,19 @@ export const DISCOUNT_TYPE = {
   NOMINAL: 'Nominal',
   PERCENTAGE: 'Percentage',
 };
+
+export const LIMIT_TRANSACTION_HISTORY = 10;
+export const DELIVERY_STATUS = {
+  ALL: 'All',
+  ONGOING: 'Ongoing',
+  PENDING_PAYMENT: 'Pending Payment',
+  PENDING_SELLER: 'Pending Seller',
+  ON_PROCESS: 'On Process',
+  OUT_FOR_DELIVERY: 'Out for Delivery',
+  DELIVERED: 'Delivered',
+  COMPLAINED: 'Complained',
+  CANCELED: 'Canceled',
+  CANCELED_BUYER: 'Canceled by Buyer',
+  CANCELED_SELLER: 'Canceled by Seller',
+  COMPLETED: 'Completed',
+};

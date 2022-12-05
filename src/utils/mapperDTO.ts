@@ -1,5 +1,10 @@
 import moment from 'moment';
-import { MerchantVoucherQuery, ProductQuery } from '../types/query';
+import {
+  MerchantVoucherQuery,
+  ProductQuery,
+  TransactionHistoryQuery,
+} from '../types/query';
+
 import {
   LoginRequest,
   RegisterRequest,
@@ -79,6 +84,21 @@ export const toMerchantVoucherQuery = (query: MerchantVoucherQuery) => {
   result += '&search-voucher-code=' + query.searchVoucherCode;
   result += '&filter-voucher-status=' + query.filterVoucherStatus;
   result += '&merchant-id=' + query.merchantID;
+
+  return result;
+};
+
+export const toTransactionHistoryQuery = (query: TransactionHistoryQuery) => {
+  let result = '';
+
+  result += 'limit=' + query.limit;
+  result += '&page=' + query.page;
+  result += '&search=' + query.search;
+  result += '&filter-order-status=' + query.filterOrderStatus;
+  result += '&filter-ongoing-order-status=' + query.filterOngoingOrderStatus;
+  result +=
+    '&filter-start-transaction-date=' + query.filterStartTransactionDate;
+  result += '&filter-end-transaction-date=' + query.filterEndTransactionDate;
 
   return result;
 };
