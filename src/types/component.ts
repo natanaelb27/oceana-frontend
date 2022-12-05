@@ -115,6 +115,23 @@ export interface Product {
   created_at: string;
 }
 
+export interface CartProduct {
+  carts_id: number;
+  product_id: number;
+  product_item_id: number;
+  product_name: string;
+  product_variation: string;
+  quantity: number;
+  stock_quantity: number;
+  price: number;
+  price_after_discount: number;
+}
+export interface CartGroupedByMerchant {
+  merchant_id: number;
+  merchant_province: string;
+  name: string;
+  products: CartProduct[];
+}
 export interface OrderDetail {
   order_detail_id: string;
   product_image: string | null;

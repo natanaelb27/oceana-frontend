@@ -18,6 +18,7 @@ export const baseApi = createApi({
     'OrderDetails',
     'Product',
     'Profile',
+    'Cart',
   ],
 });
 
