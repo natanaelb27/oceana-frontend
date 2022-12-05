@@ -23,6 +23,7 @@ import { stringCompare } from '../../utils/validation';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toRupiah, toStringDate, toStringTime } from '../../utils/convert';
 import { number } from 'yup';
+import { getDateDiff } from '../../utils/date';
 
 type ContentProps = {
   profile: Merchant;
@@ -129,11 +130,13 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
                   ) ? (
                     <Badge color='warning' className='flex gap-1 bg-opacity-50'>
                       <HiOutlineClock />
-                      <Countdown
-                        value={Number(
-                          getMerchantVoucherDetailsData?.data.end_datetime
-                        )}
-                      ></Countdown>
+                      {getDateDiff(
+                        getMerchantVoucherDetailsData?.data.start_datetime,
+                        getMerchantVoucherDetailsData?.data.end_datetime
+                      )}
+                      <Countdown value={10}></Countdown>:
+                      <Countdown value={24}></Countdown>:
+                      <Countdown value={1}></Countdown>
                     </Badge>
                   ) : null}
                 </div>
