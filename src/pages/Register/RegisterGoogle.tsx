@@ -12,14 +12,30 @@ import { PHONE_REGEX } from '../../constants';
 import { useRegisterWithGoogleMutation } from '../../store/services/authService';
 import { selectRegisterGoogleState } from '../../store/slices/registerGoogleSlice';
 import { useAppSelector } from '../../store/store';
+import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import { toRegisterWithGoogleRequest } from '../../utils/mapperDTO';
 import { notifyErrorToast } from '../../utils/toast';
 import { passwordInUsername } from '../../utils/validation';
 
-const RegisterGoogle = () => {
+type RegisterGoogleProps = {
+  handleSuccessRegister: () => void;
+  handleFailedRegister: (
+    message: string,
+    setFieldValue: (
+      field: string,
+      value: string,
+      shouldValidate?: boolean | undefined
+    ) => void
+  ) => void;
+};
+
+const RegisterGoogle = ({
+  handleSuccessRegister,
+  handleFailedRegister,
+}: RegisterGoogleProps) => {
   const [registerWithGoogle, { isLoading }] = useRegisterWithGoogleMutation();
   const registerGoogleState = useAppSelector(selectRegisterGoogleState);
 
-  console.log(registerGoogleState);
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -29,9 +45,6 @@ const RegisterGoogle = () => {
     },
     validationSchema: Yup.object({
       username: Yup.string().required('Please enter a username'),
-      email: Yup.string()
-        .email('Invalid email address')
-        .required('Please enter your email'),
       phoneNumber: Yup.string()
         .matches(PHONE_REGEX, 'Invalid phone number')
         .required('Please enter your phone number'),
@@ -47,9 +60,29 @@ const RegisterGoogle = () => {
         notifyErrorToast('Password must not contain username');
         return;
       }
-      console.log(values);
+      const { googleId, fullName, email, imageUrl } = registerGoogleState;
+      registerWithGoogle(
+        toRegisterWithGoogleRequest(
+          googleId,
+          fullName,
+          username,
+          email,
+          password,
+          phoneNumber,
+          imageUrl
+        )
+      )
+        .unwrap()
+        .then(() => handleSuccessRegister())
+        .catch((err) => {
+          const { data: errorResponse } = err;
+          const { message } = errorResponse;
+          const messageCapitalized = capitalizeFirstLetter(message);
+          handleFailedRegister(messageCapitalized, setFieldValue);
+        });
     },
   });
+
   return (
     <>
       <FormTitleContainer>
@@ -126,8 +159,8 @@ const RegisterGoogle = () => {
         >
           Sign Up
         </Button>
-        <FormFooter />
       </Form>
+      <FormFooter />
     </>
   );
 };

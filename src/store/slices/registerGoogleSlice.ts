@@ -2,19 +2,19 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 
 type RegisterGoogleState = {
-  googleId: string | null;
-  email: string | null;
-  fullName: string | null;
-  imageUrl: string | null;
+  googleId: string;
+  email: string;
+  fullName: string;
+  imageUrl: string;
 };
 
 const slice = createSlice({
   name: 'auth',
   initialState: {
-    googleId: null,
-    email: null,
-    fullName: null,
-    imageUrl: null,
+    googleId: '',
+    email: '',
+    fullName: '',
+    imageUrl: '',
   } as RegisterGoogleState,
   reducers: {
     setRegisterGoogleState: (
@@ -22,10 +22,10 @@ const slice = createSlice({
       {
         payload: { googleId, email, fullName, imageUrl },
       }: PayloadAction<{
-        googleId: string | null;
-        email: string | null;
-        fullName: string | null;
-        imageUrl: string | null;
+        googleId: string;
+        email: string;
+        fullName: string;
+        imageUrl: string;
       }>
     ) => {
       state.googleId = googleId;
@@ -34,10 +34,10 @@ const slice = createSlice({
       state.imageUrl = imageUrl;
     },
     unsetRegisterGoogleState: (state) => {
-      state.googleId = null;
-      state.email = null;
-      state.fullName = null;
-      state.imageUrl = null;
+      state.googleId = '';
+      state.email = '';
+      state.fullName = '';
+      state.imageUrl = '';
     },
   },
 });
