@@ -51,3 +51,8 @@ export type UpdateAddressRequest = {
   detail: string;
   sub_district_id: number;
 };
+
+export type UpdateUserCartRequest = {
+  product_item_id: number;
+  quantity: number;
+}
