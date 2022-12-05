@@ -142,7 +142,7 @@ const BuyerCart = () => {
       newSelectedItems.selectAll = false;
     }
     setSelectedItems(newSelectedItems);
-    console.log({newSelectedItems});
+    console.log({ newSelectedItems });
   };
 
   const handleClickProduct = (e: React.SyntheticEvent) => {
@@ -176,7 +176,7 @@ const BuyerCart = () => {
       }
       return merchant;
     });
-    console.log({newSelectedItems});
+    console.log({ newSelectedItems });
     setSelectedItems(newSelectedItems);
     selectedItems.selectItem.forEach((merchant) => {
       if (merchant.selectAll === true) {
@@ -246,14 +246,15 @@ const BuyerCart = () => {
               updateUserCart({
                 product_item_id: product.productItemID,
                 quantity: product.quantity,
-              }).unwrap()
-              .then(() => {
-                notifySuccessToast('1 Item has been removed from cart');
               })
-              .catch((err) => {
-                notifyErrorToast(err.data.message);
-                console.error(err);
-              });;
+                .unwrap()
+                .then(() => {
+                  notifySuccessToast('1 Item has been removed from cart');
+                })
+                .catch((err) => {
+                  notifyErrorToast(err.data.message);
+                  console.error(err);
+                });
             }
           }
           return product;
@@ -405,7 +406,8 @@ const BuyerCart = () => {
                     checked={
                       selectedItems?.selectItem[merchantIndex]?.selectItem[
                         productIndex
-                    ]?.selectItem || false}
+                      ]?.selectItem || false
+                    }
                     onChange={handleClickProduct}
                   />
                   <div className='h-20 w-20 ml-2 mr-2 h-'>
@@ -428,19 +430,18 @@ const BuyerCart = () => {
                 </div>
                 <div className='flex justify-end'>
                   <BiTrash
-                    size='1.5em'
+                    size='2em'
                     className='text-error mr-12 cursor-pointer'
                     onClick={handleClickDelete}
                   />
                   <AiOutlineMinusCircle
-                    size='1.5em'
+                    size='2em'
                     className='text-primary cursor-pointer'
                     onClick={handleClickDecreaseQuantity}
                   />
                   <Input
-                    type='number'
-                    size='xs'
-                    className='w-10 text-center border-primary'
+                    size='sm'
+                    className='w-10 text-center border-2 border-primary'
                     value={
                       selectedItems?.selectItem[merchantIndex]?.selectItem[
                         productIndex
@@ -449,7 +450,7 @@ const BuyerCart = () => {
                     onChange={handleChangeQuantity}
                   />
                   <AiOutlinePlusCircle
-                    size='1.5em'
+                    size='2em'
                     className='text-primary cursor-pointer'
                     onClick={handleClickAddQuantity}
                   />
