@@ -1,12 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { NavLink } from 'react-router-dom';
 import tw from 'tailwind-styled-components';
 
-export const FormTitle = tw.h1`
-  mb-12
+export const FormTitleContainer = tw.div<any>`
+  w-full
+  flex
+  justify-center
+  mb-8
+`;
+
+export const FormTitle = tw(NavLink)<any>`
+  rounded-xl
+  p-4
   text-center
   text-6xl
   text-primary-content
   font-bold
+
+  transition
+  transform
+  hover:-translate-y-1
+  motion-reduce:transition-none
+  motion-reduce:hover:transform-none
 `;
 
 export const FormErrorText = tw.p`
