@@ -3,6 +3,7 @@ import {
   LoginRequest,
   LoginWithGoogleRequest,
   RegisterRequest,
+  RegisterWithGoogleRequest,
 } from '../../types/request';
 import { LoginResponse, RegisterResponse } from '../../types/response';
 
@@ -34,6 +35,16 @@ export const authApi = createApi({
         body: request,
       }),
     }),
+    registerWithGoogle: builder.mutation<
+      RegisterResponse,
+      RegisterWithGoogleRequest
+    >({
+      query: (request) => ({
+        url: '/auth/register-google',
+        method: 'POST',
+        body: request,
+      }),
+    }),
   }),
 });
 
@@ -41,4 +52,5 @@ export const {
   useLoginMutation,
   useLoginWithGoogleMutation,
   useRegisterMutation,
+  useRegisterWithGoogleMutation,
 } = authApi;
