@@ -1,6 +1,13 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Badge, Card, Divider, Progress, Tooltip } from 'react-daisyui';
+import {
+  Badge,
+  Card,
+  Countdown,
+  Divider,
+  Progress,
+  Tooltip,
+} from 'react-daisyui';
 import { CgMathPercent } from 'react-icons/cg';
 import {
   HiOutlineCurrencyDollar,
@@ -15,6 +22,7 @@ import { useGetMerchantVoucherDetailsQuery } from '../../store/services/shopServ
 import { stringCompare } from '../../utils/validation';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toRupiah, toStringDate, toStringTime } from '../../utils/convert';
+import { number } from 'yup';
 
 type ContentProps = {
   profile: Merchant;
@@ -121,7 +129,11 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
                   ) ? (
                     <Badge color='warning' className='flex gap-1 bg-opacity-50'>
                       <HiOutlineClock />
-                      countdown
+                      <Countdown
+                        value={Number(
+                          getMerchantVoucherDetailsData?.data.end_datetime
+                        )}
+                      ></Countdown>
                     </Badge>
                   ) : null}
                 </div>
