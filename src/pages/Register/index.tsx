@@ -13,7 +13,11 @@ import {
 import { STATUS_SEE_OTHER } from '../../constants';
 import { useLoginWithGoogleMutation } from '../../store/services/authService';
 import { setCredentials } from '../../store/slices/authSlice';
-import { useAppDispatch } from '../../store/store';
+import {
+  selectRegisterGoogleState,
+  setRegisterGoogleState,
+} from '../../store/slices/registerGoogleSlice';
+import { useAppDispatch, useAppSelector } from '../../store/store';
 import { Role } from '../../types/component';
 import { toLoginWithGoogleRequest } from '../../utils/mapperDTO';
 import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
@@ -22,6 +26,7 @@ import RegisterGoogle from './RegisterGoogle';
 
 const Register = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
+  const registerGoogleState = useAppSelector(selectRegisterGoogleState);
   const [step, setStep] = useState<number>(1);
   const nextStep = () => setStep(step + 1);
   const dispatch = useAppDispatch();
@@ -39,13 +44,12 @@ const Register = () => {
   ) => {
     const resGoogleLogin = response as GoogleLoginResponse;
     const basicProfile = resGoogleLogin.getBasicProfile();
+    const googleId = basicProfile.getId();
+    const email = basicProfile.getEmail();
+    const fullName = basicProfile.getName();
+    const imageUrl = basicProfile.getImageUrl();
     loginWithGoogle(
-      toLoginWithGoogleRequest(
-        basicProfile.getId(),
-        basicProfile.getEmail(),
-        basicProfile.getName(),
-        basicProfile.getImageUrl()
-      )
+      toLoginWithGoogleRequest(googleId, fullName, email, imageUrl)
     )
       .unwrap()
       .then((response) => {
@@ -58,6 +62,14 @@ const Register = () => {
       .catch((err) => {
         switch (err.status) {
           case STATUS_SEE_OTHER:
+            dispatch(
+              setRegisterGoogleState({
+                googleId,
+                email,
+                fullName,
+                imageUrl,
+              })
+            );
             nextStep();
             break;
 

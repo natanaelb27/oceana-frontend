@@ -10,12 +10,16 @@ import {
 } from '../../components/common/Form';
 import { PHONE_REGEX } from '../../constants';
 import { useRegisterWithGoogleMutation } from '../../store/services/authService';
+import { selectRegisterGoogleState } from '../../store/slices/registerGoogleSlice';
+import { useAppSelector } from '../../store/store';
 import { notifyErrorToast } from '../../utils/toast';
 import { passwordInUsername } from '../../utils/validation';
 
 const RegisterGoogle = () => {
   const [registerWithGoogle, { isLoading }] = useRegisterWithGoogleMutation();
+  const registerGoogleState = useAppSelector(selectRegisterGoogleState);
 
+  console.log(registerGoogleState);
   const formik = useFormik({
     initialValues: {
       username: '',
