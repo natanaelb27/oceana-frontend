@@ -13,8 +13,12 @@ export const passwordInUsername = (
     .filter((char) => /[a-zA-Z]/.test(char))
     .join('')
     .toLocaleLowerCase();
-    
+
   return username.length > passwordLetters.length
     ? usernameLetters.includes(passwordLetters)
     : passwordLetters.includes(usernameLetters);
+};
+
+export const stringCompare = (string1: string, string2: string): boolean => {
+  return string1.toLowerCase() === string2.toLowerCase();
 };

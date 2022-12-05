@@ -10,10 +10,12 @@ import {
   AuthContainer,
   FormContainer,
 } from '../../components/common/Container';
+import { FormFooter } from '../../components/common/Form';
 import {
   FormCTA,
   FormErrorText,
   FormTitle,
+  FormTitleContainer,
   InputGroup,
   StyledDivider,
 } from '../../components/common/Form/style';
@@ -102,7 +104,6 @@ const Register = () => {
         .unwrap()
         .then(() => handleRegisterSuccess())
         .catch((err) => {
-          console.log(err);
           const { data: errorResponse } = err;
           const { message } = errorResponse;
           const messageCapitalized = capitalizeFirstLetter(message);
@@ -125,7 +126,9 @@ const Register = () => {
     <Tiles>
       <AuthContainer>
         <FormContainer className='max-h-[1080px] md:max-w-[580px] md:mt-0'>
-          <FormTitle>Sign Up</FormTitle>
+          <FormTitleContainer>
+            <FormTitle to='/'>Oceana</FormTitle>
+          </FormTitleContainer>
           <Form onSubmit={formik.handleSubmit}>
             <div className='md:flex md:justify-between'>
               <InputGroup className='md:inline'>
@@ -258,6 +261,7 @@ const Register = () => {
             onFailure={notifyRegisterFailed}
             cookiePolicy='single_host_origin'
           />
+          <FormFooter />
         </FormContainer>
       </AuthContainer>
     </Tiles>

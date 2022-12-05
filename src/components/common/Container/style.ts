@@ -15,7 +15,7 @@ export const FormContainer = tw.div<any>`
   max-h-[640px]
   p-10
   z-10
-  bg-primary
+  glass
   rounded-3xl
   shadow-2xl
 

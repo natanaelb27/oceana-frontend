@@ -1,8 +1,10 @@
-import { number } from 'yup';
 import {
   Address,
   Category,
+  Merchant,
   Metadata,
+  OrderList,
+  OrderListDetail,
   Product,
   Profile,
   Role,
@@ -136,3 +138,37 @@ export type UpdateUserCartResponse = {
   user_id: string;
   quantity: number;
 }
+
+export type GetAllTransactionHistoryResponse = {
+  data: {
+    order_list: OrderList[];
+  } | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type UpdateMerchantResponse = {
+  data: Merchant | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetOrderDetailsResponse = {
+  data: OrderListDetail | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetMerchantResponse = {
+  data: Merchant | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
