@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 
-import { Footer, Header, Loading } from '../common';
+import { Footer, Header } from '../common';
 
 const Layout = () => {
   return (
@@ -9,7 +9,6 @@ const Layout = () => {
       <main className='bg-base-100'>
         <Outlet />
       </main>
-      <Loading />
       <Footer />
     </div>
   );
