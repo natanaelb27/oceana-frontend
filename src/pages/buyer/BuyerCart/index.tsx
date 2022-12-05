@@ -9,6 +9,7 @@ import { Divider, Input, Modal, Alert } from 'react-daisyui';
 import { BiTrash } from 'react-icons/bi';
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { titleCase } from '../../../utils/titleCase';
+import NoData from '../../../components/common/NoData';
 
 type SelectItem = {
   productID: number;
@@ -112,7 +113,6 @@ const BuyerCart = () => {
   const handleClickMerchant = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLInputElement;
     const merchantID = Number(target.parentElement?.parentElement?.id);
-    console.log(merchantID);
     const newSelectedItems = { ...selectedItems };
     let selectedMerchants = 0;
     newSelectedItems.selectItem.map((merchant) => {
@@ -142,6 +142,7 @@ const BuyerCart = () => {
       newSelectedItems.selectAll = false;
     }
     setSelectedItems(newSelectedItems);
+    console.log({newSelectedItems});
   };
 
   const handleClickProduct = (e: React.SyntheticEvent) => {
@@ -175,6 +176,7 @@ const BuyerCart = () => {
       }
       return merchant;
     });
+    console.log({newSelectedItems});
     setSelectedItems(newSelectedItems);
     selectedItems.selectItem.forEach((merchant) => {
       if (merchant.selectAll === true) {
@@ -199,7 +201,6 @@ const BuyerCart = () => {
       if (merchant.merchantID === merchantID) {
         merchant.selectItem = merchant.selectItem.map((product) => {
           if (product.productItemID === productItemID) {
-            // call endpoint to add quantity using product item id
             product.quantity += 1;
             updateUserCart({
               product_item_id: product.productItemID,
@@ -245,7 +246,14 @@ const BuyerCart = () => {
               updateUserCart({
                 product_item_id: product.productItemID,
                 quantity: product.quantity,
-              });
+              }).unwrap()
+              .then(() => {
+                notifySuccessToast('1 Item has been removed from cart');
+              })
+              .catch((err) => {
+                notifyErrorToast(err.data.message);
+                console.error(err);
+              });;
             }
           }
           return product;
@@ -270,7 +278,6 @@ const BuyerCart = () => {
           if (product.productItemID === productItemID) {
             product.quantity = quantity;
             setTimeout(() => {
-              console.log('delayed for 400ms');
               updateUserCart({
                 product_item_id: product.productItemID,
                 quantity: product.quantity,
@@ -333,16 +340,31 @@ const BuyerCart = () => {
       });
   };
 
+  const handleClickOutsideModal = () => {
+    setModal({
+      open: false,
+      merchantID: 0,
+      productItemID: 0,
+    });
+  };
+
   if (!data?.data || data?.data?.length === 0) {
-    return null;
+    return (
+      <div className='py-10'>
+        <NoData
+          title='No items in cart'
+          message='Please add to cart to view more items'
+        />
+      </div>
+    );
   }
 
   return (
     <div className='px-2 container mx-auto flex flex-col'>
-      <h5 className='font-bold text-2xl text-primary'>Cart</h5>
-      <Alert className='bg-red-100 border-2 border-red-300 my-2'>
+      <h5 className='font-bold text-2xl text-primary my-4'>Cart</h5>
+      {/* <Alert className='bg-red-100 border-2 border-red-300 my-2'>
         :( There was 1 item that could not be processed
-      </Alert>
+      </Alert> */}
       <div className='flex'>
         <input
           type='checkbox'
@@ -383,8 +405,7 @@ const BuyerCart = () => {
                     checked={
                       selectedItems?.selectItem[merchantIndex]?.selectItem[
                         productIndex
-                      ]?.selectItem || false
-                    }
+                    ]?.selectItem || false}
                     onChange={handleClickProduct}
                   />
                   <div className='h-20 w-20 ml-2 mr-2 h-'>
@@ -409,6 +430,7 @@ const BuyerCart = () => {
                   <BiTrash
                     size='1.5em'
                     className='text-error mr-12 cursor-pointer'
+                    onClick={handleClickDelete}
                   />
                   <AiOutlineMinusCircle
                     size='1.5em'
@@ -436,7 +458,7 @@ const BuyerCart = () => {
             );
           })}
           <Divider />
-          <Modal open={modal.open}>
+          <Modal open={modal.open} onClickBackdrop={handleClickOutsideModal}>
             <div className='font-bold text-primary mb-2'>Warning</div>
             <div>
               Are you sure you want to delete this product from your cart?
