@@ -13,12 +13,14 @@ type ProductDescriptionProps = {
   productDetail: ProductDetail;
   handleClickVariation: (e: React.SyntheticEvent) => void;
   selectedVariations: number[];
+  purchasedQuantitiesPrice?: number;
 };
 
 const ProductDescription = ({
   productDetail,
   handleClickVariation,
   selectedVariations,
+  purchasedQuantitiesPrice,
 }: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
 
@@ -61,9 +63,13 @@ const ProductDescription = ({
         </Tooltip>{' '}
         {productDetail.rating_star} ({productDetail.rating_count} rating)
       </div>
-      {productDetail.price_after_discount &&
-      productDetail.price_after_discount ===
-        productDetail.price_max_after_discount ? (
+      {purchasedQuantitiesPrice ? (
+        <h4 className='text-4xl font-bold mb-2.5'>
+          {toRupiah(purchasedQuantitiesPrice)}
+        </h4>
+      ) : productDetail.price_after_discount &&
+        productDetail.price_after_discount ===
+          productDetail.price_max_after_discount ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(productDetail.price_after_discount)}
         </h4>
@@ -136,7 +142,7 @@ const ProductDescription = ({
           </div>
         ))}
       </div>
-      <Divider />
+      {productDetail.product_variation.length === 0 ? <div></div> : <Divider />}
       <Tabs variant='bordered' value={tab} onChange={setTab}>
         <Tabs.Tab value={ProductTab.Specification}>Specification</Tabs.Tab>
         <Tabs.Tab value={ProductTab.Description}>Description</Tabs.Tab>

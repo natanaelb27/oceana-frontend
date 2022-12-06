@@ -10,6 +10,7 @@ import {
 import { HiShoppingBag, HiShoppingCart } from 'react-icons/hi';
 
 import { toRupiah } from '../../utils/convert';
+import { titleCase } from '../../utils/titleCase';
 
 type ProductCartProps = {
   stock: number;
@@ -17,7 +18,9 @@ type ProductCartProps = {
   handleClickAddQuantity: () => void;
   handleClickDecreaseQuantity: () => void;
   handleChangeQuantity: (e: React.SyntheticEvent) => void;
-  purchased_quantities_stock?: number;
+  purchasedQuantitiesStock?: number;
+  purchasedQuantitiesPrice?: number;
+  productVariation?: string;
   isLoading?: boolean;
 };
 
@@ -27,7 +30,9 @@ const ProductCart = ({
   handleClickAddQuantity,
   handleClickDecreaseQuantity,
   handleChangeQuantity,
-  purchased_quantities_stock,
+  purchasedQuantitiesStock,
+  purchasedQuantitiesPrice,
+  productVariation,
   isLoading,
 }: ProductCartProps) => {
   // const [quantity, setQuantity] = useState<number>(1);
@@ -78,7 +83,11 @@ const ProductCart = ({
       <div className='p-4'>
         <div className='flex items-center gap-2'>
           <Avatar src='https://picsum.photos/200' size='sm' />
-          <p className='line-clamp-1'>BLOB, Black</p>
+          {productVariation ? (
+            <p className='line-clamp-1'>{titleCase(productVariation)}</p>
+          ) : (
+            <p className='line-clamp-1'>No selected variation</p>
+          )}
         </div>
         <Divider />
         <div className='flex items-center'>
@@ -96,12 +105,14 @@ const ProductCart = ({
               +
             </Button>
           </InputGroup>
-          {purchased_quantities_stock ? (
+          {purchasedQuantitiesStock ? (
             <p className='flex-1 line-clamp-1'>
-              Stock: {purchased_quantities_stock}
+              Stock: {purchasedQuantitiesStock}
             </p>
-          ) : purchased_quantities_stock === 0 ? (
-            <p className='flex-1 line-clamp-1'>Stock: {purchased_quantities_stock}</p>
+          ) : purchasedQuantitiesStock === 0 ? (
+            <p className='flex-1 line-clamp-1'>
+              Stock: {purchasedQuantitiesStock}
+            </p>
           ) : (
             <p className='flex-1 line-clamp-1'>Stock: {stock}</p>
           )}
@@ -110,7 +121,13 @@ const ProductCart = ({
         <Divider />
         <div className='flex justify-between items-center mb-4'>
           <p>Subtotal</p>
-          <h5 className='font-bold text-xl'>{toRupiah(430000)}</h5>
+          {!purchasedQuantitiesPrice ? (
+            <h5 className='font-bold text-xl'>{toRupiah(0)}</h5>
+          ) : (
+            <h5 className='font-bold text-xl'>
+              {toRupiah(purchasedQuantitiesPrice*quantity)}
+            </h5>
+          )}
         </div>
         <Button
           color='primary'

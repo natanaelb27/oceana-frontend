@@ -445,7 +445,7 @@ const BuyerCart = () => {
                     value={
                       selectedItems?.selectItem[merchantIndex]?.selectItem[
                         productIndex
-                      ]?.quantity || ''
+                      ]?.quantity || 0
                     }
                     onChange={handleChangeQuantity}
                   />

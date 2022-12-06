@@ -35,6 +35,7 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
     },
   ] = useLazyGetPurchasedQuantitiesQuery();
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
+  const [productVariation, setProductVariation] = useState('');
 
   const handleClickVariation = (e: React.SyntheticEvent) => {
     if (!getProductDetailData?.data) {
@@ -61,9 +62,11 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
           JSON.stringify(row.variation_index) ===
           JSON.stringify(selectedVariationsCopy)
       );
+      console.log({foundProductModel});
       if (!foundProductModel) {
         return;
       }
+      setProductVariation(foundProductModel.product_variations);
       const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
       purchasedQuantitiesQueryCopy.product_item_id =
         foundProductModel.product_item_id;
@@ -112,7 +115,7 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
   // if (!getProductDetailData?.data) {
   //   return <div>404</div>;
   // }
-
+  
   if (getProductDetailIsLoading || !getProductDetailData?.data) {
     return (
       <div className='p-4 md:p-10 animate-pulse'>
@@ -181,6 +184,7 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
               productDetail={getProductDetailData.data}
               handleClickVariation={handleClickVariation}
               selectedVariations={selectedVariations}
+              purchasedQuantitiesPrice={getPurchasedQuantitiesData?.data?.price}
             />
           </div>
           <div className='col-span-12 md:col-span-3'>
@@ -190,7 +194,9 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
               handleClickAddQuantity={handleClickAddQuantity}
               handleClickDecreaseQuantity={handleClickDecreaseQuantity}
               handleChangeQuantity={handleChangeQuantity}
-              purchased_quantities_stock={getPurchasedQuantitiesData?.data?.stock}
+              purchasedQuantitiesStock={getPurchasedQuantitiesData?.data?.stock}
+              purchasedQuantitiesPrice={getPurchasedQuantitiesData?.data?.price}
+              productVariation={productVariation}
             />
           </div>
           <div className='col-span-12 md:col-span-3'>

@@ -121,6 +121,7 @@ interface ProductModel {
   stock_quantity: number;
   price: number;
   price_after_discount: number | null;
+  product_variations: string;
   variation_index: number[];
 }
 
