@@ -142,7 +142,7 @@ const ProductDescription = ({
           </div>
         ))}
       </div>
-      {productDetail.product_variation.length === 0 ? <div></div> : <Divider />}
+      {productDetail.product_variation.length !== 0 && <Divider />}
       <Tabs variant='bordered' value={tab} onChange={setTab}>
         <Tabs.Tab value={ProductTab.Specification}>Specification</Tabs.Tab>
         <Tabs.Tab value={ProductTab.Description}>Description</Tabs.Tab>

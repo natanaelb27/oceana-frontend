@@ -125,7 +125,7 @@ interface ProductModel {
   variation_index: number[];
 }
 
-interface ProductVariation {
+export interface ProductVariation {
   name: string;
   options: string[];
   image: string[];

@@ -92,6 +92,9 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
 
   const handleChangeQuantity = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLInputElement;
+    if (isNaN(Number(target.value))) {
+      return;
+    }
     const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
     purchasedQuantitiesQueryCopy.quantity = Number(target.value);
     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
@@ -197,6 +200,8 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
               purchasedQuantitiesStock={getPurchasedQuantitiesData?.data?.stock}
               purchasedQuantitiesPrice={getPurchasedQuantitiesData?.data?.price}
               productVariation={productVariation}
+              productVariations={getProductDetailData.data.product_variation}
+              productPrice={getProductDetailData.data.price}
             />
           </div>
           <div className='col-span-12 md:col-span-3'>

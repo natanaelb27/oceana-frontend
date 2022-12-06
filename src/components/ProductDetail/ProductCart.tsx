@@ -8,6 +8,7 @@ import {
   InputGroup,
 } from 'react-daisyui';
 import { HiShoppingBag, HiShoppingCart } from 'react-icons/hi';
+import { ProductVariation } from '../../types/component';
 
 import { toRupiah } from '../../utils/convert';
 import { titleCase } from '../../utils/titleCase';
@@ -21,6 +22,8 @@ type ProductCartProps = {
   purchasedQuantitiesStock?: number;
   purchasedQuantitiesPrice?: number;
   productVariation?: string;
+  productVariations: ProductVariation[];
+  productPrice: number;
   isLoading?: boolean;
 };
 
@@ -33,6 +36,8 @@ const ProductCart = ({
   purchasedQuantitiesStock,
   purchasedQuantitiesPrice,
   productVariation,
+  productVariations,
+  productPrice,
   isLoading,
 }: ProductCartProps) => {
   // const [quantity, setQuantity] = useState<number>(1);
@@ -81,51 +86,94 @@ const ProductCart = ({
   return (
     <Card className='shadow'>
       <div className='p-4'>
-        <div className='flex items-center gap-2'>
-          <Avatar src='https://picsum.photos/200' size='sm' />
-          {productVariation ? (
-            <p className='line-clamp-1'>{titleCase(productVariation)}</p>
-          ) : (
-            <p className='line-clamp-1'>No selected variation</p>
-          )}
-        </div>
-        <Divider />
-        <div className='flex items-center'>
-          <InputGroup size='sm' className='flex-1'>
+        {productVariations.length !== 0 && (
+          <div>
+            <div className='flex items-center gap-2'>
+              <Avatar src='https://picsum.photos/200' size='sm' />
+              {productVariation ? (
+                <p className='line-clamp-1'>{titleCase(productVariation)}</p>
+              ) : (
+                <p className='line-clamp-1'>No selected variation</p>
+              )}
+            </div>
+            <Divider />
+          </div>
+        )}
+        <div className='mb-2 font-bold text-lg'>Quantity</div>
+        <div className='flex justify-between items-center'>
+          <InputGroup size='sm' className='max-w-fit'>
             <Button size='sm' onClick={handleClickDecreaseQuantity}>
               -
             </Button>
             <Input
               size='sm'
-              value={quantity}
+              value={quantity || 0}
               onChange={handleChangeQuantity}
               className='w-16 text-center'
             />
-            <Button size='sm' onClick={handleClickAddQuantity}>
+            <Button
+              size='sm'
+              onClick={handleClickAddQuantity}
+              disabled={
+                stock === quantity ||
+                (purchasedQuantitiesStock &&
+                  purchasedQuantitiesStock !== 0 &&
+                  purchasedQuantitiesStock === quantity)
+                  ? true
+                  : false
+              }
+            >
               +
             </Button>
           </InputGroup>
           {purchasedQuantitiesStock ? (
-            <p className='flex-1 line-clamp-1'>
+            <p className='min-w-fit line-clamp-1'>
               Stock: {purchasedQuantitiesStock}
             </p>
           ) : purchasedQuantitiesStock === 0 ? (
-            <p className='flex-1 line-clamp-1'>
+            <p className='min-w-fit line-clamp-1'>
               Stock: {purchasedQuantitiesStock}
             </p>
           ) : (
-            <p className='flex-1 line-clamp-1'>Stock: {stock}</p>
+            <p className='min-w-fit line-clamp-1'>Stock: {stock}</p>
           )}
-          {/* <p className='flex-1 line-clamp-1'>Stock: {stock}</p> */}
         </div>
+        {!purchasedQuantitiesStock && stock < quantity && (
+          <div className='mt-2 text-red-500'>
+            There are only {stock} items left
+          </div>
+        )}
+        {purchasedQuantitiesStock === 0 && (
+          <div className='mt-2 text-red-500'>
+            There are {purchasedQuantitiesStock} items left
+          </div>
+        )}
+        {purchasedQuantitiesStock !== 0 && quantity === 0 && (
+          <div className='mt-2 text-red-500'>
+            Minimum purchase of this product is 1 item
+          </div>
+        )}
+        {purchasedQuantitiesStock &&
+        purchasedQuantitiesStock !== 0 &&
+        purchasedQuantitiesStock < quantity ? (
+          <div className='mt-2 text-red-500'>
+            There are only {purchasedQuantitiesStock} items left
+          </div>
+        ) : (
+          <div></div>
+        )}
         <Divider />
         <div className='flex justify-between items-center mb-4'>
           <p>Subtotal</p>
-          {!purchasedQuantitiesPrice ? (
+          {productVariations.length === 0 ? (
+            <h5 className='font-bold text-xl'>
+              {toRupiah(productPrice * quantity)}
+            </h5>
+          ) : !purchasedQuantitiesPrice ? (
             <h5 className='font-bold text-xl'>{toRupiah(0)}</h5>
           ) : (
             <h5 className='font-bold text-xl'>
-              {toRupiah(purchasedQuantitiesPrice*quantity)}
+              {toRupiah(purchasedQuantitiesPrice * quantity)}
             </h5>
           )}
         </div>
