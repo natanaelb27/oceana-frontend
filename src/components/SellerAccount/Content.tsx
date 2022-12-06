@@ -4,6 +4,7 @@ import { SellerAccountContent } from '../../types/content';
 import AddressContent from './AddressContent';
 import VoucherContent from './VoucherContent';
 import VoucherDetailContent from './VoucherDetailContent';
+import VoucherAddContent from './VoucherAddContent';
 
 // import ProfileContent from './ProfileContent';
 
@@ -32,6 +33,10 @@ const Content = ({ profile, content }: ContentProps) => {
 
     if (content === SellerAccountContent.VoucherDetail) {
       return <VoucherDetailContent profile={profile} />;
+    }
+
+    if (content === SellerAccountContent.VoucherAdd) {
+      return <VoucherAddContent profile={profile} />;
     }
 
     if (content === SellerAccountContent.Promotion) {

@@ -27,7 +27,6 @@ type SidebarProps = {
 const Sidebar = ({ profile }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
-  console.log(pathname);
   const splitLocation = pathname.split('/');
 
   const dispatch = useAppDispatch();

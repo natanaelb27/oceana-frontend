@@ -28,14 +28,21 @@ import {
 import { MerchantVoucherQuery } from '../../types/query';
 import { Merchant } from '../../types/component';
 import { useGetAllMerchantVoucherQuery } from '../../store/services/shopService';
+import { useDeleteMerchantVoucherMutation } from '../../store/services/myShopService';
 import { toMerchantVoucherQuery } from '../../utils/mapperDTO';
-import { Pager } from '../../components/common';
+import { ConfirmationModal, Pager } from '../../components/common';
 import { stringCompare } from '../../utils/validation';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toRupiah, toStringDate, toStringTime } from '../../utils/convert';
+import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
+import { DeleteMerchantVoucherResponse } from '../../types/response';
 
 type ContentProps = {
   profile: Merchant;
+};
+
+type OpenMerchantVoucherModal = {
+  delete: boolean;
 };
 
 const VoucherContent = ({ profile }: ContentProps) => {
@@ -56,7 +63,7 @@ const VoucherContent = ({ profile }: ContentProps) => {
 
   const {
     data: getAllMerchantVoucherData,
-    isLoading: getAllMerchantVoucherLoading,
+    isLoading: getAllMerchantVoucherIsLoading,
   } = useGetAllMerchantVoucherQuery(toMerchantVoucherQuery(voucherQuery));
 
   const handlePageChange = (n: number) => {
@@ -65,6 +72,22 @@ const VoucherContent = ({ profile }: ContentProps) => {
       page: n,
     });
   };
+
+  const [merchantVoucherID, setMerchantVoucherID] = useState<number | null>(
+    null
+  );
+
+  const [
+    deleteMerchantVoucher,
+    {
+      isLoading: deleteMerchantVoucherIsLoading,
+      error: deleteMerchantVoucherError,
+    },
+  ] = useDeleteMerchantVoucherMutation();
+
+  const [openModal, setOpenModal] = useState<OpenMerchantVoucherModal>({
+    delete: false,
+  });
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -97,18 +120,67 @@ const VoucherContent = ({ profile }: ContentProps) => {
     });
   };
 
-  const handleEditVoucherClick = () => {
+  const handleCreateVoucherClick = () => {
+    navigate('/seller/marketing/vouchers/add', {
+      replace: true,
+    });
+  };
+
+  const handleEditVoucherClick = (id: number) => {
     console.log('edit');
   };
 
-  const handleCancelVoucherClick = () => {
-    console.log('cancel');
+  const handleCancelVoucherClick = (id: number) => {
+    setOpenModal({
+      delete: true,
+    });
+
+    setMerchantVoucherID(id);
   };
 
-  const handleDetailVoucherClick = (voucherID: number) => {
-    navigate(`/seller/marketing/vouchers/detail/${voucherID}`, {
+  const handleDetailVoucherClick = (id: number) => {
+    navigate(`/seller/marketing/vouchers/detail/${id}`, {
       replace: true,
     });
+  };
+
+  const handleModalClose = () => {
+    setOpenModal({
+      delete: false,
+    });
+    setMerchantVoucherID(null);
+  };
+
+  const handleDeleteMerchantVoucher = () => {
+    setOpenModal({
+      delete: false,
+    });
+
+    if (!merchantVoucherID) {
+      return;
+    }
+
+    deleteMerchantVoucher(merchantVoucherID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Voucher has been deleted!');
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        setMerchantVoucherID(null);
+
+        if (
+          deleteMerchantVoucherError &&
+          'data' in deleteMerchantVoucherError
+        ) {
+          const response =
+            deleteMerchantVoucherError.data as DeleteMerchantVoucherResponse;
+
+          notifyErrorToast(response.message);
+        }
+      });
   };
 
   return (
@@ -119,9 +191,7 @@ const VoucherContent = ({ profile }: ContentProps) => {
           className='w-full md:w-auto'
           startIcon={<HiPlus className='text-xl' />}
           color='primary'
-          onClick={() => {
-            console.log('tes');
-          }}
+          onClick={handleCreateVoucherClick}
         >
           Voucher
         </Button>
@@ -261,13 +331,17 @@ const VoucherContent = ({ profile }: ContentProps) => {
                             <Tooltip message='Edit'>
                               <HiOutlinePencil
                                 className='bg-warning text-white h-7 w-7 p-1 rounded-md cursor-pointer'
-                                onClick={handleEditVoucherClick}
+                                onClick={() => {
+                                  handleEditVoucherClick(id);
+                                }}
                               />
                             </Tooltip>
                             <Tooltip message='Cancel'>
                               <HiOutlineXCircle
                                 className='bg-error text-white h-7 w-7 p-1 rounded-md cursor-pointer'
-                                onClick={handleCancelVoucherClick}
+                                onClick={() => {
+                                  handleCancelVoucherClick(id);
+                                }}
                               />
                             </Tooltip>
                             <Tooltip message='Detail'>
@@ -287,7 +361,9 @@ const VoucherContent = ({ profile }: ContentProps) => {
                             <Tooltip message='Edit'>
                               <HiOutlinePencil
                                 className='bg-warning text-white h-7 w-7 p-1 rounded-md cursor-pointer'
-                                onClick={handleEditVoucherClick}
+                                onClick={() => {
+                                  handleEditVoucherClick(id);
+                                }}
                               />
                             </Tooltip>
                             <HiOutlineXCircle className='bg-base-300 h-7 w-7 p-1 rounded-md' />
@@ -336,6 +412,13 @@ const VoucherContent = ({ profile }: ContentProps) => {
           onPageChange={handlePageChange}
         />
       </div>
+      <ConfirmationModal
+        open={openModal.delete}
+        title='Are you sure?'
+        message='This action cannot be undone.'
+        onClose={handleModalClose}
+        onAccepted={handleDeleteMerchantVoucher}
+      />
     </div>
   );
 };

@@ -140,7 +140,7 @@ const PurchaseContent = () => {
     });
   };
 
-  const [isDateOpen, setisDateOpen] = useState<boolean>(false);
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
 
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
     null,
@@ -167,7 +167,7 @@ const PurchaseContent = () => {
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
     });
-    setisDateOpen(false);
+    setIsDateOpen(false);
   };
 
   const handleApplyFilterDate = () => {
@@ -177,7 +177,7 @@ const PurchaseContent = () => {
       filterStartTransactionDate: moment(startDate).format('YYYY-MM-DD'),
       filterEndTransactionDate: moment(endDate).format('YYYY-MM-DD'),
     });
-    setisDateOpen(false);
+    setIsDateOpen(false);
   };
 
   type DateContainerProps = {
@@ -269,7 +269,7 @@ const PurchaseContent = () => {
         ).toDate(),
       ]);
     }
-    setisDateOpen(false);
+    setIsDateOpen(false);
   };
 
   useOutsideAlerter(dateWrapperRef, handleDateOutsideClick);
@@ -283,7 +283,7 @@ const PurchaseContent = () => {
         className='normal-case flex gap-2 w-[100%] md:w-auto md:pl-7 md:pr-7 btn-outline no-animation'
         onClick={() => {
           onClick;
-          setisDateOpen(!isDateOpen);
+          setIsDateOpen(!isDateOpen);
         }}
         ref={ref}
       >

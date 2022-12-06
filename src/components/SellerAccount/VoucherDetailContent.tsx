@@ -2,6 +2,7 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Badge,
+  Breadcrumbs,
   Card,
   Countdown,
   Divider,
@@ -22,8 +23,7 @@ import { useGetMerchantVoucherDetailsQuery } from '../../store/services/shopServ
 import { stringCompare } from '../../utils/validation';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toRupiah, toStringDate, toStringTime } from '../../utils/convert';
-import { number } from 'yup';
-import { getDateDiff } from '../../utils/date';
+import { computeDatetime, getDateDiffNow } from '../../utils/date';
 
 type ContentProps = {
   profile: Merchant;
@@ -35,11 +35,11 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
 
   const {
     data: getMerchantVoucherDetailsData,
-    isLoading: getMerchantVoucherDetailsLoading,
+    isLoading: getMerchantVoucherDetailsIsLoading,
   } = useGetMerchantVoucherDetailsQuery(params.voucherID || '');
 
   if (
-    !getMerchantVoucherDetailsLoading &&
+    !getMerchantVoucherDetailsIsLoading &&
     getMerchantVoucherDetailsData?.data.merchant_id !== profile.id
   ) {
     navigate('/seller/marketing/vouchers/list', { replace: true });
@@ -54,14 +54,27 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
     return 'success';
   };
 
+  const handleGoBack = () => {
+    navigate('/seller/marketing/vouchers/list', { replace: true });
+  };
+
   return (
     <div className='p-4 md:p-10'>
+      <Breadcrumbs className='mb-4'>
+        <Breadcrumbs.Item
+          className='text-primary cursor-pointer'
+          onClick={handleGoBack}
+        >
+          Voucher List
+        </Breadcrumbs.Item>
+        <Breadcrumbs.Item>Voucher Detail</Breadcrumbs.Item>
+      </Breadcrumbs>
       <div className='flex flex-col md:flex-row gap-y-3 justify-between items-center'>
         <h5 className='font-bold text-2xl text-primary'>Voucher Detail</h5>
       </div>
       <Divider />
       <div className='grid grid-cols-12 gap-4'>
-        {getMerchantVoucherDetailsLoading && (
+        {getMerchantVoucherDetailsIsLoading && (
           <Card className='col-span-12 shadow animate-pulse'>
             <div className='p-4'>
               <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
@@ -130,13 +143,60 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
                   ) ? (
                     <Badge color='warning' className='flex gap-1 bg-opacity-50'>
                       <HiOutlineClock />
-                      {getDateDiff(
-                        getMerchantVoucherDetailsData?.data.start_datetime,
-                        getMerchantVoucherDetailsData?.data.end_datetime
+                      {computeDatetime(
+                        getDateDiffNow(
+                          getMerchantVoucherDetailsData?.data.end_datetime
+                        )
+                      ).days > 0 ? (
+                        <div className='font-bold'>
+                          <Countdown
+                            value={
+                              computeDatetime(
+                                getDateDiffNow(
+                                  getMerchantVoucherDetailsData?.data
+                                    .end_datetime
+                                )
+                              ).days
+                            }
+                          ></Countdown>{' '}
+                          days
+                        </div>
+                      ) : (
+                        <div className='font-bold'>
+                          <Countdown
+                            value={
+                              computeDatetime(
+                                getDateDiffNow(
+                                  getMerchantVoucherDetailsData?.data
+                                    .end_datetime
+                                )
+                              ).hours
+                            }
+                          ></Countdown>
+                          {':'}
+                          <Countdown
+                            value={
+                              computeDatetime(
+                                getDateDiffNow(
+                                  getMerchantVoucherDetailsData?.data
+                                    .end_datetime
+                                )
+                              ).minutes
+                            }
+                          ></Countdown>
+                          {':'}
+                          <Countdown
+                            value={
+                              computeDatetime(
+                                getDateDiffNow(
+                                  getMerchantVoucherDetailsData?.data
+                                    .end_datetime
+                                )
+                              ).seconds
+                            }
+                          ></Countdown>
+                        </div>
                       )}
-                      <Countdown value={10}></Countdown>:
-                      <Countdown value={24}></Countdown>:
-                      <Countdown value={1}></Countdown>
                     </Badge>
                   ) : null}
                 </div>
@@ -201,7 +261,7 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
                 </div>
                 <div className='flex flex-col gap-1 col-span-1'>
                   <span className='uppercase font-light text-sm'>
-                    Nominal Discount
+                    Discount Nominal
                   </span>
                   <span>
                     {toRupiah(getMerchantVoucherDetailsData?.data.discount)}
@@ -230,7 +290,7 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
                 </div>
                 <div className='flex flex-col gap-1 col-span-1'>
                   <span className='uppercase font-light text-sm'>
-                    Nominal Discount
+                    Discount Percentage
                   </span>
                   <span>{getMerchantVoucherDetailsData?.data.discount}%</span>
                 </div>
