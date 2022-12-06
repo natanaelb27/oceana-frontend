@@ -12,6 +12,24 @@ export type RegisterRequest = {
   role: string;
 };
 
+export type LoginWithGoogleRequest = {
+  google_id: string;
+  full_name: string;
+  email: string;
+  image_url: string;
+};
+
+export type RegisterWithGoogleRequest = {
+  google_id: string;
+  full_name: string;
+  username: string;
+  email: string;
+  password: string;
+  phone_number: string;
+  role: string;
+  image_url: string;
+};
+
 export type UpdateProfileRequest = {
   full_name?: string;
   gender?: string;
@@ -42,4 +60,8 @@ export type CreateMerchantVoucherRequest = {
   discount: number;
   minimum_spend_amount: number;
   maximum_quota: number;
+};
+export type UpdateUserCartRequest = {
+  product_item_id: number;
+  quantity: number;
 };

@@ -1,25 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createApi } from '@reduxjs/toolkit/dist/query/react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { TAG_TYPES } from '../constants/tags';
 import baseQueryInterceptor from './baseQuery';
 
 import { authApi } from './services/authService';
 import authReducer from './slices/authSlice';
+import registerGoogleReducer from './slices/registerGoogleSlice';
 import sellerSidebarReducer from './slices/sellerSidebarSlice';
 
 export const baseApi = createApi({
   reducerPath: 'baseApi',
   baseQuery: baseQueryInterceptor,
   endpoints: () => ({}),
-  tagTypes: [
-    'Category',
-    'MerchantVoucher',
-    'MyShop',
-    'Order',
-    'OrderDetails',
-    'Product',
-    'Profile',
-  ],
+  tagTypes: TAG_TYPES,
 });
 
 export const store = configureStore({
@@ -27,6 +21,7 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [baseApi.reducerPath]: baseApi.reducer,
     auth: authReducer,
+    registerGoogle: registerGoogleReducer,
     sellerSidebar: sellerSidebarReducer,
   },
   middleware: (getDefaultMiddleware) =>
