@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Badge, Button, Divider, Tabs, Tooltip } from 'react-daisyui';
 import { HiStar } from 'react-icons/hi';
 import { NavLink } from 'react-router-dom';
@@ -11,9 +11,15 @@ import { titleCase } from '../../utils/titleCase';
 
 type ProductDescriptionProps = {
   productDetail: ProductDetail;
+  handleClickVariation: (e: React.SyntheticEvent) => void;
+  selectedVariations: number[];
 };
 
-const ProductDescription = ({ productDetail }: ProductDescriptionProps) => {
+const ProductDescription = ({
+  productDetail,
+  handleClickVariation,
+  selectedVariations,
+}: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
 
   const renderTabContent = (tab: ProductTab) => {
@@ -35,9 +41,7 @@ const ProductDescription = ({ productDetail }: ProductDescriptionProps) => {
     if (tab === ProductTab.Description) {
       return (
         <div className='bg-base-200 p-4 text-sm'>
-          <p className='prose-sm'>
-            {productDetail.description}
-          </p>
+          <p className='prose-sm'>{productDetail.description}</p>
         </div>
       );
     }
@@ -57,11 +61,21 @@ const ProductDescription = ({ productDetail }: ProductDescriptionProps) => {
         </Tooltip>{' '}
         {productDetail.rating_star} ({productDetail.rating_count} rating)
       </div>
-      {productDetail.price_min_after_discount &&
-      productDetail.price_max_after_discount ? (
+      {productDetail.price_after_discount &&
+      productDetail.price_after_discount ===
+        productDetail.price_max_after_discount ? (
+        <h4 className='text-4xl font-bold mb-2.5'>
+          {toRupiah(productDetail.price_after_discount)}
+        </h4>
+      ) : productDetail.price_min_after_discount &&
+        productDetail.price_max_after_discount ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(productDetail.price_min_after_discount)}-
           {toRupiah(productDetail.price_max_after_discount)}
+        </h4>
+      ) : productDetail.price_min === productDetail.price_max ? (
+        <h4 className='text-4xl font-bold mb-2.5'>
+          {toRupiah(productDetail.price)}
         </h4>
       ) : (
         <h4 className='text-4xl font-bold mb-2.5'>
@@ -69,32 +83,51 @@ const ProductDescription = ({ productDetail }: ProductDescriptionProps) => {
           {toRupiah(productDetail.price_max)}
         </h4>
       )}
-      {/* <h4 className='text-4xl font-bold mb-2.5'>
-        {toRupiah(productDetail.price_min_after_discount)}-{toRupiah(productDetail.price_max_after_discount)}
-      </h4> */}
-      <div className='flex items-center'>
-        <Tooltip message='Murah Lebay' color='success'>
-          <Badge color='success' size='sm' className='truncate'>
-            {productDetail.discount}%
-          </Badge>
-        </Tooltip>
-        <h5 className='text-lg line-through ml-1'>
-          {toRupiah(productDetail.price_min)}-
-          {toRupiah(productDetail.price_max)}
-        </h5>
-      </div>
+      {productDetail.price_after_discount ? (
+        <div className='flex items-center'>
+          <Tooltip message='Murah Lebay' color='success'>
+            <Badge color='success' size='sm' className='truncate'>
+              {productDetail.discount}%
+            </Badge>
+          </Tooltip>
+          {productDetail.price_min === productDetail.price_max ? (
+            <h5 className='text-lg line-through ml-1'>
+              {toRupiah(productDetail.price)}
+            </h5>
+          ) : (
+            <h5 className='text-lg line-through ml-1'>
+              {toRupiah(productDetail.price_min)}-
+              {toRupiah(productDetail.price_max)}
+            </h5>
+          )}
+        </div>
+      ) : (
+        <div></div>
+      )}
+
       <Divider />
       <div className='flex flex-col gap-4'>
-        {productDetail.product_variation.map((variation) => (
+        {productDetail.product_variation.map((variation, variationIndex) => (
           <div key={variation.name}>
             <p className='font-bold mb-2'>{titleCase(variation.name)}:</p>
             <div className='flex flex-wrap gap-1'>
-              {variation.options.map((option, index) => (
+              {variation.options.map((option, optionIndex) => (
                 <Button
+                  id={`${variationIndex}-${optionIndex}`}
                   size='sm'
                   variant='outline'
-                  className='font-normal normal-case'
-                  key={index}
+                  className={`font-normal normal-case btn-primary disabled:btn-outline ${
+                    selectedVariations[variationIndex] === optionIndex
+                      ? 'btn-active'
+                      : ''
+                  }`}
+                  key={option}
+                  disabled={
+                    selectedVariations.length !== variationIndex - 1
+                      ? false
+                      : true
+                  }
+                  onClick={handleClickVariation}
                 >
                   {titleCase(option)}
                 </Button>
@@ -102,101 +135,6 @@ const ProductDescription = ({ productDetail }: ProductDescriptionProps) => {
             </div>
           </div>
         ))}
-        {/* <div>
-          <p className='font-bold mb-2'>Size:</p>
-          <div className='flex flex-wrap gap-1'>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-            >
-              BNIB
-            </Button>
-            <Button
-              size='sm'
-              color='secondary'
-              className='font-normal normal-case'
-            >
-              BNOB
-            </Button>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-              disabled
-            >
-              BNIB+BUNDLE 1
-            </Button>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-            >
-              BNIB+BUNDLE 2
-            </Button>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-            >
-              BNIB+BUNDLE 3
-            </Button>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-            >
-              BNIB+BUNDLE 4
-            </Button>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-            >
-              BNOB+BUNDLE 1
-            </Button>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-            >
-              BNOB+BUNDLE 2
-            </Button>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-            >
-              BNOB+BUNDLE 3
-            </Button>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-            >
-              BNOB+BUNDLE 4
-            </Button>
-          </div>
-        </div> */}
-        {/* <div>
-          <p className='font-bold mb-2'>Color:</p>
-          <div className='flex flex-wrap gap-1'>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-            >
-              White
-            </Button>
-            <Button
-              size='sm'
-              variant='outline'
-              className='font-normal normal-case'
-            >
-              Black
-            </Button>
-          </div>
-        </div> */}
       </div>
       <Divider />
       <Tabs variant='bordered' value={tab} onChange={setTab}>

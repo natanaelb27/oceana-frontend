@@ -172,6 +172,13 @@ export interface CartGroupedByMerchant {
   name: string;
   products: CartProduct[];
 }
+
+export interface UpdateCart {
+  id: number;
+  product_item_id: number;
+  user_id: string;
+  quantity: number;
+}
 export interface OrderDetail {
   order_detail_id: string;
   product_image: string | null;
@@ -233,4 +240,12 @@ export interface Merchant {
   name: string;
   address_id: string;
   photo: string;
+}
+
+export interface PurchasedQuantities {
+  price: number;
+  stock: number;
+  max_purchase_quantity: number;
+  user_max_purchase_quantity: number;
+  product_merchant_promotion_id: number;
 }

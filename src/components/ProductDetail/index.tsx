@@ -1,26 +1,119 @@
+import React, { useState, useEffect } from 'react';
 import { Card, Divider } from 'react-daisyui';
-import { useGetProductDetailQuery } from '../../store/services/productService';
+import {
+  useGetProductDetailQuery,
+  useGetPurchasedQuantitiesQuery,
+  useLazyGetPurchasedQuantitiesQuery,
+} from '../../store/services/productService';
+import { toPurchasedQuantitiesQuery } from '../../utils/mapperDTO';
 import ProductCart from './ProductCart';
 import ProductDescription from './ProductDescription';
 import ProductMedia from './ProductMedia';
 import Reviews from './Reviews';
 import ReviewStatsAndFilter from './ReviewStatsAndFilter';
 import ShopBanner from './ShopBanner';
+import { PurchasedQuantitiesQuery } from '../../types/query';
 
 type ProductDetailProps = {
   productID: string | undefined;
 };
 
 const ProductDetail = ({ productID }: ProductDetailProps) => {
+  const [purchasedQuantitiesQuery, setPurchasedQuantitiesQuery] =
+    useState<PurchasedQuantitiesQuery>({
+      product_id: Number(productID),
+      product_item_id: 0,
+      quantity: 1,
+    });
   const { data: getProductDetailData, isLoading: getProductDetailIsLoading } =
     useGetProductDetailQuery(productID);
-  console.log(getProductDetailData);
+  const [
+    getPurchasedQuantities,
+    {
+      data: getPurchasedQuantitiesData,
+      isLoading: getPurchasedQuantitiesIsLoading,
+    },
+  ] = useLazyGetPurchasedQuantitiesQuery();
+  const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
 
-  if (!getProductDetailData?.data) {
-    return <div>404</div>;
-  }
+  const handleClickVariation = (e: React.SyntheticEvent) => {
+    if (!getProductDetailData?.data) {
+      return;
+    }
 
-  if (getProductDetailIsLoading) {
+    const target = e.target as HTMLInputElement;
+    const indexes = target.id.split('-');
+    const variationIndex = Number(indexes[0]);
+    const optionIndex = Number(indexes[1]);
+    const selectedVariationsCopy: number[] = [...selectedVariations];
+    if (selectedVariationsCopy.length < variationIndex + 1) {
+      selectedVariationsCopy.push(optionIndex);
+    } else {
+      selectedVariationsCopy[variationIndex] = optionIndex;
+    }
+    setSelectedVariations(selectedVariationsCopy);
+    if (
+      selectedVariationsCopy.length ===
+      getProductDetailData.data.product_model[0].variation_index.length
+    ) {
+      const foundProductModel = getProductDetailData.data.product_model.find(
+        (row) =>
+          JSON.stringify(row.variation_index) ===
+          JSON.stringify(selectedVariationsCopy)
+      );
+      if (!foundProductModel) {
+        return;
+      }
+      const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
+      purchasedQuantitiesQueryCopy.product_item_id =
+        foundProductModel.product_item_id;
+      purchasedQuantitiesQueryCopy.quantity = 1;
+      setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
+    }
+  };
+
+  const handleClickAddQuantity = () => {
+    const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
+    purchasedQuantitiesQueryCopy.quantity += 1;
+    setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
+  };
+
+  const handleClickDecreaseQuantity = () => {
+    const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
+    if (purchasedQuantitiesQueryCopy.quantity === 0) {
+      return;
+    }
+    purchasedQuantitiesQueryCopy.quantity -= 1;
+    setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
+  };
+
+  const handleChangeQuantity = (e: React.SyntheticEvent) => {
+    const target = e.target as HTMLInputElement;
+    const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
+    purchasedQuantitiesQueryCopy.quantity = Number(target.value);
+    setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
+  };
+
+  useEffect(() => {
+    if (purchasedQuantitiesQuery.product_item_id === 0) {
+      return;
+    }
+    getPurchasedQuantities(toPurchasedQuantitiesQuery(purchasedQuantitiesQuery))
+      .unwrap()
+      .then((res) => {
+        console.log(res);
+        // console.log(getPurchasedQuantitiesData);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [purchasedQuantitiesQuery]);
+
+  // if (!getProductDetailData?.data) {
+  //   return <div>404</div>;
+  // }
+
+  if (getProductDetailIsLoading || !getProductDetailData?.data) {
     return (
       <div className='p-4 md:p-10 animate-pulse'>
         <div className='grid grid-cols-12 gap-4 md:gap-10'>
@@ -84,10 +177,21 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
             <ProductMedia />
           </div>
           <div className='col-span-12 md:col-span-6'>
-            <ProductDescription productDetail={getProductDetailData.data} />
+            <ProductDescription
+              productDetail={getProductDetailData.data}
+              handleClickVariation={handleClickVariation}
+              selectedVariations={selectedVariations}
+            />
           </div>
           <div className='col-span-12 md:col-span-3'>
-            <ProductCart />
+            <ProductCart
+              stock={getProductDetailData.data.total_stock}
+              quantity={purchasedQuantitiesQuery.quantity}
+              handleClickAddQuantity={handleClickAddQuantity}
+              handleClickDecreaseQuantity={handleClickDecreaseQuantity}
+              handleChangeQuantity={handleChangeQuantity}
+              purchased_quantities_stock={getPurchasedQuantitiesData?.data?.stock}
+            />
           </div>
           <div className='col-span-12 md:col-span-3'>
             <ReviewStatsAndFilter />

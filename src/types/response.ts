@@ -11,6 +11,8 @@ import {
   Role,
   User,
   CartGroupedByMerchant,
+  PurchasedQuantities,
+  UpdateCart
 } from './component';
 
 export type GetRolesResponse = {
@@ -138,10 +140,19 @@ export type GetProductDetailsResponse = {
 };
 
 export type UpdateUserCartResponse = {
-  id: number;
-  product_item_id: number;
-  user_id: string;
-  quantity: number;
+  data: UpdateCart | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetPurchasedQuantitiesResponse = {
+  data: PurchasedQuantities | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
 };
 
 export type GetAllTransactionHistoryResponse = {
