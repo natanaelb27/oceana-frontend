@@ -3,7 +3,7 @@ import { RatingField, RightContentAttribute, ShopDetailCardContainer, ShopDetail
 
 const ShopDetailCard = () => {
   return (
-    <ShopDetailCardContainer className='bg-purple-500'>
+    <ShopDetailCardContainer className='bg-secondary'>
         <ShopDetailCardContent>
            <ShopDetailCardContentLeft>
                 <img src="https://picsum.photos/id/88/100" className="rounded-full mr-3"></img>
