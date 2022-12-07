@@ -6,10 +6,15 @@ import { NavLink } from 'react-router-dom';
 import { ProductTab } from '../../types/tab';
 import { toCompact, toRupiah } from '../../utils/convert';
 import ShopBanner from './ShopBanner';
-import { ProductDetail, ShopInformation } from '../../types/component';
+import {
+  ProductDetail,
+  ProductVariation,
+  ShopInformation,
+} from '../../types/component';
 import { titleCase } from '../../utils/titleCase';
 
 type ProductDescriptionProps = {
+  productVariations: ProductVariation[];
   productDetail: ProductDetail;
   shopInformation: ShopInformation;
   handleClickVariation: (e: React.SyntheticEvent) => void;
@@ -18,6 +23,7 @@ type ProductDescriptionProps = {
 };
 
 const ProductDescription = ({
+  productVariations,
   productDetail,
   shopInformation,
   handleClickVariation,
@@ -65,7 +71,8 @@ const ProductDescription = ({
         </Tooltip>{' '}
         {productDetail.rating_star} ({productDetail.rating_count} rating)
       </div>
-      {purchasedQuantitiesPrice ? (
+      {purchasedQuantitiesPrice &&
+      selectedVariations.length === productVariations.length ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(purchasedQuantitiesPrice)}
         </h4>

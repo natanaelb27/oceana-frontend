@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React from 'react';
 import {
   Avatar,
   Button,
@@ -24,7 +24,10 @@ type ProductCartProps = {
   productVariation?: string;
   productVariations: ProductVariation[];
   productPrice: number;
-  isLoading?: boolean;
+  selectedVariations: number[];
+  productMerchantPromotionID?: number | null;
+  userMaxPurchaseQuantity?: number;
+  maxPurchaseQuantity?: number;
 };
 
 const ProductCart = ({
@@ -38,33 +41,11 @@ const ProductCart = ({
   productVariation,
   productVariations,
   productPrice,
-  isLoading,
+  selectedVariations,
+  productMerchantPromotionID,
+  userMaxPurchaseQuantity,
+  maxPurchaseQuantity,
 }: ProductCartProps) => {
-  if (isLoading) {
-    return (
-      <Card className='shadow animate-pulse'>
-        <div className='p-4'>
-          <div className='flex items-center gap-2'>
-            <div className='h-12 w-12 bg-base-200'></div>
-            <div className='h-4 bg-base-200 rounded-full w-2/5 mb-2.5'></div>
-          </div>
-          <Divider />
-          <div className='flex items-center'>
-            <div className='h-6 bg-base-200 rounded-full w-full'></div>
-          </div>
-          <Divider />
-          <div className='flex justify-between items-center mb-4'>
-            <div className='h-4 bg-base-200 rounded-full w-full'></div>
-          </div>
-          <div className='h-8 bg-base-200 rounded-full w-full mb-2.5'></div>
-          <div className='h-8 bg-base-200 rounded-full w-full'></div>
-        </div>
-      </Card>
-    );
-  }
-
-  console.log(productVariations);
-
   return (
     <Card className='shadow'>
       <div className='p-4'>
@@ -72,7 +53,8 @@ const ProductCart = ({
           <div>
             <div className='flex items-center gap-2'>
               <Avatar src='https://picsum.photos/200' size='sm' />
-              {productVariation ? (
+              {productVariation &&
+              productVariations.length === selectedVariations.length ? (
                 <p className='line-clamp-1'>{titleCase(productVariation)}</p>
               ) : (
                 <p className='line-clamp-1'>No selected variation</p>
@@ -102,9 +84,12 @@ const ProductCart = ({
               onClick={handleClickAddQuantity}
               disabled={
                 stock <= quantity ||
-                (purchasedQuantitiesStock &&
-                  purchasedQuantitiesStock !== 0 &&
-                  purchasedQuantitiesStock <= quantity)
+                (productVariations.length === selectedVariations.length &&
+                  purchasedQuantitiesStock &&
+                  purchasedQuantitiesStock <= quantity) ||
+                (productVariations.length === selectedVariations.length &&
+                  productVariations.length > 0 &&
+                  purchasedQuantitiesStock === 0)
                   ? true
                   : false
               }
@@ -112,11 +97,13 @@ const ProductCart = ({
               +
             </Button>
           </InputGroup>
-          {purchasedQuantitiesStock ? (
+          {purchasedQuantitiesStock &&
+          productVariations.length === selectedVariations.length ? (
             <p className='min-w-fit line-clamp-1'>
               Stock: {purchasedQuantitiesStock}
             </p>
-          ) : purchasedQuantitiesStock === 0 ? (
+          ) : productVariations.length === selectedVariations.length &&
+            purchasedQuantitiesStock === 0 ? (
             <p className='min-w-fit line-clamp-1'>
               Stock: {purchasedQuantitiesStock}
             </p>
@@ -124,28 +111,39 @@ const ProductCart = ({
             <p className='min-w-fit line-clamp-1'>Stock: {stock}</p>
           )}
         </div>
-        {productVariations.length === 0 && stock < quantity && stock !== 0 && (
-          <div className='mt-2 text-red-500'>
+        {productMerchantPromotionID !== null &&
+        userMaxPurchaseQuantity &&
+        maxPurchaseQuantity &&
+        Math.min(userMaxPurchaseQuantity, maxPurchaseQuantity) === quantity ? (
+          <div className='mt-1 text-sm text-red-600'>Purchase quantity is at maximum threshold, increasing quantity may cause increase in price</div>
+        ) : productMerchantPromotionID != null ? (
+          <div className='mt-1 text-sm text-red-600'></div>
+        ) : productVariations.length === selectedVariations.length && (
+          <div className='mt-1 text-sm text-red-600'>Promotion not in effect</div>
+        )}
+        {productVariations.length === 0 && stock === 0 ? (
+          <div className='text-sm mt-1 text-red-600'>There are {stock} items left</div>
+        ) : productVariations.length === 0 &&
+          stock < quantity &&
+          stock !== 0 ? (
+          <div className='text-sm mt-1 text-red-600'>
             There are only {stock} items left
           </div>
-        )}
-        {productVariations.length === 0 && stock === 0 && (
-          <div className='mt-2 text-red-500'>There are {stock} items left</div>
-        )}
-        {productVariations.length !== 0 && purchasedQuantitiesStock === 0 && (
-          <div className='mt-2 text-red-500'>
+        ) : purchasedQuantitiesStock === 0 &&
+          quantity !== 0 &&
+          productVariations.length === selectedVariations.length ? (
+          <div className='text-sm mt-1 text-red-600'>
             There are {purchasedQuantitiesStock} items left
           </div>
-        )}
-        {stock !== 0 && purchasedQuantitiesStock !== 0 && quantity === 0 && (
-          <div className='mt-2 text-red-500'>
+        ) : stock !== 0 && purchasedQuantitiesStock !== 0 && quantity === 0 ? (
+          <div className='text-sm mt-1 text-red-600'>
             Minimum purchase of this product is 1 item
           </div>
-        )}
-        {purchasedQuantitiesStock &&
-        purchasedQuantitiesStock !== 0 &&
-        purchasedQuantitiesStock < quantity ? (
-          <div className='mt-2 text-red-500'>
+        ) : purchasedQuantitiesStock &&
+          purchasedQuantitiesStock !== 0 &&
+          purchasedQuantitiesStock < quantity &&
+          productVariations.length === selectedVariations.length ? (
+          <div className='text-sm mt-1 text-red-600'>
             There are only {purchasedQuantitiesStock} items left
           </div>
         ) : (
@@ -158,54 +156,33 @@ const ProductCart = ({
             <h5 className='font-bold text-xl'>
               {toRupiah(productPrice * quantity)}
             </h5>
-          ) : !purchasedQuantitiesPrice ? (
-            <h5 className='font-bold text-xl'>{toRupiah(0)}</h5>
-          ) : (
+          ) : productVariations.length === selectedVariations.length &&
+            purchasedQuantitiesPrice &&
+            purchasedQuantitiesStock !== 0 ? (
             <h5 className='font-bold text-xl'>
               {toRupiah(purchasedQuantitiesPrice * quantity)}
             </h5>
+          ) : (
+            <h5 className='font-bold text-xl'>{toRupiah(0)}</h5>
           )}
         </div>
-        {productVariations.length === 0 && stock !== 0 ? (
-          <div>
-            <Button
-              color='primary'
-              endIcon={<HiShoppingCart className='text-lg' />}
-              className='w-full mb-2.5'
-            >
-              Add to Cart
-            </Button>
-            <Button
-              color='primary'
-              variant='outline'
-              endIcon={<HiShoppingBag className='text-lg' />}
-              className='w-full mb-2.5'
-            >
-              Buy Now
-            </Button>
-          </div>
-        ) : (
-          productVariations.length > 0 &&
-          purchasedQuantitiesStock !== 0 && (
-            <div>
-              <Button
-                color='primary'
-                endIcon={<HiShoppingCart className='text-lg' />}
-                className='w-full mb-2.5'
-              >
-                Add to Cart
-              </Button>
-              <Button
-                color='primary'
-                variant='outline'
-                endIcon={<HiShoppingBag className='text-lg' />}
-                className='w-full mb-2.5'
-              >
-                Buy Now
-              </Button>
-            </div>
-          )
-        )}
+        <div>
+          <Button
+            color='primary'
+            endIcon={<HiShoppingCart className='text-lg' />}
+            className='w-full mb-2.5'
+          >
+            Add to Cart
+          </Button>
+          <Button
+            color='primary'
+            variant='outline'
+            endIcon={<HiShoppingBag className='text-lg' />}
+            className='w-full mb-2.5'
+          >
+            Buy Now
+          </Button>
+        </div>
       </div>
     </Card>
   );

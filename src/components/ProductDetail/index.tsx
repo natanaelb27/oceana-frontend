@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Divider } from 'react-daisyui';
 import {
-  useGetProductDetailQuery,
-  useGetPurchasedQuantitiesQuery,
+  useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
 } from '../../store/services/productService';
 import { toPurchasedQuantitiesQuery } from '../../utils/mapperDTO';
@@ -27,8 +26,10 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       product_item_id: 0,
       quantity: 1,
     });
-  const { data: getProductDetailData, isLoading: getProductDetailIsLoading } =
-    useGetProductDetailQuery(productID);
+  const [
+    getProductDetail,
+    { data: getProductDetailData, isLoading: getProductDetailIsLoading },
+  ] = useLazyGetProductDetailQuery();
   const [
     getPurchasedQuantities,
     {
@@ -41,6 +42,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     isLoading: getShopInformationIsLoading,
   } = useGetShopInformationQuery(merchantID);
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
+  const [selectedVariantImage, setSelectedVariantImage] = useState<string>('');
   const [productVariation, setProductVariation] = useState('');
 
   const handleClickVariation = (e: React.SyntheticEvent) => {
@@ -56,7 +58,32 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     if (selectedVariationsCopy.length < variationIndex + 1) {
       selectedVariationsCopy.push(optionIndex);
     } else {
-      selectedVariationsCopy[variationIndex] = optionIndex;
+      if (selectedVariationsCopy[variationIndex] === optionIndex) {
+        console.log('here');
+        if (
+          getProductDetailData.data.product_variation.length === 2 &&
+          variationIndex === 1
+        ) {
+          selectedVariationsCopy.splice(variationIndex, 1);
+        } else {
+          selectedVariationsCopy.length = 0;
+        }
+      } else {
+        selectedVariationsCopy[variationIndex] = optionIndex;
+      }
+    }
+    if (
+      getProductDetailData.data.product_variation[0].image[
+        selectedVariationsCopy[0]
+      ] === undefined
+    ) {
+      setSelectedVariantImage(getProductDetailData.data.images[0]);
+    } else {
+      setSelectedVariantImage(
+        getProductDetailData.data.product_variation[0].image[
+          selectedVariationsCopy[0]
+        ]
+      );
     }
     setSelectedVariations(selectedVariationsCopy);
     if (
@@ -105,6 +132,31 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     purchasedQuantitiesQueryCopy.quantity = Number(target.value);
     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
   };
+
+  useEffect(() => {
+    getProductDetail(productID).then(({ data }) => {
+      console.log({ data: data?.data });
+      if (!data?.data) {
+        return;
+      }
+      if (data.data.product_variation.length === 0) {
+        getPurchasedQuantities(
+          toPurchasedQuantitiesQuery({
+            product_item_id: data.data.product_model[0].product_item_id,
+            product_id: Number(productID),
+            quantity: purchasedQuantitiesQuery.quantity,
+          })
+        )
+          .unwrap()
+          .then((res) => {
+            console.log(res.data?.product_merchant_promotion_id);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (purchasedQuantitiesQuery.product_item_id === 0) {
@@ -186,39 +238,19 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     );
   }
 
-  useEffect(() => {
-    if (!getProductDetailData?.data) {
-      return;
-    }
-    if (getProductDetailData.data.product_variation.length === 0) {
-      getPurchasedQuantities(
-        toPurchasedQuantitiesQuery({
-          product_item_id:
-            getProductDetailData.data.product_model[0].product_item_id,
-          product_id: Number(productID),
-          quantity: purchasedQuantitiesQuery.quantity,
-        })
-      )
-        .unwrap()
-        .then((res) => {
-          console.log(res);
-          // console.log(getPurchasedQuantitiesData);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  }, [getProductDetailData]);
-
   return (
     <div className='container mx-auto'>
       <div className='px-4 py-10'>
         <div className='grid grid-cols-12 gap-4 gap-y-10 md:gap-10'>
           <div className='col-span-12 md:col-span-3'>
-            <ProductMedia />
+            <ProductMedia
+              images={getProductDetailData.data.images}
+              selectedVariantImage={selectedVariantImage}
+            />
           </div>
           <div className='col-span-12 md:col-span-6'>
             <ProductDescription
+              productVariations={getProductDetailData.data.product_variation}
               productDetail={getProductDetailData.data}
               shopInformation={getShopInformationData.data}
               handleClickVariation={handleClickVariation}
@@ -238,6 +270,10 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               productVariation={productVariation}
               productVariations={getProductDetailData.data.product_variation}
               productPrice={getProductDetailData.data.price}
+              selectedVariations={selectedVariations}
+              productMerchantPromotionID={getPurchasedQuantitiesData?.data?.product_merchant_promotion_id}
+              userMaxPurchaseQuantity={getPurchasedQuantitiesData?.data?.user_max_purchase_quantity}
+              maxPurchaseQuantity={getPurchasedQuantitiesData?.data?.max_purchase_quantity}
             />
           </div>
           <div className='col-span-12 md:col-span-3'>

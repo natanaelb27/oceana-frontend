@@ -12,8 +12,14 @@ import { IoCopyOutline } from 'react-icons/io5';
 import { Button } from 'react-daisyui';
 import { toCompact } from '../../utils/convert';
 import { notifyInfoToast } from '../../utils/toast';
+import { useEffect } from 'react';
 
-const ProductMedia = () => {
+type ProductMediaProps = {
+  images: string[];
+  selectedVariantImage: string;
+};
+
+const ProductMedia = ({ images, selectedVariantImage }: ProductMediaProps) => {
   const handleCopyClick = () => {
     navigator.clipboard.writeText(window.location.href);
 
@@ -24,43 +30,15 @@ const ProductMedia = () => {
     <div>
       <div className='mb-2'>
         <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
+          <img src={`${selectedVariantImage === '' ? images[0] : selectedVariantImage}`} className='w-full rounded-lg' />
         </Zoom>
       </div>
       <div className='grid grid-cols-5 gap-2 mb-4'>
-        <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
-        </Zoom>
-        <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
-        </Zoom>
-        <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
-        </Zoom>
-        <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
-        </Zoom>
-        <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
-        </Zoom>
+        {images.slice(1).map((image, index) => (
+          <Zoom key={index}>
+            <img src={image} className='w-full rounded-lg' />
+          </Zoom>
+        ))}
       </div>
       <div className='flex justify-center items-center mb-2.5'>
         <span className='mr-2'>Share:</span>
