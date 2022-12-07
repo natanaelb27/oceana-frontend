@@ -40,24 +40,6 @@ const ProductCart = ({
   productPrice,
   isLoading,
 }: ProductCartProps) => {
-  // const [quantity, setQuantity] = useState<number>(1);
-
-  // const handleQuantityChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const value = e.target.value;
-
-  //   if (value === '') {
-  //     setQuantity(0);
-
-  //     return;
-  //   }
-
-  //   if (isNaN(Number(value))) {
-  //     return;
-  //   }
-
-  //   setQuantity(Number(value));
-  // };
-
   if (isLoading) {
     return (
       <Card className='shadow animate-pulse'>
@@ -81,7 +63,7 @@ const ProductCart = ({
     );
   }
 
-  // console.log({ purchased_quantities_stock });
+  console.log(productVariations);
 
   return (
     <Card className='shadow'>
@@ -102,7 +84,11 @@ const ProductCart = ({
         <div className='mb-2 font-bold text-lg'>Quantity</div>
         <div className='flex justify-between items-center'>
           <InputGroup size='sm' className='max-w-fit'>
-            <Button size='sm' onClick={handleClickDecreaseQuantity}>
+            <Button
+              size='sm'
+              onClick={handleClickDecreaseQuantity}
+              disabled={quantity === 0}
+            >
               -
             </Button>
             <Input
@@ -115,10 +101,10 @@ const ProductCart = ({
               size='sm'
               onClick={handleClickAddQuantity}
               disabled={
-                stock === quantity ||
+                stock <= quantity ||
                 (purchasedQuantitiesStock &&
                   purchasedQuantitiesStock !== 0 &&
-                  purchasedQuantitiesStock === quantity)
+                  purchasedQuantitiesStock <= quantity)
                   ? true
                   : false
               }
@@ -138,17 +124,20 @@ const ProductCart = ({
             <p className='min-w-fit line-clamp-1'>Stock: {stock}</p>
           )}
         </div>
-        {!purchasedQuantitiesStock && stock < quantity && (
+        {productVariations.length === 0 && stock < quantity && stock !== 0 && (
           <div className='mt-2 text-red-500'>
             There are only {stock} items left
           </div>
         )}
-        {purchasedQuantitiesStock === 0 && (
+        {productVariations.length === 0 && stock === 0 && (
+          <div className='mt-2 text-red-500'>There are {stock} items left</div>
+        )}
+        {productVariations.length !== 0 && purchasedQuantitiesStock === 0 && (
           <div className='mt-2 text-red-500'>
             There are {purchasedQuantitiesStock} items left
           </div>
         )}
-        {purchasedQuantitiesStock !== 0 && quantity === 0 && (
+        {stock !== 0 && purchasedQuantitiesStock !== 0 && quantity === 0 && (
           <div className='mt-2 text-red-500'>
             Minimum purchase of this product is 1 item
           </div>
@@ -177,21 +166,46 @@ const ProductCart = ({
             </h5>
           )}
         </div>
-        <Button
-          color='primary'
-          endIcon={<HiShoppingCart className='text-lg' />}
-          className='w-full mb-2.5'
-        >
-          Add to Cart
-        </Button>
-        <Button
-          color='primary'
-          variant='outline'
-          endIcon={<HiShoppingBag className='text-lg' />}
-          className='w-full mb-2.5'
-        >
-          Buy Now
-        </Button>
+        {productVariations.length === 0 && stock !== 0 ? (
+          <div>
+            <Button
+              color='primary'
+              endIcon={<HiShoppingCart className='text-lg' />}
+              className='w-full mb-2.5'
+            >
+              Add to Cart
+            </Button>
+            <Button
+              color='primary'
+              variant='outline'
+              endIcon={<HiShoppingBag className='text-lg' />}
+              className='w-full mb-2.5'
+            >
+              Buy Now
+            </Button>
+          </div>
+        ) : (
+          productVariations.length > 0 &&
+          purchasedQuantitiesStock !== 0 && (
+            <div>
+              <Button
+                color='primary'
+                endIcon={<HiShoppingCart className='text-lg' />}
+                className='w-full mb-2.5'
+              >
+                Add to Cart
+              </Button>
+              <Button
+                color='primary'
+                variant='outline'
+                endIcon={<HiShoppingBag className='text-lg' />}
+                className='w-full mb-2.5'
+              >
+                Buy Now
+              </Button>
+            </div>
+          )
+        )}
       </div>
     </Card>
   );

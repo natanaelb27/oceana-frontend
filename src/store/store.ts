@@ -19,6 +19,7 @@ export const baseApi = createApi({
     'Product',
     'Profile',
     'Cart',
+    'Shop',
   ],
 });
 

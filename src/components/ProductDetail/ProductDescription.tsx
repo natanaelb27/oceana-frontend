@@ -6,11 +6,12 @@ import { NavLink } from 'react-router-dom';
 import { ProductTab } from '../../types/tab';
 import { toCompact, toRupiah } from '../../utils/convert';
 import ShopBanner from './ShopBanner';
-import { ProductDetail } from '../../types/component';
+import { ProductDetail, ShopInformation } from '../../types/component';
 import { titleCase } from '../../utils/titleCase';
 
 type ProductDescriptionProps = {
   productDetail: ProductDetail;
+  shopInformation: ShopInformation;
   handleClickVariation: (e: React.SyntheticEvent) => void;
   selectedVariations: number[];
   purchasedQuantitiesPrice?: number;
@@ -18,6 +19,7 @@ type ProductDescriptionProps = {
 
 const ProductDescription = ({
   productDetail,
+  shopInformation,
   handleClickVariation,
   selectedVariations,
   purchasedQuantitiesPrice,
@@ -149,7 +151,7 @@ const ProductDescription = ({
       </Tabs>
       {renderTabContent(tab)}
       <Divider />
-      <ShopBanner />
+      <ShopBanner shopInformation={shopInformation} />
     </div>
   );
 };

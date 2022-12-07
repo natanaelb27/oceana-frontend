@@ -79,7 +79,7 @@ const Routes = () => {
           element: <Navigate to='/' />,
         },
         {
-          path: '/products/:productID',
+          path: '/products/:productPath',
           element: <Product />,
         },
         {

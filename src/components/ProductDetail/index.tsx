@@ -13,12 +13,14 @@ import Reviews from './Reviews';
 import ReviewStatsAndFilter from './ReviewStatsAndFilter';
 import ShopBanner from './ShopBanner';
 import { PurchasedQuantitiesQuery } from '../../types/query';
+import { useGetShopInformationQuery } from '../../store/services/shopService';
 
 type ProductDetailProps = {
+  merchantID: string | undefined;
   productID: string | undefined;
 };
 
-const ProductDetail = ({ productID }: ProductDetailProps) => {
+const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   const [purchasedQuantitiesQuery, setPurchasedQuantitiesQuery] =
     useState<PurchasedQuantitiesQuery>({
       product_id: Number(productID),
@@ -34,6 +36,10 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
       isLoading: getPurchasedQuantitiesIsLoading,
     },
   ] = useLazyGetPurchasedQuantitiesQuery();
+  const {
+    data: getShopInformationData,
+    isLoading: getShopInformationIsLoading,
+  } = useGetShopInformationQuery(merchantID);
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
   const [productVariation, setProductVariation] = useState('');
 
@@ -62,7 +68,7 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
           JSON.stringify(row.variation_index) ===
           JSON.stringify(selectedVariationsCopy)
       );
-      console.log({foundProductModel});
+      console.log({ foundProductModel });
       if (!foundProductModel) {
         return;
       }
@@ -118,8 +124,13 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
   // if (!getProductDetailData?.data) {
   //   return <div>404</div>;
   // }
-  
-  if (getProductDetailIsLoading || !getProductDetailData?.data) {
+
+  if (
+    getProductDetailIsLoading ||
+    !getProductDetailData?.data ||
+    !getShopInformationData?.data ||
+    getShopInformationIsLoading
+  ) {
     return (
       <div className='p-4 md:p-10 animate-pulse'>
         <div className='grid grid-cols-12 gap-4 md:gap-10'>
@@ -158,7 +169,7 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
               <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
             </div>
             <Divider />
-            <ShopBanner isLoading />
+            <ShopBanner />
           </div>
           <div className='col-span-12 md:col-span-3'>
             <Card className='shadow max-w-sm'>
@@ -175,6 +186,30 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
     );
   }
 
+  useEffect(() => {
+    if (!getProductDetailData?.data) {
+      return;
+    }
+    if (getProductDetailData.data.product_variation.length === 0) {
+      getPurchasedQuantities(
+        toPurchasedQuantitiesQuery({
+          product_item_id:
+            getProductDetailData.data.product_model[0].product_item_id,
+          product_id: Number(productID),
+          quantity: purchasedQuantitiesQuery.quantity,
+        })
+      )
+        .unwrap()
+        .then((res) => {
+          console.log(res);
+          // console.log(getPurchasedQuantitiesData);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [getProductDetailData]);
+
   return (
     <div className='container mx-auto'>
       <div className='px-4 py-10'>
@@ -185,6 +220,7 @@ const ProductDetail = ({ productID }: ProductDetailProps) => {
           <div className='col-span-12 md:col-span-6'>
             <ProductDescription
               productDetail={getProductDetailData.data}
+              shopInformation={getShopInformationData.data}
               handleClickVariation={handleClickVariation}
               selectedVariations={selectedVariations}
               purchasedQuantitiesPrice={getPurchasedQuantitiesData?.data?.price}

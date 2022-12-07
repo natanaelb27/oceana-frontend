@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Product } from '../../../types/component';
 
 import { toCompact, toRupiah } from '../../../utils/convert';
+import { toUrl } from '../../../utils/toUrl';
 
 type ProductCardProps = {
   product?: Product;
@@ -36,7 +37,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   }
 
   return (
-    <Link to='/'>
+    <Link to={`/products/${toUrl(product.name)}-i.${product.merchant_id}-${product.id}`}>
       <Card className='md:max-h-[26rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'>
         <figure>
           <img
