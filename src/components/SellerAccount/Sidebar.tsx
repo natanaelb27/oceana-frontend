@@ -18,7 +18,6 @@ import { useAppDispatch, useAppSelector } from '../../store/store';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import { Merchant } from '../../types/component';
-import { SellerAccountContent } from '../../types/content';
 
 type SidebarProps = {
   profile: Merchant;

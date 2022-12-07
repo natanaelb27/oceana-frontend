@@ -13,6 +13,7 @@ import {
 } from 'react-daisyui';
 import { CgMathPercent } from 'react-icons/cg';
 import {
+  HiOutlineClipboardCopy,
   HiOutlineCurrencyDollar,
   HiOutlineClipboardList,
   HiPlus,
@@ -24,18 +25,19 @@ import {
   DISCOUNT_TYPE,
   LIMIT_SELLER_VOUCHER_LIST,
   VOUCHER_STATUS,
-} from '../../constants';
-import { MerchantVoucherQuery } from '../../types/query';
-import { Merchant } from '../../types/component';
-import { useGetAllMerchantVoucherQuery } from '../../store/services/shopService';
-import { useDeleteMerchantVoucherMutation } from '../../store/services/myShopService';
-import { toMerchantVoucherQuery } from '../../utils/mapperDTO';
-import { ConfirmationModal, Pager } from '../../components/common';
-import { stringCompare } from '../../utils/validation';
-import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
-import { toRupiah, toStringDate, toStringTime } from '../../utils/convert';
-import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
-import { DeleteMerchantVoucherResponse } from '../../types/response';
+} from '../../../constants';
+import { MerchantVoucherQuery } from '../../../types/query';
+import { Merchant } from '../../../types/component';
+import { useGetAllMerchantVoucherQuery } from '../../../store/services/shopService';
+import { useDeleteMerchantVoucherMutation } from '../../../store/services/myShopService';
+import { toMerchantVoucherQuery } from '../../../utils/mapperDTO';
+import { ConfirmationModal, Pager } from '../../common';
+import { stringCompare } from '../../../utils/validation';
+import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
+import { toRupiah, toStringDate, toStringTime } from '../../../utils/convert';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import { DeleteMerchantVoucherResponse } from '../../../types/response';
+import NoData from '../../common/NoData';
 
 type ContentProps = {
   profile: Merchant;
@@ -121,13 +123,11 @@ const VoucherContent = ({ profile }: ContentProps) => {
   };
 
   const handleCreateVoucherClick = () => {
-    navigate('/seller/marketing/vouchers/add', {
-      replace: true,
-    });
+    navigate('/seller/marketing/vouchers/add');
   };
 
   const handleEditVoucherClick = (id: number) => {
-    console.log('edit');
+    navigate(`/seller/marketing/vouchers/edit/${id}`);
   };
 
   const handleCancelVoucherClick = (id: number) => {
@@ -139,9 +139,11 @@ const VoucherContent = ({ profile }: ContentProps) => {
   };
 
   const handleDetailVoucherClick = (id: number) => {
-    navigate(`/seller/marketing/vouchers/detail/${id}`, {
-      replace: true,
-    });
+    navigate(`/seller/marketing/vouchers/detail/${id}`);
+  };
+
+  const handleDuplicateVoucherClick = (id: number) => {
+    navigate(`/seller/marketing/vouchers/duplicate/${id}`);
   };
 
   const handleModalClose = () => {
@@ -226,27 +228,24 @@ const VoucherContent = ({ profile }: ContentProps) => {
       </div>
 
       <div className='overflow-x-auto'>
-        <Table className='w-[100%]'>
-          <Table.Head>
-            <span>Voucher Information</span>
-            <span>Quota</span>
-            <span>Period &#38; Status</span>
-            <span></span>
-          </Table.Head>
-
-          <Table.Body>
-            {getAllMerchantVoucherData?.data &&
-            getAllMerchantVoucherData?.data.merchant_voucher.length > 0 ? (
-              getAllMerchantVoucherData?.data.merchant_voucher.map(
+        {getAllMerchantVoucherData?.data &&
+        getAllMerchantVoucherData?.data.merchant_voucher.length > 0 ? (
+          <Table className='w-[100%]'>
+            <Table.Head>
+              <span>Voucher Information</span>
+              <span>Quota</span>
+              <span>Period &#38; Status</span>
+              <span></span>
+            </Table.Head>
+            <Table.Body>
+              {getAllMerchantVoucherData?.data.merchant_voucher.map(
                 ({
                   id,
-                  merchant_id,
                   code,
                   start_datetime,
                   end_datetime,
                   discount_type,
                   discount,
-                  minimum_spend_amount,
                   maximum_discount_amount,
                   maximum_quota,
                   current_quota,
@@ -300,7 +299,7 @@ const VoucherContent = ({ profile }: ContentProps) => {
                             <span className='font-bold'>
                               {toStringDate(start_datetime)}
                             </span>
-                            <span className='text-sm opacity-50 opacity-50'>
+                            <span className='text-sm opacity-50'>
                               {toStringTime(start_datetime)}
                             </span>
                           </div>
@@ -315,7 +314,7 @@ const VoucherContent = ({ profile }: ContentProps) => {
                           </div>
                         </div>
                         <Badge
-                          size='sm'
+                          size='xs'
                           className='font-bold p-2'
                           color={getBadgeColor(voucher_status)}
                         >
@@ -323,83 +322,67 @@ const VoucherContent = ({ profile }: ContentProps) => {
                         </Badge>
                       </div>
                       <div className='flex gap-1 justify-left'>
-                        {stringCompare(
-                          voucher_status,
-                          VOUCHER_STATUS.UPCOMING
-                        ) ? (
-                          <div className='flex gap-1'>
-                            <Tooltip message='Edit'>
-                              <HiOutlinePencil
-                                className='bg-warning text-white h-7 w-7 p-1 rounded-md cursor-pointer'
-                                onClick={() => {
-                                  handleEditVoucherClick(id);
-                                }}
-                              />
-                            </Tooltip>
-                            <Tooltip message='Cancel'>
-                              <HiOutlineXCircle
-                                className='bg-error text-white h-7 w-7 p-1 rounded-md cursor-pointer'
-                                onClick={() => {
-                                  handleCancelVoucherClick(id);
-                                }}
-                              />
-                            </Tooltip>
-                            <Tooltip message='Detail'>
-                              <HiOutlineClipboardList
-                                className='bg-primary text-white h-7 w-7 p-1 rounded-md cursor-pointer'
-                                onClick={() => {
-                                  handleDetailVoucherClick(id);
-                                }}
-                              />
-                            </Tooltip>
-                          </div>
-                        ) : stringCompare(
-                            voucher_status,
-                            VOUCHER_STATUS.ONGOING
-                          ) ? (
-                          <div className='flex gap-1'>
-                            <Tooltip message='Edit'>
-                              <HiOutlinePencil
-                                className='bg-warning text-white h-7 w-7 p-1 rounded-md cursor-pointer'
-                                onClick={() => {
-                                  handleEditVoucherClick(id);
-                                }}
-                              />
-                            </Tooltip>
-                            <HiOutlineXCircle className='bg-base-300 h-7 w-7 p-1 rounded-md' />
-                            <Tooltip message='Detail'>
-                              <HiOutlineClipboardList
-                                className='bg-primary text-white h-7 w-7 p-1 rounded-md cursor-pointer'
-                                onClick={() => {
-                                  handleDetailVoucherClick(id);
-                                }}
-                              />
-                            </Tooltip>
-                          </div>
-                        ) : (
-                          <div className='flex gap-1'>
-                            <HiOutlinePencil className='bg-base-300 h-7 w-7 p-1 rounded-md' />
-                            <HiOutlineXCircle className='bg-base-300 h-7 w-7 p-1 rounded-md' />
-                            <Tooltip message='Detail'>
-                              <HiOutlineClipboardList
-                                className='bg-primary text-white h-7 w-7 p-1 rounded-md cursor-pointer'
-                                onClick={() => {
-                                  handleDetailVoucherClick(id);
-                                }}
-                              />
-                            </Tooltip>
-                          </div>
-                        )}
+                        <div className='flex gap-1'>
+                          <Tooltip message='Edit'>
+                            <Button
+                              color='warning'
+                              size='sm'
+                              onClick={() => handleEditVoucherClick(id)}
+                              disabled={stringCompare(
+                                voucher_status,
+                                VOUCHER_STATUS.ENDED
+                              )}
+                            >
+                              <HiOutlinePencil className='text-lg' />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip message='Cancel'>
+                            <Button
+                              color='error'
+                              size='sm'
+                              onClick={() => handleCancelVoucherClick(id)}
+                              disabled={
+                                !stringCompare(
+                                  voucher_status,
+                                  VOUCHER_STATUS.UPCOMING
+                                )
+                              }
+                            >
+                              <HiOutlineXCircle className='text-lg' />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip message='Detail'>
+                            <Button
+                              color='info'
+                              size='sm'
+                              onClick={() => handleDetailVoucherClick(id)}
+                            >
+                              <HiOutlineClipboardList className='text-lg' />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip message='Duplicate'>
+                            <Button
+                              color='accent'
+                              size='sm'
+                              onClick={() => handleDuplicateVoucherClick(id)}
+                            >
+                              <HiOutlineClipboardCopy className='text-lg' />
+                            </Button>
+                          </Tooltip>
+                        </div>
                       </div>
                     </Table.Row>
                   );
                 }
-              )
-            ) : (
-              <h1>no data</h1>
-            )}
-          </Table.Body>
-        </Table>
+              )}
+            </Table.Body>
+          </Table>
+        ) : (
+          <NoData
+            title='No vouchers?'
+            message='Try add new voucher to see some secrets!'
+          />
+        )}
       </div>
       <div className='mt-6 flex justify-center'>
         <Pager

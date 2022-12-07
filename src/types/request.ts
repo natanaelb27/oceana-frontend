@@ -59,6 +59,7 @@ export type CreateMerchantVoucherRequest = {
   discount_type: string;
   discount: number;
   minimum_spend_amount: number;
+  maximum_discount_amount: number | null;
   maximum_quota: number;
 };
 export type UpdateUserCartRequest = {

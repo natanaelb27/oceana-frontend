@@ -28,17 +28,17 @@ import {
   useGetAddressesQuery,
   useSetAddressDefaultMutation,
   useSetShopAddressMutation,
-} from '../../store/services/addressService';
+} from '../../../store/services/addressService';
 import {
   UpdateAddressResponse,
   UpdateMerchantResponse,
-} from '../../types/response';
-import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
-import { selectRole } from '../../store/slices/authSlice';
-import { useAppSelector } from '../../store/store';
-import { ConfirmationModal } from '../common';
-import { validateUserRole } from '../../utils/auth';
-import { Role } from '../../types/role';
+} from '../../../types/response';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import { selectRole } from '../../../store/slices/authSlice';
+import { useAppSelector } from '../../../store/store';
+import { ConfirmationModal } from '../../common';
+import { validateUserRole } from '../../../utils/auth';
+import { Role } from '../../../types/role';
 
 type OpenAddressModal = {
   add: boolean;

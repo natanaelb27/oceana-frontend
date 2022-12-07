@@ -398,8 +398,24 @@ const PurchaseContent = () => {
           <div ref={dateWrapperRef} className='w-[100%] md:w-auto'>
             <DatePicker
               selectsRange={true}
-              startDate={startDate}
-              endDate={endDate}
+              startDate={
+                isDateOpen
+                  ? startDate
+                  : moment(
+                      transactionHistoryQuery.filterStartTransactionDate === ''
+                        ? new Date()
+                        : transactionHistoryQuery.filterStartTransactionDate
+                    ).toDate()
+              }
+              endDate={
+                isDateOpen
+                  ? endDate
+                  : moment(
+                      transactionHistoryQuery.filterEndTransactionDate === ''
+                        ? new Date()
+                        : transactionHistoryQuery.filterEndTransactionDate
+                    ).toDate()
+              }
               dateFormat='dd MMM yyyy'
               maxDate={new Date()}
               calendarContainer={DateContainer}
@@ -686,7 +702,7 @@ const PurchaseContent = () => {
           dateRange.at(1) === null &&
           search === '' ? (
           <div className='col-span-12'>
-            <NoData title='Oops, it seems that you have never made a purchase'></NoData>
+            <NoData title='Oops, it seems that you have never made a purchase' />
           </div>
         ) : (
           <div className='col-span-12'>

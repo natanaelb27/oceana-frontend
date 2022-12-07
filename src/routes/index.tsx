@@ -233,8 +233,12 @@ const Routes = () => {
                   element: <ShopAddVoucher />,
                 },
                 {
-                  path: '/seller/marketing/vouchers/edit',
+                  path: '/seller/marketing/vouchers/edit/:voucherID',
                   element: <ShopEditVoucher />,
+                },
+                {
+                  path: '/seller/marketing/vouchers/duplicate/:voucherID',
+                  element: <ShopAddVoucher />,
                 },
                 {
                   path: '/seller/marketing/promotions',

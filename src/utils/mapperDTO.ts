@@ -6,6 +6,7 @@ import {
 } from '../types/query';
 
 import {
+  CreateMerchantVoucherRequest,
   LoginRequest,
   LoginWithGoogleRequest,
   RegisterRequest,
@@ -135,3 +136,23 @@ export const toTransactionHistoryQuery = (query: TransactionHistoryQuery) => {
 
   return result;
 };
+
+export const toCreateMerchantVoucherRequest = (
+  code: string,
+  startDateTime: Date,
+  endDateTime: Date,
+  discountType: string,
+  discount: number,
+  minimumSpendAmount: number,
+  maximumDiscountAmount: number | null,
+  maximumQuota: number
+): CreateMerchantVoucherRequest => ({
+  code,
+  start_datetime: startDateTime.toISOString(),
+  end_datetime: endDateTime.toISOString(),
+  discount_type: discountType,
+  discount,
+  minimum_spend_amount: minimumSpendAmount,
+  maximum_quota: maximumQuota,
+  maximum_discount_amount: maximumDiscountAmount,
+});

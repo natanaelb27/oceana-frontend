@@ -13,7 +13,13 @@ export enum SellerAccountContent {
   Voucher,
   VoucherDetail,
   VoucherAdd,
+  VoucherEdit,
   Promotion,
   Order,
   ShipmentSetting,
+}
+
+export enum SellerAccountVoucherFormContent {
+  Add = 0,
+  Edit,
 }

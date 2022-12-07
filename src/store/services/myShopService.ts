@@ -4,6 +4,7 @@ import {
   CreateMerchantVoucherResponse,
   DeleteMerchantVoucherResponse,
   GetMerchantResponse,
+  UpdateMerchantVoucherResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -16,18 +17,32 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       providesTags: ['MyShop'],
     }),
-    CreateMerchantVoucher: builder.mutation<
+    createMerchantVoucher: builder.mutation<
       CreateMerchantVoucherResponse,
       CreateMerchantVoucherRequest
     >({
       query: (request) => ({
-        url: '/my-shop/vouchers/',
+        url: '/my-shop/vouchers',
         method: 'POST',
         body: request,
       }),
       invalidatesTags: ['MerchantVoucher'],
     }),
-    DeleteMerchantVoucher: builder.mutation<
+    updateMerchantVoucher: builder.mutation<
+      UpdateMerchantVoucherResponse,
+      {
+        id: number;
+        request: CreateMerchantVoucherRequest;
+      }
+    >({
+      query: ({ id, request }) => ({
+        url: `/my-shop/vouchers/${id}`,
+        method: 'PUT',
+        body: request,
+      }),
+      invalidatesTags: ['MerchantVoucher'],
+    }),
+    deleteMerchantVoucher: builder.mutation<
       DeleteMerchantVoucherResponse,
       number
     >({
@@ -41,7 +56,9 @@ export const myShopApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useDeleteMerchantVoucherMutation,
   useGetMyShopProfileQuery,
   useLazyGetMyShopProfileQuery,
+  useCreateMerchantVoucherMutation,
+  useUpdateMerchantVoucherMutation,
+  useDeleteMerchantVoucherMutation,
 } = myShopApi;
