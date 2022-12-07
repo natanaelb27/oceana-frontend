@@ -9,7 +9,7 @@ type RegisterGoogleState = {
 };
 
 const slice = createSlice({
-  name: 'auth',
+  name: 'registerGoogle',
   initialState: {
     googleId: '',
     email: '',
