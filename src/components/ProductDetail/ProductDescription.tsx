@@ -20,6 +20,7 @@ type ProductDescriptionProps = {
   handleClickVariation: (e: React.SyntheticEvent) => void;
   selectedVariations: number[];
   purchasedQuantitiesPrice?: number;
+  productItemPrice?: number;
 };
 
 const ProductDescription = ({
@@ -29,6 +30,7 @@ const ProductDescription = ({
   handleClickVariation,
   selectedVariations,
   purchasedQuantitiesPrice,
+  productItemPrice,
 }: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
 
@@ -108,6 +110,10 @@ const ProductDescription = ({
           {productDetail.price_min === productDetail.price_max ? (
             <h5 className='text-lg line-through ml-1'>
               {toRupiah(productDetail.price)}
+            </h5>
+          ) : productItemPrice ? (
+            <h5 className='text-lg line-through ml-1'>
+              {toRupiah(productItemPrice)}
             </h5>
           ) : (
             <h5 className='text-lg line-through ml-1'>

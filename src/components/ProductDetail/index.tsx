@@ -43,7 +43,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   } = useGetShopInformationQuery(merchantID);
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
   const [selectedVariantImage, setSelectedVariantImage] = useState<string>('');
-  const [productVariation, setProductVariation] = useState('');
+  const [productItemName, setProductItemName] = useState('');
+  const [productItemPrice, setProductItemPrice] = useState(0);
 
   const handleClickVariation = (e: React.SyntheticEvent) => {
     if (!getProductDetailData?.data) {
@@ -99,7 +100,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       if (!foundProductModel) {
         return;
       }
-      setProductVariation(foundProductModel.product_variations);
+      setProductItemName(foundProductModel.product_variations);
+      setProductItemPrice(foundProductModel.price);
       const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
       purchasedQuantitiesQueryCopy.product_item_id =
         foundProductModel.product_item_id;
@@ -126,6 +128,12 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   const handleChangeQuantity = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLInputElement;
     if (isNaN(Number(target.value))) {
+      return;
+    }
+    if (Number(target.value) > 999) {
+      const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
+      purchasedQuantitiesQueryCopy.quantity = 999;
+      setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
       return;
     }
     const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
@@ -256,6 +264,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               handleClickVariation={handleClickVariation}
               selectedVariations={selectedVariations}
               purchasedQuantitiesPrice={getPurchasedQuantitiesData?.data?.price}
+              productItemPrice={productItemPrice}
             />
           </div>
           <div className='col-span-12 md:col-span-3'>
@@ -267,13 +276,19 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               handleChangeQuantity={handleChangeQuantity}
               purchasedQuantitiesStock={getPurchasedQuantitiesData?.data?.stock}
               purchasedQuantitiesPrice={getPurchasedQuantitiesData?.data?.price}
-              productVariation={productVariation}
+              productVariation={productItemName}
               productVariations={getProductDetailData.data.product_variation}
               productPrice={getProductDetailData.data.price}
               selectedVariations={selectedVariations}
-              productMerchantPromotionID={getPurchasedQuantitiesData?.data?.product_merchant_promotion_id}
-              userMaxPurchaseQuantity={getPurchasedQuantitiesData?.data?.user_max_purchase_quantity}
-              maxPurchaseQuantity={getPurchasedQuantitiesData?.data?.max_purchase_quantity}
+              productMerchantPromotionID={
+                getPurchasedQuantitiesData?.data?.product_merchant_promotion_id
+              }
+              userMaxPurchaseQuantity={
+                getPurchasedQuantitiesData?.data?.user_max_purchase_quantity
+              }
+              maxPurchaseQuantity={
+                getPurchasedQuantitiesData?.data?.max_purchase_quantity
+              }
             />
           </div>
           <div className='col-span-12 md:col-span-3'>
