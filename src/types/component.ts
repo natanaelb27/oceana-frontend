@@ -106,3 +106,33 @@ export interface Product {
   updated_at: string;
   created_at: string;
 }
+
+export interface Merchant {
+  id: number;
+  name: string;
+  photo: string;
+  total_rating: number;
+  rating_star: number;
+  product_count: number;
+  user_id: string;
+  shop_address: string;
+  shop_sub_district: string;
+  shop_district: string;
+  shop_city: string;
+  shop_province: string;
+}
+
+export interface MerchantVoucher {
+      id: number;
+      merchant_id: number;
+      code: string;
+      start_datetime: string;
+      end_datetime: string;
+      discount_type: string;
+      discount: number;
+      minimum_spend_amount: number;
+      maximum_discount_amount: number;
+      maximum_quota: number;
+      current_quota: number;
+      voucher_status: string;
+}

@@ -53,8 +53,6 @@ export const ShopVouchersCardContainer = tw.div<any>`
 
 export const ShopVouchersFlex = tw.div<any>`
     flex
-    flex-row
-    flex-wrap
 `;
 
 export const ShopVoucherCardContainer = tw.div<any>`
