@@ -65,7 +65,7 @@ export const ShopVoucherCardContainer = tw.div<any>`
     p-5
     mr-3
     mb-5
-    w-80
+    w-96
 `;
 
 export const ShopVoucherCardContents = tw.div<any>`
