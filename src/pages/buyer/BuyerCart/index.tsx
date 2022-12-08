@@ -10,6 +10,7 @@ import { BiTrash } from 'react-icons/bi';
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { titleCase } from '../../../utils/titleCase';
 import NoData from '../../../components/common/NoData';
+import { toRupiah } from '../../../utils/convert';
 
 type SelectItem = {
   productID: number;
@@ -423,9 +424,20 @@ const BuyerCart = () => {
                     <div className='text-sm mt-0.5'>
                       {titleCase(product.product_variation)}
                     </div>
-                    <div className='text-base font-bold mt-3'>
-                      Rp{product.price.toLocaleString('id-ID')}
-                    </div>
+                    {product.price !== product.price_after_discount ? (
+                      <div className='flex items-center'>
+                        <div className='text-lg font-bold'>
+                          {toRupiah(product.price_after_discount)}
+                        </div>
+                        <h5 className='text-base line-through ml-1'>
+                          {toRupiah(product.price)}
+                        </h5>
+                      </div>
+                    ) : (
+                      <div className='text-base font-bold mt-3'>
+                        Rp{toRupiah(product.price_after_discount)}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className='flex justify-end'>
