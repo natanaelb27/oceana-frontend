@@ -111,7 +111,7 @@ const ProductDescription = ({
             <h5 className='text-lg line-through ml-1'>
               {toRupiah(productDetail.price)}
             </h5>
-          ) : productItemPrice ? (
+          ) : selectedVariations.length === productVariations.length && productItemPrice ? (
             <h5 className='text-lg line-through ml-1'>
               {toRupiah(productItemPrice)}
             </h5>
