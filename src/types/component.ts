@@ -94,6 +94,7 @@ export interface Product {
   category_id: number;
   name: string;
   description: string;
+  media_url: string;
   is_hazardous: boolean;
   weight: number;
   package_size: string;
@@ -264,4 +265,10 @@ export interface ShopInformation {
   shop_district: string;
   shop_city: string;
   shop_province: string;
+}
+
+export interface ViewPost {
+  user_id: string;
+  product_id: number;
+  is_favorite: boolean;
 }

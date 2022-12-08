@@ -440,14 +440,14 @@ const BuyerCart = () => {
                     )}
                   </div>
                 </div>
-                <div className='flex justify-end'>
+                <div className='flex items-center justify-end gap-1'>
                   <BiTrash
-                    size='2em'
+                    size='1.5em'
                     className='text-error mr-12 cursor-pointer'
                     onClick={handleClickDelete}
                   />
                   <AiOutlineMinusCircle
-                    size='2em'
+                    size='1.75em'
                     className='text-primary cursor-pointer'
                     onClick={handleClickDecreaseQuantity}
                   />
@@ -462,7 +462,7 @@ const BuyerCart = () => {
                     onChange={handleChangeQuantity}
                   />
                   <AiOutlinePlusCircle
-                    size='2em'
+                    size='1.75em'
                     className='text-primary cursor-pointer'
                     onClick={handleClickAddQuantity}
                   />

@@ -37,11 +37,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
   }
 
   return (
-    <Link to={`/products/${toUrl(product.name)}-i.${product.merchant_id}-${product.id}`}>
+    <Link
+      to={`/products/${toUrl(product.name)}-i.${product.merchant_id}-${
+        product.id
+      }`}
+    >
       <Card className='md:max-h-[26rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'>
         <figure>
           <img
-            src='https://api.lorem.space/image/shoes?w=480&h=480'
+            src={product.media_url}
             className='object-cover max-h-64 w-full'
           />
         </figure>

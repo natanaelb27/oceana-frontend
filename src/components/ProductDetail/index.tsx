@@ -3,6 +3,7 @@ import { Card, Divider } from 'react-daisyui';
 import {
   useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
+  useViewPostMutation,
 } from '../../store/services/productService';
 import { toPurchasedQuantitiesQuery } from '../../utils/mapperDTO';
 import ProductCart from './ProductCart';
@@ -15,10 +16,14 @@ import { PurchasedQuantitiesQuery } from '../../types/query';
 import { useGetShopInformationQuery } from '../../store/services/shopService';
 import { useUpdateUserCartMutation } from '../../store/services/cartService';
 import { notifySuccessToast } from '../../utils/toast';
+import { useAppSelector } from '../../store/store';
+import { selectRole } from '../../store/slices/authSlice';
+import { validateUserRole } from '../../utils/auth';
+import { Role } from '../../types/role';
 
 type ProductDetailProps = {
-  merchantID: string | undefined;
-  productID: string | undefined;
+  merchantID?: string;
+  productID?: string;
 };
 
 const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
@@ -28,6 +33,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       product_item_id: 0,
       quantity: 1,
     });
+  const [viewPost, { isLoading: viewPostIsLoading, error: viewPostError }] =
+    useViewPostMutation();
   const [
     getProductDetail,
     { data: getProductDetailData, isLoading: getProductDetailIsLoading },
@@ -146,7 +153,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   const handleClckAddToCart = () => {
     let productItemID = 0;
     if (getProductDetailData?.data?.product_variation.length === 0) {
-      productItemID = getProductDetailData.data.product_model[0].product_item_id;
+      productItemID =
+        getProductDetailData.data.product_model[0].product_item_id;
     } else {
       productItemID = purchasedQuantitiesQuery.product_item_id;
     }
@@ -165,7 +173,22 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       });
   };
 
+  if (!productID || !merchantID) {
+    return null;
+  }
+
+  const roleCode = useAppSelector(selectRole);
+  const role = validateUserRole(roleCode);
+
   useEffect(() => {
+    viewPost(productID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Successfully view post');
+      })
+      .catch((err) => {
+        console.error(err);
+      });
     getProductDetail(productID).then(({ data }) => {
       console.log({ data: data?.data });
       if (!data?.data) {

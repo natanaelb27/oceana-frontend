@@ -13,7 +13,8 @@ import {
   CartGroupedByMerchant,
   PurchasedQuantities,
   UpdateCart,
-  ShopInformation
+  ShopInformation,
+  ViewPost
 } from './component';
 
 export type GetRolesResponse = {
@@ -197,3 +198,12 @@ export type GetShopInformationResponse = {
   message: string;
   metadata: Metadata | null;
 }
+
+export type ViewPostResponse = {
+  data: ViewPost | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+}
+

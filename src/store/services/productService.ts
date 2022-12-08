@@ -2,6 +2,7 @@ import {
   GetAllProductsResponse,
   GetProductDetailsResponse,
   GetPurchasedQuantitiesResponse,
+  ViewPostResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -14,10 +15,7 @@ export const productApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Product'],
     }),
-    getProductDetail: builder.query<
-      GetProductDetailsResponse,
-      string | undefined
-    >({
+    getProductDetail: builder.query<GetProductDetailsResponse, string>({
       query: (id) => ({
         url: `/products/${id}`,
         method: 'GET',
@@ -26,13 +24,19 @@ export const productApi = baseApi.injectEndpoints({
     }),
     getPurchasedQuantities: builder.query<
       GetPurchasedQuantitiesResponse,
-      string | undefined
+      string
     >({
       query: (query) => ({
         url: `/products/purchased-quantities?${query}`,
         method: 'GET',
       }),
       providesTags: ['Product'],
+    }),
+    viewPost: builder.mutation<ViewPostResponse, string>({
+      query: (id) => ({
+        url: `/products/${id}/favorite`,
+        method: 'POST',
+      }),
     }),
   }),
 });
@@ -43,5 +47,6 @@ export const {
   useGetProductDetailQuery,
   useGetPurchasedQuantitiesQuery,
   useLazyGetProductDetailQuery,
-  useLazyGetPurchasedQuantitiesQuery
+  useLazyGetPurchasedQuantitiesQuery,
+  useViewPostMutation,
 } = productApi;
