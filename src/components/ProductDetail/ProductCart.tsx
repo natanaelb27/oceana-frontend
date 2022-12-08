@@ -28,6 +28,7 @@ type ProductCartProps = {
   productMerchantPromotionID?: number | null;
   userMaxPurchaseQuantity?: number;
   maxPurchaseQuantity?: number;
+  handleClickAddToCart: () => void;
 };
 
 const ProductCart = ({
@@ -45,6 +46,7 @@ const ProductCart = ({
   productMerchantPromotionID,
   userMaxPurchaseQuantity,
   maxPurchaseQuantity,
+  handleClickAddToCart
 }: ProductCartProps) => {
   const renderPurchaseButtons = () => {
     if (
@@ -57,6 +59,7 @@ const ProductCart = ({
             color='primary'
             endIcon={<HiShoppingCart className='text-lg' />}
             className='w-full mb-2.5'
+            onClick={handleClickAddToCart}
           >
             Add to Cart
           </Button>

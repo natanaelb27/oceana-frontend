@@ -13,6 +13,8 @@ import ReviewStatsAndFilter from './ReviewStatsAndFilter';
 import ShopBanner from './ShopBanner';
 import { PurchasedQuantitiesQuery } from '../../types/query';
 import { useGetShopInformationQuery } from '../../store/services/shopService';
+import { useUpdateUserCartMutation } from '../../store/services/cartService';
+import { notifySuccessToast } from '../../utils/toast';
 
 type ProductDetailProps = {
   merchantID: string | undefined;
@@ -37,6 +39,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       isLoading: getPurchasedQuantitiesIsLoading,
     },
   ] = useLazyGetPurchasedQuantitiesQuery();
+  const [updateUserCart, { isLoading }] = useUpdateUserCartMutation();
   const {
     data: getShopInformationData,
     isLoading: getShopInformationIsLoading,
@@ -50,7 +53,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     if (!getProductDetailData?.data) {
       return;
     }
-
     const target = e.target as HTMLInputElement;
     const indexes = target.id.split('-');
     const variationIndex = Number(indexes[0]);
@@ -139,6 +141,28 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
     purchasedQuantitiesQueryCopy.quantity = Number(target.value);
     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
+  };
+
+  const handleClckAddToCart = () => {
+    let productItemID = 0;
+    if (getProductDetailData?.data?.product_variation.length === 0) {
+      productItemID = getProductDetailData.data.product_model[0].product_item_id;
+    } else {
+      productItemID = purchasedQuantitiesQuery.product_item_id;
+    }
+    updateUserCart({
+      product_item_id: productItemID,
+      quantity: purchasedQuantitiesQuery.quantity,
+    })
+      .unwrap()
+      .then(() => {
+        notifySuccessToast(
+          `${purchasedQuantitiesQuery.quantity} items has been added to cart`
+        );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   useEffect(() => {
@@ -289,6 +313,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               maxPurchaseQuantity={
                 getPurchasedQuantitiesData?.data?.max_purchase_quantity
               }
+              handleClickAddToCart={handleClckAddToCart}
             />
           </div>
           <div className='col-span-12 md:col-span-3'>
