@@ -46,6 +46,32 @@ const ProductCart = ({
   userMaxPurchaseQuantity,
   maxPurchaseQuantity,
 }: ProductCartProps) => {
+  const renderPurchaseButtons = () => {
+    if (
+      purchasedQuantitiesStock ||
+      (stock > 0 && selectedVariations.length < productVariations.length)
+    ) {
+      return (
+        <div>
+          <Button
+            color='primary'
+            endIcon={<HiShoppingCart className='text-lg' />}
+            className='w-full mb-2.5'
+          >
+            Add to Cart
+          </Button>
+          <Button
+            color='primary'
+            variant='outline'
+            endIcon={<HiShoppingBag className='text-lg' />}
+            className='w-full mb-2.5'
+          >
+            Buy Now
+          </Button>
+        </div>
+      );
+    }
+  };
   return (
     <Card className='shadow'>
       <div className='p-4'>
@@ -168,23 +194,7 @@ const ProductCart = ({
             <h5 className='font-bold text-xl'>{toRupiah(0)}</h5>
           )}
         </div>
-        <div>
-          <Button
-            color='primary'
-            endIcon={<HiShoppingCart className='text-lg' />}
-            className='w-full mb-2.5'
-          >
-            Add to Cart
-          </Button>
-          <Button
-            color='primary'
-            variant='outline'
-            endIcon={<HiShoppingBag className='text-lg' />}
-            className='w-full mb-2.5'
-          >
-            Buy Now
-          </Button>
-        </div>
+        {renderPurchaseButtons()}
       </div>
     </Card>
   );
