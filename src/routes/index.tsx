@@ -39,6 +39,7 @@ import {
   ShopShipmentSetting,
   ShopVoucherList,
 } from '../pages';
+import SealabsPay from '../pages/SealabsPay';
 import { selectRole } from '../store/slices/authSlice';
 import { useAppSelector } from '../store/store';
 import { Role } from '../types/role';
@@ -65,6 +66,10 @@ const Routes = () => {
         {
           path: '/',
           element: <Home />,
+        },
+        {
+          path: '/sealabs-pay',
+          element: <SealabsPay />,
         },
         {
           path: '/category',

@@ -10,6 +10,7 @@ import {
   Role,
   User,
   CartGroupedByMerchant,
+  SealabsPayTransaction,
 } from './component';
 
 export type GetRolesResponse = {
@@ -61,12 +62,12 @@ export type GetAllCategoryResponse = {
 };
 
 export type GetUserCartResponse = {
-  data: CartGroupedByMerchant[] | null; 
-  code: number; 
+  data: CartGroupedByMerchant[] | null;
+  code: number;
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type GetAddressesResponse = {
   data: Address[] | null;
@@ -137,7 +138,7 @@ export type UpdateUserCartResponse = {
   product_item_id: number;
   user_id: string;
   quantity: number;
-}
+};
 
 export type GetAllTransactionHistoryResponse = {
   data: {
@@ -167,6 +168,22 @@ export type GetOrderDetailsResponse = {
 
 export type GetMerchantResponse = {
   data: Merchant | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type SealabsPayRedirectResponse = {
+  data: string | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type SealabsPayPaymentResponse = {
+  data: SealabsPayTransaction | null;
   code: number;
   error: string | null;
   message: string;

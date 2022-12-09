@@ -55,4 +55,9 @@ export type UpdateAddressRequest = {
 export type UpdateUserCartRequest = {
   product_item_id: number;
   quantity: number;
-}
+};
+
+export type SealabsPayPaymentRequest = {
+  card_number: string;
+  amount: string;
+};

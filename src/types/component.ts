@@ -194,3 +194,12 @@ export interface Merchant {
   address_id: string;
   photo: string;
 }
+
+export interface SealabsPayTransaction {
+  txn_id: string;
+  amount: string;
+  merchant_code: string;
+  status: string;
+  message: string;
+  signature: string;
+}

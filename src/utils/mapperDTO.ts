@@ -6,6 +6,7 @@ import {
   LoginWithGoogleRequest,
   RegisterRequest,
   RegisterWithGoogleRequest,
+  SealabsPayPaymentRequest,
   UpdateProfileRequest,
 } from '../types/request';
 
@@ -117,3 +118,11 @@ export const toTransactionHistoryQuery = (query: TransactionHistoryQuery) => {
 
   return result;
 };
+
+export const toSealabsPayPaymentRequest = (
+  cardNumber: string,
+  amount: string
+): SealabsPayPaymentRequest => ({
+  card_number: cardNumber,
+  amount,
+});
