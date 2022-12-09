@@ -5,7 +5,7 @@ import {
 } from '../../../store/services/cartService';
 import { GetUserCartResponse } from '../../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
-import { Divider, Input, Modal, Alert } from 'react-daisyui';
+import { Divider, Input, Modal } from 'react-daisyui';
 import { BiTrash } from 'react-icons/bi';
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { titleCase } from '../../../utils/titleCase';
@@ -37,7 +37,7 @@ type ModalInformation = {
 
 const BuyerCart = () => {
   const { data, error } = useGetUserCartQuery();
-  const [updateUserCart, { isLoading }] = useUpdateUserCartMutation();
+  const [updateUserCart] = useUpdateUserCartMutation();
   const [selectedItems, setSelectedItems] = useState<SelectCartItems>({
     selectAll: false,
     selectItem: [],

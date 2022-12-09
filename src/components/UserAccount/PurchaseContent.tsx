@@ -140,7 +140,7 @@ const PurchaseContent = () => {
     });
   };
 
-  const [isDateOpen, setisDateOpen] = useState<boolean>(false);
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
 
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
     null,
@@ -167,7 +167,7 @@ const PurchaseContent = () => {
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
     });
-    setisDateOpen(false);
+    setIsDateOpen(false);
   };
 
   const handleApplyFilterDate = () => {
@@ -177,7 +177,7 @@ const PurchaseContent = () => {
       filterStartTransactionDate: moment(startDate).format('YYYY-MM-DD'),
       filterEndTransactionDate: moment(endDate).format('YYYY-MM-DD'),
     });
-    setisDateOpen(false);
+    setIsDateOpen(false);
   };
 
   type DateContainerProps = {
@@ -269,7 +269,7 @@ const PurchaseContent = () => {
         ).toDate(),
       ]);
     }
-    setisDateOpen(false);
+    setIsDateOpen(false);
   };
 
   useOutsideAlerter(dateWrapperRef, handleDateOutsideClick);
@@ -283,7 +283,7 @@ const PurchaseContent = () => {
         className='normal-case flex gap-2 w-[100%] md:w-auto md:pl-7 md:pr-7 btn-outline no-animation'
         onClick={() => {
           onClick;
-          setisDateOpen(!isDateOpen);
+          setIsDateOpen(!isDateOpen);
         }}
         ref={ref}
       >
@@ -398,8 +398,24 @@ const PurchaseContent = () => {
           <div ref={dateWrapperRef} className='w-[100%] md:w-auto'>
             <DatePicker
               selectsRange={true}
-              startDate={startDate}
-              endDate={endDate}
+              startDate={
+                isDateOpen
+                  ? startDate
+                  : moment(
+                      transactionHistoryQuery.filterStartTransactionDate === ''
+                        ? new Date()
+                        : transactionHistoryQuery.filterStartTransactionDate
+                    ).toDate()
+              }
+              endDate={
+                isDateOpen
+                  ? endDate
+                  : moment(
+                      transactionHistoryQuery.filterEndTransactionDate === ''
+                        ? new Date()
+                        : transactionHistoryQuery.filterEndTransactionDate
+                    ).toDate()
+              }
               dateFormat='dd MMM yyyy'
               maxDate={new Date()}
               calendarContainer={DateContainer}
@@ -686,7 +702,7 @@ const PurchaseContent = () => {
           dateRange.at(1) === null &&
           search === '' ? (
           <div className='col-span-12'>
-            <NoData title='Oops, it seems that you have never made a purchase'></NoData>
+            <NoData title='Oops, it seems that you have never made a purchase' />
           </div>
         ) : (
           <div className='col-span-12'>

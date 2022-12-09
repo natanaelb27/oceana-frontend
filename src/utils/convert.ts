@@ -17,3 +17,5 @@ export const toStringDatetime = (d: string) =>
 
 export const toLongStringDatetime = (d: string) =>
   moment(d).format('DD MMMM YYYY, HH:mm');
+
+export const toStringTime = (d: string) => moment(d).format('HH:mm A');
