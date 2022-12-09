@@ -22,7 +22,10 @@ import { useAppSelector } from '../../store/store';
 import { selectRole } from '../../store/slices/authSlice';
 import { validateUserRole } from '../../utils/auth';
 import { Role } from '../../types/role';
-import { GetPurchasedQuantitiesResponse, UpdateUserCartResponse } from '../../types/response';
+import {
+  GetPurchasedQuantitiesResponse,
+  UpdateUserCartResponse,
+} from '../../types/response';
 
 type ProductDetailProps = {
   merchantID?: string;
@@ -170,9 +173,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     })
       .unwrap()
       .then(() => {
-        notifySuccessToast(
-          `${purchasedQuantitiesQuery.quantity} items have been added to cart`
-        );
+        notifySuccessToast('Product has been added to cart');
       })
       .catch((err) => {
         if (err && 'data' in err) {
