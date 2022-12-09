@@ -24,3 +24,8 @@ export type TransactionHistoryQuery = {
   limit: number;
   page: number;
 };
+
+export type CategoryQuery = {
+  categoryID: number;
+  levelDepth: number;
+};

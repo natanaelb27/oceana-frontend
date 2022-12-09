@@ -94,6 +94,7 @@ export interface Product {
   category_id: number;
   name: string;
   description: string;
+  media_url: string;
   is_hazardous: boolean;
   weight: number;
   package_size: string;
@@ -103,9 +104,13 @@ export interface Product {
   price_maximum: number;
   price_minimum_after_discount: number;
   price_maximum_after_discount: number;
+  product_merchant_promotion_id: number;
+  merchant_promotion_name: string;
   discount: number;
   discount_type: string;
   total_view_count: number;
+  total_purchase_count: number;
+  rating_star: number;
   merchant: {
     id: number;
     name: string;
@@ -193,4 +198,11 @@ export interface Merchant {
   name: string;
   address_id: string;
   photo: string;
+}
+
+export interface CategoryDetails {
+  id: number;
+  media_url: string;
+  name: string;
+  parent_id: number;
 }
