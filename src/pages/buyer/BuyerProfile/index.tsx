@@ -1,4 +1,3 @@
-import { toast } from 'react-toastify';
 import { UserAccount } from '../../../components';
 import { useGetProfileQuery } from '../../../store/services/profileService';
 import { UserAccountContent } from '../../../types/content';

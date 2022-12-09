@@ -1,8 +1,16 @@
 import moment from 'moment';
-import { ProductQuery } from '../types/query';
 import {
+  MerchantVoucherQuery,
+  ProductQuery,
+  TransactionHistoryQuery,
+} from '../types/query';
+
+import {
+  CreateMerchantVoucherRequest,
   LoginRequest,
+  LoginWithGoogleRequest,
   RegisterRequest,
+  RegisterWithGoogleRequest,
   UpdateProfileRequest,
 } from '../types/request';
 
@@ -27,6 +35,37 @@ export const toRegisterRequest = (
   password,
   phone_number: phoneNumber,
   role: '001',
+});
+
+export const toLoginWithGoogleRequest = (
+  googleId: string,
+  fullName: string,
+  email: string,
+  imageUrl: string
+): LoginWithGoogleRequest => ({
+  google_id: googleId,
+  full_name: fullName,
+  email,
+  image_url: imageUrl,
+});
+
+export const toRegisterWithGoogleRequest = (
+  googleId: string,
+  fullName: string,
+  username: string,
+  email: string,
+  password: string,
+  phoneNumber: string,
+  imageUrl: string
+): RegisterWithGoogleRequest => ({
+  google_id: googleId,
+  full_name: fullName,
+  username,
+  email,
+  password,
+  phone_number: phoneNumber,
+  role: '001',
+  image_url: imageUrl,
 });
 
 export const toUpdateProfileRequest = (
@@ -68,3 +107,52 @@ export const toProductQuery = (query: ProductQuery) => {
 
   return result;
 };
+
+export const toMerchantVoucherQuery = (query: MerchantVoucherQuery) => {
+  let result = '';
+
+  result += 'sort-by=' + query.sortBy;
+  result += '&sort=' + query.sort;
+  result += '&limit=' + query.limit;
+  result += '&page=' + query.page;
+  result += '&search-voucher-code=' + query.searchVoucherCode;
+  result += '&filter-voucher-status=' + query.filterVoucherStatus;
+  result += '&merchant-id=' + query.merchantID;
+
+  return result;
+};
+
+export const toTransactionHistoryQuery = (query: TransactionHistoryQuery) => {
+  let result = '';
+
+  result += 'limit=' + query.limit;
+  result += '&page=' + query.page;
+  result += '&search=' + query.search;
+  result += '&filter-order-status=' + query.filterOrderStatus;
+  result += '&filter-ongoing-order-status=' + query.filterOngoingOrderStatus;
+  result +=
+    '&filter-start-transaction-date=' + query.filterStartTransactionDate;
+  result += '&filter-end-transaction-date=' + query.filterEndTransactionDate;
+
+  return result;
+};
+
+export const toCreateMerchantVoucherRequest = (
+  code: string,
+  startDateTime: Date,
+  endDateTime: Date,
+  discountType: string,
+  discount: number,
+  minimumSpendAmount: number,
+  maximumDiscountAmount: number | null,
+  maximumQuota: number
+): CreateMerchantVoucherRequest => ({
+  code,
+  start_datetime: startDateTime.toISOString(),
+  end_datetime: endDateTime.toISOString(),
+  discount_type: discountType,
+  discount,
+  minimum_spend_amount: minimumSpendAmount,
+  maximum_quota: maximumQuota,
+  maximum_discount_amount: maximumDiscountAmount,
+});

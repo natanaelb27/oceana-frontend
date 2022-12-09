@@ -45,7 +45,7 @@ const Home = () => {
           </Slider>
         </HomeCard>
       </div>
-      <Divider className='w-[360px] self-center md:w-[1080px]' />
+      <Divider className='w-[360px] self-center md:w-[640px] lg:w-[800px] xl:w-[1080px]' />
       <div className='my-5'>
         <HomeCard
           title='Recommended Products'
@@ -61,7 +61,7 @@ const Home = () => {
                     <ProductCard product={product} />
                   </Carousel.Item>
                 ))
-              : Array(10)
+              : Array(LIMIT_HOME_RECOMMENDED_PRODUCTS)
                   .fill(0)
                   .map((_, n) => (
                     <Carousel.Item

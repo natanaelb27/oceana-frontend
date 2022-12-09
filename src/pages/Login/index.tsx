@@ -1,39 +1,37 @@
-import { useFormik } from 'formik';
 import { gapi } from 'gapi-script';
-import { useEffect } from 'react';
-import { Button, Form, Input, Link } from 'react-daisyui';
-import { GoogleLogin } from 'react-google-login';
+import { useEffect, useState } from 'react';
+import {
+  GoogleLoginResponse,
+  GoogleLoginResponseOffline,
+} from 'react-google-login';
 import { useNavigate } from 'react-router-dom';
-import * as Yup from 'yup';
-import { useLoginMutation } from '../../store/services/authService';
+import { useLoginWithGoogleMutation } from '../../store/services/authService';
 import { setCredentials } from '../../store/slices/authSlice';
 import { useAppDispatch } from '../../store/store';
 import { Role } from '../../types/component';
-import { toLoginRequest } from '../../utils/mapperDTO';
+import { toLoginWithGoogleRequest } from '../../utils/mapperDTO';
 import {
   AuthContainer,
-  GlassContainer,
+  FormContainer,
 } from '../../components/common/Container';
-import {
-  FormErrorText,
-  FormTitle,
-  InputGroup,
-} from '../../components/common/Form';
 import { notifyErrorToast } from '../../utils/toast';
+import { Tiles } from '../../components/common';
+import { STATUS_SEE_OTHER } from '../../constants';
+import { setRegisterGoogleState } from '../../store/slices/registerGoogleSlice';
+import RegisterGoogle from '../Register/RegisterGoogle';
+import LoginForm from './LoginForm';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
+  const [step, setStep] = useState<number>(1);
+  const nextStep = () => setStep(step + 1);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [login, { isLoading }] = useLoginMutation();
+  const [loginWithGoogle] = useLoginWithGoogleMutation();
 
-  const notifyInvalidCredentials = () =>
-    notifyErrorToast('Invalid login credentials');
-
-  const handleLoginSuccess = () => {
-    navigate('/');
-  };
-  const handleLoginFailed = (
+  const handleSuccessLogin = () => navigate('/');
+  const handleFailedLogin = (
+    message: string,
     setFieldValue: (
       field: string,
       value: string,
@@ -42,30 +40,70 @@ const Login = () => {
   ) => {
     setFieldValue('loginCredentials', '');
     setFieldValue('password', '');
-    notifyInvalidCredentials();
+    notifyErrorToast(message, true);
+  };
+  const handleSuccessGoogleLogin = (
+    response: GoogleLoginResponse | GoogleLoginResponseOffline
+  ) => {
+    const resGoogleLogin = response as GoogleLoginResponse;
+    const basicProfile = resGoogleLogin.getBasicProfile();
+    const googleId = basicProfile.getId();
+    const email = basicProfile.getEmail();
+    const fullName = basicProfile.getName();
+    const imageUrl = basicProfile.getImageUrl();
+    loginWithGoogle(
+      toLoginWithGoogleRequest(googleId, fullName, email, imageUrl)
+    )
+      .unwrap()
+      .then((response) => {
+        console.log(response);
+        const { data: loginResponseData } = response;
+        const { role } = loginResponseData as Role;
+        dispatch(setCredentials({ role }));
+        navigate('/');
+      })
+      .catch((err) => {
+        switch (err.status) {
+          case STATUS_SEE_OTHER:
+            dispatch(
+              setRegisterGoogleState({
+                googleId,
+                email,
+                fullName,
+                imageUrl,
+              })
+            );
+            nextStep();
+            break;
+
+          default:
+            notifyErrorToast('Sign in with Google failed');
+            break;
+        }
+      });
   };
 
-  const formik = useFormik({
-    initialValues: { loginCredentials: '', password: '' },
-    validationSchema: Yup.object({
-      loginCredentials: Yup.string().required(
-        'Please enter your login credential'
-      ),
-      password: Yup.string().required('Please enter your password'),
-    }),
-    onSubmit: (values, { setFieldValue }) => {
-      login(toLoginRequest(values.loginCredentials, values.password))
-        .unwrap()
-        .then((response) => {
-          // TODO: refactor handleLoginSuccess(response: LoginResponse) once sign-in with Google has a BE endpoint
-          const { data: loginResponseData } = response;
-          const { role } = loginResponseData as Role;
-          dispatch(setCredentials({ role }));
-          handleLoginSuccess();
-        })
-        .catch(() => handleLoginFailed(setFieldValue));
-    },
-  });
+  const handleLoginStep = (step: number) => {
+    switch (step) {
+      case 2:
+        return (
+          <RegisterGoogle
+            handleSuccessRegister={handleSuccessLogin}
+            handleFailedRegister={handleFailedLogin}
+          />
+        );
+
+      default:
+        return (
+          <LoginForm
+            clientId={clientId}
+            handleSuccessLogin={handleSuccessLogin}
+            handleFailedLogin={handleFailedLogin}
+            handleSuccessGoogleLogin={handleSuccessGoogleLogin}
+          />
+        );
+    }
+  };
 
   useEffect(() => {
     const initClient = () => {
@@ -78,67 +116,11 @@ const Login = () => {
   }, []);
 
   return (
-    <AuthContainer>
-      <GlassContainer>
-        <FormTitle>Login</FormTitle>
-        <Form onSubmit={formik.handleSubmit}>
-          <InputGroup>
-            <Input
-              color='primary'
-              name='loginCredentials'
-              onChange={formik.handleChange}
-              placeholder='Email/Phone/Username'
-              type='text'
-              value={formik.values.loginCredentials}
-            />
-
-            {formik.touched.loginCredentials &&
-            formik.errors.loginCredentials ? (
-              <FormErrorText>{formik.errors.loginCredentials}</FormErrorText>
-            ) : null}
-          </InputGroup>
-          <InputGroup>
-            <Input
-              color='primary'
-              name='password'
-              onChange={formik.handleChange}
-              placeholder='Password'
-              type='password'
-              value={formik.values.password}
-            />
-
-            {formik.touched.password && formik.errors.password ? (
-              <FormErrorText>{formik.errors.password}</FormErrorText>
-            ) : null}
-          </InputGroup>
-          <Button
-            className='mt-2'
-            color={!isLoading ? 'primary' : 'secondary'}
-            loading={isLoading}
-            type='submit'
-          >
-            Login
-          </Button>
-        </Form>
-        <p className='mt-2 text-base-100'>
-          Need an account?{' '}
-          <Link color='secondary' href='/register'>
-            Sign Up
-          </Link>
-        </p>
-        <span className='my-4 block text-xl text-center text-slate-400'>
-          ---OR---
-        </span>
-        <GoogleLogin
-          className='w-full flex justify-center'
-          clientId={String(clientId)}
-          buttonText='Sign in with Google'
-          onSuccess={handleLoginSuccess}
-          onFailure={notifyInvalidCredentials}
-          cookiePolicy='single_host_origin'
-        />
-      </GlassContainer>
-    </AuthContainer>
+    <Tiles>
+      <AuthContainer>
+        <FormContainer>{handleLoginStep(step)}</FormContainer>
+      </AuthContainer>
+    </Tiles>
   );
 };
 

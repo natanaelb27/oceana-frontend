@@ -28,7 +28,9 @@ export { default as ShopOrder } from './seller/ShopOrder';
 export { default as ShopProductList } from './seller/ShopProductList';
 export { default as ShopProfile } from './seller/ShopProfile';
 export { default as ShopPromotionList } from './seller/ShopPromotionList';
+export { default as ShopVoucherDetail } from './seller/ShopVoucherDetail';
 export { default as ShopVoucherList } from './seller/ShopVoucherList';
+export { default as ShopShipmentSetting } from './seller/ShopShipmentSetting';
 
 export { default as AdminAddPromotion } from './admin/AdminAddPromotion';
 export { default as AdminEditPromotion } from './admin/AdminEditPromotion';

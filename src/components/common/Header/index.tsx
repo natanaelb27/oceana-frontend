@@ -13,19 +13,23 @@ import { GoPerson } from 'react-icons/go';
 import { HiMoon, HiSun } from 'react-icons/hi';
 import { CgLogOut, CgProfile } from 'react-icons/cg';
 
-import { useScrollPosition } from '../../../hooks';
+import { useLocalStorage, useScrollPosition } from '../../../hooks';
 import { selectRole, unsetCredentials } from '../../../store/slices/authSlice';
 import { useAppDispatch, useAppSelector } from '../../../store/store';
+import { useLogoutMutation } from '../../../store/services/profileService';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
   const scrollPosition = useScrollPosition();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [logout] = useLogoutMutation();
 
-  const [isDarkTheme, setIsDarkTheme] = useState(
-    window.matchMedia('(prefers-color-scheme: dark)').matches
+  const [theme, setTheme] = useLocalStorage<string>(
+    'theme',
+    window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   );
+
   const [search, setSearch] = useState<string>('');
 
   const hanldeSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +47,7 @@ const Header = () => {
   const handleThemeClick = (theme: string) => {
     document.getElementsByTagName('html')[0].setAttribute('data-theme', theme);
 
-    setIsDarkTheme(theme === 'dark');
+    setTheme(theme);
   };
 
   const handleProfileClick = () => {
@@ -52,7 +56,14 @@ const Header = () => {
 
   const handleLogoutClick = async () => {
     await dispatch(unsetCredentials());
-
+    await logout()
+      .unwrap()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     navigate('/');
   };
 
@@ -91,7 +102,7 @@ const Header = () => {
             </Form>
           </div>
           <div className='flex-none ml-4 gap-2'>
-            {!isDarkTheme ? (
+            {theme === 'light' ? (
               <Button
                 shape='circle'
                 color='ghost'
@@ -162,7 +173,7 @@ const Header = () => {
             </Form>
           </div>
           <div className='flex-none ml-4'>
-            {!isDarkTheme ? (
+            {theme === 'light' ? (
               <Button
                 shape='circle'
                 color='ghost'
