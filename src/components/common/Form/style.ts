@@ -24,7 +24,7 @@ export const FormTitle = tw(NavLink)<any>`
   motion-reduce:hover:transform-none
 `;
 
-export const FormErrorText = tw.p`
+export const FormErrorText = tw.p<any>`
   ml-3
   text-lg
   text-error

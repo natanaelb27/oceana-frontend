@@ -1,9 +1,12 @@
 import moment from 'moment';
-import { ProductQuery } from '../types/query';
+import { ProductQuery, TransactionHistoryQuery } from '../types/query';
+
 import {
   LoginRequest,
   MerchantCreateRequest,
+  LoginWithGoogleRequest,
   RegisterRequest,
+  RegisterWithGoogleRequest,
   UpdateProfileRequest,
 } from '../types/request';
 
@@ -28,6 +31,37 @@ export const toRegisterRequest = (
   password,
   phone_number: phoneNumber,
   role: '001',
+});
+
+export const toLoginWithGoogleRequest = (
+  googleId: string,
+  fullName: string,
+  email: string,
+  imageUrl: string
+): LoginWithGoogleRequest => ({
+  google_id: googleId,
+  full_name: fullName,
+  email,
+  image_url: imageUrl,
+});
+
+export const toRegisterWithGoogleRequest = (
+  googleId: string,
+  fullName: string,
+  username: string,
+  email: string,
+  password: string,
+  phoneNumber: string,
+  imageUrl: string
+): RegisterWithGoogleRequest => ({
+  google_id: googleId,
+  full_name: fullName,
+  username,
+  email,
+  password,
+  phone_number: phoneNumber,
+  role: '001',
+  image_url: imageUrl,
 });
 
 export const toUpdateProfileRequest = (
@@ -74,6 +108,21 @@ export const toProductQuery = (query: ProductQuery) => {
   result += '&price-maximum=' + query.priceMaximum;
   result += '&merchant-cities=' + query.merchantCities.join(',');
   result += '&courier-services=' + query.courierServices.join(',');
+
+  return result;
+};
+
+export const toTransactionHistoryQuery = (query: TransactionHistoryQuery) => {
+  let result = '';
+
+  result += 'limit=' + query.limit;
+  result += '&page=' + query.page;
+  result += '&search=' + query.search;
+  result += '&filter-order-status=' + query.filterOrderStatus;
+  result += '&filter-ongoing-order-status=' + query.filterOngoingOrderStatus;
+  result +=
+    '&filter-start-transaction-date=' + query.filterStartTransactionDate;
+  result += '&filter-end-transaction-date=' + query.filterEndTransactionDate;
 
   return result;
 };

@@ -27,19 +27,28 @@ import {
   useDeleteAddressMutation,
   useGetAddressesQuery,
   useSetAddressDefaultMutation,
+  useSetShopAddressMutation,
 } from '../../store/services/addressService';
-import { UpdateAddressResponse } from '../../types/response';
+import { UpdateAddressResponse, UpdateMerchantResponse } from '../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
+import { selectRole } from '../../store/slices/authSlice';
+import { useAppSelector } from '../../store/store';
 import { ConfirmationModal } from '../common';
+import { validateUserRole } from '../../utils/auth';
+import { Role } from '../../types/role';
 
 type OpenAddressModal = {
   add: boolean;
   edit: boolean;
   delete: boolean;
   default: boolean;
+  shopAddress: boolean;
 };
 
 const AddressContent = () => {
+  const roleCode = useAppSelector(selectRole);
+  const role = validateUserRole(roleCode);
+  
   const { data: getAddressesData, isLoading: getAddressesIsLoading } =
     useGetAddressesQuery();
   const [
@@ -50,12 +59,17 @@ const AddressContent = () => {
     setAddressDefault,
     { isLoading: setAddressDefaultIsLoading, error: setAddressDefaultError },
   ] = useSetAddressDefaultMutation();
+  const [
+    setShopAddress,
+    { isLoading: setShopAddressIsLoading, error: setShopAddressError },
+  ] = useSetShopAddressMutation();
   const [addressID, setAddressID] = useState<string | null>(null);
   const [openModal, setOpenModal] = useState<OpenAddressModal>({
     add: false,
     edit: false,
     delete: false,
     default: false,
+    shopAddress: false,
   });
   const [search, setSearch] = useState<string>('');
 
@@ -123,6 +137,7 @@ const AddressContent = () => {
       edit: false,
       delete: false,
       default: false,
+      shopAddress: false,
     });
     setAddressID(null);
   };
@@ -133,6 +148,7 @@ const AddressContent = () => {
       edit: true,
       delete: false,
       default: false,
+      shopAddress: false,
     });
     setAddressID(id);
   };
@@ -143,6 +159,7 @@ const AddressContent = () => {
       edit: false,
       delete: true,
       default: false,
+      shopAddress: false,
     });
     setAddressID(id);
   };
@@ -153,6 +170,18 @@ const AddressContent = () => {
       edit: false,
       delete: false,
       default: true,
+      shopAddress: false,
+    });
+    setAddressID(id);
+  };
+
+  const handleSetShopAddressClick = (id: string) => {
+    setOpenModal({
+      add: false,
+      edit: false,
+      delete: false,
+      default: false,
+      shopAddress: true,
     });
     setAddressID(id);
   };
@@ -163,6 +192,7 @@ const AddressContent = () => {
       edit: false,
       delete: false,
       default: false,
+      shopAddress: false,
     });
     setAddressID(null);
   };
@@ -173,6 +203,7 @@ const AddressContent = () => {
       edit: false,
       delete: false,
       default: false,
+      shopAddress: false,
     });
 
     if (!addressID) {
@@ -204,6 +235,7 @@ const AddressContent = () => {
       edit: false,
       delete: false,
       default: false,
+      shopAddress: false,
     });
 
     if (!addressID) {
@@ -223,6 +255,38 @@ const AddressContent = () => {
 
         if (setAddressDefaultError && 'data' in setAddressDefaultError) {
           const response = setAddressDefaultError.data as UpdateAddressResponse;
+
+          notifyErrorToast(response.message);
+        }
+      });
+  };
+
+  const handleSetShopAddress = () => {
+    setOpenModal({
+      add: false,
+      edit: false,
+      delete: false,
+      default: false,
+      shopAddress: false,
+    });
+
+    if (!addressID) {
+      return;
+    }
+
+    setShopAddress(addressID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Shop address has been changed!');
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        setAddressID(null);
+
+        if (setShopAddressError && 'data' in setShopAddressError) {
+          const response = setShopAddressError.data as UpdateMerchantResponse;
 
           notifyErrorToast(response.message);
         }
@@ -274,108 +338,152 @@ const AddressContent = () => {
             .filter(({ name }) =>
               name.toLowerCase().includes(search.toLowerCase())
             )
-            .map(({ id, user, name, detail, is_default }) =>
-              is_default ? (
-                <Card
-                  className='col-span-12 shadow border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
-                  key={id}
-                >
-                  <div className='p-4'>
-                    <div className='flex items-center mb-2.5'>
-                      <h5 className='text-xl font-medium'>
-                        {name}
-                        <Badge color='secondary' className='ml-2.5'>
-                          Default
-                        </Badge>
-                      </h5>
+            .map(
+              ({
+                id,
+                phone_number,
+                name,
+                detail,
+                is_default,
+                is_shop_address,
+              }) =>
+                is_default ? (
+                  <Card
+                    className='col-span-12 shadow border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
+                    key={id}
+                  >
+                    <div className='p-4'>
+                      <div className='flex items-center mb-2.5'>
+                        <h5 className='text-xl font-medium'>
+                          {name}
+                          <Badge color='secondary' className='ml-2.5'>
+                            Default
+                          </Badge>
+                          {is_shop_address ? (
+                            <Badge color='accent' className='ml-2.5'>
+                              Pickup Address
+                            </Badge>
+                          ) : null}
+                        </h5>
+                      </div>
+                      <div className='flex items-center mb-2.5'>
+                        <Tooltip message='Phone Number' color='info'>
+                          <HiPhone className='text-info text-xl mr-2.5' />
+                        </Tooltip>
+                        <span>{phone_number}</span>
+                      </div>
+                      <div className='flex items-center mb-4'>
+                        <Tooltip message='Location' color='accent'>
+                          <HiLocationMarker className='text-accent text-xl mr-2.5' />
+                        </Tooltip>
+                        <span className='line-clamp-3 md:line-clamp-1'>
+                          {detail}
+                        </span>
+                      </div>
+                      <Divider />
+                      <Card.Actions>
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          color='ghost'
+                          className='normal-case font-medium w-full md:w-auto'
+                          startIcon={<HiPencil />}
+                          onClick={() => handleEditAddressClick(id)}
+                        >
+                          Edit
+                        </Button>
+                        {role === Role.Seller && !is_shop_address ? (
+                          <Button
+                            size='sm'
+                            color='accent'
+                            className='normal-case font-medium w-full md:w-auto'
+                            startIcon={<HiCheck />}
+                            onClick={() => handleSetShopAddressClick(id)
+                            }
+                          >
+                            Set as Shop Pickup Address
+                          </Button>
+                        ) : null}
+                      </Card.Actions>
                     </div>
-                    <div className='flex items-center mb-2.5'>
-                      <Tooltip message='Phone Number' color='info'>
-                        <HiPhone className='text-info text-xl mr-2.5' />
-                      </Tooltip>
-                      <span>{user.phone_number}</span>
+                  </Card>
+                ) : (
+                  <Card
+                    className='col-span-12 border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-primary border-b-primary shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
+                    key={id}
+                  >
+                    <div className='p-4'>
+                      <div className='flex items-center mb-2.5'>
+                        <h5 className='text-xl font-medium'>{name}</h5>
+                        {is_shop_address ? (
+                          <Badge color='accent' className='ml-2.5'>
+                            Pickup Address
+                          </Badge>
+                        ) : null}
+                      </div>
+                      <div className='flex items-center mb-2.5'>
+                        <Tooltip message='Phone Number' color='info'>
+                          <HiPhone className='text-info text-xl mr-2.5' />
+                        </Tooltip>
+                        <span>{phone_number}</span>
+                      </div>
+                      <div className='flex items-center mb-4'>
+                        <Tooltip message='Location' color='accent'>
+                          <HiLocationMarker className='text-accent text-xl mr-2.5' />
+                        </Tooltip>
+                        <span className='line-clamp-3 md:line-clamp-1'>
+                          {detail}
+                        </span>
+                      </div>
+                      <Divider />
+                      <Card.Actions>
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          color='ghost'
+                          className='normal-case font-medium w-full md:w-auto'
+                          startIcon={<HiPencil />}
+                          onClick={() => handleEditAddressClick(id)}
+                        >
+                          Edit
+                        </Button>
+                        {!is_shop_address ? (
+                          <Button
+                            variant='outline'
+                            size='sm'
+                            color='ghost'
+                            className='normal-case font-medium w-full md:w-auto'
+                            startIcon={<HiTrash />}
+                            onClick={() => handleDeleteAddressClick(id)}
+                          >
+                            Delete
+                          </Button>
+                        ) : null}
+                        <Button
+                          size='sm'
+                          color='secondary'
+                          className='normal-case font-medium w-full md:w-auto'
+                          startIcon={<HiCheck />}
+                          onClick={() => handleSetAddressAsDefaultClick(id)}
+                        >
+                          Set as Default
+                        </Button>
+                        {role === Role.Seller && !is_shop_address ? (
+                          <Button
+                            size='sm'
+                            color='accent'
+                            className='normal-case font-medium w-full md:w-auto'
+                            startIcon={<HiCheck />}
+                            onClick={() => handleSetShopAddressClick(id)
+                            }
+                          >
+                            Set as Shop Pickup Address
+                          </Button>
+                        ) : null}
+                      </Card.Actions>
                     </div>
-                    <div className='flex items-center mb-4'>
-                      <Tooltip message='Location' color='accent'>
-                        <HiLocationMarker className='text-accent text-xl mr-2.5' />
-                      </Tooltip>
-                      <span className='line-clamp-3 md:line-clamp-1'>
-                        {detail}
-                      </span>
-                    </div>
-                    <Divider />
-                    <Card.Actions>
-                      <Button
-                        variant='outline'
-                        size='sm'
-                        color='ghost'
-                        className='normal-case font-medium w-full md:w-auto'
-                        startIcon={<HiPencil />}
-                        onClick={() => handleEditAddressClick(id)}
-                      >
-                        Edit
-                      </Button>
-                    </Card.Actions>
-                  </div>
-                </Card>
-              ) : (
-                <Card
-                  className='col-span-12 border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-primary border-b-primary shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
-                  key={id}
-                >
-                  <div className='p-4'>
-                    <div className='flex items-center mb-2.5'>
-                      <h5 className='text-xl font-medium'>{name}</h5>
-                    </div>
-                    <div className='flex items-center mb-2.5'>
-                      <Tooltip message='Phone Number' color='info'>
-                        <HiPhone className='text-info text-xl mr-2.5' />
-                      </Tooltip>
-                      <span>{user.phone_number}</span>
-                    </div>
-                    <div className='flex items-center mb-4'>
-                      <Tooltip message='Location' color='accent'>
-                        <HiLocationMarker className='text-accent text-xl mr-2.5' />
-                      </Tooltip>
-                      <span className='line-clamp-3 md:line-clamp-1'>
-                        {detail}
-                      </span>
-                    </div>
-                    <Divider />
-                    <Card.Actions>
-                      <Button
-                        variant='outline'
-                        size='sm'
-                        color='ghost'
-                        className='normal-case font-medium w-full md:w-auto'
-                        startIcon={<HiPencil />}
-                        onClick={() => handleEditAddressClick(id)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant='outline'
-                        size='sm'
-                        color='ghost'
-                        className='normal-case font-medium w-full md:w-auto'
-                        startIcon={<HiTrash />}
-                        onClick={() => handleDeleteAddressClick(id)}
-                      >
-                        Delete
-                      </Button>
-                      <Button
-                        size='sm'
-                        color='secondary'
-                        className='normal-case font-medium w-full md:w-auto'
-                        startIcon={<HiCheck />}
-                        onClick={() => handleSetAddressAsDefaultClick(id)}
-                      >
-                        Set as Default
-                      </Button>
-                    </Card.Actions>
-                  </div>
-                </Card>
-              )
+                  </Card>
+                )
             )}
       </div>
       <Modal
@@ -544,6 +652,14 @@ const AddressContent = () => {
         loading={setAddressDefaultIsLoading}
         onClose={handleModalClose}
         onAccepted={handleSetAddressDefault}
+      />
+      <ConfirmationModal
+        open={openModal.shopAddress}
+        title='Are you sure?'
+        message='Your shop address will be changed.'
+        loading={setShopAddressIsLoading}
+        onClose={handleModalClose}
+        onAccepted={handleSetShopAddress}
       />
     </div>
   );

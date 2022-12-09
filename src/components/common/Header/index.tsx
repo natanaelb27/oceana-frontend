@@ -58,11 +58,14 @@ const Header = () => {
   };
   const handleLogoutClick = async () => {
     await dispatch(unsetCredentials());
-    logout().unwrap().then((res) => {
-      console.log(res);
-    }).catch((err) => {
-      console.log(err);
-    });
+    await logout()
+      .unwrap()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     navigate('/');
   };
 
