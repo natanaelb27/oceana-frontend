@@ -46,7 +46,7 @@ const ProductCart = ({
   productMerchantPromotionID,
   userMaxPurchaseQuantity,
   maxPurchaseQuantity,
-  handleClickAddToCart
+  handleClickAddToCart,
 }: ProductCartProps) => {
   const renderPurchaseButtons = () => {
     if (
@@ -141,15 +141,17 @@ const ProductCart = ({
           )}
         </div>
         {productMerchantPromotionID !== null &&
-          userMaxPurchaseQuantity &&
-          maxPurchaseQuantity &&
-          Math.min(userMaxPurchaseQuantity, maxPurchaseQuantity) ===
-            quantity && (
-            <div className='mt-1 text-sm text-red-600'>
-              Purchase quantity is at maximum threshold, increasing quantity may
-              cause increase in price
-            </div>
-          )}
+        userMaxPurchaseQuantity &&
+        maxPurchaseQuantity &&
+        Math.min(userMaxPurchaseQuantity, maxPurchaseQuantity) === quantity &&
+        quantity !== 0 ? (
+          <div className='mt-1 text-sm text-red-600'>
+            Purchase quantity is at maximum threshold, increasing quantity may
+            cause increase in price
+          </div>
+        ) : (
+          <div></div>
+        )}
         {productVariations.length === 0 && stock === 0 ? (
           <div className='text-sm mt-1 text-red-600'>
             There are {stock} items left
