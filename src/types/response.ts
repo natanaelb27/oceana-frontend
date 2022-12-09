@@ -14,7 +14,8 @@ import {
   PurchasedQuantities,
   UpdateCart,
   ShopInformation,
-  ViewPost
+  ViewPost,
+  FavoriteProduct
 } from './component';
 
 export type GetRolesResponse = {
@@ -201,6 +202,22 @@ export type GetShopInformationResponse = {
 
 export type ViewPostResponse = {
   data: ViewPost | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+}
+
+export type FavoriteProductResponse = {
+  data: FavoriteProduct | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+}
+
+export type GetFavoriteProductResponse = {
+  data: FavoriteProduct | null;
   code: number;
   error: string | null;
   message: string;

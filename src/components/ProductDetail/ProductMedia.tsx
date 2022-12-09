@@ -1,5 +1,5 @@
 import Zoom from 'react-medium-image-zoom';
-import { HiHeart } from 'react-icons/hi';
+import { HiHeart, HiOutlineHeart } from 'react-icons/hi';
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -17,9 +17,16 @@ import { useEffect } from 'react';
 type ProductMediaProps = {
   images: string[];
   selectedVariantImage: string;
+  handleClickFavoriteProduct: () => void;
+  favoriteProductValue: boolean;
 };
 
-const ProductMedia = ({ images, selectedVariantImage }: ProductMediaProps) => {
+const ProductMedia = ({
+  images,
+  selectedVariantImage,
+  handleClickFavoriteProduct,
+  favoriteProductValue,
+}: ProductMediaProps) => {
   const handleCopyClick = () => {
     navigator.clipboard.writeText(window.location.href);
 
@@ -30,7 +37,12 @@ const ProductMedia = ({ images, selectedVariantImage }: ProductMediaProps) => {
     <div>
       <div className='mb-2'>
         <Zoom>
-          <img src={`${selectedVariantImage === '' ? images[0] : selectedVariantImage}`} className='w-full rounded-lg' />
+          <img
+            src={`${
+              selectedVariantImage === '' ? images[0] : selectedVariantImage
+            }`}
+            className='w-full rounded-lg'
+          />
         </Zoom>
       </div>
       <div className='grid grid-cols-5 gap-2 mb-4'>
@@ -60,8 +72,17 @@ const ProductMedia = ({ images, selectedVariantImage }: ProductMediaProps) => {
           <IoCopyOutline className='text-sm' />
         </Button>
         <span className='mx-2'>|</span>
-        <Button shape='circle' size='sm' color='ghost'>
-          <HiHeart className='text-2xl text-secondary' />
+        <Button
+          shape='circle'
+          size='sm'
+          color='ghost'
+          onClick={handleClickFavoriteProduct}
+        >
+          {favoriteProductValue === true ? (
+            <HiHeart className='text-2xl text-secondary' />
+          ) : (
+            <HiOutlineHeart className='text-2xl' />
+          )}
         </Button>
         <span className='ml-1'>Favorite ({toCompact(10000)})</span>
       </div>

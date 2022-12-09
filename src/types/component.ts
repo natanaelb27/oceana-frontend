@@ -270,5 +270,12 @@ export interface ShopInformation {
 export interface ViewPost {
   user_id: string;
   product_id: number;
+  last_viewed_at: string;
+  count: number;
+}
+
+export interface FavoriteProduct {
+  user_id: string;
+  product_id: number;
   is_favorite: boolean;
 }

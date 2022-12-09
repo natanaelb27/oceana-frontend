@@ -1,5 +1,7 @@
 import {
+  FavoriteProductResponse,
   GetAllProductsResponse,
+  GetFavoriteProductResponse,
   GetProductDetailsResponse,
   GetPurchasedQuantitiesResponse,
   ViewPostResponse,
@@ -34,9 +36,23 @@ export const productApi = baseApi.injectEndpoints({
     }),
     viewPost: builder.mutation<ViewPostResponse, string>({
       query: (id) => ({
+        url: `/products/${id}/view`,
+        method: 'POST',
+      }),
+    }),
+    favoriteProduct: builder.mutation<FavoriteProductResponse, string>({
+      query: (id) => ({
         url: `/products/${id}/favorite`,
         method: 'POST',
       }),
+      invalidatesTags: ['Product'],
+    }),
+    getFavoriteProduct: builder.query<GetFavoriteProductResponse, string>({
+      query: (id) => ({
+        url: `/products/${id}/favorite`,
+        method: 'GET',
+      }),
+      providesTags: ['Product'],
     }),
   }),
 });
@@ -49,4 +65,7 @@ export const {
   useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
   useViewPostMutation,
+  useFavoriteProductMutation,
+  useGetFavoriteProductQuery,
+  useLazyGetFavoriteProductQuery,
 } = productApi;

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Divider } from 'react-daisyui';
 import {
+  useFavoriteProductMutation,
+  useGetFavoriteProductQuery,
+  useLazyGetFavoriteProductQuery,
   useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
   useViewPostMutation,
@@ -27,6 +30,10 @@ type ProductDetailProps = {
 };
 
 const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
+  if (!productID || !merchantID) {
+    return null;
+  }
+
   const [purchasedQuantitiesQuery, setPurchasedQuantitiesQuery] =
     useState<PurchasedQuantitiesQuery>({
       product_id: Number(productID),
@@ -35,6 +42,10 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     });
   const [viewPost, { isLoading: viewPostIsLoading, error: viewPostError }] =
     useViewPostMutation();
+  const [
+    favoriteProduct,
+    { isLoading: favoritePostIsLoading, error: favoritePostError },
+  ] = useFavoriteProductMutation();
   const [
     getProductDetail,
     { data: getProductDetailData, isLoading: getProductDetailIsLoading },
@@ -51,6 +62,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     data: getShopInformationData,
     isLoading: getShopInformationIsLoading,
   } = useGetShopInformationQuery(merchantID);
+  const { data: getFavoriteProduct, isLoading: getFavoriteProductIsLoading } =
+    useGetFavoriteProductQuery(productID);
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
   const [selectedVariantImage, setSelectedVariantImage] = useState<string>('');
   const [productItemName, setProductItemName] = useState('');
@@ -173,44 +186,58 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       });
   };
 
-  if (!productID || !merchantID) {
-    return null;
-  }
+  const handleClickFavoriteProduct = () => {
+    console.log('kontol');
+    favoriteProduct(productID)
+      .unwrap()
+      .then((res) => {
+        if (!res.data) {
+          return;
+        }
+        notifySuccessToast('Successfully favorite post');
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   const roleCode = useAppSelector(selectRole);
   const role = validateUserRole(roleCode);
 
   useEffect(() => {
-    viewPost(productID)
-      .unwrap()
-      .then(() => {
-        notifySuccessToast('Successfully view post');
-      })
-      .catch((err) => {
-        console.error(err);
+    const fetchData = () => {
+      // if (role === Role.Buyer || role === Role.Seller) {
+      viewPost(productID)
+        .unwrap()
+        .catch((err) => {
+          console.error(err);
+        });
+      // }
+      getProductDetail(productID).then(({ data }) => {
+        console.log({ data: data?.data });
+        if (!data?.data) {
+          return;
+        }
+        if (data.data.product_variation.length === 0) {
+          getPurchasedQuantities(
+            toPurchasedQuantitiesQuery({
+              product_item_id: data.data.product_model[0].product_item_id,
+              product_id: Number(productID),
+              quantity: purchasedQuantitiesQuery.quantity,
+            })
+          )
+            .unwrap()
+            .then((res) => {
+              console.log(res.data?.product_merchant_promotion_id);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }
       });
-    getProductDetail(productID).then(({ data }) => {
-      console.log({ data: data?.data });
-      if (!data?.data) {
-        return;
-      }
-      if (data.data.product_variation.length === 0) {
-        getPurchasedQuantities(
-          toPurchasedQuantitiesQuery({
-            product_item_id: data.data.product_model[0].product_item_id,
-            product_id: Number(productID),
-            quantity: purchasedQuantitiesQuery.quantity,
-          })
-        )
-          .unwrap()
-          .then((res) => {
-            console.log(res.data?.product_merchant_promotion_id);
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      }
-    });
+    };
+
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -236,7 +263,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     getProductDetailIsLoading ||
     !getProductDetailData?.data ||
     !getShopInformationData?.data ||
-    getShopInformationIsLoading
+    getShopInformationIsLoading ||
+    getFavoriteProductIsLoading
   ) {
     return (
       <div className='p-4 md:p-10 animate-pulse'>
@@ -301,6 +329,10 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             <ProductMedia
               images={getProductDetailData.data.images}
               selectedVariantImage={selectedVariantImage}
+              handleClickFavoriteProduct={handleClickFavoriteProduct}
+              favoriteProductValue={Boolean(
+                getFavoriteProduct?.data?.is_favorite
+              )}
             />
           </div>
           <div className='col-span-12 md:col-span-6'>

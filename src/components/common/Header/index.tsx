@@ -15,8 +15,9 @@ import { CgLogOut, CgProfile } from 'react-icons/cg';
 
 import { useLocalStorage, useScrollPosition } from '../../../hooks';
 import { selectRole, unsetCredentials } from '../../../store/slices/authSlice';
-import { useAppDispatch, useAppSelector } from '../../../store/store';
+import { baseApi, useAppDispatch, useAppSelector } from '../../../store/store';
 import { useLogoutMutation } from '../../../store/services/profileService';
+import { TAG_TYPES } from '../../../constants/tags';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -60,6 +61,7 @@ const Header = () => {
       .unwrap()
       .then((res) => {
         console.log(res);
+        dispatch(baseApi.util.invalidateTags(TAG_TYPES));
       })
       .catch((err) => {
         console.log(err);

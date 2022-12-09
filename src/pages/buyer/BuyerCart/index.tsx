@@ -5,7 +5,7 @@ import {
 } from '../../../store/services/cartService';
 import { GetUserCartResponse } from '../../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
-import { Divider, Input, Modal, Alert } from 'react-daisyui';
+import { Divider, Input, Modal, Alert, Button } from 'react-daisyui';
 import { BiTrash } from 'react-icons/bi';
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { titleCase } from '../../../utils/titleCase';
@@ -17,6 +17,7 @@ type SelectItem = {
   productItemID: number;
   selectItem: boolean;
   quantity: number;
+  stock_quantity: number;
 };
 
 type SelectMerchantItems = {
@@ -68,6 +69,7 @@ const BuyerCart = () => {
           productItemID: product.product_item_id,
           selectItem: false,
           quantity: product.quantity,
+          stock_quantity: product.stock_quantity,
         });
       });
       selectedMerchantItems.push({
@@ -212,8 +214,8 @@ const BuyerCart = () => {
                 notifySuccessToast('1 Item has been added to cart');
               })
               .catch((err) => {
-                product.quantity -= 1;
-                notifyErrorToast(err.data.message);
+                product.quantity = product.stock_quantity;
+                notifyErrorToast('Your quantity is over the available stock!');
                 console.error(err);
               });
           }
@@ -279,12 +281,43 @@ const BuyerCart = () => {
         merchant.selectItem = merchant.selectItem.map((product) => {
           if (product.productItemID === productItemID) {
             product.quantity = quantity;
+          }
+          return product;
+        });
+      }
+      return merchant;
+    });
+    setSelectedItems(newSelectedItems);
+  };
+
+  const handleKeyUpQuantity = (e: React.SyntheticEvent) => {
+    const target = e.target as HTMLTextAreaElement;
+    const newSelectedItems = { ...selectedItems };
+    const merchantID = Number(
+      target.parentElement?.parentElement?.parentElement?.id
+    );
+    const productItemID = Number(target.parentElement?.parentElement?.id);
+    newSelectedItems.selectItem.map((merchant) => {
+      if (merchant.merchantID === merchantID) {
+        merchant.selectItem = merchant.selectItem.map((product) => {
+          if (product.productItemID === productItemID) {
             setTimeout(() => {
               updateUserCart({
                 product_item_id: product.productItemID,
                 quantity: product.quantity,
-              });
-            }, 3000);
+              })
+                .unwrap()
+                .then(() => {
+                  notifySuccessToast('Successfully updated your cart!');
+                })
+                .catch((err) => {
+                  notifyErrorToast(
+                    'Your quantity is over the available stock!'
+                  );
+                  product.quantity = product.stock_quantity;
+                  console.error(err);
+                });
+            }, 100);
           }
           return product;
         });
@@ -296,6 +329,7 @@ const BuyerCart = () => {
 
   const handleClickDelete = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLTextAreaElement;
+    console.log(target.type);
     const merchantID = Number(
       target.parentElement?.parentElement?.parentElement?.id
     );
@@ -411,14 +445,14 @@ const BuyerCart = () => {
                     }
                     onChange={handleClickProduct}
                   />
-                  <div className='h-20 w-20 ml-2 mr-2 h-'>
+                  <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2 h-'>
                     <img
                       src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
                       className='rounded-lg h-full w-full'
                     />
                   </div>
-                  <div className='h-20 flex flex-col'>
-                    <div className='justify-start'>
+                  <div className='h-24 flex flex-col'>
+                    <div className='justify-start mt-2 md:mt-0'>
                       {titleCase(product.product_name)}
                     </div>
                     <div className='text-sm mt-0.5'>
@@ -434,38 +468,79 @@ const BuyerCart = () => {
                         </h5>
                       </div>
                     ) : (
-                      <div className='text-base font-bold mt-3'>
-                        Rp{toRupiah(product.price_after_discount)}
+                      <div className='text-lg font-bold'>
+                        {toRupiah(product.price_after_discount)}
                       </div>
+                    )}
+                    {product.stock_quantity <= 5 &&
+                    product.stock_quantity > 1 ? (
+                      <div className='text-red-500 text-sm'>
+                        Stock: Only {product.stock_quantity} left!
+                      </div>
+                    ) : (
+                      product.stock_quantity === 1 && (
+                        <div className='text-red-500 text-sm'>
+                          Last item, check out now!
+                        </div>
+                      )
                     )}
                   </div>
                 </div>
                 <div className='flex items-center justify-end gap-1'>
-                  <BiTrash
-                    size='1.5em'
-                    className='text-error mr-12 cursor-pointer'
+                  <Button
                     onClick={handleClickDelete}
-                  />
-                  <AiOutlineMinusCircle
-                    size='1.75em'
-                    className='text-primary cursor-pointer'
+                    className='btn-ghost text-red-500'
+                    endIcon={
+                      <BiTrash
+                        pointerEvents={'none'}
+                        size='1.25em'
+                        className='pointer-events-none'
+                      />
+                    }
+                    size='sm'
+                  >
+                    {/* <BiTrash
+                      size='1.5em'
+                      className='text-error cursor-pointer'
+                    /> */}
+                    DELETE
+                  </Button>
+                  <Button
+                    className='btn-ghost'
                     onClick={handleClickDecreaseQuantity}
-                  />
+                    shape='circle'
+                    size='sm'
+                  >
+                    <AiOutlineMinusCircle
+                      size={'2em'}
+                      className='text-primary pointer-events-none'
+                      pointerEvents={'none'}
+                    />
+                  </Button>
+
                   <Input
                     size='sm'
-                    className='w-10 text-center border-2 border-primary'
+                    className='w-14 text-center border-2 border-primary'
                     value={
                       selectedItems?.selectItem[merchantIndex]?.selectItem[
                         productIndex
                       ]?.quantity || 0
                     }
                     onChange={handleChangeQuantity}
+                    onBlur={handleKeyUpQuantity}
                   />
-                  <AiOutlinePlusCircle
-                    size='1.75em'
-                    className='text-primary cursor-pointer'
+                  <Button
+                    className='btn-ghost'
                     onClick={handleClickAddQuantity}
-                  />
+                    shape='circle'
+                    size='sm'
+                  >
+                    <AiOutlinePlusCircle
+                      size='2em'
+                      className='text-primary pointer-events-none'
+                      pointerEvents={'none'}
+                    />
+                  </Button>
                 </div>
               </div>
             );
