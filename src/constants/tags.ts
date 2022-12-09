@@ -6,4 +6,5 @@ export const TAG_TYPES = [
   'Product',
   'Profile',
   'Cart',
+  'Merchant',
 ];
