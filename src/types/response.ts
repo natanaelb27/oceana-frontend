@@ -140,6 +140,10 @@ export type GetAllProductsResponse = {
 
 export type GetProductDetailsResponse = {
   data: ProductDetail | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
 };
 
 export type UpdateUserCartResponse = {

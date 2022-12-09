@@ -3,7 +3,6 @@ import { Card, Divider } from 'react-daisyui';
 import {
   useFavoriteProductMutation,
   useGetFavoriteProductQuery,
-  useLazyGetFavoriteProductQuery,
   useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
   useViewPostMutation,
@@ -18,11 +17,12 @@ import ShopBanner from './ShopBanner';
 import { PurchasedQuantitiesQuery } from '../../types/query';
 import { useGetShopInformationQuery } from '../../store/services/shopService';
 import { useUpdateUserCartMutation } from '../../store/services/cartService';
-import { notifySuccessToast } from '../../utils/toast';
+import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
 import { useAppSelector } from '../../store/store';
 import { selectRole } from '../../store/slices/authSlice';
 import { validateUserRole } from '../../utils/auth';
 import { Role } from '../../types/role';
+import { GetPurchasedQuantitiesResponse, UpdateUserCartResponse } from '../../types/response';
 
 type ProductDetailProps = {
   merchantID?: string;
@@ -40,24 +40,15 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       product_item_id: 0,
       quantity: 1,
     });
-  const [viewPost, { isLoading: viewPostIsLoading, error: viewPostError }] =
-    useViewPostMutation();
-  const [
-    favoriteProduct,
-    { isLoading: favoritePostIsLoading, error: favoritePostError },
-  ] = useFavoriteProductMutation();
+  const [viewPost] = useViewPostMutation();
+  const [favoriteProduct] = useFavoriteProductMutation();
   const [
     getProductDetail,
     { data: getProductDetailData, isLoading: getProductDetailIsLoading },
   ] = useLazyGetProductDetailQuery();
-  const [
-    getPurchasedQuantities,
-    {
-      data: getPurchasedQuantitiesData,
-      isLoading: getPurchasedQuantitiesIsLoading,
-    },
-  ] = useLazyGetPurchasedQuantitiesQuery();
-  const [updateUserCart, { isLoading }] = useUpdateUserCartMutation();
+  const [getPurchasedQuantities, { data: getPurchasedQuantitiesData }] =
+    useLazyGetPurchasedQuantitiesQuery();
+  const [updateUserCart] = useUpdateUserCartMutation();
   const {
     data: getShopInformationData,
     isLoading: getShopInformationIsLoading,
@@ -68,6 +59,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   const [selectedVariantImage, setSelectedVariantImage] = useState<string>('');
   const [productItemName, setProductItemName] = useState('');
   const [productItemPrice, setProductItemPrice] = useState(0);
+  const roleCode = useAppSelector(selectRole);
+  const role = validateUserRole(roleCode);
 
   const handleClickVariation = (e: React.SyntheticEvent) => {
     if (!getProductDetailData?.data) {
@@ -178,41 +171,36 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       .unwrap()
       .then(() => {
         notifySuccessToast(
-          `${purchasedQuantitiesQuery.quantity} items has been added to cart`
+          `${purchasedQuantitiesQuery.quantity} items have been added to cart`
         );
       })
       .catch((err) => {
-        console.error(err);
+        if (err && 'data' in err) {
+          const data = err.data as UpdateUserCartResponse;
+          notifyErrorToast(data.message);
+        }
       });
   };
 
   const handleClickFavoriteProduct = () => {
-    console.log('kontol');
     favoriteProduct(productID)
       .unwrap()
       .then((res) => {
         if (!res.data) {
           return;
         }
-        notifySuccessToast('Successfully favorite post');
+        notifySuccessToast('Product was added to favorite list');
       })
       .catch((err) => {
         console.error(err);
       });
   };
 
-  const roleCode = useAppSelector(selectRole);
-  const role = validateUserRole(roleCode);
-
   useEffect(() => {
     const fetchData = () => {
-      // if (role === Role.Buyer || role === Role.Seller) {
-      viewPost(productID)
-        .unwrap()
-        .catch((err) => {
-          console.error(err);
-        });
-      // }
+      if (role === Role.Buyer || role === Role.Seller) {
+        viewPost(productID);
+      }
       getProductDetail(productID).then(({ data }) => {
         console.log({ data: data?.data });
         if (!data?.data) {
@@ -227,11 +215,11 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             })
           )
             .unwrap()
-            .then((res) => {
-              console.log(res.data?.product_merchant_promotion_id);
-            })
             .catch((err) => {
-              console.error(err);
+              if (err && 'data' in err) {
+                const data = err.data as GetPurchasedQuantitiesResponse;
+                notifyErrorToast(data.message);
+              }
             });
         }
       });
@@ -254,10 +242,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
         console.error(err);
       });
   }, [purchasedQuantitiesQuery]);
-
-  // if (!getProductDetailData?.data) {
-  //   return <div>404</div>;
-  // }
 
   if (
     getProductDetailIsLoading ||
