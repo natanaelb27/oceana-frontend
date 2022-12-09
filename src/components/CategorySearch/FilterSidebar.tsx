@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
@@ -7,49 +7,61 @@ import {
   Form,
   Input,
 } from 'react-daisyui';
-import { HiOutlineChevronDown } from 'react-icons/hi';
+import { HiOutlineChevronDown, HiOutlineChevronUp } from 'react-icons/hi';
 import { IoFilter } from 'react-icons/io5';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   useGetAllCategoryQuery,
   useGetAncestorsCategoryQuery,
 } from '../../store/services/categoryService';
+import { Category } from '../../types/component';
 import { CategoryQuery, ProductQuery } from '../../types/query';
 import { GetAllCategoryResponse } from '../../types/response';
 import { toCategoryQuery } from '../../utils/mapperDTO';
+import { toUrl } from '../../utils/toUrl';
 import { FilterSidebarContainer } from './style';
 
 type FilterSidebarProps = {
   productQuery: ProductQuery;
   setProductQuery: (query: ProductQuery) => void;
+  category: Category[];
+};
+
+type CategoryState = {
+  id: number;
+  open: boolean;
 };
 
 const FilterSidebar = ({
   productQuery,
   setProductQuery,
+  category,
 }: FilterSidebarProps) => {
-  const { categoryPath } = useParams();
-  if (!categoryPath) {
-    return null;
-  }
-  const categoryID = categoryPath.split('-i.').slice(-1)[0].split('-')[0];
+  // const { categoryPath } = useParams();
+  // if (!categoryPath) {
+  //   return null;
+  // }
 
-  const { data: resGetAncestorsCategory } =
-    useGetAncestorsCategoryQuery(categoryID);
+  // const categoryID = categoryPath.split('-i.').slice(-1)[0].split('-')[0];
 
-  const [categoryQuery, setCategoryQuery] = useState<CategoryQuery>({
-    categoryID: resGetAncestorsCategory?.data?.at(0)?.id || 0,
-    levelDepth: 0,
-  });
+  // const { data: resGetAncestorsCategory } =
+  //   useGetAncestorsCategoryQuery(categoryID);
 
-  const { data: resGetAllCategory } = useGetAllCategoryQuery(
-    toCategoryQuery(categoryQuery),
-    {
-      skip: categoryQuery.categoryID === 0,
-    }
-  );
+  // const [categoryQuery, setCategoryQuery] = useState<CategoryQuery>({
+  //   categoryID: resGetAncestorsCategory?.data?.at(0)?.id,
+  //   levelDepth: 0,
+  // });
 
-  console.log(resGetAllCategory);
+  // const { data: resGetAllCategory } = useGetAllCategoryQuery(
+  //   toCategoryQuery(categoryQuery),
+  //   {
+  //     skip: !resGetAncestorsCategory?.data?.at(0)?.id,
+  //   }
+  // );
+
+  // useEffect(() => {
+  //   setSkip(!resGetAncestorsCategory?.data?.at(0)?.id);
+  // }, [resGetAncestorsCategory?.data?.at(0)?.id]);
 
   const handleClickFilterToggle = () => {
     const filterSidebarEl = document.getElementById('filter-sidebar');
@@ -74,6 +86,33 @@ const FilterSidebar = ({
     });
   };
 
+  const navigate = useNavigate();
+
+  const handleCategoryClick = (categoryName: string, categoryID: number) => {
+    navigate(`/category/${toUrl(categoryName)}-i.${categoryID}`);
+  };
+
+  const [subSubCategoryCollapse, setSubSubCategoryCollapse] = useState<
+    boolean[]
+  >([]);
+
+  const handleCollapseClick = (index: number) => {
+    const newCollapse = subSubCategoryCollapse.map((value, i) => {
+      if (i === index) {
+        return !value;
+      } else {
+        return value;
+      }
+    });
+    setSubSubCategoryCollapse(newCollapse);
+  };
+
+  useEffect(() => {
+    const data: boolean[] = [];
+    category?.at(0)?.category.map(() => data.push(false));
+    setSubSubCategoryCollapse(data);
+  }, []);
+
   return (
     <>
       <FilterSidebarContainer id='filter-sidebar'>
@@ -85,15 +124,67 @@ const FilterSidebar = ({
 
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
           <Collapse.Title className='font-bold'>
-            Category - <span>{resGetAncestorsCategory?.data?.at(0)?.name}</span>
+            Category - <span>{category?.at(0)?.name}</span>
           </Collapse.Title>
-          <Collapse.Content>
-            <div>{}</div>
-            <Form>
+          <Collapse.Content className='flex flex-col gap-5'>
+            {category?.at(0)?.category.map((subCategory, i) => {
+              return (
+                <div key={i} className='flex flex-col gap-1'>
+                  <div className='flex justify-between items-center'>
+                    <span
+                      className='cursor-pointer hover:text-primary font-bold'
+                      onClick={() => {
+                        handleCategoryClick(subCategory?.name, subCategory?.id);
+                      }}
+                    >
+                      {subCategory?.name}
+                    </span>
+                    {subSubCategoryCollapse.at(i) ? (
+                      <HiOutlineChevronUp
+                        className='cursor-pointer'
+                        onClick={() => {
+                          handleCollapseClick(i);
+                        }}
+                      />
+                    ) : (
+                      <HiOutlineChevronDown
+                        className='cursor-pointer'
+                        onClick={() => {
+                          handleCollapseClick(i);
+                        }}
+                      />
+                    )}
+                  </div>
+                  <div key={i} className='flex flex-col gap-2'>
+                    {subSubCategoryCollapse.at(i)
+                      ? subCategory?.category.map((subSubCategory, i) => {
+                          return (
+                            <div
+                              key={i}
+                              className='flex justify-between cursor-pointer hover:text-primary'
+                              onClick={() => {
+                                handleCategoryClick(
+                                  subSubCategory?.name,
+                                  subSubCategory?.id
+                                );
+                              }}
+                            >
+                              <span className='ml-3'>
+                                {subSubCategory.name}
+                              </span>
+                            </div>
+                          );
+                        })
+                      : null}
+                  </div>
+                </div>
+              );
+            })}
+            {/* <Form>
               <Form.Label title='Nothing to see aa...'>
                 <HiOutlineChevronDown></HiOutlineChevronDown>
               </Form.Label>
-            </Form>
+            </Form> */}
           </Collapse.Content>
         </Collapse>
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>

@@ -26,6 +26,6 @@ export type TransactionHistoryQuery = {
 };
 
 export type CategoryQuery = {
-  categoryID: number;
+  categoryID?: number;
   levelDepth: number;
 };

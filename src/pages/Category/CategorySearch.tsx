@@ -5,16 +5,20 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Pager, ProductCard, SortBar } from '../../components/common';
 import { FilterSidebar } from '../../components/CategorySearch';
 import { LIMIT_SEARCH_PRODUCTS_LIST } from '../../constants';
-import { useGetAncestorsCategoryQuery } from '../../store/services/categoryService';
+import {
+  useGetAllCategoryQuery,
+  useGetAncestorsCategoryQuery,
+} from '../../store/services/categoryService';
 import { useGetAllProductsQuery } from '../../store/services/productService';
-import { ProductQuery } from '../../types/query';
+import { CategoryQuery, ProductQuery } from '../../types/query';
 import {
   ProductsSortString,
   ProductsSortBy,
   ProductsSortByString,
 } from '../../types/sort';
-import { toProductQuery } from '../../utils/mapperDTO';
+import { toCategoryQuery, toProductQuery } from '../../utils/mapperDTO';
 import { toUrl } from '../../utils/toUrl';
+import NoData from '../../components/common/NoData';
 
 const CategorySearch = () => {
   const { categoryPath } = useParams();
@@ -47,31 +51,31 @@ const CategorySearch = () => {
     toProductQuery(productQuery)
   );
 
-  // const [categoryQuery, setCategoryQuery] = useState<CategoryQuery>({
-  //   categoryID: resGetAncestorsCategory?.data?.at(0)?.id || 0,
-  //   levelDepth: 0,
-  // });
+  const [categoryQuery, setCategoryQuery] = useState<CategoryQuery>({
+    categoryID: resGetAncestorsCategory?.data?.at(0)?.id,
+    levelDepth: 0,
+  });
 
-  // console.log(resGetAncestorsCategory?.data?.at(0)?.name);
-
-  // const { data: resGetAllCategory } = useGetAllCategoryQuery(
-  //   toCategoryQuery(categoryQuery),
-  //   {
-  //     skip: categoryID === undefined,
-  //   }
-  // );
+  const { data: resGetAllCategory } = useGetAllCategoryQuery(
+    toCategoryQuery(categoryQuery),
+    {
+      skip: categoryQuery.categoryID === undefined,
+    }
+  );
 
   useEffect(() => {
     setProductQuery({
       ...productQuery,
       categoryID: parseInt(categoryID, 10),
     });
-
-    // setCategoryQuery({
-    //   ...categoryQuery,
-    //   categoryID: resGetAncestorsCategory?.data?.at(0)?.id || 0,
-    // });
   }, [categoryID]);
+
+  useEffect(() => {
+    setCategoryQuery({
+      ...categoryQuery,
+      categoryID: resGetAncestorsCategory?.data?.at(0)?.id,
+    });
+  }, [resGetAncestorsCategory]);
 
   const sortBy = searchParams.get('sort-by') || '';
 
@@ -118,52 +122,6 @@ const CategorySearch = () => {
     });
   };
 
-  // render product not found
-  if (resGetAllProducts?.data?.length === 0) {
-    return (
-      <div className='mx-auto container'>
-        <div className='p-4 grid grid-cols-1 md:grid-cols-5 gap-4 md:py-10 md:gap-10'>
-          <div className='col-span-1'>
-            <FilterSidebar
-              productQuery={productQuery}
-              setProductQuery={setProductQuery}
-            />
-          </div>
-          <div
-            id='product-list-search-page'
-            className='col-span-4 flex flex-col'
-          >
-            <div className='product-list-header'>
-              <div className='ml-2 flex items-center gap-2 text-lg'>
-                <AiOutlineInfoCircle />
-                {resGetAncestorsCategory?.data &&
-                  resGetAncestorsCategory?.data.map((category, i) => {
-                    return (
-                      <span
-                        className='text-sm text-primary cursor-pointer'
-                        key={i}
-                      >
-                        {category.name}
-                      </span>
-                    );
-                  })}
-              </div>
-              <div className='mt-6'>
-                <SortBar sort={sort} onSortChange={handleSortChange} />
-              </div>
-            </div>
-            <div className='mt-6 flex flex-col items-center text-center text-error animate-pulse'>
-              <TbError404 className='text-9xl' />
-              <h3 className='text-3xl font-bold'>
-                Oof, product not found... Please try again!
-              </h3>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const navigate = useNavigate();
 
   const handleCategoryClick = (categoryName: string, categoryID: number) => {
@@ -174,10 +132,13 @@ const CategorySearch = () => {
     <div className='mx-auto container'>
       <div className='p-4 grid grid-cols-1 md:grid-cols-5 gap-4 md:py-10 md:gap-10'>
         <div className='col-span-1'>
-          <FilterSidebar
-            productQuery={productQuery}
-            setProductQuery={setProductQuery}
-          />
+          {resGetAllCategory?.data ? (
+            <FilterSidebar
+              productQuery={productQuery}
+              setProductQuery={setProductQuery}
+              category={resGetAllCategory?.data}
+            />
+          ) : null}
         </div>
         <div id='product-list-search-page' className='col-span-4 flex flex-col'>
           <div className='product-list-header'>
@@ -220,16 +181,6 @@ const CategorySearch = () => {
                           {category.name}
                         </span>
                       )}
-                      {/* <span
-                        className={`text-sm ${
-                          resGetAncestorsCategory?.data?.at(-1)?.id ===
-                          category.id
-                            ? ''
-                            : 'text-primary cursor-pointer'
-                        }`}
-                      >
-                        {category.name}
-                      </span> */}
                     </div>
                   );
                 })}
@@ -249,11 +200,15 @@ const CategorySearch = () => {
               />
             </div>
           </div>
-          <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
-            {resGetAllProducts?.data?.map((product, n) => (
-              <ProductCard key={n} product={product} />
-            ))}
-          </div>
+          {resGetAllProducts?.data?.length || 0 > 0 ? (
+            <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
+              {resGetAllProducts?.data?.map((product, n) => (
+                <ProductCard key={n} product={product} />
+              ))}
+            </div>
+          ) : (
+            <NoData title='Oops, product not found... Please try again!'></NoData>
+          )}
           <div className='mt-6 flex justify-center'>
             <Pager
               page={productQuery.page}
