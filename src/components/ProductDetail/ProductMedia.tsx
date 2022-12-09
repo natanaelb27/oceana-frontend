@@ -45,13 +45,15 @@ const ProductMedia = ({
           />
         </Zoom>
       </div>
-      <div className='grid grid-cols-5 gap-2 mb-4'>
-        {images.slice(1).map((image, index) => (
-          <Zoom key={index}>
-            <img src={image} className='w-full rounded-lg' />
-          </Zoom>
-        ))}
-      </div>
+      {images.length > 1 && (
+        <div className='grid grid-cols-5 gap-2 mb-4'>
+          {images.slice(1).map((image, index) => (
+            <Zoom key={index}>
+              <img src={image} className='w-full rounded-lg' />
+            </Zoom>
+          ))}
+        </div>
+      )}
       <div className='flex justify-center items-center mb-2.5'>
         <span className='mr-2'>Share:</span>
         <FacebookShareButton url={window.location.href} className='mr-1'>

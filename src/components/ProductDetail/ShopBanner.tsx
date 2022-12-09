@@ -27,7 +27,15 @@ const ShopBanner = ({ shopInformation }: ShopBannerProps) => {
 
   return (
     <div className='flex flex-row gap-4 md:items-center'>
-      <Avatar size='sm' shape='circle' src={shopInformation.photo}></Avatar>
+      {shopInformation.photo ? (
+        <Avatar size='sm' shape='circle' src={shopInformation.photo}></Avatar>
+      ) : (
+        <Avatar
+          size='sm'
+          shape='circle'
+          letters={shopInformation.name.charAt(0)}
+        />
+      )}
       <div>
         <Link to='/' className='font-bold mb-2.5 line-clamp-1 link link-hover'>
           {shopInformation.name}
@@ -37,7 +45,8 @@ const ShopBanner = ({ shopInformation }: ShopBannerProps) => {
             <HiStar className='text-warning text-lg' />
           </Tooltip>
           <p className='line-clamp-1'>
-            {shopInformation.rating_star} | {toCompact(shopInformation.product_count)} products | Joined since{' '}
+            {shopInformation.rating_star} |{' '}
+            {toCompact(shopInformation.product_count)} products | Joined since{' '}
             {moment().format('MMMM YYYY')}
           </p>
         </div>
