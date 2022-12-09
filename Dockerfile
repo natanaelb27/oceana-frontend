@@ -1,10 +1,7 @@
 # build
 FROM node:16.17.1-alpine as build
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn
 COPY . .
-RUN yarn build
 
 # production
 # Use NgInx alpine image 
