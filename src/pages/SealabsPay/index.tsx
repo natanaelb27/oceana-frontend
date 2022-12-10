@@ -1,7 +1,7 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Button, Form, Input } from 'react-daisyui';
-import { useSealabsPayPaymentMutation } from '../../store/services/sealabsPayService';
+import { useSealabsPayTopupMutation } from '../../store/services/sealabsPayService';
 import { toSealabsPayPaymentRequest } from '../../utils/mapperDTO';
 import { FormContainer } from '../../components/common/Container';
 import { FormErrorText, InputGroup } from '../../components/common/Form';
@@ -10,7 +10,7 @@ import { toCardNumber } from '../../utils/convert';
 const SealabsPay = () => {
   const userCardNumber = process.env
     .REACT_APP_SEALABS_PAY_CARD_NUMBER as string;
-  const [sealabsPayPayment, { isLoading }] = useSealabsPayPaymentMutation();
+  const [sealabsPayPayment, { isLoading }] = useSealabsPayTopupMutation();
 
   const formik = useFormik({
     initialValues: { amount: '' },

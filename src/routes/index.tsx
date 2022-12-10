@@ -329,7 +329,7 @@ const Routes = () => {
       ),
     },
     {
-      path: '/sealabs-pay/success',
+      path: '/sealabs-pay/redirect',
       element: (
         <ProtectedRoute
           roleCode={roleCode}

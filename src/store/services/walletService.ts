@@ -5,7 +5,7 @@ export const walletApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     walletTopUp: builder.mutation<void, WalletTopUpRequest>({
       query: (request) => ({
-        url: '/wallet/top-up',
+        url: '/wallet/topup',
         method: 'POST',
         body: request,
       }),

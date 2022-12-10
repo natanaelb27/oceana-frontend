@@ -4,12 +4,12 @@ import { baseApi } from '../store';
 
 export const sealabsPayApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    sealabsPayPayment: builder.mutation<
+    sealabsPayTopup: builder.mutation<
       SealabsPayRedirectResponse,
       SealabsPayPaymentRequest
     >({
       query: (request) => ({
-        url: '/sealabs-pay/pay',
+        url: '/sealabs-pay/topup',
         method: 'POST',
         body: request,
       }),
@@ -17,4 +17,4 @@ export const sealabsPayApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useSealabsPayPaymentMutation } = sealabsPayApi;
+export const { useSealabsPayTopupMutation } = sealabsPayApi;
