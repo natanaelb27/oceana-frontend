@@ -206,3 +206,8 @@ export interface CategoryDetails {
   name: string;
   parent_id: number;
 }
+
+export interface City {
+  id: number;
+  name: string;
+}

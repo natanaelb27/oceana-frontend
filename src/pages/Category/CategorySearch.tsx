@@ -19,6 +19,10 @@ import {
 import { toCategoryQuery, toProductQuery } from '../../utils/mapperDTO';
 import { toUrl } from '../../utils/toUrl';
 import NoData from '../../components/common/NoData';
+import { Button } from 'react-daisyui';
+import { CgClose } from 'react-icons/cg';
+import { useGetAllCityQuery } from '../../store/services/cityService';
+import { toRupiah } from '../../utils/convert';
 
 const CategorySearch = () => {
   const { categoryPath } = useParams();
@@ -129,6 +133,50 @@ const CategorySearch = () => {
     navigate(`/category/${toUrl(categoryName)}-i.${categoryID}`);
   };
 
+  const { data: resGetAllCity } = useGetAllCityQuery();
+
+  const handleClearLocationFilter = (id: number) => {
+    const updatedList: string[] = [...productQuery.merchantCities];
+
+    updatedList.splice(productQuery.merchantCities.indexOf(id.toString()), 1);
+
+    setProductQuery({
+      ...productQuery,
+      merchantCities: updatedList,
+    });
+  };
+
+  const handleClearRatingFilter = () => {
+    setProductQuery({
+      ...productQuery,
+      rating: 0,
+    });
+  };
+
+  const handleClickResetFilter = () => {
+    setProductQuery({
+      ...productQuery,
+      merchantCities: [],
+      priceMinimum: 0,
+      priceMaximum: 0,
+      rating: 0,
+    });
+  };
+
+  const handleClearPriceMinimumFilter = () => {
+    setProductQuery({
+      ...productQuery,
+      priceMinimum: 0,
+    });
+  };
+
+  const handleClearPriceMaximumFilter = () => {
+    setProductQuery({
+      ...productQuery,
+      priceMaximum: 0,
+    });
+  };
+
   return (
     <div className='mx-auto container'>
       <div className='p-4 grid grid-cols-1 md:grid-cols-5 gap-4 md:py-10 md:gap-10'>
@@ -146,7 +194,7 @@ const CategorySearch = () => {
             <h1 className='text-3xl font-bold'>
               {resGetAncestorsCategory?.data?.at(-1)?.name}
             </h1>
-            <div className='flex items-center gap-1 md:gap-2 mt-2 text-lg p-5 border-2 rounded-md bg-white shadow-md'>
+            <div className='flex items-center gap-1 md:gap-2 mt-2 text-lg px-2 py-5 md:p-5 border-2 rounded-md bg-white shadow-md'>
               <span
                 className='text-sm text-primary cursor-pointer hidden md:flex'
                 onClick={() => {
@@ -167,7 +215,10 @@ const CategorySearch = () => {
               {resGetAncestorsCategory?.data &&
                 resGetAncestorsCategory?.data.map((category, i) => {
                   return (
-                    <div key={i} className='flex items-center gap-1 md:gap-2'>
+                    <div
+                      key={i}
+                      className='flex items-center gap-1 md:gap-2 truncate'
+                    >
                       <span className='text-sm'>&gt;</span>
                       {resGetAncestorsCategory?.data?.at(-1)?.id ===
                       category.id ? (
@@ -191,7 +242,97 @@ const CategorySearch = () => {
             <div className='mt-6'>
               <SortBar sort={sort} onSortChange={handleSortChange} />
             </div>
-            <div className='mt-6 flex justify-center'>
+            {productQuery.merchantCities.length > 0 ||
+            productQuery.priceMinimum ||
+            productQuery.priceMaximum ||
+            productQuery.rating ? (
+              <div className='flex gap-3 items-center'>
+                <div className='flex mt-6 gap-3 p-1 items-center overflow-x-auto overflow-y-hidden'>
+                  {productQuery.merchantCities.length > 0
+                    ? resGetAllCity?.data
+                        ?.filter(({ id }) =>
+                          productQuery.merchantCities.includes(id.toString())
+                        )
+                        .map((city, i) => {
+                          return (
+                            <div
+                              key={i}
+                              className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'
+                            >
+                              <span>{city.name}</span>
+                              <Button
+                                size='xs'
+                                shape='circle'
+                                color='ghost'
+                                className=''
+                                onClick={() => {
+                                  handleClearLocationFilter(city.id);
+                                }}
+                              >
+                                <CgClose className='text-xs' />
+                              </Button>
+                            </div>
+                          );
+                        })
+                    : null}
+                  {productQuery.priceMinimum ? (
+                    <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
+                      <span>Min: {toRupiah(productQuery.priceMinimum)}</span>
+                      <Button
+                        size='xs'
+                        shape='circle'
+                        color='ghost'
+                        className=''
+                        onClick={() => {
+                          handleClearPriceMinimumFilter();
+                        }}
+                      >
+                        <CgClose className='text-xs' />
+                      </Button>
+                    </div>
+                  ) : null}
+                  {productQuery.priceMaximum ? (
+                    <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
+                      <span>Max: {toRupiah(productQuery.priceMaximum)}</span>
+                      <Button
+                        size='xs'
+                        shape='circle'
+                        color='ghost'
+                        className=''
+                        onClick={() => {
+                          handleClearPriceMaximumFilter();
+                        }}
+                      >
+                        <CgClose className='text-xs' />
+                      </Button>
+                    </div>
+                  ) : null}
+                  {productQuery.rating ? (
+                    <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
+                      <span>{productQuery.rating} and above</span>
+                      <Button
+                        size='xs'
+                        shape='circle'
+                        color='ghost'
+                        className=''
+                        onClick={() => {
+                          handleClearRatingFilter();
+                        }}
+                      >
+                        <CgClose className='text-xs' />
+                      </Button>
+                    </div>
+                  ) : null}
+                </div>
+                <Button
+                  className='normal-case text-sm btn-outline btn-primary'
+                  onClick={handleClickResetFilter}
+                >
+                  Reset Filter
+                </Button>
+              </div>
+            ) : null}
+            {/* <div className='mt-6 flex justify-center'>
               <Pager
                 page={productQuery.page}
                 totalPage={
@@ -201,7 +342,7 @@ const CategorySearch = () => {
                 }
                 onPageChange={handlePageChange}
               />
-            </div>
+            </div> */}
           </div>
           {resGetAllProducts?.data?.length || 0 > 0 ? (
             <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>

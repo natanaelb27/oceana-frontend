@@ -2,6 +2,7 @@ import {
   Address,
   Category,
   CategoryDetails,
+  City,
   Merchant,
   Metadata,
   OrderList,
@@ -176,6 +177,14 @@ export type GetMerchantResponse = {
 
 export type GetAncestorsCategoryResponse = {
   data: CategoryDetails[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetAllCityResponse = {
+  data: City[] | null;
   code: number;
   error: string | null;
   message: string;

@@ -6,19 +6,24 @@ import {
   Divider,
   Form,
   Input,
+  InputGroup,
+  Modal,
 } from 'react-daisyui';
-import { HiOutlineChevronDown, HiOutlineChevronUp } from 'react-icons/hi';
+import { CgClose } from 'react-icons/cg';
+import {
+  HiOutlineChevronDown,
+  HiOutlineChevronUp,
+  HiSearch,
+} from 'react-icons/hi';
 import { IoFilter } from 'react-icons/io5';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import {
-  useGetAllCategoryQuery,
-  useGetAncestorsCategoryQuery,
-} from '../../store/services/categoryService';
+import { useGetAllCityQuery } from '../../store/services/cityService';
 import { Category } from '../../types/component';
 import { CategoryQuery, ProductQuery } from '../../types/query';
-import { GetAllCategoryResponse } from '../../types/response';
+import { GetAllCityResponse } from '../../types/response';
 import { toCategoryQuery } from '../../utils/mapperDTO';
 import { toUrl } from '../../utils/toUrl';
+import { handleNumberInvalidKey } from '../../utils/validation';
 import { FilterSidebarContainer } from './style';
 
 type FilterSidebarProps = {
@@ -32,11 +37,19 @@ type CategoryState = {
   open: boolean;
 };
 
+type OpenModal = {
+  location: boolean;
+};
+
 const FilterSidebar = ({
   productQuery,
   setProductQuery,
   category,
 }: FilterSidebarProps) => {
+  const [openModal, setOpenModal] = useState<OpenModal>({
+    location: false,
+  });
+
   const handleClickFilterToggle = () => {
     const filterSidebarEl = document.getElementById('filter-sidebar');
     filterSidebarEl?.classList.toggle('-left-full');
@@ -46,6 +59,27 @@ const FilterSidebar = ({
     );
     productListSearchPageEl?.classList.toggle('hidden');
   };
+
+  const { data: resGetAllCity } = useGetAllCityQuery();
+
+  const [priceMinimum, setPriceMinimum] = useState<number>(0);
+  const [priceMaximum, setPriceMaximum] = useState<number>(0);
+
+  const handlePriceMinimumChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPriceMinimum(Number(e.target.value));
+  };
+
+  const handlePriceMaximumChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPriceMaximum(Number(e.target.value));
+  };
+
+  useEffect(() => {
+    setPriceMinimum(productQuery.priceMinimum);
+  }, [productQuery.priceMinimum]);
+
+  useEffect(() => {
+    setPriceMaximum(productQuery.priceMaximum);
+  }, [productQuery.priceMaximum]);
 
   const handleSubmitFilterPrice = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,9 +92,11 @@ const FilterSidebar = ({
       priceMinimum: Number(target.priceMinimum.value),
       priceMaximum: Number(target.priceMaximum.value),
     });
+    setPriceMinimum(Number(target.priceMinimum.value));
+    setPriceMaximum(Number(target.priceMaximum.value));
   };
 
-  const handleSubmitFilterRating = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFilterRating = (e: ChangeEvent<HTMLInputElement>) => {
     const target = e.target as typeof e.target & {
       rating: { value: string };
     };
@@ -76,6 +112,33 @@ const FilterSidebar = ({
         rating: 0,
       });
     }
+  };
+
+  const [locationChecked, setLocationChecked] = useState<string[]>([]);
+
+  useEffect(() => {
+    setLocationChecked(productQuery.merchantCities);
+  }, [productQuery.merchantCities]);
+
+  const handleFilterLocation = (e: ChangeEvent<HTMLInputElement>) => {
+    const target = e.target as typeof e.target & {
+      location: { value: string };
+    };
+
+    let updatedList: string[] = [...locationChecked];
+
+    if (target.checked) {
+      updatedList = [...locationChecked, target.value];
+    } else {
+      updatedList.splice(locationChecked.indexOf(target.value), 1);
+    }
+
+    setLocationChecked(updatedList);
+
+    setProductQuery({
+      ...productQuery,
+      merchantCities: updatedList,
+    });
   };
 
   const navigate = useNavigate();
@@ -109,6 +172,34 @@ const FilterSidebar = ({
     const data: boolean[] = [];
     category?.at(0)?.category.map(() => data.push(false));
     setSubSubCategoryCollapse(data);
+  };
+
+  const handleLocationLoadMoreClick = () => {
+    setOpenModal({
+      location: true,
+    });
+  };
+
+  const handleModalClose = () => {
+    setOpenModal({
+      location: false,
+    });
+  };
+
+  const [search, setSearch] = useState<string>('');
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setSearch(search);
+  };
+
+  const handleSearchClick = () => {
+    setSearch(search);
   };
 
   return (
@@ -169,7 +260,9 @@ const FilterSidebar = ({
                             );
                           }}
                         >
-                          <span className='ml-2'>{subSubCategory.name}</span>
+                          <span className='text-sm ml-2'>
+                            {subSubCategory.name}
+                          </span>
                         </div>
                       );
                     })}
@@ -184,9 +277,24 @@ const FilterSidebar = ({
           <Collapse.Title className='font-bold'>Location</Collapse.Title>
           <Collapse.Content>
             <Form>
-              <Form.Label title='Nothing to see here...'>
-                <Checkbox />
-              </Form.Label>
+              {resGetAllCity?.data &&
+                resGetAllCity?.data?.slice(0, 5).map((city, i) => {
+                  return (
+                    <Form.Label key={i} title={city.name}>
+                      <Checkbox
+                        value={city.id}
+                        checked={locationChecked.includes(city.id.toString())}
+                        onChange={handleFilterLocation}
+                      />
+                    </Form.Label>
+                  );
+                })}
+              <span
+                className='text-primary text-sm cursor-pointer mt-2'
+                onClick={handleLocationLoadMoreClick}
+              >
+                Load more
+              </span>
             </Form>
           </Collapse.Content>
         </Collapse>
@@ -196,18 +304,32 @@ const FilterSidebar = ({
           <Collapse.Content>
             <Form onSubmit={handleSubmitFilterPrice}>
               <Form.Label title='Min'>
-                <Input
-                  name='priceMinimum'
-                  type='text'
-                  className='w-full ml-2 focus:border-primary'
-                />
+                <InputGroup className='ml-2'>
+                  <span className='text-sm font-bold'>Rp</span>
+                  <Input
+                    name='priceMinimum'
+                    type='text'
+                    className='w-full focus:border-primary'
+                    value={priceMinimum || ''}
+                    placeholder='Price Minimum'
+                    onChange={handlePriceMinimumChange}
+                    onKeyDown={handleNumberInvalidKey}
+                  />
+                </InputGroup>
               </Form.Label>
               <Form.Label title='Max'>
-                <Input
-                  name='priceMaximum'
-                  type='text'
-                  className='w-full ml-2 focus:border-primary'
-                />
+                <InputGroup className='ml-2'>
+                  <span className='text-sm font-bold'>Rp</span>
+                  <Input
+                    name='priceMaximum'
+                    type='text'
+                    className='w-full focus:border-primary'
+                    value={priceMaximum || ''}
+                    placeholder='Price Maximum'
+                    onChange={handlePriceMaximumChange}
+                    onKeyDown={handleNumberInvalidKey}
+                  />
+                </InputGroup>
               </Form.Label>
               <Input type='submit' hidden />
             </Form>
@@ -222,15 +344,10 @@ const FilterSidebar = ({
                 <Checkbox
                   name='rating'
                   value={4}
-                  onChange={handleSubmitFilterRating}
+                  checked={!!productQuery.rating}
+                  onChange={handleFilterRating}
                 />
               </Form.Label>
-              {/* <Form.Label title='⭐ 3 and above'>
-                <Checkbox />
-              </Form.Label>
-              <Form.Label title='⭐ 2 and above'>
-                <Checkbox />
-              </Form.Label> */}
             </Form>
           </Collapse.Content>
         </Collapse>
@@ -242,6 +359,64 @@ const FilterSidebar = ({
       >
         <IoFilter />
       </Button>
+      <Modal
+        open={openModal.location}
+        responsive
+        className=''
+        onClickBackdrop={handleModalClose}
+      >
+        <Button
+          size='sm'
+          shape='circle'
+          color='ghost'
+          className='absolute right-2 top-2'
+          onClick={handleModalClose}
+        >
+          <CgClose className='text-lg' />
+        </Button>
+        <Modal.Header className='text-center font-bold flex flex-col md:flex-row items-center gap-3'>
+          <h1>Location</h1>
+          <Form onSubmit={handleFormSubmit} className='w-full md:w-auto'>
+            <InputGroup>
+              <Input
+                type='text'
+                placeholder='Search...'
+                className='w-full md:max-w-xs'
+                value={search}
+                onChange={handleSearchChange}
+              />
+              <Button onClick={handleSearchClick}>
+                <HiSearch className='text-lg' />
+              </Button>
+            </InputGroup>
+          </Form>
+        </Modal.Header>
+
+        <Modal.Body>
+          <Form className='grid grid-cols-2 gap-x-10'>
+            {resGetAllCity?.data &&
+              resGetAllCity?.data
+                ?.filter(({ name }) =>
+                  name.toLowerCase().includes(search.toLowerCase())
+                )
+                .map((city, i) => {
+                  return (
+                    <Form.Label
+                      key={i}
+                      title={city.name}
+                      className='cols-span-1'
+                    >
+                      <Checkbox
+                        checked={locationChecked.includes(city.id.toString())}
+                        value={city.id}
+                        onChange={handleFilterLocation}
+                      />
+                    </Form.Label>
+                  );
+                })}
+          </Form>
+        </Modal.Body>
+      </Modal>
     </>
   );
 };
