@@ -7,6 +7,9 @@ export { default as Product } from './Product';
 export { default as Search } from './Search';
 export { default as Shop } from './Shop';
 
+export { default as SealabsPay } from './SealabsPay';
+export { default as SealabsPaySuccess } from './SealabsPay/SealabsPaySuccess';
+
 export { default as BuyerAddress } from './buyer/BuyerAddress';
 export { default as BuyerCart } from './buyer/BuyerCart';
 export { default as BuyerCheckout } from './buyer/BuyerCheckout';

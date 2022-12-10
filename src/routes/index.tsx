@@ -38,8 +38,9 @@ import {
   ShopPromotionList,
   ShopShipmentSetting,
   ShopVoucherList,
+  SealabsPay,
+  SealabsPaySuccess,
 } from '../pages';
-import SealabsPay from '../pages/SealabsPay';
 import { selectRole } from '../store/slices/authSlice';
 import { useAppSelector } from '../store/store';
 import { Role } from '../types/role';
@@ -324,6 +325,19 @@ const Routes = () => {
           redirectTo='/'
         >
           <Register />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/success',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPaySuccess />
         </ProtectedRoute>
       ),
     },

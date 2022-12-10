@@ -61,3 +61,13 @@ export type SealabsPayPaymentRequest = {
   card_number: string;
   amount: string;
 };
+
+export type WalletTopUpRequest = {
+  card_number: string;
+  txn_id: string;
+  amount: string;
+  merchant_code: string;
+  status: string;
+  message: string;
+  signature: string;
+};
