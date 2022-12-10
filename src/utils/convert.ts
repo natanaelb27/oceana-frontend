@@ -17,3 +17,5 @@ export const toStringDatetime = (d: string) =>
 
 export const toLongStringDatetime = (d: string) =>
   moment(d).format('DD MMMM YYYY, HH:mm');
+
+export const toCardNumber = (n: string) => n.match(/.{1,4}/g)?.join('-');
