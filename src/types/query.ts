@@ -11,6 +11,7 @@ export type ProductQuery = {
   categoryID: number;
   priceMinimum: number;
   priceMaximum: number;
+  rating: number;
   merchantCities: string[];
   courierServices: string[];
 } & Query;

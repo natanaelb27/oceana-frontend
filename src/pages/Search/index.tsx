@@ -26,6 +26,7 @@ const Search = () => {
     categoryID: 0,
     priceMinimum: 0,
     priceMaximum: 0,
+    rating: 0,
     merchantCities: [],
     courierServices: [],
   });

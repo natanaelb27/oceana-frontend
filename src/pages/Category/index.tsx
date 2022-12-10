@@ -109,12 +109,14 @@ const Category = () => {
                     </Link>
                   </div>
                   <Divider className='m-0' />
-
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-12'>
                     {category?.category &&
                       category?.category.map((subCategory, n2) => {
                         return (
-                          <div className='gap-5 cols-span-1' key={n2}>
+                          <div
+                            className='gap-5 cols-span-1 md:w-[90%]'
+                            key={n2}
+                          >
                             <Link
                               to={`/category/${toUrl(subCategory.name)}-i.${
                                 subCategory.id

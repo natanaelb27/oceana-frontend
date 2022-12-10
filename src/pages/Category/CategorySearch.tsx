@@ -42,6 +42,7 @@ const CategorySearch = () => {
     categoryID: parseInt(categoryID, 10),
     priceMinimum: 0,
     priceMaximum: 0,
+    rating: 0,
     merchantCities: [],
     courierServices: [],
   });
@@ -145,18 +146,18 @@ const CategorySearch = () => {
             <h1 className='text-3xl font-bold'>
               {resGetAncestorsCategory?.data?.at(-1)?.name}
             </h1>
-            <div className='flex items-center gap-2 mt-2 text-lg p-5 border-2 rounded-md bg-white shadow-md'>
+            <div className='flex items-center gap-1 md:gap-2 mt-2 text-lg p-5 border-2 rounded-md bg-white shadow-md'>
               <span
-                className='text-sm text-primary cursor-pointer'
+                className='text-sm text-primary cursor-pointer hidden md:flex'
                 onClick={() => {
                   navigate('/');
                 }}
               >
                 Home
               </span>
-              <span className='text-sm'>&gt;</span>
+              <span className='text-sm hidden md:flex'>&gt;</span>
               <span
-                className='text-sm text-primary cursor-pointer'
+                className='text-sm text-primary cursor-pointer truncate'
                 onClick={() => {
                   navigate('/category');
                 }}
@@ -166,11 +167,13 @@ const CategorySearch = () => {
               {resGetAncestorsCategory?.data &&
                 resGetAncestorsCategory?.data.map((category, i) => {
                   return (
-                    <div key={i} className='flex items-center gap-2'>
+                    <div key={i} className='flex items-center gap-1 md:gap-2'>
                       <span className='text-sm'>&gt;</span>
                       {resGetAncestorsCategory?.data?.at(-1)?.id ===
                       category.id ? (
-                        <span className='text-sm'>{category.name}</span>
+                        <span className='text-sm truncate'>
+                          {category.name}
+                        </span>
                       ) : (
                         <span
                           className='text-sm text-primary cursor-pointer'

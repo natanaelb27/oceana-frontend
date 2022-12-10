@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
@@ -37,32 +37,6 @@ const FilterSidebar = ({
   setProductQuery,
   category,
 }: FilterSidebarProps) => {
-  // const { categoryPath } = useParams();
-  // if (!categoryPath) {
-  //   return null;
-  // }
-
-  // const categoryID = categoryPath.split('-i.').slice(-1)[0].split('-')[0];
-
-  // const { data: resGetAncestorsCategory } =
-  //   useGetAncestorsCategoryQuery(categoryID);
-
-  // const [categoryQuery, setCategoryQuery] = useState<CategoryQuery>({
-  //   categoryID: resGetAncestorsCategory?.data?.at(0)?.id,
-  //   levelDepth: 0,
-  // });
-
-  // const { data: resGetAllCategory } = useGetAllCategoryQuery(
-  //   toCategoryQuery(categoryQuery),
-  //   {
-  //     skip: !resGetAncestorsCategory?.data?.at(0)?.id,
-  //   }
-  // );
-
-  // useEffect(() => {
-  //   setSkip(!resGetAncestorsCategory?.data?.at(0)?.id);
-  // }, [resGetAncestorsCategory?.data?.at(0)?.id]);
-
   const handleClickFilterToggle = () => {
     const filterSidebarEl = document.getElementById('filter-sidebar');
     filterSidebarEl?.classList.toggle('-left-full');
@@ -84,6 +58,24 @@ const FilterSidebar = ({
       priceMinimum: Number(target.priceMinimum.value),
       priceMaximum: Number(target.priceMaximum.value),
     });
+  };
+
+  const handleSubmitFilterRating = (e: ChangeEvent<HTMLInputElement>) => {
+    const target = e.target as typeof e.target & {
+      rating: { value: string };
+    };
+
+    if (target.checked) {
+      setProductQuery({
+        ...productQuery,
+        rating: Number(target.value),
+      });
+    } else {
+      setProductQuery({
+        ...productQuery,
+        rating: 0,
+      });
+    }
   };
 
   const navigate = useNavigate();
@@ -113,6 +105,12 @@ const FilterSidebar = ({
     setSubSubCategoryCollapse(data);
   }, []);
 
+  const handleCollapseClose = () => {
+    const data: boolean[] = [];
+    category?.at(0)?.category.map(() => data.push(false));
+    setSubSubCategoryCollapse(data);
+  };
+
   return (
     <>
       <FilterSidebarContainer id='filter-sidebar'>
@@ -122,7 +120,12 @@ const FilterSidebar = ({
         </div>
         <Divider className='m-0' />
 
-        <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
+        <Collapse
+          checkbox
+          icon='arrow'
+          onClose={handleCollapseClose}
+          className='border-b-2 border-base-200'
+        >
           <Collapse.Title className='font-bold'>
             Category - <span>{category?.at(0)?.name}</span>
           </Collapse.Title>
@@ -139,54 +142,44 @@ const FilterSidebar = ({
                     >
                       {subCategory?.name}
                     </span>
-                    {subSubCategoryCollapse.at(i) ? (
-                      <HiOutlineChevronUp
-                        className='cursor-pointer'
-                        onClick={() => {
-                          handleCollapseClick(i);
-                        }}
-                      />
-                    ) : (
-                      <HiOutlineChevronDown
-                        className='cursor-pointer'
-                        onClick={() => {
-                          handleCollapseClick(i);
-                        }}
-                      />
-                    )}
+                    <HiOutlineChevronDown
+                      className={`cursor-pointer transition-transform duration-300 ${
+                        subSubCategoryCollapse.at(i) ? 'rotate-180' : ''
+                      }`}
+                      onClick={() => {
+                        handleCollapseClick(i);
+                      }}
+                    />
                   </div>
-                  <div key={i} className='flex flex-col gap-2'>
-                    {subSubCategoryCollapse.at(i)
-                      ? subCategory?.category.map((subSubCategory, i) => {
-                          return (
-                            <div
-                              key={i}
-                              className='flex justify-between cursor-pointer hover:text-primary'
-                              onClick={() => {
-                                handleCategoryClick(
-                                  subSubCategory?.name,
-                                  subSubCategory?.id
-                                );
-                              }}
-                            >
-                              <span className='ml-3'>
-                                {subSubCategory.name}
-                              </span>
-                            </div>
-                          );
-                        })
-                      : null}
+                  <div
+                    key={i}
+                    className={`flex flex-col gap-2 border-2 p-2 rounded-md mt-2 ${
+                      subSubCategoryCollapse.at(i) ? 'flex' : 'hidden'
+                    }`}
+                  >
+                    {subCategory?.category.map((subSubCategory, i) => {
+                      return (
+                        <div
+                          key={i}
+                          className='flex justify-between cursor-pointer hover:text-primary'
+                          onClick={() => {
+                            handleCategoryClick(
+                              subSubCategory?.name,
+                              subSubCategory?.id
+                            );
+                          }}
+                        >
+                          <span className='ml-2'>{subSubCategory.name}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
             })}
-            {/* <Form>
-              <Form.Label title='Nothing to see aa...'>
-                <HiOutlineChevronDown></HiOutlineChevronDown>
-              </Form.Label>
-            </Form> */}
           </Collapse.Content>
         </Collapse>
+        <Divider className='m-0'></Divider>
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
           <Collapse.Title className='font-bold'>Location</Collapse.Title>
           <Collapse.Content>
@@ -197,6 +190,7 @@ const FilterSidebar = ({
             </Form>
           </Collapse.Content>
         </Collapse>
+        <Divider className='m-0'></Divider>
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
           <Collapse.Title className='font-bold'>Price</Collapse.Title>
           <Collapse.Content>
@@ -219,19 +213,24 @@ const FilterSidebar = ({
             </Form>
           </Collapse.Content>
         </Collapse>
+        <Divider className='m-0'></Divider>
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
           <Collapse.Title className='font-bold'>Rating</Collapse.Title>
           <Collapse.Content>
             <Form>
               <Form.Label title='⭐ 4 and above'>
-                <Checkbox />
+                <Checkbox
+                  name='rating'
+                  value={4}
+                  onChange={handleSubmitFilterRating}
+                />
               </Form.Label>
-              <Form.Label title='⭐ 3 and above'>
+              {/* <Form.Label title='⭐ 3 and above'>
                 <Checkbox />
               </Form.Label>
               <Form.Label title='⭐ 2 and above'>
                 <Checkbox />
-              </Form.Label>
+              </Form.Label> */}
             </Form>
           </Collapse.Content>
         </Collapse>
