@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { SuccessModal } from '../../components/common';
+import { FailedModal, SuccessModal } from '../../components/common';
+import { TXN_STATUS } from '../../constants/sealabsPay';
 import { useWalletTopUpMutation } from '../../store/services/walletService';
 import { toWalletTopUpRequest } from '../../utils/mapperDTO';
 
-const SealabsPaySuccess = () => {
-  const timeout = 3000;
+const SealabsPayRedirect = () => {
+  const [txnStatus, setTxnStatus] = useState<string>('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [walletTopUp] = useWalletTopUpMutation();
@@ -19,15 +20,9 @@ const SealabsPaySuccess = () => {
     const message = searchParams.get('message') || '';
     const signature = searchParams.get('signature') || '';
 
-    console.log(txnId);
-    console.log(amount);
-    console.log(merchantCode);
-    console.log(status);
-    console.log(message);
-    console.log(signature);
-    console.log(cardNumber);
+    setTxnStatus(status);
 
-    setTimeout(() => {
+    if (status === TXN_STATUS.SUCCESS) {
       walletTopUp(
         toWalletTopUpRequest(
           cardNumber,
@@ -38,29 +33,37 @@ const SealabsPaySuccess = () => {
           message,
           signature
         )
-      )
-        .unwrap()
-        .then((res) => {
-          console.log(res);
-          console.log(cardNumber);
-        })
-        .catch((err) => console.error(err));
-    }, timeout);
+      );
+    }
 
     // setTimeout(() => {
     //   navigate('/');
     // }, timeout);
   }, []);
 
-  return (
-    <SuccessModal
-      open={true}
-      title='Transaction Success'
-      message='Your transaction has been processed successfully'
-      onClose={() => navigate('/')}
-      onAccepted={() => navigate('/')}
-    />
-  );
+  if (txnStatus === TXN_STATUS.SUCCESS) {
+    return (
+      <SuccessModal
+        open={true}
+        title='Transaction Success'
+        message='Your transaction has been processed successfully'
+        onClose={() => navigate('/')}
+        onAccepted={() => navigate('/')}
+      />
+    );
+  } else if (txnStatus === TXN_STATUS.FAILED) {
+    return (
+      <FailedModal
+        open={true}
+        title='Transaction Failed'
+        message='Oops... Something went wrong, please try again'
+        onClose={() => navigate('/')}
+        onAccepted={() => navigate('/')}
+      />
+    );
+  }
+
+  return <div>Not Found</div>;
 };
 
-export default SealabsPaySuccess;
+export default SealabsPayRedirect;

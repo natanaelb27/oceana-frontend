@@ -39,7 +39,7 @@ import {
   ShopShipmentSetting,
   ShopVoucherList,
   SealabsPay,
-  SealabsPaySuccess,
+  SealabsPayRedirect,
 } from '../pages';
 import { selectRole } from '../store/slices/authSlice';
 import { useAppSelector } from '../store/store';
@@ -337,7 +337,7 @@ const Routes = () => {
           allowedRoles={[Role.Buyer, Role.Seller]}
           redirectTo='/'
         >
-          <SealabsPaySuccess />
+          <SealabsPayRedirect />
         </ProtectedRoute>
       ),
     },
