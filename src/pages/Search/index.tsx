@@ -153,6 +153,7 @@ const Search = () => {
       priceMinimum: 0,
       priceMaximum: 0,
       rating: 0,
+      categoryID: 0,
     });
   };
 
@@ -167,6 +168,13 @@ const Search = () => {
     setProductQuery({
       ...productQuery,
       priceMaximum: 0,
+    });
+  };
+
+  const handleClearCategoryFilter = () => {
+    setProductQuery({
+      ...productQuery,
+      categoryID: 0,
     });
   };
 
@@ -194,7 +202,8 @@ const Search = () => {
             {productQuery.merchantCities.length > 0 ||
             productQuery.priceMinimum ||
             productQuery.priceMaximum ||
-            productQuery.rating ? (
+            productQuery.rating ||
+            productQuery.categoryID ? (
               <div className='flex gap-3 items-center mt-3'>
                 <div className='flex gap-3 p-1 w-full items-center overflow-x-auto overflow-y-hidden'>
                   {productQuery.merchantCities.length > 0
@@ -262,6 +271,24 @@ const Search = () => {
                       </Button>
                     </div>
                   ) : null}
+                  {productQuery.categoryID ? (
+                    <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
+                      <span className='whitespace-nowrap'>
+                        {productQuery.categoryID}
+                      </span>
+                      <Button
+                        size='xs'
+                        shape='circle'
+                        color='ghost'
+                        className=''
+                        onClick={() => {
+                          handleClearCategoryFilter();
+                        }}
+                      >
+                        <CgClose className='text-xs' />
+                      </Button>
+                    </div>
+                  ) : null}
                   {productQuery.rating ? (
                     <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
                       <span className='whitespace-nowrap'>
@@ -299,7 +326,8 @@ const Search = () => {
           ) : productQuery.merchantCities.length > 0 ||
             productQuery.priceMinimum ||
             productQuery.priceMaximum ||
-            productQuery.rating ? (
+            productQuery.rating ||
+            productQuery.categoryID ? (
             <div className='mt-4'>
               <NoData
                 title='Oops, there are no products that match the filter...'
