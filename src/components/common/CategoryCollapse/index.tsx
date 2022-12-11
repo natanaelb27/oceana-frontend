@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { HiOutlineChevronDown } from 'react-icons/hi';
-import { Category } from '../../types/component';
+import { Category } from '../../../types/component';
 
 type CategoryCollapseProps = {
   category: Category[] | undefined;

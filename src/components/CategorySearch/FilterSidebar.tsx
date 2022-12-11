@@ -19,6 +19,7 @@ import { CityQuery, ProductQuery } from '../../types/query';
 import { toCityQuery } from '../../utils/mapperDTO';
 import { toUrl } from '../../utils/toUrl';
 import { handleNumberInvalidKey } from '../../utils/validation';
+import CategoryCollapse from '../common/CategoryCollapse';
 import { FilterSidebarContainer } from './style';
 
 type FilterSidebarProps = {
@@ -182,37 +183,8 @@ const FilterSidebar = ({
 
   const navigate = useNavigate();
 
-  const handleCategoryClick = (categoryName: string, categoryID: number) => {
+  const handleCategoryClick = (categoryID: number, categoryName: string) => {
     navigate(`/category/${toUrl(categoryName)}-i.${categoryID}`);
-  };
-
-  const [subSubCategoryCollapse, setSubSubCategoryCollapse] = useState<
-    boolean[]
-  >([]);
-
-  const handleCollapseClick = (index: number) => {
-    const newCollapse = subSubCategoryCollapse.map((value, i) => {
-      if (i === index) {
-        return !value;
-      } else {
-        return value;
-      }
-    });
-    setSubSubCategoryCollapse(newCollapse);
-  };
-
-  useEffect(() => {
-    if (category?.at(0)?.category) {
-      const data: boolean[] = [];
-      category?.at(0)?.category.map(() => data.push(false));
-      setSubSubCategoryCollapse(data);
-    }
-  }, []);
-
-  const handleCollapseClose = () => {
-    const data: boolean[] = [];
-    category?.at(0)?.category.map(() => data.push(false));
-    setSubSubCategoryCollapse(data);
   };
 
   const handleLocationLoadMoreClick = () => {
@@ -271,74 +243,21 @@ const FilterSidebar = ({
           <h5>FILTER</h5>
         </div>
         <Divider className='m-0' />
-
         {category?.at(0)?.category ? (
           <Collapse
             checkbox
             icon='arrow'
-            onClose={handleCollapseClose}
             className='border-b-2 border-base-200'
           >
             <Collapse.Title className='font-bold'>
               Category - <span>{category?.at(0)?.name}</span>
             </Collapse.Title>
             <Collapse.Content className='flex flex-col gap-5'>
-              {category?.at(0)?.category.map((subCategory, i) => {
-                return (
-                  <div key={i} className='flex flex-col gap-1'>
-                    <div className='flex justify-between items-center'>
-                      <span
-                        className='cursor-pointer hover:text-primary font-bold'
-                        onClick={() => {
-                          handleCategoryClick(
-                            subCategory?.name,
-                            subCategory?.id
-                          );
-                        }}
-                      >
-                        {subCategory?.name}
-                      </span>
-                      {subCategory?.category ? (
-                        <HiOutlineChevronDown
-                          className={`cursor-pointer transition-transform duration-300 ${
-                            subSubCategoryCollapse.at(i) ? 'rotate-180' : ''
-                          }`}
-                          onClick={() => {
-                            handleCollapseClick(i);
-                          }}
-                        />
-                      ) : null}
-                    </div>
-                    {subCategory?.category ? (
-                      <div
-                        key={i}
-                        className={`flex flex-col gap-2 mt-2 ${
-                          subSubCategoryCollapse.at(i) ? 'flex' : 'hidden'
-                        }`}
-                      >
-                        {subCategory?.category.map((subSubCategory, i) => {
-                          return (
-                            <div
-                              key={i}
-                              className='flex justify-between cursor-pointer hover:text-primary'
-                              onClick={() => {
-                                handleCategoryClick(
-                                  subSubCategory?.name,
-                                  subSubCategory?.id
-                                );
-                              }}
-                            >
-                              <span className='text-sm ml-2'>
-                                {subSubCategory.name}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : null}
-                  </div>
-                );
-              })}
+              <CategoryCollapse
+                category={category.at(0)?.category}
+                marginLeft={0}
+                handleCategoryClick={handleCategoryClick}
+              ></CategoryCollapse>
             </Collapse.Content>
           </Collapse>
         ) : (
@@ -481,7 +400,7 @@ const FilterSidebar = ({
           </Button>
         </Modal.Header>
         <Modal.Body>
-          <Form className='grid grid-cols-2 md:grid-cols-3 gap-x-3'>
+          <Form className='grid grid-cols-2 md:grid-cols-3 gap-x-3 md:gap-x-10'>
             {resGetAllCity?.data &&
               resGetAllCity?.data?.map((city, i) => {
                 const currentFirstLetter = city.name.at(0);

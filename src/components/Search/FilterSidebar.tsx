@@ -17,7 +17,7 @@ import { useGetAllCityQuery } from '../../store/services/cityService';
 import { CityQuery, ProductQuery } from '../../types/query';
 import { toCityQuery } from '../../utils/mapperDTO';
 import { handleNumberInvalidKey } from '../../utils/validation';
-import CategoryCollapse from './CategoryCollapse';
+import CategoryCollapse from '../common/CategoryCollapse';
 import { FilterSidebarContainer } from './style';
 
 type CategoryFilter = {
@@ -254,7 +254,6 @@ const FilterSidebar = ({
           <h5>FILTER</h5>
         </div>
         <Divider className='m-0' />
-
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
           <Collapse.Title className='font-bold'>Location</Collapse.Title>
           <Collapse.Content>
@@ -283,6 +282,7 @@ const FilterSidebar = ({
             </Form>
           </Collapse.Content>
         </Collapse>
+        <Divider className='m-0' />
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
           <Collapse.Title className='font-bold'>Price</Collapse.Title>
           <Collapse.Content>
@@ -319,6 +319,7 @@ const FilterSidebar = ({
             </Form>
           </Collapse.Content>
         </Collapse>
+        <Divider className='m-0' />
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
           <Collapse.Title className='font-bold'>Category</Collapse.Title>
           <Collapse.Content>
@@ -329,6 +330,7 @@ const FilterSidebar = ({
             ></CategoryCollapse>
           </Collapse.Content>
         </Collapse>
+        <Divider className='m-0' />
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
           <Collapse.Title className='font-bold'>Rating</Collapse.Title>
           <Collapse.Content>
