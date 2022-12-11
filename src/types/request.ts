@@ -62,6 +62,7 @@ export type CreateMerchantVoucherRequest = {
   maximum_discount_amount: number | null;
   maximum_quota: number;
 };
+
 export type UpdateUserCartRequest = {
   product_item_id: number;
   quantity: number;
