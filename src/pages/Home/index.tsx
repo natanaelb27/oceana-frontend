@@ -8,6 +8,7 @@ import { useGetAllProductsQuery } from '../../store/services/productService';
 import { CategoryQuery, ProductQuery } from '../../types/query';
 import { ProductsSortByString } from '../../types/sort';
 import { toCategoryQuery, toProductQuery } from '../../utils/mapperDTO';
+import { toUrl } from '../../utils/toUrl';
 
 const Home = () => {
   const [productQuery] = useState<ProductQuery>({
@@ -48,7 +49,10 @@ const Home = () => {
             {resGetAllCategory?.data &&
               resGetAllCategory.data.map((category, n) => (
                 <Carousel.Item key={n}>
-                  <CategoryCard category={category} to={'/'} />
+                  <CategoryCard
+                    category={category}
+                    to={`/category/${toUrl(category.name)}-i.${category.id}`}
+                  />
                 </Carousel.Item>
               ))}
           </Slider>

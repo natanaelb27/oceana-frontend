@@ -133,11 +133,6 @@ const CategorySearch = () => {
     navigate(`/category/${toUrl(categoryName)}-i.${categoryID}`);
   };
 
-
-  // const [cityQuery, setCityQuery] = useState<CityQuery>({
-  //   search: '',
-  // });
-
   const { data: resGetAllCity } = useGetAllCityQuery('');
 
   const handleClearLocationFilter = (id: number) => {
@@ -252,7 +247,7 @@ const CategorySearch = () => {
             productQuery.priceMaximum ||
             productQuery.rating ? (
               <div className='flex gap-3 items-center mt-3'>
-                <div className='flex gap-3 p-1 items-center overflow-x-auto overflow-y-hidden'>
+                <div className='flex gap-3 p-1 w-full items-center overflow-x-auto overflow-y-hidden'>
                   {productQuery.merchantCities.length > 0
                     ? resGetAllCity?.data
                         ?.filter(({ id }) =>
@@ -264,7 +259,7 @@ const CategorySearch = () => {
                               key={i}
                               className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'
                             >
-                              <span>{city.name}</span>
+                              <span className='whitespace-nowrap'>{city.name}</span>
                               <Button
                                 size='xs'
                                 shape='circle'
@@ -282,7 +277,7 @@ const CategorySearch = () => {
                     : null}
                   {productQuery.priceMinimum ? (
                     <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
-                      <span>Min: {toRupiah(productQuery.priceMinimum)}</span>
+                      <span className='whitespace-nowrap'>Min: {toRupiah(productQuery.priceMinimum)}</span>
                       <Button
                         size='xs'
                         shape='circle'
@@ -298,7 +293,7 @@ const CategorySearch = () => {
                   ) : null}
                   {productQuery.priceMaximum ? (
                     <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
-                      <span>Max: {toRupiah(productQuery.priceMaximum)}</span>
+                      <span className='whitespace-nowrap'>Max: {toRupiah(productQuery.priceMaximum)}</span>
                       <Button
                         size='xs'
                         shape='circle'
@@ -314,7 +309,7 @@ const CategorySearch = () => {
                   ) : null}
                   {productQuery.rating ? (
                     <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
-                      <span>{productQuery.rating} and above</span>
+                      <span className='whitespace-nowrap'>{productQuery.rating} and above</span>
                       <Button
                         size='xs'
                         shape='circle'

@@ -10,18 +10,13 @@ import {
   Modal,
 } from 'react-daisyui';
 import { CgClose } from 'react-icons/cg';
-import {
-  HiOutlineChevronDown,
-  HiOutlineChevronUp,
-  HiSearch,
-} from 'react-icons/hi';
+import { HiOutlineChevronDown, HiSearch } from 'react-icons/hi';
 import { IoFilter } from 'react-icons/io5';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useGetAllCityQuery } from '../../store/services/cityService';
 import { Category } from '../../types/component';
-import { CategoryQuery, CityQuery, ProductQuery } from '../../types/query';
-import { GetAllCityResponse } from '../../types/response';
-import { toCategoryQuery, toCityQuery } from '../../utils/mapperDTO';
+import { CityQuery, ProductQuery } from '../../types/query';
+import { toCityQuery } from '../../utils/mapperDTO';
 import { toUrl } from '../../utils/toUrl';
 import { handleNumberInvalidKey } from '../../utils/validation';
 import { FilterSidebarContainer } from './style';
@@ -30,11 +25,6 @@ type FilterSidebarProps = {
   productQuery: ProductQuery;
   setProductQuery: (query: ProductQuery) => void;
   category: Category[];
-};
-
-type CategoryState = {
-  id: number;
-  open: boolean;
 };
 
 type OpenModal = {
@@ -143,7 +133,9 @@ const FilterSidebar = ({
     });
   };
 
-  const [modalLocationChecked, setModalLocationChecked] = useState<string[]>([]);
+  const [modalLocationChecked, setModalLocationChecked] = useState<string[]>(
+    []
+  );
 
   const handleModalFilterLocation = (e: ChangeEvent<HTMLInputElement>) => {
     const target = e.target as typeof e.target & {
@@ -170,6 +162,13 @@ const FilterSidebar = ({
     setOpenModal({
       location: false,
     });
+
+    setSearch('');
+
+    setCityQuery({
+      ...cityQuery,
+      search: '',
+    });
   };
 
   useEffect(() => {
@@ -179,11 +178,6 @@ const FilterSidebar = ({
 
   const handleResetLocationFilter = () => {
     setModalLocationChecked([]);
-
-    // setProductQuery({
-    //   ...productQuery,
-    //   merchantCities: [],
-    // });
   };
 
   const navigate = useNavigate();
@@ -208,9 +202,11 @@ const FilterSidebar = ({
   };
 
   useEffect(() => {
-    const data: boolean[] = [];
-    category?.at(0)?.category.map(() => data.push(false));
-    setSubSubCategoryCollapse(data);
+    if (category?.at(0)?.category) {
+      const data: boolean[] = [];
+      category?.at(0)?.category.map(() => data.push(false));
+      setSubSubCategoryCollapse(data);
+    }
   }, []);
 
   const handleCollapseClose = () => {
@@ -238,8 +234,6 @@ const FilterSidebar = ({
     });
 
     setModalLocationChecked(productQuery.merchantCities);
-
-
   };
 
   const [search, setSearch] = useState<string>('');
@@ -255,7 +249,6 @@ const FilterSidebar = ({
       ...cityQuery,
       search: search,
     });
-
   };
 
   const handleCitySearchClick = () => {
@@ -266,13 +259,10 @@ const FilterSidebar = ({
   };
 
   const arrLocation: string[] = [];
-  for (const [, value] of Object.entries(
-    resGetAllCity?.data || ''
-  )) {
+  for (const [, value] of Object.entries(resGetAllCity?.data || '')) {
     arrLocation.push(value.name);
   }
-
-  
+  console.log(!category?.at(0)?.category);
 
   return (
     <>
@@ -283,67 +273,84 @@ const FilterSidebar = ({
         </div>
         <Divider className='m-0' />
 
-        <Collapse
-          checkbox
-          icon='arrow'
-          onClose={handleCollapseClose}
-          className='border-b-2 border-base-200'
-        >
-          <Collapse.Title className='font-bold'>
-            Category - <span>{category?.at(0)?.name}</span>
-          </Collapse.Title>
-          <Collapse.Content className='flex flex-col gap-5'>
-            {category?.at(0)?.category.map((subCategory, i) => {
-              return (
-                <div key={i} className='flex flex-col gap-1'>
-                  <div className='flex justify-between items-center'>
-                    <span
-                      className='cursor-pointer hover:text-primary font-bold'
-                      onClick={() => {
-                        handleCategoryClick(subCategory?.name, subCategory?.id);
-                      }}
-                    >
-                      {subCategory?.name}
-                    </span>
-                    <HiOutlineChevronDown
-                      className={`cursor-pointer transition-transform duration-300 ${
-                        subSubCategoryCollapse.at(i) ? 'rotate-180' : ''
-                      }`}
-                      onClick={() => {
-                        handleCollapseClick(i);
-                      }}
-                    />
-                  </div>
-                  <div
-                    key={i}
-                    className={`flex flex-col gap-2 border-2 p-2 rounded-md mt-2 ${
-                      subSubCategoryCollapse.at(i) ? 'flex' : 'hidden'
-                    }`}
-                  >
-                    {subCategory?.category.map((subSubCategory, i) => {
-                      return (
-                        <div
-                          key={i}
-                          className='flex justify-between cursor-pointer hover:text-primary'
+        {category?.at(0)?.category ? (
+          <Collapse
+            checkbox
+            icon='arrow'
+            onClose={handleCollapseClose}
+            className='border-b-2 border-base-200'
+          >
+            <Collapse.Title className='font-bold'>
+              Category - <span>{category?.at(0)?.name}</span>
+            </Collapse.Title>
+            <Collapse.Content className='flex flex-col gap-5'>
+              {category?.at(0)?.category.map((subCategory, i) => {
+                return (
+                  <div key={i} className='flex flex-col gap-1'>
+                    <div className='flex justify-between items-center'>
+                      <span
+                        className='cursor-pointer hover:text-primary font-bold'
+                        onClick={() => {
+                          handleCategoryClick(
+                            subCategory?.name,
+                            subCategory?.id
+                          );
+                        }}
+                      >
+                        {subCategory?.name}
+                      </span>
+                      {subCategory?.category ? (
+                        <HiOutlineChevronDown
+                          className={`cursor-pointer transition-transform duration-300 ${
+                            subSubCategoryCollapse.at(i) ? 'rotate-180' : ''
+                          }`}
                           onClick={() => {
-                            handleCategoryClick(
-                              subSubCategory?.name,
-                              subSubCategory?.id
-                            );
+                            handleCollapseClick(i);
                           }}
-                        >
-                          <span className='text-sm ml-2'>
-                            {subSubCategory.name}
-                          </span>
-                        </div>
-                      );
-                    })}
+                        />
+                      ) : null}
+                    </div>
+                    {subCategory?.category ? (
+                      <div
+                        key={i}
+                        className={`flex flex-col gap-2 border-2 p-2 rounded-md mt-2 ${
+                          subSubCategoryCollapse.at(i) ? 'flex' : 'hidden'
+                        }`}
+                      >
+                        {subCategory?.category.map((subSubCategory, i) => {
+                          return (
+                            <div
+                              key={i}
+                              className='flex justify-between cursor-pointer hover:text-primary'
+                              onClick={() => {
+                                handleCategoryClick(
+                                  subSubCategory?.name,
+                                  subSubCategory?.id
+                                );
+                              }}
+                            >
+                              <span className='text-sm ml-2'>
+                                {subSubCategory.name}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : null}
                   </div>
-                </div>
-              );
-            })}
-          </Collapse.Content>
-        </Collapse>
+                );
+              })}
+            </Collapse.Content>
+          </Collapse>
+        ) : (
+          <Collapse open={false} className='border-b-2 border-base-200'>
+            <Collapse.Title className='font-bold'>
+              Category - <span>{category?.at(0)?.name}</span>
+            </Collapse.Title>
+            <Collapse.Content className='flex flex-col gap-5'></Collapse.Content>
+          </Collapse>
+        )}
+
         <Divider className='m-0'></Divider>
         <Collapse checkbox icon='arrow' className='border-b-2 border-base-200'>
           <Collapse.Title className='font-bold'>Location</Collapse.Title>
@@ -447,8 +454,8 @@ const FilterSidebar = ({
           <CgClose className='text-lg' />
         </Button>
         <Modal.Header className='flex items-center justify-between mb-0'>
-          <div className='flex flex-col md:flex-row items-center gap-x-8 text-center font-bold'>
-            <h1>Location</h1>
+          <div className='flex flex-col md:flex-row items-center gap-x-8 text-center'>
+            <h1 className='font-bold'>Location</h1>
             <Form onSubmit={handleFormSubmit} className='w-full md:w-auto'>
               <InputGroup>
                 <Input
@@ -478,52 +485,62 @@ const FilterSidebar = ({
           <Form className='grid grid-cols-2 md:grid-cols-3 gap-x-3'>
             {resGetAllCity?.data &&
               resGetAllCity?.data?.map((city, i) => {
-                  const currentFirstLetter = city.name.at(0);
-                  if (
-                    i === 0 ||
-                    arrLocation.at(i - 1)?.at(0) !== currentFirstLetter
-                  ) {
-                    return (
-                      <Fragment key={i}>
-                        <div className='col-span-2 md:col-span-3 mt-5'>
-                          <h1 className='text-xl font-bold'>
-                            {currentFirstLetter}
-                          </h1>
-                        </div>
-                        <Form.Label title={city.name} className='col-span-1'>
-                          <Checkbox
-                            checked={modalLocationChecked.includes(
-                              city.id.toString()
-                            )}
-                            value={city.id}
-                            onChange={handleModalFilterLocation}
-                          />
-                        </Form.Label>
-                      </Fragment>
-                    );
-                  } else {
-                    return (
-                      <Form.Label
-                        key={i}
-                        title={city.name}
-                        className='col-span-1'
-                      >
+                const currentFirstLetter = city.name.at(0);
+                if (
+                  i === 0 ||
+                  arrLocation.at(i - 1)?.at(0) !== currentFirstLetter
+                ) {
+                  return (
+                    <Fragment key={i}>
+                      <div className='col-span-2 md:col-span-3 mt-5'>
+                        <h1 className='text-xl font-bold'>
+                          {currentFirstLetter}
+                        </h1>
+                      </div>
+                      <Form.Label title={city.name} className='col-span-1 pl-0'>
                         <Checkbox
-                          checked={modalLocationChecked.includes(city.id.toString())}
+                          checked={modalLocationChecked.includes(
+                            city.id.toString()
+                          )}
                           value={city.id}
                           onChange={handleModalFilterLocation}
                         />
                       </Form.Label>
-                    );
-                  }
-                })}
+                    </Fragment>
+                  );
+                } else {
+                  return (
+                    <Form.Label
+                      key={i}
+                      title={city.name}
+                      className='col-span-1 pl-0'
+                    >
+                      <Checkbox
+                        checked={modalLocationChecked.includes(
+                          city.id.toString()
+                        )}
+                        value={city.id}
+                        onChange={handleModalFilterLocation}
+                      />
+                    </Form.Label>
+                  );
+                }
+              })}
           </Form>
         </Modal.Body>
         <Modal.Actions className='flex gap-3'>
-          <Button color='primary' className='btn-outline normal-case' onClick={handleResetLocationFilter}>
+          <Button
+            color='primary'
+            className='btn-outline normal-case'
+            onClick={handleResetLocationFilter}
+          >
             Reset
           </Button>
-          <Button color='primary' className='normal-case' onClick={handleApplyLocationFilter}>
+          <Button
+            color='primary'
+            className='normal-case'
+            onClick={handleApplyLocationFilter}
+          >
             Apply
           </Button>
         </Modal.Actions>
