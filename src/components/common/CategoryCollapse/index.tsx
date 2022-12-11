@@ -43,7 +43,7 @@ const CategoryCollapse = ({
     <div className='mb-2 w-full'>
       {category?.map((category, i) => (
         <div key={i} className={`ml-${marginLeft}`}>
-          <div className='flex hover:bg-base-300 p-2 rounded-md items-center justify-between'>
+          <div className='flex hover:bg-base-300 p-2 pr-1 rounded-md items-center justify-between'>
             <div
               className='w-full cursor-pointer'
               onClick={() => {
