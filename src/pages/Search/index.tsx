@@ -19,6 +19,11 @@ import {
 import { toRupiah } from '../../utils/convert';
 import { toProductQuery } from '../../utils/mapperDTO';
 
+type CategoryFilter = {
+  id: number;
+  name: string;
+};
+
 const Search = () => {
   const [sort, setSort] = useState(ProductsSortBy.Default);
   const [productQuery, setProductQuery] = useState<ProductQuery>({
@@ -171,10 +176,20 @@ const Search = () => {
     });
   };
 
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>({
+    id: 0,
+    name: '',
+  });
+
   const handleClearCategoryFilter = () => {
     setProductQuery({
       ...productQuery,
       categoryID: 0,
+    });
+
+    setCategoryFilter({
+      id: 0,
+      name: '',
     });
   };
 
@@ -185,6 +200,7 @@ const Search = () => {
           <FilterSidebar
             productQuery={productQuery}
             setProductQuery={setProductQuery}
+            setCategoryFilter={setCategoryFilter}
           />
         </div>
         <div id='product-list-search-page' className='col-span-4 flex flex-col'>
@@ -274,7 +290,7 @@ const Search = () => {
                   {productQuery.categoryID ? (
                     <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
                       <span className='whitespace-nowrap'>
-                        {productQuery.categoryID}
+                        {categoryFilter.name}
                       </span>
                       <Button
                         size='xs'

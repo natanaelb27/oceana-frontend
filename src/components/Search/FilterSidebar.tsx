@@ -10,7 +10,7 @@ import {
   Modal,
 } from 'react-daisyui';
 import { CgClose } from 'react-icons/cg';
-import { HiOutlineChevronDown, HiSearch } from 'react-icons/hi';
+import { HiSearch } from 'react-icons/hi';
 import { IoFilter } from 'react-icons/io5';
 import { useGetAllCategoryQuery } from '../../store/services/categoryService';
 import { useGetAllCityQuery } from '../../store/services/cityService';
@@ -20,9 +20,15 @@ import { handleNumberInvalidKey } from '../../utils/validation';
 import CategoryCollapse from './CategoryCollapse';
 import { FilterSidebarContainer } from './style';
 
+type CategoryFilter = {
+  id: number;
+  name: string;
+};
+
 type FilterSidebarProps = {
   productQuery: ProductQuery;
   setProductQuery: (query: ProductQuery) => void;
+  setCategoryFilter: (categoryFilter: CategoryFilter) => void;
 };
 
 type OpenModal = {
@@ -32,6 +38,7 @@ type OpenModal = {
 const FilterSidebar = ({
   productQuery,
   setProductQuery,
+  setCategoryFilter,
 }: FilterSidebarProps) => {
   const handleClickFilterToggle = () => {
     const filterSidebarEl = document.getElementById('filter-sidebar');
@@ -227,10 +234,15 @@ const FilterSidebar = ({
     arrLocation.push(value.name);
   }
 
-  const handleCategoryClick = (id: number) => {
+  const handleCategoryClick = (id: number, name: string) => {
     setProductQuery({
       ...productQuery,
       categoryID: id,
+    });
+
+    setCategoryFilter({
+      id: id,
+      name: name,
     });
   };
 

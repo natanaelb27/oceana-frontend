@@ -5,7 +5,7 @@ import { Category } from '../../types/component';
 type CategoryCollapseProps = {
   category: Category[] | undefined;
   marginLeft: number;
-  handleCategoryClick: (id: number) => void;
+  handleCategoryClick: (id: number, name: string) => void;
 };
 const CategoryCollapse = ({
   category,
@@ -35,8 +35,8 @@ const CategoryCollapse = ({
     });
   }, []);
 
-  const handleClick = (id: number) => {
-    handleCategoryClick(id);
+  const handleClick = (id: number, name: string) => {
+    handleCategoryClick(id, name);
   };
 
   return (
@@ -47,7 +47,7 @@ const CategoryCollapse = ({
             <div
               className='w-full cursor-pointer'
               onClick={() => {
-                handleClick(category.id);
+                handleClick(category.id, category.name);
               }}
             >
               <span className='text-sm'>{category.name}</span>
