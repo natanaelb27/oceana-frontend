@@ -30,3 +30,7 @@ export type CategoryQuery = {
   categoryID?: number;
   levelDepth: number;
 };
+
+export type CityQuery = {
+  search: string;
+};

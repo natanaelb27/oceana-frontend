@@ -3,9 +3,9 @@ import { baseApi } from '../store';
 
 export const categoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllCity: builder.query<GetAllCityResponse, void>({
-      query: () => ({
-        url: '/cities',
+    getAllCity: builder.query<GetAllCityResponse, string>({
+      query: (query) => ({
+        url: `/cities?${query}`,
         method: 'GET',
       }),
       providesTags: ['City'],

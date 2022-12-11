@@ -10,13 +10,13 @@ import {
   useGetAncestorsCategoryQuery,
 } from '../../store/services/categoryService';
 import { useGetAllProductsQuery } from '../../store/services/productService';
-import { CategoryQuery, ProductQuery } from '../../types/query';
+import { CategoryQuery, CityQuery, ProductQuery } from '../../types/query';
 import {
   ProductsSortString,
   ProductsSortBy,
   ProductsSortByString,
 } from '../../types/sort';
-import { toCategoryQuery, toProductQuery } from '../../utils/mapperDTO';
+import { toCategoryQuery, toCityQuery, toProductQuery } from '../../utils/mapperDTO';
 import { toUrl } from '../../utils/toUrl';
 import NoData from '../../components/common/NoData';
 import { Button } from 'react-daisyui';
@@ -133,7 +133,12 @@ const CategorySearch = () => {
     navigate(`/category/${toUrl(categoryName)}-i.${categoryID}`);
   };
 
-  const { data: resGetAllCity } = useGetAllCityQuery();
+
+  // const [cityQuery, setCityQuery] = useState<CityQuery>({
+  //   search: '',
+  // });
+
+  const { data: resGetAllCity } = useGetAllCityQuery('');
 
   const handleClearLocationFilter = (id: number) => {
     const updatedList: string[] = [...productQuery.merchantCities];
@@ -246,8 +251,8 @@ const CategorySearch = () => {
             productQuery.priceMinimum ||
             productQuery.priceMaximum ||
             productQuery.rating ? (
-              <div className='flex gap-3 items-center'>
-                <div className='flex mt-6 gap-3 p-1 items-center overflow-x-auto overflow-y-hidden'>
+              <div className='flex gap-3 items-center mt-3'>
+                <div className='flex gap-3 p-1 items-center overflow-x-auto overflow-y-hidden'>
                   {productQuery.merchantCities.length > 0
                     ? resGetAllCity?.data
                         ?.filter(({ id }) =>

@@ -1,6 +1,7 @@
 import moment from 'moment';
 import {
   CategoryQuery,
+  CityQuery,
   ProductQuery,
   TransactionHistoryQuery,
 } from '../types/query';
@@ -128,6 +129,14 @@ export const toCategoryQuery = (query: CategoryQuery) => {
 
   result += 'category-id=' + query.categoryID;
   result += '&level-depth=' + query.levelDepth;
+
+  return result;
+};
+
+export const toCityQuery = (query: CityQuery) => {
+  let result = '';
+
+  result += 'search=' + query.search;
 
   return result;
 };
