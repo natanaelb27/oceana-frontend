@@ -36,10 +36,6 @@ const FilterSidebar = ({
   setProductQuery,
   category,
 }: FilterSidebarProps) => {
-  const [openModal, setOpenModal] = useState<OpenModal>({
-    location: false,
-  });
-
   const handleClickFilterToggle = () => {
     const filterSidebarEl = document.getElementById('filter-sidebar');
     filterSidebarEl?.classList.toggle('-left-full');
@@ -49,6 +45,10 @@ const FilterSidebar = ({
     );
     productListSearchPageEl?.classList.toggle('hidden');
   };
+
+  const [openModal, setOpenModal] = useState<OpenModal>({
+    location: false,
+  });
 
   const [cityQuery, setCityQuery] = useState<CityQuery>({
     search: '',
@@ -262,7 +262,6 @@ const FilterSidebar = ({
   for (const [, value] of Object.entries(resGetAllCity?.data || '')) {
     arrLocation.push(value.name);
   }
-  console.log(!category?.at(0)?.category);
 
   return (
     <>
@@ -313,7 +312,7 @@ const FilterSidebar = ({
                     {subCategory?.category ? (
                       <div
                         key={i}
-                        className={`flex flex-col gap-2 border-2 p-2 rounded-md mt-2 ${
+                        className={`flex flex-col gap-2 mt-2 ${
                           subSubCategoryCollapse.at(i) ? 'flex' : 'hidden'
                         }`}
                       >

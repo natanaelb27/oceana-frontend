@@ -55,7 +55,7 @@ export type UpdateProfileResponse = {
 };
 
 export type GetAllCategoryResponse = {
-  data: Category[] | null;
+  data: Category[];
   code: number;
   error: string | null;
   message: string;

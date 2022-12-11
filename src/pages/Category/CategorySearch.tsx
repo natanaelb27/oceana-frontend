@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { TbError404 } from 'react-icons/tb';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Pager, ProductCard, SortBar } from '../../components/common';
 import { FilterSidebar } from '../../components/CategorySearch';
@@ -10,13 +8,13 @@ import {
   useGetAncestorsCategoryQuery,
 } from '../../store/services/categoryService';
 import { useGetAllProductsQuery } from '../../store/services/productService';
-import { CategoryQuery, CityQuery, ProductQuery } from '../../types/query';
+import { CategoryQuery, ProductQuery } from '../../types/query';
 import {
   ProductsSortString,
   ProductsSortBy,
   ProductsSortByString,
 } from '../../types/sort';
-import { toCategoryQuery, toCityQuery, toProductQuery } from '../../utils/mapperDTO';
+import { toCategoryQuery, toProductQuery } from '../../utils/mapperDTO';
 import { toUrl } from '../../utils/toUrl';
 import NoData from '../../components/common/NoData';
 import { Button } from 'react-daisyui';
@@ -259,7 +257,9 @@ const CategorySearch = () => {
                               key={i}
                               className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'
                             >
-                              <span className='whitespace-nowrap'>{city.name}</span>
+                              <span className='whitespace-nowrap'>
+                                {city.name}
+                              </span>
                               <Button
                                 size='xs'
                                 shape='circle'
@@ -277,7 +277,9 @@ const CategorySearch = () => {
                     : null}
                   {productQuery.priceMinimum ? (
                     <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
-                      <span className='whitespace-nowrap'>Min: {toRupiah(productQuery.priceMinimum)}</span>
+                      <span className='whitespace-nowrap'>
+                        Min: {toRupiah(productQuery.priceMinimum)}
+                      </span>
                       <Button
                         size='xs'
                         shape='circle'
@@ -293,7 +295,9 @@ const CategorySearch = () => {
                   ) : null}
                   {productQuery.priceMaximum ? (
                     <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
-                      <span className='whitespace-nowrap'>Max: {toRupiah(productQuery.priceMaximum)}</span>
+                      <span className='whitespace-nowrap'>
+                        Max: {toRupiah(productQuery.priceMaximum)}
+                      </span>
                       <Button
                         size='xs'
                         shape='circle'
@@ -309,7 +313,9 @@ const CategorySearch = () => {
                   ) : null}
                   {productQuery.rating ? (
                     <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
-                      <span className='whitespace-nowrap'>{productQuery.rating} and above</span>
+                      <span className='whitespace-nowrap'>
+                        {productQuery.rating} and above
+                      </span>
                       <Button
                         size='xs'
                         shape='circle'
@@ -332,26 +338,29 @@ const CategorySearch = () => {
                 </Button>
               </div>
             ) : null}
-            {/* <div className='mt-6 flex justify-center'>
-              <Pager
-                page={productQuery.page}
-                totalPage={
-                  resGetAllProducts?.metadata?.total_pages
-                    ? resGetAllProducts.metadata.total_pages
-                    : 0
-                }
-                onPageChange={handlePageChange}
-              />
-            </div> */}
           </div>
-          {resGetAllProducts?.data?.length || 0 > 0 ? (
+          {resGetAllProducts?.data && resGetAllProducts?.data?.length > 0 ? (
             <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
               {resGetAllProducts?.data?.map((product, n) => (
                 <ProductCard key={n} product={product} />
               ))}
             </div>
+          ) : productQuery.merchantCities.length > 0 ||
+            productQuery.priceMinimum ||
+            productQuery.priceMaximum ||
+            productQuery.rating ? (
+            <div className='mt-4'>
+              <NoData
+                title='Oops, there are no products that match the filter...'
+                message='Try to reset or change your filter'
+                buttonMessage='Reset Filter'
+                buttonHandleClick={handleClickResetFilter}
+              ></NoData>
+            </div>
           ) : (
-            <NoData title='Oops, product not found... Please try again!'></NoData>
+            <div className='mt-4'>
+              <NoData title='Oops, it seems that there are no products in this category...'></NoData>
+            </div>
           )}
           <div className='mt-6 flex justify-center'>
             <Pager
