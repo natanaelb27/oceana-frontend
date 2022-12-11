@@ -7,22 +7,29 @@ import { baseApi } from '../store';
 
 export const sealabsPayApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    sealabsPayTopup: builder.mutation<
-      SealabsPayRedirectResponse,
-      SealabsPayPaymentRequest
-    >({
+    sealabsPayRegister: builder.mutation<void, SealabsPayRegisterRequest>({
       query: (request) => ({
-        url: '/sealabs-pay/topup',
+        url: '/sealabs-pay/register',
         method: 'POST',
         body: request,
       }),
     }),
-    sealabsPayRegister: builder.mutation<
+    sealabsPayRegisterOTP: builder.mutation<
       SealabsPayRedirectResponse,
-      SealabsPayRegisterRequest
+      SealabsPayPaymentRequest
     >({
       query: (request) => ({
-        url: '/sealabs-pay/register',
+        url: '/sealabs-pay/register-otp',
+        method: 'POST',
+        body: request,
+      }),
+    }),
+    sealabsPayTopupOTP: builder.mutation<
+      SealabsPayRedirectResponse,
+      SealabsPayPaymentRequest
+    >({
+      query: (request) => ({
+        url: '/sealabs-pay/topup-otp',
         method: 'POST',
         body: request,
       }),
@@ -30,5 +37,8 @@ export const sealabsPayApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useSealabsPayTopupMutation, useSealabsPayRegisterMutation } =
-  sealabsPayApi;
+export const {
+  useSealabsPayRegisterMutation,
+  useSealabsPayRegisterOTPMutation,
+  useSealabsPayTopupOTPMutation,
+} = sealabsPayApi;

@@ -1,16 +1,16 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Button, Form, Input } from 'react-daisyui';
-import { useSealabsPayTopupMutation } from '../../store/services/sealabsPayService';
+import { useSealabsPayTopupOTPMutation } from '../../store/services/sealabsPayService';
 import { toSealabsPayPaymentRequest } from '../../utils/mapperDTO';
 import { FormContainer } from '../../components/common/Container';
 import { FormErrorText, InputGroup } from '../../components/common/Form';
 import { toCardNumber } from '../../utils/convert';
 
-const SealabsPay = () => {
+const SealabsPayTopup = () => {
   const userCardNumber = process.env
     .REACT_APP_SEALABS_PAY_CARD_NUMBER as string;
-  const [sealabsPayPayment, { isLoading }] = useSealabsPayTopupMutation();
+  const [sealabsPayPayment, { isLoading }] = useSealabsPayTopupOTPMutation();
 
   const formik = useFormik({
     initialValues: { amount: '' },
@@ -21,13 +21,12 @@ const SealabsPay = () => {
     }),
     onSubmit: (values) => {
       sealabsPayPayment(
-        toSealabsPayPaymentRequest(userCardNumber, String(values.amount))
+        toSealabsPayPaymentRequest(null, userCardNumber, String(values.amount))
       )
         .unwrap()
         .then((res) => {
           if (!res?.data) return;
           const { data: otpURLData } = res;
-          console.log(otpURLData);
           window.location.replace(otpURLData);
         })
         .catch((err) => console.error(err));
@@ -41,7 +40,7 @@ const SealabsPay = () => {
           <InputGroup className='text-base-100'>
             <label htmlFor='cardNumber'>Card Number</label>
             <Input
-              className='disabled:bg-transparent disabled:border-none text-4xl'
+              className='disabled:bg-transparent disabled:border-none text-2xl md:text-4xl'
               id='cardNumber'
               name='cardNumber'
               type='text'
@@ -77,4 +76,4 @@ const SealabsPay = () => {
   );
 };
 
-export default SealabsPay;
+export default SealabsPayTopup;

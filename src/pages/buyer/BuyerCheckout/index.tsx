@@ -12,11 +12,16 @@ import {
   LETTERS_ONLY_REGEX,
   NUMBERS_ONLY_REGEX,
 } from '../../../constants/regex';
-import { CARD_NUMBER_LENGTH } from '../../../constants/sealabsPay';
-import { useSealabsPayRegisterMutation } from '../../../store/services/sealabsPayService';
+import {
+  CARD_NUMBER_LENGTH,
+  REGISTER_CHARGE,
+} from '../../../constants/sealabsPay';
+import { useSealabsPayRegisterOTPMutation } from '../../../store/services/sealabsPayService';
+import { toSealabsPayPaymentRequest } from '../../../utils/mapperDTO';
 
 const BuyerCheckout = () => {
-  const [sealabsPayRegister, { isLoading }] = useSealabsPayRegisterMutation();
+  const [sealabsPayRegister, { isLoading }] =
+    useSealabsPayRegisterOTPMutation();
 
   const formik = useFormik({
     initialValues: { nameOnCard: '', cardNumber: '' },
@@ -34,7 +39,20 @@ const BuyerCheckout = () => {
         ),
     }),
     onSubmit: (values) => {
-      console.log(values);
+      sealabsPayRegister(
+        toSealabsPayPaymentRequest(
+          values.nameOnCard,
+          values.cardNumber,
+          REGISTER_CHARGE
+        )
+      )
+        .unwrap()
+        .then((res) => {
+          if (!res?.data) return;
+          const { data: otpURLData } = res;
+          window.location.replace(otpURLData);
+        })
+        .catch((err) => console.error(err));
     },
   });
 
@@ -60,7 +78,7 @@ const BuyerCheckout = () => {
           </InputGroup>
           <InputGroup>
             <Input
-              className='text-3xl'
+              className='text-2xl md:text-3xl'
               id='cardNumber'
               name='cardNumber'
               onChange={formik.handleChange}

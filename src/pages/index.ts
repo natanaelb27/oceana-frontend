@@ -7,8 +7,10 @@ export { default as Product } from './Product';
 export { default as Search } from './Search';
 export { default as Shop } from './Shop';
 
-export { default as SealabsPay } from './SealabsPay';
-export { default as SealabsPayRedirect } from './SealabsPay/SealabsPayRedirect';
+export { default as SealabsPayTopup } from './SealabsPay';
+export { default as SealabsPayTopupRedirect } from './SealabsPay/SealabsPayTopupRedirect';
+export { default as SealabsPayRegisterRedirect } from './SealabsPay/SealabsPayRegisterRedirect';
+export { default as SealabsPayPaymentRedirect } from './SealabsPay/SealabsPayPaymentRedirect';
 
 export { default as BuyerAddress } from './buyer/BuyerAddress';
 export { default as BuyerCart } from './buyer/BuyerCart';

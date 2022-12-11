@@ -38,9 +38,11 @@ import {
   ShopPromotionList,
   ShopShipmentSetting,
   ShopVoucherList,
-  SealabsPay,
-  SealabsPayRedirect,
+  SealabsPayTopup,
+  SealabsPayTopupRedirect,
   ShopVoucherDetail,
+  SealabsPayRegisterRedirect,
+  SealabsPayPaymentRedirect,
 } from '../pages';
 import { selectRole } from '../store/slices/authSlice';
 import { useAppSelector } from '../store/store';
@@ -71,7 +73,7 @@ const Routes = () => {
         },
         {
           path: '/sealabs-pay',
-          element: <SealabsPay />,
+          element: <SealabsPayTopup />,
         },
         {
           path: '/category',
@@ -342,7 +344,7 @@ const Routes = () => {
       ),
     },
     {
-      path: '/sealabs-pay/redirect',
+      path: '/sealabs-pay/redirect/register',
       element: (
         <ProtectedRoute
           roleCode={roleCode}
@@ -350,7 +352,33 @@ const Routes = () => {
           allowedRoles={[Role.Buyer, Role.Seller]}
           redirectTo='/'
         >
-          <SealabsPayRedirect />
+          <SealabsPayRegisterRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/topup',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayTopupRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/payment',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayPaymentRedirect />
         </ProtectedRoute>
       ),
     },

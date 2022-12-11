@@ -13,9 +13,11 @@ export const FormTitle = tw(NavLink)<any>`
   rounded-xl
   p-4
   text-center
-  text-6xl
+  text-5xl
   text-primary-content
   font-bold
+
+  md:text-6xl
 
   transition
   transform

@@ -11,7 +11,7 @@ export const AuthContainer = tw.div<any>`
 `;
 
 export const FormContainer = tw.div<any>`
-  max-w-[480px]
+  max-w-[360px]
   max-h-[640px]
   p-10
   z-10
@@ -20,6 +20,7 @@ export const FormContainer = tw.div<any>`
   shadow-2xl
 
   md:w-[640px]
+  md:max-w-[480px]
 `;
 
 export const GlassContainer = tw.div<any>`

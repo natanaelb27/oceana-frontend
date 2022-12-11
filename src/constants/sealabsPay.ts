@@ -4,3 +4,5 @@ export const TXN_STATUS = {
 };
 
 export const CARD_NUMBER_LENGTH = 16;
+
+export const REGISTER_CHARGE = '1';

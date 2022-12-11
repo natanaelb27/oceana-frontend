@@ -5,7 +5,7 @@ import { TXN_STATUS } from '../../constants/sealabsPay';
 import { useWalletTopUpMutation } from '../../store/services/walletService';
 import { toWalletTopUpRequest } from '../../utils/mapperDTO';
 
-const SealabsPayRedirect = () => {
+const SealabsPayTopupRedirect = () => {
   const [txnStatus, setTxnStatus] = useState<string>('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -66,4 +66,4 @@ const SealabsPayRedirect = () => {
   return <div>Not Found</div>;
 };
 
-export default SealabsPayRedirect;
+export default SealabsPayTopupRedirect;

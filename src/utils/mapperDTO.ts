@@ -141,9 +141,11 @@ export const toTransactionHistoryQuery = (query: TransactionHistoryQuery) => {
 };
 
 export const toSealabsPayPaymentRequest = (
+  nameOnCard: string | null,
   cardNumber: string,
   amount: string
 ): SealabsPayPaymentRequest => ({
+  name_on_card: nameOnCard,
   card_number: cardNumber,
   amount,
 });
@@ -168,12 +170,10 @@ export const toWalletTopUpRequest = (
 
 export const toSealabsPayRegisterRequest = (
   nameOnCard: string,
-  cardNumber: string,
-  amount: string
+  cardNumber: string
 ): SealabsPayRegisterRequest => ({
   name_on_card: nameOnCard,
   card_number: cardNumber,
-  amount,
 });
 
 export const toCreateMerchantVoucherRequest = (
