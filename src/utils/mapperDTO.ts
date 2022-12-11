@@ -170,10 +170,14 @@ export const toWalletTopUpRequest = (
 
 export const toSealabsPayRegisterRequest = (
   nameOnCard: string,
-  cardNumber: string
+  cardNumber: string,
+  txnId: string,
+  signature: string
 ): SealabsPayRegisterRequest => ({
   name_on_card: nameOnCard,
   card_number: cardNumber,
+  txn_id: txnId,
+  signature,
 });
 
 export const toCreateMerchantVoucherRequest = (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FailedModal, SuccessModal } from '../../components/common';
+import { FailedModal, Loading, SuccessModal } from '../../components/common';
 import { TXN_STATUS } from '../../constants/sealabsPay';
 import { useWalletTopUpMutation } from '../../store/services/walletService';
 import { toWalletTopUpRequest } from '../../utils/mapperDTO';
@@ -9,7 +9,7 @@ const SealabsPayTopupRedirect = () => {
   const [txnStatus, setTxnStatus] = useState<string>('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [walletTopUp] = useWalletTopUpMutation();
+  const [walletTopUp, { isLoading }] = useWalletTopUpMutation();
 
   useEffect(() => {
     const cardNumber = searchParams.get('card_number') || '';
@@ -35,10 +35,6 @@ const SealabsPayTopupRedirect = () => {
         )
       );
     }
-
-    // setTimeout(() => {
-    //   navigate('/');
-    // }, timeout);
   }, []);
 
   if (txnStatus === TXN_STATUS.SUCCESS) {
@@ -63,7 +59,7 @@ const SealabsPayTopupRedirect = () => {
     );
   }
 
-  return <div>Not Found</div>;
+  return <Loading isLoading={isLoading} />;
 };
 
 export default SealabsPayTopupRedirect;

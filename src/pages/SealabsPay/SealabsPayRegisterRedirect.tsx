@@ -1,39 +1,38 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FailedModal, SuccessModal } from '../../components/common';
+import { FailedModal, Loading, SuccessModal } from '../../components/common';
 import { TXN_STATUS } from '../../constants/sealabsPay';
+import { useSealabsPayRegisterMutation } from '../../store/services/sealabsPayService';
+import { toSealabsPayRegisterRequest } from '../../utils/mapperDTO';
 
 const SealabsPayRegisterRedirect = () => {
   const [txnStatus, setTxnStatus] = useState<string>('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [sealabsPayRegister, { isLoading }] = useSealabsPayRegisterMutation();
 
   useEffect(() => {
     const cardNumber = searchParams.get('card_number') || '';
-    const txnId = searchParams.get('txn_id') || '';
-    const amount = searchParams.get('amount') || '';
-    const merchantCode = searchParams.get('merchant_code') || '';
+    const nameOnCard = searchParams.get('name_on_card') || '';
     const status = searchParams.get('status') || '';
-    const message = searchParams.get('message') || '';
     const signature = searchParams.get('signature') || '';
+    const txnId = searchParams.get('txn_id') || '';
 
     setTxnStatus(status);
 
     if (status === TXN_STATUS.SUCCESS) {
-      console.log(status);
+      sealabsPayRegister(
+        toSealabsPayRegisterRequest(nameOnCard, cardNumber, txnId, signature)
+      );
     }
-
-    // setTimeout(() => {
-    //   navigate('/');
-    // }, timeout);
   }, []);
 
   if (txnStatus === TXN_STATUS.SUCCESS) {
     return (
       <SuccessModal
         open={true}
-        title='Transaction Success'
-        message='Your transaction has been processed successfully'
+        title='Success'
+        message='Your Sealabs Pay account has been registered'
         onClose={() => navigate('/')}
         onAccepted={() => navigate('/')}
       />
@@ -42,7 +41,7 @@ const SealabsPayRegisterRedirect = () => {
     return (
       <FailedModal
         open={true}
-        title='Transaction Failed'
+        title='Failed'
         message='Oops... Something went wrong, please try again'
         onClose={() => navigate('/')}
         onAccepted={() => navigate('/')}
@@ -50,7 +49,7 @@ const SealabsPayRegisterRedirect = () => {
     );
   }
 
-  return <div>Not Found</div>;
+  return <Loading isLoading={isLoading} />;
 };
 
 export default SealabsPayRegisterRedirect;
