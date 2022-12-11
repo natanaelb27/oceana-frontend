@@ -4,7 +4,7 @@ import Content from './Content';
 import Sidebar from './Sidebar';
 
 type SellerAccountProps = {
-  profile: Merchant | null | undefined;
+  profile: Merchant;
   content: SellerAccountContent;
 };
 

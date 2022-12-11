@@ -1,12 +1,18 @@
 import { Card } from 'react-daisyui';
 import { Merchant } from '../../types/component';
-import { SellerAccountContent } from '../../types/content';
+import {
+  SellerAccountContent,
+  SellerAccountVoucherFormContent,
+} from '../../types/content';
 import AddressContent from './AddressContent';
+import VoucherContent from './VoucherContent';
+import VoucherDetailContent from './VoucherDetailContent';
+import VoucherFormContent from './VoucherFormContent';
 
 // import ProfileContent from './ProfileContent';
 
 type ContentProps = {
-  profile: Merchant | null | undefined;
+  profile: Merchant;
   content: SellerAccountContent;
 };
 
@@ -25,7 +31,29 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === SellerAccountContent.Voucher) {
-      // return <AddressContent />;
+      return <VoucherContent profile={profile} />;
+    }
+
+    if (content === SellerAccountContent.VoucherDetail) {
+      return <VoucherDetailContent profile={profile} />;
+    }
+
+    if (content === SellerAccountContent.VoucherAdd) {
+      return (
+        <VoucherFormContent
+          profile={profile}
+          content={SellerAccountVoucherFormContent.Add}
+        />
+      );
+    }
+
+    if (content === SellerAccountContent.VoucherEdit) {
+      return (
+        <VoucherFormContent
+          profile={profile}
+          content={SellerAccountVoucherFormContent.Edit}
+        />
+      );
     }
 
     if (content === SellerAccountContent.Promotion) {

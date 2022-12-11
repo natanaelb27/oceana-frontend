@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { Loading } from '../components/common';
 import { Role } from '../types/role';
 import { validateUserRole } from '../utils/auth';
+import ScrollToTop from './ScrollToTop';
 
 type ProtectedRouteProps = {
   roleCode: string | null;
@@ -39,7 +40,7 @@ const ProtectedRoute = ({
     return null;
   }
 
-  return children;
+  return <ScrollToTop>{children}</ScrollToTop>;
 };
 
 export default ProtectedRoute;
