@@ -33,7 +33,7 @@ const CategoryCollapse = ({
         setSubCategoryCollapse(data);
       }
     });
-  }, []);
+  }, [category]);
 
   const handleClick = (id: number, name: string) => {
     handleCategoryClick(id, name);

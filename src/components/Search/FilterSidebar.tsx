@@ -267,6 +267,9 @@ const FilterSidebar = ({
                         value={city.id}
                         checked={locationChecked.includes(city.id.toString())}
                         onChange={handleFilterLocation}
+                        // onChange={(e) => {
+                        //   handleFilterLocation(e, city.id, city.name);
+                        // }}
                       />
                     </Form.Label>
                   );
