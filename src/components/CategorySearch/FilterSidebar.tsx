@@ -10,7 +10,7 @@ import {
   Modal,
 } from 'react-daisyui';
 import { CgClose } from 'react-icons/cg';
-import { HiOutlineChevronDown, HiSearch } from 'react-icons/hi';
+import { HiSearch } from 'react-icons/hi';
 import { IoFilter } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { useGetAllCityQuery } from '../../store/services/cityService';
