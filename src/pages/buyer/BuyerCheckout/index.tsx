@@ -3,6 +3,7 @@ import { Button, Form, Input } from 'react-daisyui';
 import * as Yup from 'yup';
 import { FormContainer } from '../../../components/common/Container';
 import {
+  FormCTA,
   FormErrorText,
   FormTitle,
   InputGroup,
@@ -80,6 +81,10 @@ const BuyerCheckout = () => {
           >
             Register
           </Button>
+          <FormCTA>
+            **Your account will be charged Rp. 1 for verification, and refunded
+            once verification is complete
+          </FormCTA>
         </Form>
       </FormContainer>
     </div>
