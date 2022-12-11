@@ -7,6 +7,7 @@ import {
   RegisterRequest,
   RegisterWithGoogleRequest,
   SealabsPayPaymentRequest,
+  SealabsPayRegisterRequest,
   UpdateProfileRequest,
   WalletTopUpRequest,
 } from '../types/request';
@@ -144,4 +145,14 @@ export const toWalletTopUpRequest = (
   status,
   message,
   signature,
+});
+
+export const toSealabsPayRegisterRequest = (
+  nameOnCard: string,
+  cardNumber: string,
+  amount: string
+): SealabsPayRegisterRequest => ({
+  name_on_card: nameOnCard,
+  card_number: cardNumber,
+  amount,
 });

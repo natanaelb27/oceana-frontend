@@ -71,3 +71,9 @@ export type WalletTopUpRequest = {
   message: string;
   signature: string;
 };
+
+export type SealabsPayRegisterRequest = {
+  name_on_card: string;
+  card_number: string;
+  amount: string;
+};
