@@ -37,6 +37,13 @@ export const sealabsPayApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+    setDefaultSealabsPay: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/sealabs-pay/${id}`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
     sealabsPayRegisterOTP: builder.mutation<
       SealabsPayRedirectResponse,
       SealabsPayPaymentRequest
@@ -66,6 +73,7 @@ export const {
   useGetAllSealabsPayQuery,
   useRegisterSealabsPayMutation,
   useDeleteSealabsPayMutation,
+  useSetDefaultSealabsPayMutation,
   useSealabsPayRegisterOTPMutation,
   useSealabsPayTopupOTPMutation,
 } = sealabsPayApi;

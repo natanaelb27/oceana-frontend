@@ -4,6 +4,7 @@ import { HiOutlineClipboardList, HiOutlineTrash } from 'react-icons/hi';
 import {
   useDeleteSealabsPayMutation,
   useGetAllSealabsPayQuery,
+  useSetDefaultSealabsPayMutation,
 } from '../../../store/services/sealabsPayService';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import { toCardNumber, toStringDate } from '../../../utils/convert';
@@ -31,6 +32,8 @@ const SealabsPayContent = () => {
   const { data: getAllSealabsPayData } = useGetAllSealabsPayQuery();
   const [deleteSealabsPay, { isLoading: deleteSealabsPayIsLoading }] =
     useDeleteSealabsPayMutation();
+  const [setDefaultSealabsPay, { isLoading: setDefaultSealabsPayIsLoading }] =
+    useSetDefaultSealabsPayMutation();
 
   const handleAddSealabsPayClick = () => {
     setOpenModal({
@@ -93,6 +96,31 @@ const SealabsPayContent = () => {
       });
   };
 
+  const handleSetDefaultSealabsPay = () => {
+    setOpenModal({
+      add: false,
+      delete: false,
+      default: false,
+    });
+    if (!sealabsPayID) {
+      return;
+    }
+    setDefaultSealabsPay(sealabsPayID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Card has been set as default!');
+      })
+      .catch((err) => {
+        const { data } = err;
+        const { message } = data;
+        const messageCapitalized = capitalizeFirstLetter(message);
+        notifyErrorToast(messageCapitalized, true);
+      })
+      .finally(() => {
+        setSealabsPayID(null);
+      });
+  };
+
   return (
     <div className='p-4 md:p-10'>
       <h5 className='font-bold text-2xl text-primary'>Sealabs Pay</h5>
@@ -115,22 +143,25 @@ const SealabsPayContent = () => {
               className={`p-6 w-[320px] h-[200px] glass text-base-100 rounded-3xl md:w-[420px] md:h-[240px] hover:shadow-2xl ${
                 is_default
                   ? 'bg-secondary hover:bg-secondary'
-                  : 'bg-primary/80 hover:bg-primary/80 '
+                  : 'bg-primary/80 hover:bg-primary/80 cursor-pointer'
               }`}
+              onDoubleClick={() =>
+                is_default ? null : handleDefaultSealabsPayClick(id)
+              }
             >
               <Card.Title className='flex justify-between text-4xl'>
                 <h1 className='text-2xl md:text-3xl'>{name_on_card}</h1>
                 <SealabsPayCardImg className='w-14' />
               </Card.Title>
               <Card.Body className='p-0 pt-6 md:pt-10'>
-                <h2 className='text-2xl md:text-3xl'>
+                <h2 className='text-xl font-mono md:text-3xl'>
                   {toCardNumber(card_number, false)}
                 </h2>
                 <div className='mt-4 md:mt-8 flex justify-between'>
                   <p>Since: {toStringDate(active_date)}</p>
                   <div className='flex gap-1'>
                     {!is_default && (
-                      <Tooltip message='Default'>
+                      <Tooltip message='Set as default'>
                         <Button
                           color='primary'
                           shape='circle'
@@ -169,6 +200,14 @@ const SealabsPayContent = () => {
         loading={deleteSealabsPayIsLoading}
         onClose={handleModalClose}
         onAccepted={handleDeleteSealabsPay}
+      />
+      <ConfirmationModal
+        open={openModal.default}
+        title='Are you sure?'
+        message='Your default Sealabs Pay account will be changed'
+        loading={setDefaultSealabsPayIsLoading}
+        onClose={handleModalClose}
+        onAccepted={handleSetDefaultSealabsPay}
       />
     </div>
   );
