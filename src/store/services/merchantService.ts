@@ -1,5 +1,5 @@
-import { MerchantCreateRequest } from '../../types/request';
-import { MerchantCreateResponse, MerchantGetInformationByIDResponse } from '../../types/response';
+import { GetAllMerchantProductRequest, MerchantCreateRequest } from '../../types/request';
+import { GetAllProductsResponse, MerchantCreateResponse, MerchantGetInformationByIDResponse } from '../../types/response';
 import { baseApi } from '../store';
 
 export const merchantApi = baseApi.injectEndpoints({
@@ -18,8 +18,20 @@ export const merchantApi = baseApi.injectEndpoints({
                 method: 'GET',
             }),
             providesTags: ['Merchant'],
+        }),
+        getAllMerchantProducts: builder.query<GetAllProductsResponse, GetAllMerchantProductRequest>({
+            query: (arg) => {
+
+                const { id, query } = arg;
+
+                return{
+                    url: `/shop/${id}/products?${query}`,
+                    method: 'GET'
+                };
+            },
+            providesTags: ['Merchant', 'Product'],
         })
     })
 });
 
-export const { useCreateMerchantMutation, useGetMerchantByIDQuery } = merchantApi;
+export const { useCreateMerchantMutation, useGetMerchantByIDQuery, useGetAllMerchantProductsQuery } = merchantApi;

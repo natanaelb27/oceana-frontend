@@ -20,3 +20,11 @@ export type MerchantVoucherQuery = {
   merchantID: number;
   searchVoucherCode: string;
 } & Query;
+
+export type MerchantProductQuery = {
+  categoryID: number;
+  priceMinimum: number;
+  priceMaximum: number;
+  merchantCities: string[];
+  courierServices: string[];
+} & Query;

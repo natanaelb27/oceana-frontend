@@ -38,3 +38,8 @@ export type MerchantCreateRequest = {
   name: string;
   address_id: string
 }
+
+export type GetAllMerchantProductRequest = {
+  id: string;
+  query: string;
+}
