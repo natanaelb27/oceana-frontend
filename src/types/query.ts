@@ -34,3 +34,9 @@ export type TransactionHistoryQuery = {
   limit: number;
   page: number;
 };
+
+export type PurchasedQuantitiesQuery = {
+  product_id: number;
+  product_item_id: number;
+  quantity: number;
+}
