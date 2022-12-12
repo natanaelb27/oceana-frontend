@@ -69,12 +69,12 @@ export type GetAllCategoryResponse = {
 };
 
 export type GetUserCartResponse = {
-  data: CartGroupedByMerchant[] | null; 
-  code: number; 
+  data: CartGroupedByMerchant[] | null;
+  code: number;
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type GetAddressesResponse = {
   data: Address[] | null;
@@ -283,13 +283,43 @@ export type DeleteMerchantVoucherResponse = {
   metadata: Metadata | null;
 };
 
+export type ProvinceResponse = {
+  id: number;
+  name: string;
+};
+
+export type CityResponse = {
+  id: number;
+  name: string;
+};
+
+export type DistrictResponse = {
+  id: number;
+  name: string;
+};
+
+export type SubDistrictResponse = {
+  id: number;
+  name: string;
+  zip_code: string;
+};
+
+export type GetSubDistrictsResponse = {
+  data: {
+    provinces: ProvinceResponse[];
+    cities: CityResponse[];
+    districts: DistrictResponse[];
+    sub_districts: SubDistrictResponse[];
+  };
+};
+
 export type GetShopInformationResponse = {
   data: ShopInformation | null;
   code: number;
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type ViewPostResponse = {
   data: ViewPost | null;
@@ -297,7 +327,7 @@ export type ViewPostResponse = {
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type FavoriteProductResponse = {
   data: FavoriteProduct | null;
@@ -305,7 +335,7 @@ export type FavoriteProductResponse = {
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type GetFavoriteProductResponse = {
   data: FavoriteProduct | null;
@@ -322,4 +352,3 @@ export type GetAllReviewsResponse = {
   message: string;
   metadata: Metadata | null;
 }
-
