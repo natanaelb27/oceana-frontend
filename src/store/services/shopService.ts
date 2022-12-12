@@ -1,4 +1,8 @@
-import { GetShopInformationResponse } from '../../types/response';
+import {
+  GetShopInformationResponse,
+  GetMerchantVoucherDetailsResponse,
+  GetMerchantVoucherResponse,
+} from '../../types/response';
 import { baseApi } from '../store';
 
 export const shopApi = baseApi.injectEndpoints({
@@ -13,7 +17,30 @@ export const shopApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Shop'],
     }),
+    getAllMerchantVoucher: builder.query<GetMerchantVoucherResponse, string>({
+      query: (query) => ({
+        url: `/shop/vouchers?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['MerchantVoucher'],
+    }),
+    getMerchantVoucherDetails: builder.query<
+      GetMerchantVoucherDetailsResponse,
+      string
+    >({
+      query: (id) => ({
+        url: `/shop/vouchers/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['MerchantVoucher'],
+    }),
   }),
 });
 
-export const { useGetShopInformationQuery } = shopApi;
+export const {
+  useGetShopInformationQuery,
+  useGetAllMerchantVoucherQuery,
+  useLazyGetAllMerchantVoucherQuery,
+  useGetMerchantVoucherDetailsQuery,
+  useLazyGetMerchantVoucherDetailsQuery,
+} = shopApi;
