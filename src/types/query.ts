@@ -35,8 +35,14 @@ export type TransactionHistoryQuery = {
   page: number;
 };
 
+export type SubDistrictQuery = {
+  province: string;
+  city: string;
+  district: string;
+};
+
 export type PurchasedQuantitiesQuery = {
   product_id: number;
   product_item_id: number;
   quantity: number;
-}
+};
