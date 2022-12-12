@@ -2,7 +2,7 @@ import { Avatar, Card, Divider, Menu } from 'react-daisyui';
 import { CgProfile } from 'react-icons/cg';
 import { IoWalletOutline } from 'react-icons/io5';
 import { GoHome, GoHistory } from 'react-icons/go';
-import { HiOutlineReceiptRefund } from 'react-icons/hi';
+import { HiOutlineCurrencyDollar, HiOutlineReceiptRefund } from 'react-icons/hi';
 import { NavLink } from 'react-router-dom';
 
 import { Profile } from '../../types/component';
@@ -78,6 +78,12 @@ const Sidebar = ({ profile }: SidebarProps) => {
             <NavLink to='/user/purchase'>
               <GoHistory />
               Purchase
+            </NavLink>
+          </Menu.Item>
+          <Menu.Item>
+            <NavLink to='/user/pending-payment'>
+              <HiOutlineCurrencyDollar />
+              Pending Payment
             </NavLink>
           </Menu.Item>
           <Menu.Item>

@@ -4,6 +4,7 @@ import { UserAccountContent } from '../../types/content';
 import AddressContent from './AddressContent';
 import PurchaseContent from './PurchaseContent';
 import ProfileContent from './ProfileContent';
+import PendingPaymentContent from './PendingPaymentContent';
 
 type ContentProps = {
   profile: Profile | null | undefined;
@@ -26,6 +27,10 @@ const Content = ({ profile, content }: ContentProps) => {
 
     if (content === UserAccountContent.Purchase) {
       return <PurchaseContent />;
+    }
+
+    if (content === UserAccountContent.PendingPayment) {
+      return <PendingPaymentContent />;
     }
 
     if (content === UserAccountContent.Refunds) {

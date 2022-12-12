@@ -16,6 +16,8 @@ import { stringCompare } from '../../../utils/validation';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import { toRupiah, toStringDate, toStringTime } from '../../../utils/convert';
 import { computeDatetime, getDateDiffNow } from '../../../utils/date';
+import DateCountdown from '../../common/DateCountdown';
+import moment from 'moment';
 
 type ContentProps = {
   profile: Merchant;
@@ -154,40 +156,45 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
                           days
                         </div>
                       ) : (
-                        <div className='font-bold'>
-                          <Countdown
-                            value={
-                              computeDatetime(
-                                getDateDiffNow(
-                                  getMerchantVoucherDetailsData?.data
-                                    .end_datetime
-                                )
-                              ).hours
-                            }
-                          ></Countdown>
-                          {':'}
-                          <Countdown
-                            value={
-                              computeDatetime(
-                                getDateDiffNow(
-                                  getMerchantVoucherDetailsData?.data
-                                    .end_datetime
-                                )
-                              ).minutes
-                            }
-                          ></Countdown>
-                          {':'}
-                          <Countdown
-                            value={
-                              computeDatetime(
-                                getDateDiffNow(
-                                  getMerchantVoucherDetailsData?.data
-                                    .end_datetime
-                                )
-                              ).seconds
-                            }
-                          ></Countdown>
-                        </div>
+                        // <div className='font-bold'>
+                        //   <Countdown
+                        //     value={
+                        //       computeDatetime(
+                        //         getDateDiffNow(
+                        //           getMerchantVoucherDetailsData?.data
+                        //             .end_datetime
+                        //         )
+                        //       ).hours
+                        //     }
+                        //   ></Countdown>
+                        //   {':'}
+                        //   <Countdown
+                        //     value={
+                        //       computeDatetime(
+                        //         getDateDiffNow(
+                        //           getMerchantVoucherDetailsData?.data
+                        //             .end_datetime
+                        //         )
+                        //       ).minutes
+                        //     }
+                        //   ></Countdown>
+                        //   {':'}
+                        //   <Countdown
+                        //     value={
+                        //       computeDatetime(
+                        //         getDateDiffNow(
+                        //           getMerchantVoucherDetailsData?.data
+                        //             .end_datetime
+                        //         )
+                        //       ).seconds
+                        //     }
+                        //   ></Countdown>
+                        // </div>
+                        <DateCountdown
+                          date={moment(
+                            getMerchantVoucherDetailsData?.data.end_datetime
+                          ).toDate()}
+                        ></DateCountdown>
                       )}
                     </Badge>
                   ) : null}

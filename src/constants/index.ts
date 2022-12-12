@@ -9,31 +9,31 @@ export const LIMIT_SEARCH_PRODUCTS_LIST = 30;
 export const LIMIT_SELLER_VOUCHER_LIST = 10;
 
 export const VOUCHER_STATUS = {
-  ALL: 'All',
-  ONGOING: 'Ongoing',
-  UPCOMING: 'Upcoming',
-  ENDED: 'Ended',
+  ALL: 'all',
+  ONGOING: 'ongoing',
+  UPCOMING: 'upcoming',
+  ENDED: 'ended',
 };
 
 export const DISCOUNT_TYPE = {
-  NOMINAL: 'Nominal',
-  PERCENTAGE: 'Percentage',
+  NOMINAL: 'nominal',
+  PERCENTAGE: 'percentage',
 };
 
 export const LIMIT_TRANSACTION_HISTORY = 10;
 export const DELIVERY_STATUS = {
-  ALL: 'All',
-  ONGOING: 'Ongoing',
-  PENDING_PAYMENT: 'Pending Payment',
-  PENDING_SELLER: 'Pending Seller',
-  ON_PROCESS: 'On Process',
-  OUT_FOR_DELIVERY: 'Out for Delivery',
-  DELIVERED: 'Delivered',
-  COMPLAINED: 'Complained',
-  CANCELED: 'Canceled',
-  CANCELED_BUYER: 'Canceled by Buyer',
-  CANCELED_SELLER: 'Canceled by Seller',
-  COMPLETED: 'Completed',
+  ALL: 'all',
+  ONGOING: 'ongoing',
+  PENDING_PAYMENT: 'pending payment',
+  PENDING_SELLER: 'pending seller',
+  ON_PROCESS: 'on process',
+  OUT_FOR_DELIVERY: 'out for delivery',
+  DELIVERED: 'delivered',
+  COMPLAINED: 'complained',
+  CANCELED: 'canceled',
+  CANCELED_BUYER: 'canceled by buyer',
+  CANCELED_SELLER: 'canceled by seller',
+  COMPLETED: 'completed',
 };
 export const PHONE_REGEX =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;

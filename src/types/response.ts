@@ -12,11 +12,12 @@ import {
   Role,
   User,
   CartGroupedByMerchant,
+  PendingPayment,
   PurchasedQuantities,
   UpdateCart,
   ShopInformation,
   ViewPost,
-  FavoriteProduct
+  FavoriteProduct,
 } from './component';
 
 export type GetRolesResponse = {
@@ -68,12 +69,12 @@ export type GetAllCategoryResponse = {
 };
 
 export type GetUserCartResponse = {
-  data: CartGroupedByMerchant[] | null; 
-  code: number; 
+  data: CartGroupedByMerchant[] | null;
+  code: number;
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type GetAddressesResponse = {
   data: Address[] | null;
@@ -164,9 +165,7 @@ export type GetPurchasedQuantitiesResponse = {
 };
 
 export type GetAllTransactionHistoryResponse = {
-  data: {
-    order_list: OrderList[];
-  } | null;
+  data: OrderList[] | null;
   code: number;
   error: string | null;
   message: string;
@@ -288,7 +287,7 @@ export type GetShopInformationResponse = {
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type ViewPostResponse = {
   data: ViewPost | null;
@@ -296,7 +295,7 @@ export type ViewPostResponse = {
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type FavoriteProductResponse = {
   data: FavoriteProduct | null;
@@ -304,7 +303,7 @@ export type FavoriteProductResponse = {
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type GetFavoriteProductResponse = {
   data: FavoriteProduct | null;
@@ -312,5 +311,12 @@ export type GetFavoriteProductResponse = {
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
+export type GetAllUserPendingPaymentResponse = {
+  data: PendingPayment[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};

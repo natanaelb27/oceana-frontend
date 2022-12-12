@@ -3,6 +3,7 @@ export enum UserAccountContent {
   Address,
   Wallet,
   Purchase,
+  PendingPayment,
   Refunds,
 }
 

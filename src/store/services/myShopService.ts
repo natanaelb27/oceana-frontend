@@ -3,7 +3,9 @@ import { CreateMerchantVoucherRequest } from '../../types/request';
 import {
   CreateMerchantVoucherResponse,
   DeleteMerchantVoucherResponse,
+  GetAllTransactionHistoryResponse,
   GetMerchantResponse,
+  GetOrderDetailsResponse,
   UpdateMerchantVoucherResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
@@ -52,6 +54,23 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['MerchantVoucher'],
     }),
+    getAllMerchantTransactionHistory: builder.query<
+      GetAllTransactionHistoryResponse,
+      string
+    >({
+      query: (query) => ({
+        url: `/my-shop/transaction-history?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Order'],
+    }),
+    getMerchantOrderDetails: builder.query<GetOrderDetailsResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/transaction-history/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['OrderDetails'],
+    }),
   }),
 });
 
@@ -61,4 +80,8 @@ export const {
   useCreateMerchantVoucherMutation,
   useUpdateMerchantVoucherMutation,
   useDeleteMerchantVoucherMutation,
+  useGetAllMerchantTransactionHistoryQuery,
+  useLazyGetAllMerchantTransactionHistoryQuery,
+  useGetMerchantOrderDetailsQuery,
+  useLazyGetMerchantOrderDetailsQuery,
 } = myShopApi;

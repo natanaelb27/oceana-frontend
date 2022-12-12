@@ -183,6 +183,7 @@ export interface UpdateCart {
 }
 export interface OrderDetail {
   order_detail_id: string;
+  message: string;
   product_image: string | null;
   product_name: string;
   product_variations: string;
@@ -197,6 +198,8 @@ export interface OrderList {
   invoice_number: string;
   merchant_id: number;
   shop_name: string;
+  user_id: string;
+  user_full_name: string;
   order_details: OrderDetail[];
   transaction_datetime: string;
   order_status: string;
@@ -292,4 +295,17 @@ export interface MerchantVoucher {
   maximum_quota: number;
   current_quota: number;
   voucher_status: string;
+}
+
+export interface PendingPayment {
+  transaction_id: string;
+  user_id: string;
+  user_full_name: string;
+  transaction_datetime: string;
+  payment_method_id: number;
+  payment_method_name: string;
+  payment_method_image: string;
+  payment_expiration_datetime: string;
+  card_number: string;
+  total_payment: number;
 }
