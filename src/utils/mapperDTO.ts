@@ -1,5 +1,6 @@
 import moment from 'moment';
 import {
+  PurchasedQuantitiesQuery,
   MerchantVoucherQuery,
   ProductQuery,
   TransactionHistoryQuery,
@@ -134,6 +135,15 @@ export const toTransactionHistoryQuery = (query: TransactionHistoryQuery) => {
     '&filter-start-transaction-date=' + query.filterStartTransactionDate;
   result += '&filter-end-transaction-date=' + query.filterEndTransactionDate;
 
+  return result;
+};
+
+export const toPurchasedQuantitiesQuery = (query: PurchasedQuantitiesQuery) => {
+  let result = '';
+
+  result += 'product-id=' + query.product_id;
+  result += '&product-item-id=' + query.product_item_id;
+  result += '&quantity=' + query.quantity;
   return result;
 };
 
