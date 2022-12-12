@@ -16,7 +16,8 @@ import {
   UpdateCart,
   ShopInformation,
   ViewPost,
-  FavoriteProduct
+  FavoriteProduct,
+  Review
 } from './component';
 
 export type GetRolesResponse = {
@@ -308,6 +309,14 @@ export type FavoriteProductResponse = {
 
 export type GetFavoriteProductResponse = {
   data: FavoriteProduct | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+}
+
+export type GetAllReviewsResponse = {
+  data: Review[] | null;
   code: number;
   error: string | null;
   message: string;

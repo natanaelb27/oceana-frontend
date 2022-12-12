@@ -4,6 +4,7 @@ import {
   MerchantVoucherQuery,
   ProductQuery,
   TransactionHistoryQuery,
+  ReviewQuery,
 } from '../types/query';
 
 import {
@@ -144,6 +145,18 @@ export const toPurchasedQuantitiesQuery = (query: PurchasedQuantitiesQuery) => {
   result += 'product-id=' + query.product_id;
   result += '&product-item-id=' + query.product_item_id;
   result += '&quantity=' + query.quantity;
+  return result;
+};
+
+export const toReviewQuery = (query: ReviewQuery) => {
+  let result = '';
+
+  result += 'sort=' + query.sort;
+  result += '&limit=' + query.limit;
+  result += '&page=' + query.page;
+  result += '&media=' + query.media;
+  result += '&comment=' + query.comment;
+  result += '&rating=' + query.rating.join(',');
   return result;
 };
 
