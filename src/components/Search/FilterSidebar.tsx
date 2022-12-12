@@ -364,7 +364,7 @@ const FilterSidebar = ({
           size='sm'
           shape='circle'
           color='ghost'
-          className='absolute right-2 top-2 md:hidden'
+          className='absolute right-2 top-2'
           onClick={handleModalClose}
         >
           <CgClose className='text-lg' />
@@ -387,18 +387,10 @@ const FilterSidebar = ({
               </InputGroup>
             </Form>
           </div>
-          <Button
-            size='sm'
-            shape='circle'
-            color='ghost'
-            className='hidden md:flex'
-            onClick={handleModalClose}
-          >
-            <CgClose className='text-lg' />
-          </Button>
         </Modal.Header>
         <Modal.Body>
-          <Form className='grid grid-cols-2 md:grid-cols-3 gap-x-3'>
+          {/* <Form className='grid grid-cols-2 md:grid-cols-3 gap-x-3'> */}
+          <Form className='grid grid-cols-2 md:grid-cols-3 gap-x-3 md:gap-x-10'>
             {resGetAllCity?.data &&
               resGetAllCity?.data?.map((city, i) => {
                 const currentFirstLetter = city.name.at(0);
@@ -413,32 +405,64 @@ const FilterSidebar = ({
                           {currentFirstLetter}
                         </h1>
                       </div>
-                      <Form.Label title={city.name} className='col-span-1 pl-0'>
+                      <Form.Label className='col-span-1 pl-0 flex justify-start cursor-pointer w-fit'>
                         <Checkbox
+                          className='mr-3'
                           checked={modalLocationChecked.includes(
                             city.id.toString()
                           )}
                           value={city.id}
                           onChange={handleModalFilterLocation}
                         />
+                        <span className='cursor-pointer'>{city.name}</span>
                       </Form.Label>
                     </Fragment>
+                    // <Fragment key={i}>
+                    //   <div className='col-span-2 md:col-span-3 mt-5'>
+                    //     <h1 className='text-xl font-bold'>
+                    //       {currentFirstLetter}
+                    //     </h1>
+                    //   </div>
+                    //   <Form.Label title={city.name} className='col-span-1 pl-0'>
+                    //     <Checkbox
+                    //       checked={modalLocationChecked.includes(
+                    //         city.id.toString()
+                    //       )}
+                    //       value={city.id}
+                    //       onChange={handleModalFilterLocation}
+                    //     />
+                    //   </Form.Label>
+                    // </Fragment>
                   );
                 } else {
                   return (
                     <Form.Label
                       key={i}
-                      title={city.name}
-                      className='col-span-1 pl-0'
+                      className='col-span-1 pl-0 flex justify-start cursor-pointer w-fit'
                     >
                       <Checkbox
+                        className='mr-3'
                         checked={modalLocationChecked.includes(
                           city.id.toString()
                         )}
                         value={city.id}
                         onChange={handleModalFilterLocation}
                       />
+                      <span>{city.name}</span>
                     </Form.Label>
+                    // <Form.Label
+                    //   key={i}
+                    //   title={city.name}
+                    //   className='col-span-1 pl-0'
+                    // >
+                    //   <Checkbox
+                    //     checked={modalLocationChecked.includes(
+                    //       city.id.toString()
+                    //     )}
+                    //     value={city.id}
+                    //     onChange={handleModalFilterLocation}
+                    //   />
+                    // </Form.Label>
                   );
                 }
               })}

@@ -314,7 +314,7 @@ const CategorySearch = () => {
                   {productQuery.rating ? (
                     <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
                       <span className='whitespace-nowrap'>
-                        {productQuery.rating} and above
+                        ⭐ {productQuery.rating} and above
                       </span>
                       <Button
                         size='xs'
