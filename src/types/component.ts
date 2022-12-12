@@ -94,6 +94,7 @@ export interface Product {
   category_id: number;
   name: string;
   description: string;
+  media_url: string;
   is_hazardous: boolean;
   weight: number;
   package_size: string;
@@ -115,6 +116,47 @@ export interface Product {
   created_at: string;
 }
 
+interface ProductModel {
+  product_item_id: number;
+  sku: string;
+  stock_quantity: number;
+  price: number;
+  price_after_discount: number | null;
+  product_variations: string;
+  variation_index: number[];
+}
+
+export interface ProductVariation {
+  name: string;
+  options: string[];
+  image: string[];
+  summed_stocks: number[];
+}
+
+export interface ProductDetail {
+  name: string;
+  is_hazardous: boolean;
+  weight: number;
+  package_size: string;
+  condition: string;
+  category: string;
+  images: string[];
+  description: string;
+  total_stock: number;
+  like_count: number;
+  rating_count: number;
+  rating_star: number;
+  discount_type: string | null;
+  discount: number | null;
+  price: number;
+  price_after_discount: number | null;
+  price_max: number;
+  price_max_after_discount: number | null;
+  price_min: number;
+  price_min_after_discount: number | null;
+  product_model: ProductModel[];
+  product_variation: ProductVariation[];
+}
 export interface CartProduct {
   carts_id: number;
   product_id: number;
@@ -131,6 +173,13 @@ export interface CartGroupedByMerchant {
   merchant_province: string;
   name: string;
   products: CartProduct[];
+}
+
+export interface UpdateCart {
+  id: number;
+  product_item_id: number;
+  user_id: string;
+  quantity: number;
 }
 export interface OrderDetail {
   order_detail_id: string;
@@ -195,6 +244,41 @@ export interface Merchant {
   photo: string;
 }
 
+export interface PurchasedQuantities {
+  price: number;
+  stock: number;
+  max_purchase_quantity: number;
+  user_max_purchase_quantity: number;
+  product_merchant_promotion_id: number;
+}
+
+export interface ShopInformation {
+  id: number;
+  name: string;
+  photo: string;
+  total_rating: number;
+  rating_star: number;
+  product_count: number;
+  user_id: string;
+  shop_address: string;
+  shop_sub_district: string;
+  shop_district: string;
+  shop_city: string;
+  shop_province: string;
+}
+
+export interface ViewPost {
+  user_id: string;
+  product_id: number;
+  last_viewed_at: string;
+  count: number;
+}
+
+export interface FavoriteProduct {
+  user_id: string;
+  product_id: number;
+  is_favorite: boolean;
+}
 export interface MerchantVoucher {
   id: number;
   merchant_id: number;
