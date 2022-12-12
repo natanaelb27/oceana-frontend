@@ -78,7 +78,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       selectedVariationsCopy.push(optionIndex);
     } else {
       if (selectedVariationsCopy[variationIndex] === optionIndex) {
-        console.log('here');
         if (
           getProductDetailData.data.product_variation.length === 2 &&
           variationIndex === 1
@@ -114,7 +113,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
           JSON.stringify(row.variation_index) ===
           JSON.stringify(selectedVariationsCopy)
       );
-      console.log({ foundProductModel });
       if (!foundProductModel) {
         return;
       }
@@ -203,7 +201,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
         viewPost(productID);
       }
       getProductDetail(productID).then(({ data }) => {
-        console.log({ data: data?.data });
         if (!data?.data) {
           return;
         }
@@ -233,15 +230,9 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     if (purchasedQuantitiesQuery.product_item_id === 0) {
       return;
     }
-    getPurchasedQuantities(toPurchasedQuantitiesQuery(purchasedQuantitiesQuery))
-      .unwrap()
-      .then((res) => {
-        console.log(res);
-        // console.log(getPurchasedQuantitiesData);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    getPurchasedQuantities(
+      toPurchasedQuantitiesQuery(purchasedQuantitiesQuery)
+    );
   }, [purchasedQuantitiesQuery]);
 
   if (
