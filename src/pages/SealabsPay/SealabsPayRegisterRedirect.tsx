@@ -2,17 +2,18 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FailedModal, Loading, SuccessModal } from '../../components/common';
 import { TXN_STATUS } from '../../constants/sealabsPay';
-import { useSealabsPayRegisterMutation } from '../../store/services/sealabsPayService';
+import { useRegisterSealabsPayMutation } from '../../store/services/sealabsPayService';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toSealabsPayRegisterRequest } from '../../utils/mapperDTO';
 import { notifyErrorToast } from '../../utils/toast';
 
 const SealabsPayRegisterRedirect = () => {
+  const redirectURL = '/user/account/sealabs-pay';
   const [txnStatus, setTxnStatus] = useState<string>('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [sealabsPayRegister, { isLoading, isError }] =
-    useSealabsPayRegisterMutation();
+    useRegisterSealabsPayMutation();
 
   useEffect(() => {
     const cardNumber = searchParams.get('card_number') || '';
@@ -45,8 +46,8 @@ const SealabsPayRegisterRedirect = () => {
         open={true}
         title='Failed'
         message='Oops... Something went wrong, please try again'
-        onClose={() => navigate('/')}
-        onAccepted={() => navigate('/')}
+        onClose={() => navigate(redirectURL)}
+        onAccepted={() => navigate(redirectURL)}
       />
     );
   }
@@ -56,8 +57,8 @@ const SealabsPayRegisterRedirect = () => {
       open={true}
       title='Success'
       message='Your Sealabs Pay account has been registered'
-      onClose={() => navigate('/')}
-      onAccepted={() => navigate('/')}
+      onClose={() => navigate(redirectURL)}
+      onAccepted={() => navigate(redirectURL)}
     />
   );
 };

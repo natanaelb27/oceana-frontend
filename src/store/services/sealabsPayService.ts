@@ -2,17 +2,40 @@ import {
   SealabsPayPaymentRequest,
   SealabsPayRegisterRequest,
 } from '../../types/request';
-import { SealabsPayRedirectResponse } from '../../types/response';
+import {
+  DeleteSealabsPayResponse,
+  GetAllSealabsPayResponse,
+  RegisterSealabsPayResponse,
+  SealabsPayRedirectResponse,
+} from '../../types/response';
 import { baseApi } from '../store';
 
 export const sealabsPayApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    sealabsPayRegister: builder.mutation<void, SealabsPayRegisterRequest>({
+    getAllSealabsPay: builder.query<GetAllSealabsPayResponse, void>({
+      query: () => ({
+        url: '/sealabs-pay',
+        method: 'GET',
+      }),
+      providesTags: ['Profile'],
+    }),
+    registerSealabsPay: builder.mutation<
+      RegisterSealabsPayResponse,
+      SealabsPayRegisterRequest
+    >({
       query: (request) => ({
-        url: '/sealabs-pay/register',
+        url: '/sealabs-pay',
         method: 'POST',
         body: request,
       }),
+      invalidatesTags: ['Profile'],
+    }),
+    deleteSealabsPay: builder.mutation<DeleteSealabsPayResponse, string>({
+      query: (id) => ({
+        url: `/sealabs-pay/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Profile'],
     }),
     sealabsPayRegisterOTP: builder.mutation<
       SealabsPayRedirectResponse,
@@ -23,6 +46,7 @@ export const sealabsPayApi = baseApi.injectEndpoints({
         method: 'POST',
         body: request,
       }),
+      invalidatesTags: ['Profile'],
     }),
     sealabsPayTopupOTP: builder.mutation<
       SealabsPayRedirectResponse,
@@ -33,12 +57,15 @@ export const sealabsPayApi = baseApi.injectEndpoints({
         method: 'POST',
         body: request,
       }),
+      invalidatesTags: ['Profile'],
     }),
   }),
 });
 
 export const {
-  useSealabsPayRegisterMutation,
+  useGetAllSealabsPayQuery,
+  useRegisterSealabsPayMutation,
+  useDeleteSealabsPayMutation,
   useSealabsPayRegisterOTPMutation,
   useSealabsPayTopupOTPMutation,
 } = sealabsPayApi;

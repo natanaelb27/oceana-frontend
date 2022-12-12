@@ -20,6 +20,7 @@ export { default as BuyerProfile } from './buyer/BuyerProfile';
 export { default as BuyerPurchaseHistory } from './buyer/BuyerPurchaseHistory';
 export { default as BuyerRefund } from './buyer/BuyerRefund';
 export { default as BuyerWallet } from './buyer/BuyerWallet';
+export { default as BuyerSealabsPay } from './buyer/BuyerSealabsPay';
 export { default as SellerRegistration } from './buyer/SellerRegistration';
 
 export { default as ShopAddProduct } from './seller/ShopAddProduct';

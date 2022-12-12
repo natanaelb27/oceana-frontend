@@ -15,6 +15,7 @@ import {
   BuyerProfile,
   BuyerPurchaseHistory,
   BuyerRefund,
+  BuyerSealabsPay,
   BuyerWallet,
   Category,
   Home,
@@ -22,6 +23,10 @@ import {
   NotFound,
   Product,
   Register,
+  SealabsPayPaymentRedirect,
+  SealabsPayRegisterRedirect,
+  SealabsPayTopup,
+  SealabsPayTopupRedirect,
   Search,
   SellerRegistration,
   Shop,
@@ -37,12 +42,8 @@ import {
   ShopProfile,
   ShopPromotionList,
   ShopShipmentSetting,
-  ShopVoucherList,
-  SealabsPayTopup,
   ShopVoucherDetail,
-  SealabsPayRegisterRedirect,
-  SealabsPayTopupRedirect,
-  SealabsPayPaymentRedirect,
+  ShopVoucherList,
 } from '../pages';
 import { selectRole } from '../store/slices/authSlice';
 import { useAppSelector } from '../store/store';
@@ -127,6 +128,10 @@ const Routes = () => {
             {
               path: '/user/account/wallet',
               element: <BuyerWallet />,
+            },
+            {
+              path: '/user/account/sealabs-pay',
+              element: <BuyerSealabsPay />,
             },
             {
               path: '/user/account/address',

@@ -18,6 +18,7 @@ import {
   ShopInformation,
   ViewPost,
   FavoriteProduct,
+  SealabsPayAccount,
 } from './component';
 
 export type GetRolesResponse = {
@@ -333,8 +334,32 @@ export type GetShopInformationResponse = {
   metadata: Metadata | null;
 };
 
-export type SealabsPayPaymentResponse = {
+export type PaymentSealabsPayResponse = {
   data: SealabsPayTransaction | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetAllSealabsPayResponse = {
+  data: SealabsPayAccount[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type RegisterSealabsPayResponse = {
+  data: null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type DeleteSealabsPayResponse = {
+  data: null;
   code: number;
   error: string | null;
   message: string;
