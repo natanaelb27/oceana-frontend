@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { useState } from 'react';
 import { Carousel, Divider } from 'react-daisyui';
 import { ProductCard, Slider } from '../../components/common';
