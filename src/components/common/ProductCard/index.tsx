@@ -43,7 +43,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
       }`}
     >
       <Card className='md:h-[24rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'>
-        {/* <Card className='md:max-h-[26rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'> */}
         <figure>
           <img
             src={product.media_url}
