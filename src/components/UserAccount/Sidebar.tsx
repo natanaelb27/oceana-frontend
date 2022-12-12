@@ -75,6 +75,16 @@ const Sidebar = ({ profile }: SidebarProps) => {
             </NavLink>
           </Menu.Item>
           <Menu.Item>
+            <NavLink to='/user/account/sealabs-pay'>
+              <img
+                className='w-4 h-4'
+                src='https://slp.air-sipp.com/user/static/brand/sealabs.svg'
+                alt='Sealabs Pay Icon'
+              />
+              Sealabs Pay
+            </NavLink>
+          </Menu.Item>
+          <Menu.Item>
             <NavLink to='/user/purchase'>
               <GoHistory />
               Purchase

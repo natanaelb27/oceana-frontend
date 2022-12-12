@@ -8,14 +8,14 @@ import { CgClose } from 'react-icons/cg';
 import {
   useUpdateProfileImageMutation,
   useUpdateProfileMutation,
-} from '../../store/services/profileService';
-import { Profile } from '../../types/component';
+} from '../../../store/services/profileService';
+import { Profile } from '../../../types/component';
 import {
   toUpdateProfileImageRequest,
   toUpdateProfileRequest,
-} from '../../utils/mapperDTO';
-import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
-import { UpdateProfileResponse } from '../../types/response';
+} from '../../../utils/mapperDTO';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import { UpdateProfileResponse } from '../../../types/response';
 
 type ProfileContentProps = {
   profile: Profile | null | undefined;
