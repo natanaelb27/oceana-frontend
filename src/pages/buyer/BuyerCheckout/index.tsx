@@ -16,12 +16,28 @@ import {
   CARD_NUMBER_LENGTH,
   REGISTER_CHARGE,
 } from '../../../constants/sealabsPay';
+import { STATUS_CONFLICT } from '../../../constants/statusCodes';
 import { useSealabsPayRegisterOTPMutation } from '../../../store/services/sealabsPayService';
+import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import { toSealabsPayPaymentRequest } from '../../../utils/mapperDTO';
+import { notifyErrorToast } from '../../../utils/toast';
 
 const BuyerCheckout = () => {
   const [sealabsPayRegister, { isLoading }] =
     useSealabsPayRegisterOTPMutation();
+
+  const handleFailedSealabsPayRegister = (
+    message: string,
+    setFieldValue: (
+      field: string,
+      value: string,
+      shouldValidate?: boolean | undefined
+    ) => void
+  ) => {
+    setFieldValue('nameOnCard', '');
+    setFieldValue('cardNumber', '');
+    notifyErrorToast(message, true);
+  };
 
   const formik = useFormik({
     initialValues: { nameOnCard: '', cardNumber: '' },
@@ -38,7 +54,7 @@ const BuyerCheckout = () => {
           `Must be exactly ${CARD_NUMBER_LENGTH} digits`
         ),
     }),
-    onSubmit: (values) => {
+    onSubmit: (values, { setFieldValue }) => {
       sealabsPayRegister(
         toSealabsPayPaymentRequest(
           values.nameOnCard,
@@ -52,7 +68,23 @@ const BuyerCheckout = () => {
           const { data: otpURLData } = res;
           window.location.replace(otpURLData);
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          const { data, status } = err;
+          const { message } = data;
+          const messageCapitalized = capitalizeFirstLetter(message);
+          switch (status) {
+            case STATUS_CONFLICT:
+              handleFailedSealabsPayRegister(messageCapitalized, setFieldValue);
+              break;
+
+            default:
+              handleFailedSealabsPayRegister(
+                'Invalid card number',
+                setFieldValue
+              );
+              break;
+          }
+        });
     },
   });
 

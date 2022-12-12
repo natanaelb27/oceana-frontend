@@ -3,13 +3,15 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FailedModal, Loading, SuccessModal } from '../../components/common';
 import { TXN_STATUS } from '../../constants/sealabsPay';
 import { useWalletTopUpMutation } from '../../store/services/walletService';
+import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toWalletTopUpRequest } from '../../utils/mapperDTO';
+import { notifyErrorToast } from '../../utils/toast';
 
 const SealabsPayTopupRedirect = () => {
   const [txnStatus, setTxnStatus] = useState<string>('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [walletTopUp, { isLoading }] = useWalletTopUpMutation();
+  const [walletTopUp, { isLoading, isError }] = useWalletTopUpMutation();
 
   useEffect(() => {
     const cardNumber = searchParams.get('card_number') || '';
@@ -33,21 +35,20 @@ const SealabsPayTopupRedirect = () => {
           message,
           signature
         )
-      );
+      )
+        .unwrap()
+        .catch((err) => {
+          const { data } = err;
+          const { message } = data;
+          const messageCapitalized = capitalizeFirstLetter(message);
+          notifyErrorToast(messageCapitalized, true);
+        });
     }
   }, []);
 
-  if (txnStatus === TXN_STATUS.SUCCESS) {
-    return (
-      <SuccessModal
-        open={true}
-        title='Transaction Success'
-        message='Your transaction has been processed successfully'
-        onClose={() => navigate('/')}
-        onAccepted={() => navigate('/')}
-      />
-    );
-  } else if (txnStatus === TXN_STATUS.FAILED) {
+  if (isLoading) return <Loading isLoading={isLoading} />;
+
+  if (isError || txnStatus === TXN_STATUS.FAILED) {
     return (
       <FailedModal
         open={true}
@@ -59,7 +60,15 @@ const SealabsPayTopupRedirect = () => {
     );
   }
 
-  return <Loading isLoading={isLoading} />;
+  return (
+    <SuccessModal
+      open={true}
+      title='Transaction Success'
+      message='Your transaction has been processed successfully'
+      onClose={() => navigate('/')}
+      onAccepted={() => navigate('/')}
+    />
+  );
 };
 
 export default SealabsPayTopupRedirect;
