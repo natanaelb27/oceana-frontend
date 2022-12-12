@@ -44,3 +44,9 @@ export type CategoryQuery = {
 export type CityQuery = {
   search: string;
 };
+
+export type PurchasedQuantitiesQuery = {
+  product_id: number;
+  product_item_id: number;
+  quantity: number;
+};

@@ -2,6 +2,7 @@ import moment from 'moment';
 import {
   CategoryQuery,
   CityQuery,
+  PurchasedQuantitiesQuery,
   MerchantVoucherQuery,
   ProductQuery,
   TransactionHistoryQuery,
@@ -154,6 +155,15 @@ export const toCityQuery = (query: CityQuery) => {
 
   result += 'search=' + query.search;
 
+  return result;
+};
+
+export const toPurchasedQuantitiesQuery = (query: PurchasedQuantitiesQuery) => {
+  let result = '';
+
+  result += 'product-id=' + query.product_id;
+  result += '&product-item-id=' + query.product_item_id;
+  result += '&quantity=' + query.quantity;
   return result;
 };
 

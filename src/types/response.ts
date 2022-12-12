@@ -9,10 +9,16 @@ import {
   OrderList,
   OrderListDetail,
   Product,
+  ProductDetail,
   Profile,
   Role,
   User,
   CartGroupedByMerchant,
+  PurchasedQuantities,
+  UpdateCart,
+  ShopInformation,
+  ViewPost,
+  FavoriteProduct,
 } from './component';
 
 export type GetRolesResponse = {
@@ -135,11 +141,28 @@ export type GetAllProductsResponse = {
   metadata: Metadata | null;
 };
 
+export type GetProductDetailsResponse = {
+  data: ProductDetail | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
 export type UpdateUserCartResponse = {
-  id: number;
-  product_item_id: number;
-  user_id: string;
-  quantity: number;
+  data: UpdateCart | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetPurchasedQuantitiesResponse = {
+  data: PurchasedQuantities | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
 };
 
 export type GetAllTransactionHistoryResponse = {
@@ -269,8 +292,40 @@ export type GetAncestorsCategoryResponse = {
   metadata: Metadata | null;
 };
 
+export type GetShopInformationResponse = {
+  data: ShopInformation | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
 export type GetAllCityResponse = {
   data: City[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type ViewPostResponse = {
+  data: ViewPost | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type FavoriteProductResponse = {
+  data: FavoriteProduct | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetFavoriteProductResponse = {
+  data: FavoriteProduct | null;
   code: number;
   error: string | null;
   message: string;
