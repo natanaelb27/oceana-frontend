@@ -139,6 +139,7 @@ export interface ProductDetail {
   weight: number;
   package_size: string;
   condition: string;
+  category_id: number;
   category: string;
   images: string[];
   description: string;
