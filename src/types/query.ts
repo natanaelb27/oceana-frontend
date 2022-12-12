@@ -34,3 +34,9 @@ export type TransactionHistoryQuery = {
   limit: number;
   page: number;
 };
+
+export type SubDistrictQuery = {
+  province: string;
+  city: string;
+  district: string;
+};

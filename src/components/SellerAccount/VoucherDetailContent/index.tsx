@@ -319,10 +319,17 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
                 </span>
               </div>
               <span className='font-bold'>
-                {toRupiah(
-                  getMerchantVoucherDetailsData?.data.maximum_discount_amount *
-                    getMerchantVoucherDetailsData?.data.maximum_quota
-                )}
+                {getMerchantVoucherDetailsData.data.discount_type ===
+                DISCOUNT_TYPE.NOMINAL
+                  ? toRupiah(
+                      getMerchantVoucherDetailsData?.data.discount *
+                        getMerchantVoucherDetailsData?.data.maximum_quota
+                    )
+                  : toRupiah(
+                      getMerchantVoucherDetailsData?.data
+                        .maximum_discount_amount *
+                        getMerchantVoucherDetailsData?.data.maximum_quota
+                    )}
               </span>
             </div>
           </div>

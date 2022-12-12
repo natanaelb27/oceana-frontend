@@ -62,12 +62,12 @@ export type GetAllCategoryResponse = {
 };
 
 export type GetUserCartResponse = {
-  data: CartGroupedByMerchant[] | null; 
-  code: number; 
+  data: CartGroupedByMerchant[] | null;
+  code: number;
   error: string | null;
   message: string;
   metadata: Metadata | null;
-}
+};
 
 export type GetAddressesResponse = {
   data: Address[] | null;
@@ -138,7 +138,7 @@ export type UpdateUserCartResponse = {
   product_item_id: number;
   user_id: string;
   quantity: number;
-}
+};
 
 export type GetAllTransactionHistoryResponse = {
   data: {
@@ -252,6 +252,40 @@ export type DeleteMerchantVoucherResponse = {
     created_at: string;
     updated_at: string;
     deleted_at: string;
+  };
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type ProvinceResponse = {
+  id: number;
+  name: string;
+};
+
+export type CityResponse = {
+  id: number;
+  name: string;
+};
+
+export type DistrictResponse = {
+  id: number;
+  name: string;
+};
+
+export type SubDistrictResponse = {
+  id: number;
+  name: string;
+  zip_code: string;
+};
+
+export type GetSubDistrictsResponse = {
+  data: {
+    provinces: ProvinceResponse[];
+    cities: CityResponse[];
+    districts: DistrictResponse[];
+    sub_districts: SubDistrictResponse[];
   };
   code: number;
   error: string | null;
