@@ -180,12 +180,12 @@ const SealabsPayContent = () => {
           Account
         </Button>
       </div>
-      <div className='flex flex-col gap-4 md:flex-row'>
+      <div className='gap-4 grid md:grid-cols-2'>
         {getAllSealabsPayData.data?.map(
           ({ id, card_number, name_on_card, is_default, active_date }) => (
             <Card
               key={id}
-              className={`p-6 w-[320px] h-[200px] glass text-base-100 rounded-3xl md:w-[400px] md:h-[240px] hover:shadow-2xl ${
+              className={`p-6 w-[320px] h-[200px] glass text-base-100 rounded-3xl md:w-[420px] md:h-[240px] hover:shadow-2xl ${
                 is_default
                   ? 'bg-secondary hover:bg-secondary'
                   : 'bg-primary/80 hover:bg-primary/80 cursor-pointer'
@@ -208,6 +208,9 @@ const SealabsPayContent = () => {
                     {!is_default && (
                       <Tooltip message='Set as default'>
                         <Button
+                          className={
+                            is_default ? '' : 'bg-transparent border-none'
+                          }
                           color='primary'
                           shape='circle'
                           size='sm'
@@ -219,6 +222,9 @@ const SealabsPayContent = () => {
                     )}
                     <Tooltip message='Delete'>
                       <Button
+                        className={
+                          is_default ? '' : 'bg-transparent border-none'
+                        }
                         color={is_default ? 'secondary' : 'primary'}
                         shape='circle'
                         size='sm'
@@ -240,7 +246,7 @@ const SealabsPayContent = () => {
       />
       <ConfirmationModal
         open={openModal.delete}
-        title='Are you sure?'
+        title='Delete card?'
         message='This action cannot be undone'
         loading={deleteSealabsPayLoading}
         onClose={handleModalClose}
@@ -248,7 +254,7 @@ const SealabsPayContent = () => {
       />
       <ConfirmationModal
         open={openModal.default}
-        title='Are you sure?'
+        title='Set as default?'
         message='Your default Sealabs Pay account will be changed'
         loading={setDefaultSealabsPayLoading}
         onClose={handleModalClose}

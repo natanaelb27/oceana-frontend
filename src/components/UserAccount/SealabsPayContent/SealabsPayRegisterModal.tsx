@@ -9,7 +9,6 @@ import {
   CARD_NUMBER_LENGTH,
   REGISTER_CHARGE,
 } from '../../../constants/sealabsPay';
-import { STATUS_CONFLICT } from '../../../constants/statusCodes';
 import { useSealabsPayRegisterOTPMutation } from '../../../store/services/sealabsPayService';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import { toSealabsPayPaymentRequest } from '../../../utils/mapperDTO';
@@ -46,10 +45,10 @@ const SealabsPayRegisterModal = ({
     initialValues: { nameOnCard: '', cardNumber: '' },
     validationSchema: Yup.object({
       nameOnCard: Yup.string()
-        .required('Name on card must not be empty')
+        .required('Please enter a name')
         .matches(LETTERS_ONLY_REGEX, 'Name can only contain letters.'),
       cardNumber: Yup.string()
-        .required('Card number must not be empty')
+        .required('Please enter your card number')
         .matches(NUMBERS_ONLY_REGEX, 'Must be only digits')
         .min(CARD_NUMBER_LENGTH, `Must be exactly ${CARD_NUMBER_LENGTH} digits`)
         .max(
@@ -72,21 +71,10 @@ const SealabsPayRegisterModal = ({
           window.location.replace(otpURLData);
         })
         .catch((err) => {
-          const { data, status } = err;
+          const { data } = err;
           const { message } = data;
           const messageCapitalized = capitalizeFirstLetter(message);
-          switch (status) {
-            case STATUS_CONFLICT:
-              handleFailedSealabsPayRegister(messageCapitalized, setFieldValue);
-              break;
-
-            default:
-              handleFailedSealabsPayRegister(
-                'Invalid card number',
-                setFieldValue
-              );
-              break;
-          }
+          handleFailedSealabsPayRegister(messageCapitalized, setFieldValue);
         });
     },
   });
@@ -115,7 +103,7 @@ const SealabsPayRegisterModal = ({
           </InputGroup>
           <InputGroup>
             <Input
-              className='text-2xl md:text-3xl'
+              className='text-xl md:text-2xl font-mono'
               id='cardNumber'
               name='cardNumber'
               onChange={formik.handleChange}
@@ -137,8 +125,8 @@ const SealabsPayRegisterModal = ({
             Register
           </Button>
           <FormCTA>
-            **Your account will be charged Rp. 1 for verification, and refunded
-            once verification is complete
+            **Please make sure your account has Rp. 1 for verification,
+            we&apos;ll refund you once it&apos;s done!
           </FormCTA>
         </Form>
       </FormContainer>
