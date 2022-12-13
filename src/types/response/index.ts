@@ -10,3 +10,4 @@ export * from './profile';
 export * from './role';
 export * from './shop';
 export * from './subDistrict';
+export * from './wallet';

@@ -23,7 +23,7 @@ const Home = () => {
     merchantCities: [],
     courierServices: [],
   });
-  const { data: resGetAllCategory } = useGetAllCategoryQuery();
+  const { data: resGetAllCategory } = useGetAllCategoryQuery('level-depth=1');
   const { data: resGetRecommendedProducts } = useGetAllProductsQuery(
     toProductQuery(productQuery)
   );

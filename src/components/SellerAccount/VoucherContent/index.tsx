@@ -161,9 +161,6 @@ const VoucherContent = ({ profile }: ContentProps) => {
       .then(() => {
         notifySuccessToast('Voucher has been deleted!');
       })
-      .catch((err) => {
-        console.error(err);
-      })
       .finally(() => {
         setMerchantVoucherID(null);
 

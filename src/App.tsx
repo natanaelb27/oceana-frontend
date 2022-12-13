@@ -25,10 +25,6 @@ const App = () => {
     setLoading(true);
     document.getElementsByTagName('html')[0].setAttribute('data-theme', theme);
 
-    // TODO: yarn add js-cookie and add conditional to check for cookies (i.e. accessToken & refreshToken)
-    // const accessToken = Cookies.get('access_token');
-    // const refreshToken = Cookies.get('refresh_token');
-
     const refreshToken = doesHttpOnlyCookieExist('refresh_token');
     const accessTokenVerifier = Cookies.get('access_token_verifier');
 
@@ -43,14 +39,10 @@ const App = () => {
             })
           );
         })
-        .catch((err) => {
-          console.error(err);
-        })
         .finally(() => {
           setLoading(false);
         });
     } else if (refreshToken && !role) {
-      // TODO integrate BE: fetch refresh token
       setLoading(false);
     } else {
       setLoading(false);

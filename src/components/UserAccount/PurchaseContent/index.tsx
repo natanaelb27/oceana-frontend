@@ -578,7 +578,7 @@ const PurchaseContent = () => {
             </div>
           </Card>
         )}
-        {getAllTransactionHistoryData?.data &&
+        {getAllTransactionHistoryData?.data?.order_list &&
         getAllTransactionHistoryData?.data.order_list.length > 0 ? (
           getAllTransactionHistoryData?.data.order_list.map(
             (transactionHistory, n) => {

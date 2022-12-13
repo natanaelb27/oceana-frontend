@@ -211,10 +211,9 @@ const BuyerCart = () => {
               .then(() => {
                 notifySuccessToast('1 Item has been added to cart');
               })
-              .catch((err) => {
+              .catch(() => {
                 product.quantity = product.stock_quantity;
                 notifyErrorToast('Your quantity is over the available stock!');
-                console.error(err);
               });
           }
           return product;
@@ -254,7 +253,6 @@ const BuyerCart = () => {
                 })
                 .catch((err) => {
                   notifyErrorToast(err.data.message);
-                  console.error(err);
                 });
             }
           }
@@ -308,12 +306,11 @@ const BuyerCart = () => {
                 .then(() => {
                   notifySuccessToast('Successfully updated your cart!');
                 })
-                .catch((err) => {
+                .catch(() => {
                   notifyErrorToast(
                     'Your quantity is over the available stock!'
                   );
                   product.quantity = product.stock_quantity;
-                  console.error(err);
                 });
             }, 100);
           }
@@ -360,9 +357,8 @@ const BuyerCart = () => {
       .then(() => {
         notifySuccessToast('Item was succesfully deleted from cart');
       })
-      .catch((err) => {
+      .catch(() => {
         notifyErrorToast('Error deleting item from cart');
-        console.error(err);
       })
       .finally(() => {
         setModal({

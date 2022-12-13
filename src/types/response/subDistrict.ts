@@ -1,3 +1,5 @@
+import { Metadata } from '../component';
+
 export type ProvinceResponse = {
   id: number;
   name: string;
@@ -25,6 +27,9 @@ export type GetSubDistrictsResponse = {
     cities: CityResponse[];
     districts: DistrictResponse[];
     sub_districts: SubDistrictResponse[];
-  };
+  } | null;
   code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
 };

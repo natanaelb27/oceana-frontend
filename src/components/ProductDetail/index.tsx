@@ -189,9 +189,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
           return;
         }
         notifySuccessToast('Product was added to favorite list');
-      })
-      .catch((err) => {
-        console.error(err);
       });
   };
 
