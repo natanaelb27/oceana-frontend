@@ -12,6 +12,8 @@ export { default as SealabsPayTopupRedirect } from './SealabsPay/SealabsPayTopup
 export { default as SealabsPayRegisterRedirect } from './SealabsPay/SealabsPayRegisterRedirect';
 export { default as SealabsPayPaymentRedirect } from './SealabsPay/SealabsPayPaymentRedirect';
 
+export { default as CategorySearch } from './Category/CategorySearch';
+
 export { default as BuyerAddress } from './buyer/BuyerAddress';
 export { default as BuyerCart } from './buyer/BuyerCart';
 export { default as BuyerCheckout } from './buyer/BuyerCheckout';

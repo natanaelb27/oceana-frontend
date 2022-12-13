@@ -56,7 +56,6 @@ const Login = () => {
     )
       .unwrap()
       .then((response) => {
-        console.log(response);
         const { data: loginResponseData } = response;
         const { role } = loginResponseData as Role;
         dispatch(setCredentials({ role }));

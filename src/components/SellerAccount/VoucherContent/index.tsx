@@ -63,10 +63,9 @@ const VoucherContent = ({ profile }: ContentProps) => {
     merchantID: profile?.id,
   });
 
-  const {
-    data: getAllMerchantVoucherData,
-    isLoading: getAllMerchantVoucherIsLoading,
-  } = useGetAllMerchantVoucherQuery(toMerchantVoucherQuery(voucherQuery));
+  const { data: getAllMerchantVoucherData } = useGetAllMerchantVoucherQuery(
+    toMerchantVoucherQuery(voucherQuery)
+  );
 
   const handlePageChange = (n: number) => {
     setVoucherQuery({
@@ -79,13 +78,8 @@ const VoucherContent = ({ profile }: ContentProps) => {
     null
   );
 
-  const [
-    deleteMerchantVoucher,
-    {
-      isLoading: deleteMerchantVoucherIsLoading,
-      error: deleteMerchantVoucherError,
-    },
-  ] = useDeleteMerchantVoucherMutation();
+  const [deleteMerchantVoucher, { error: deleteMerchantVoucherError }] =
+    useDeleteMerchantVoucherMutation();
 
   const [openModal, setOpenModal] = useState<OpenMerchantVoucherModal>({
     delete: false,
@@ -166,9 +160,6 @@ const VoucherContent = ({ profile }: ContentProps) => {
       .unwrap()
       .then(() => {
         notifySuccessToast('Voucher has been deleted!');
-      })
-      .catch((err) => {
-        console.error(err);
       })
       .finally(() => {
         setMerchantVoucherID(null);
