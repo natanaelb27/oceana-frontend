@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { Button, Divider, Input, Modal } from 'react-daisyui';
+import { AiOutlineMinusCircle, AiOutlinePlusCircle } from 'react-icons/ai';
+import { BiTrash } from 'react-icons/bi';
+import { Link } from 'react-router-dom';
+import NoData from '../../../components/common/NoData';
 import {
   useGetUserCartQuery,
   useUpdateUserCartMutation,
 } from '../../../store/services/cartService';
 import { GetUserCartResponse } from '../../../types/response';
-import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
-import { Divider, Input, Modal, Button } from 'react-daisyui';
-import { BiTrash } from 'react-icons/bi';
-import { AiOutlinePlusCircle, AiOutlineMinusCircle } from 'react-icons/ai';
-import { titleCase } from '../../../utils/titleCase';
-import NoData from '../../../components/common/NoData';
 import { toRupiah } from '../../../utils/convert';
+import { titleCase } from '../../../utils/titleCase';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 
 type SelectItem = {
   productID: number;
@@ -560,6 +561,13 @@ const BuyerCart = () => {
           </Modal>
         </div>
       ))}
+      <div className='my-10 md:flex md:justify-end'>
+        <Link to='/checkout'>
+          <Button className='px-10 w-full md:w-auto' color='primary'>
+            Checkout
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 };
