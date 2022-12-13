@@ -16,7 +16,7 @@ import {
 } from '../../components/common/Container';
 import { notifyErrorToast } from '../../utils/toast';
 import { Tiles } from '../../components/common';
-import { STATUS_SEE_OTHER } from '../../constants';
+import { STATUS_SEE_OTHER } from '../../constants/statusCodes';
 import { setRegisterGoogleState } from '../../store/slices/registerGoogleSlice';
 import RegisterGoogle from '../Register/RegisterGoogle';
 import LoginForm from './LoginForm';

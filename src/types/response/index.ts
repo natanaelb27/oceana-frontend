@@ -9,6 +9,7 @@ export * from './order';
 export * from './product';
 export * from './profile';
 export * from './role';
+export * from './sealabsPay';
 export * from './shop';
 export * from './subDistrict';
 export * from './wallet';

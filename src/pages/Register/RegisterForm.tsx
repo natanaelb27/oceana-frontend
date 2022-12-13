@@ -14,7 +14,7 @@ import {
   InputGroup,
   StyledDivider,
 } from '../../components/common/Form';
-import { PHONE_REGEX } from '../../constants';
+import { LETTERS_ONLY_REGEX, PHONE_REGEX } from '../../constants/regex';
 import { useRegisterMutation } from '../../store/services/authService';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toRegisterRequest } from '../../utils/mapperDTO';
@@ -56,8 +56,12 @@ const RegisterForm = ({
       confirm: '',
     },
     validationSchema: Yup.object({
-      firstName: Yup.string().required('Please enter your first name'),
-      lastName: Yup.string().required('Please enter your last name'),
+      firstName: Yup.string()
+        .required('Please enter your first name')
+        .matches(LETTERS_ONLY_REGEX, 'Name must be in letters'),
+      lastName: Yup.string()
+        .required('Please enter your last name')
+        .matches(LETTERS_ONLY_REGEX, 'Name must be in letters'),
       username: Yup.string().required('Please enter a username'),
       email: Yup.string()
         .email('Invalid email address')
