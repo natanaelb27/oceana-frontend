@@ -20,8 +20,8 @@ import {
   Radio,
   Steps,
 } from 'react-daisyui';
-import { useOutsideAlerter } from '../../hooks';
-import { Pager } from '../../components/common';
+import { useOutsideAlerter } from '../../../hooks';
+import { Pager } from '../../common';
 import {
   HiOutlineCalendar,
   HiOutlineClock,
@@ -31,25 +31,25 @@ import {
   HiOutlineShoppingBag,
   HiSearch,
 } from 'react-icons/hi';
-import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../constants';
-import { TransactionHistoryQuery } from '../../types/query';
+import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../../constants';
+import { TransactionHistoryQuery } from '../../../types/query';
 import {
   useGetAllTransactionHistoryQuery,
   useGetOrderDetailsQuery,
-} from '../../store/services/orderService';
-import { toTransactionHistoryQuery } from '../../utils/mapperDTO';
+} from '../../../store/services/orderService';
+import { toTransactionHistoryQuery } from '../../../utils/mapperDTO';
 import {
   toRupiah,
   toLongStringDatetime,
   toStringDate,
   toStringDatetime,
-} from '../../utils/convert';
+} from '../../../utils/convert';
 import { CgClose } from 'react-icons/cg';
-import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
 import moment from 'moment';
-import NoData from '../common/NoData';
-import { stringCompare } from '../../utils/validation';
+import NoData from '../../common/NoData';
+import { stringCompare } from '../../../utils/validation';
 
 const PurchaseContent = () => {
   const [transactionHistoryQuery, setTransactionHistoryQuery] =

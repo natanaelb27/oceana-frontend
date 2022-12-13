@@ -1,6 +1,8 @@
 import {
   Address,
   Category,
+  CategoryDetails,
+  City,
   Merchant,
   MerchantVoucher,
   Metadata,
@@ -61,7 +63,7 @@ export type UpdateProfileResponse = {
 };
 
 export type GetAllCategoryResponse = {
-  data: Category[] | null;
+  data: Category[];
   code: number;
   error: string | null;
   message: string;
@@ -281,8 +283,54 @@ export type DeleteMerchantVoucherResponse = {
   metadata: Metadata | null;
 };
 
+export type GetAncestorsCategoryResponse = {
+  data: CategoryDetails[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type ProvinceResponse = {
+  id: number;
+  name: string;
+};
+
+export type CityResponse = {
+  id: number;
+  name: string;
+};
+
+export type DistrictResponse = {
+  id: number;
+  name: string;
+};
+
+export type SubDistrictResponse = {
+  id: number;
+  name: string;
+  zip_code: string;
+};
+
+export type GetSubDistrictsResponse = {
+  data: {
+    provinces: ProvinceResponse[];
+    cities: CityResponse[];
+    districts: DistrictResponse[];
+    sub_districts: SubDistrictResponse[];
+  };
+};
+
 export type GetShopInformationResponse = {
   data: ShopInformation | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetAllCityResponse = {
+  data: City[] | null;
   code: number;
   error: string | null;
   message: string;
