@@ -215,9 +215,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
           return;
         }
         notifySuccessToast('Product was added to favorite list');
-      })
-      .catch((err) => {
-        console.error(err);
       });
   };
 
@@ -227,7 +224,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
         viewPost(productID);
       }
       getProductDetail(productID).then(({ data }) => {
-        console.log({ data: data?.data });
         if (!data?.data) {
           return;
         }
@@ -303,14 +299,9 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     if (purchasedQuantitiesQuery.product_item_id === 0) {
       return;
     }
-    getPurchasedQuantities(toPurchasedQuantitiesQuery(purchasedQuantitiesQuery))
-      .unwrap()
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    getPurchasedQuantities(
+      toPurchasedQuantitiesQuery(purchasedQuantitiesQuery)
+    );
   }, [purchasedQuantitiesQuery]);
 
   if (

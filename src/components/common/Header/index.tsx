@@ -59,12 +59,8 @@ const Header = () => {
     await dispatch(unsetCredentials());
     await logout()
       .unwrap()
-      .then((res) => {
-        console.log(res);
+      .then(() => {
         dispatch(baseApi.util.invalidateTags(TAG_TYPES));
-      })
-      .catch((err) => {
-        console.log(err);
       });
     navigate('/');
   };
