@@ -7,6 +7,7 @@ import baseQueryInterceptor from './baseQuery';
 import { authApi } from './services/authService';
 import authReducer from './slices/authSlice';
 import registerGoogleReducer from './slices/registerGoogleSlice';
+import sealabsPayReducer from './slices/sealabsPaySlice';
 import sellerSidebarReducer from './slices/sellerSidebarSlice';
 
 export const baseApi = createApi({
@@ -22,6 +23,7 @@ export const store = configureStore({
     [baseApi.reducerPath]: baseApi.reducer,
     auth: authReducer,
     registerGoogle: registerGoogleReducer,
+    sealabsPay: sealabsPayReducer,
     sellerSidebar: sellerSidebarReducer,
   },
   middleware: (getDefaultMiddleware) =>

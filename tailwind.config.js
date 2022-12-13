@@ -10,6 +10,33 @@ module.exports = {
   },
   theme: {
     extend: {
+      fontFamily: {
+        main: 'Montserrat Alternates',
+        sans: [
+          'Poppins',
+          'Inter Tight',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'Oxygen',
+          'Ubuntu',
+          'Cantarell',
+          'Fira Sans',
+          'Droid Sans',
+          'Helvetica Neue',
+          'sans-serif',
+        ],
+        mono: [
+          'Monaco',
+          'source-code-pro',
+          'Menlo',
+          'Consolas',
+          'Courier New',
+          'monospace',
+        ],
+      },
+
       gridTemplateColumns: {
         tiles: 'repeat(var(--columns), 1fr)',
       },

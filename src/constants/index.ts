@@ -36,11 +36,6 @@ export const DELIVERY_STATUS = {
   CANCELED_SELLER: 'Canceled by Seller',
   COMPLETED: 'Completed',
 };
-export const PHONE_REGEX =
-  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-
-// status codes
-export const STATUS_SEE_OTHER = 303;
 
 export const WALLET_TRANSACTION_HISTORY_TYPE = {
   DEBIT: 'Debit',
