@@ -30,9 +30,9 @@ const SealabsPayContent = () => {
   });
   const [sealabsPayID, setSealabsPayID] = useState<string | null>(null);
   const { data: getAllSealabsPayData } = useGetAllSealabsPayQuery();
-  const [deleteSealabsPay, { isLoading: deleteSealabsPayIsLoading }] =
+  const [deleteSealabsPay, { isLoading: deleteSealabsPayLoading }] =
     useDeleteSealabsPayMutation();
-  const [setDefaultSealabsPay, { isLoading: setDefaultSealabsPayIsLoading }] =
+  const [setDefaultSealabsPay, { isLoading: setDefaultSealabsPayLoading }] =
     useSetDefaultSealabsPayMutation();
 
   const handleAddSealabsPayClick = () => {
@@ -121,6 +121,51 @@ const SealabsPayContent = () => {
       });
   };
 
+  if (!getAllSealabsPayData?.data) {
+    return (
+      <div className='p-4 md:p-10'>
+        <div className='animate-pulse'>
+          <div className='h-8 bg-base-200 rounded-full w-40 max-w-3/5' />
+          <Divider />
+          <div className='flex justify-end'>
+            <div className='mb-8 w-full h-12 bg-base-200 rounded-full md:w-52' />
+          </div>
+        </div>
+        <div className='gap-4 grid md:grid-cols-2'>
+          {Array(4)
+            .fill(0)
+            .map((_, n) => (
+              <Card
+                key={n}
+                className={`m-0 p-6 w-[320px] h-[200px] glass text-base-100 rounded-3xl md:w-[390px] md:h-[240px] hover:shadow-2xl ${
+                  n === 0
+                    ? 'bg-secondary hover:bg-secondary'
+                    : 'bg-primary/80 hover:bg-primary/80'
+                }`}
+              >
+                <div className='animate-pulse'>
+                  <Card.Title className='flex justify-between'>
+                    <div className='w-28 h-6 bg-base-100 rounded-full' />
+                    <div className='w-10 h-10 bg-base-100 rounded-full' />
+                  </Card.Title>
+                  <Card.Body className='p-0 pt-6 md:pt-10'>
+                    <div className='w-64 h-6 bg-base-100 rounded-full md:w-80 md:h-9' />
+                    <div className='mt-8 flex justify-between items-center'>
+                      <div className='w-40 h-4 bg-base-100 rounded-full md:h-6' />
+                      <div className='flex gap-1'>
+                        <div className='w-6 h-6 bg-base-100 rounded-full' />
+                        <div className='w-6 h-6 bg-base-100 rounded-full' />
+                      </div>
+                    </div>
+                  </Card.Body>
+                </div>
+              </Card>
+            ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='p-4 md:p-10'>
       <h5 className='font-bold text-2xl text-primary'>Sealabs Pay</h5>
@@ -136,11 +181,11 @@ const SealabsPayContent = () => {
         </Button>
       </div>
       <div className='flex flex-col gap-4 md:flex-row'>
-        {getAllSealabsPayData?.data?.map(
+        {getAllSealabsPayData.data?.map(
           ({ id, card_number, name_on_card, is_default, active_date }) => (
             <Card
               key={id}
-              className={`p-6 w-[320px] h-[200px] glass text-base-100 rounded-3xl md:w-[420px] md:h-[240px] hover:shadow-2xl ${
+              className={`p-6 w-[320px] h-[200px] glass text-base-100 rounded-3xl md:w-[400px] md:h-[240px] hover:shadow-2xl ${
                 is_default
                   ? 'bg-secondary hover:bg-secondary'
                   : 'bg-primary/80 hover:bg-primary/80 cursor-pointer'
@@ -197,7 +242,7 @@ const SealabsPayContent = () => {
         open={openModal.delete}
         title='Are you sure?'
         message='This action cannot be undone'
-        loading={deleteSealabsPayIsLoading}
+        loading={deleteSealabsPayLoading}
         onClose={handleModalClose}
         onAccepted={handleDeleteSealabsPay}
       />
@@ -205,7 +250,7 @@ const SealabsPayContent = () => {
         open={openModal.default}
         title='Are you sure?'
         message='Your default Sealabs Pay account will be changed'
-        loading={setDefaultSealabsPayIsLoading}
+        loading={setDefaultSealabsPayLoading}
         onClose={handleModalClose}
         onAccepted={handleSetDefaultSealabsPay}
       />
