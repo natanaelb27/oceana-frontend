@@ -45,6 +45,12 @@ export type CityQuery = {
   search: string;
 };
 
+export type SubDistrictQuery = {
+  province: string;
+  city: string;
+  district: string;
+};
+
 export type PurchasedQuantitiesQuery = {
   product_id: number;
   product_item_id: number;

@@ -5,10 +5,12 @@ import {
   PurchasedQuantitiesQuery,
   MerchantVoucherQuery,
   ProductQuery,
+  SubDistrictQuery,
   TransactionHistoryQuery,
 } from '../types/query';
 
 import {
+  CreateAddressRequest,
   CreateMerchantVoucherRequest,
   LoginRequest,
   LoginWithGoogleRequest,
@@ -186,3 +188,23 @@ export const toCreateMerchantVoucherRequest = (
   maximum_quota: maximumQuota,
   maximum_discount_amount: maximumDiscountAmount,
 });
+
+export const toCreateAddress = (
+  name: string,
+  detail: string,
+  subDistrictID: string
+): CreateAddressRequest => ({
+  name: name,
+  detail: detail,
+  sub_district_id: Number(subDistrictID),
+});
+
+export const toSubDistrictQuery = (query: SubDistrictQuery) => {
+  let result = '';
+
+  result += 'province=' + query.province;
+  result += '&city=' + query.city;
+  result += '&district=' + query.district;
+
+  return result;
+};
