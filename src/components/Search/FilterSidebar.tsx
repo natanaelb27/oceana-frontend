@@ -324,7 +324,9 @@ const FilterSidebar = ({
           <Collapse.Title className='font-bold'>Category</Collapse.Title>
           <Collapse.Content>
             <CategoryCollapse
-              category={resGetAllCategory?.data}
+              category={
+                resGetAllCategory?.data ? resGetAllCategory.data : undefined
+              }
               marginLeft={0}
               handleCategoryClick={handleCategoryClick}
             ></CategoryCollapse>

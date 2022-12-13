@@ -1,4 +1,4 @@
-import { Province } from '../component';
+import { ProvinceDetails } from '../component';
 
 export interface City {
   id: number;

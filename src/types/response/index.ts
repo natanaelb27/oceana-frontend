@@ -2,6 +2,7 @@ export * from './address';
 export * from './auth';
 export * from './cart';
 export * from './category';
+export * from './city';
 export * from './merchant';
 export * from './merchantVoucher';
 export * from './order';
