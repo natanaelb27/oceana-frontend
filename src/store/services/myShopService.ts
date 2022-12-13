@@ -7,6 +7,7 @@ import {
   GetMerchantResponse,
   GetOrderDetailsResponse,
   UpdateMerchantVoucherResponse,
+  UpdateOrderStatusResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -71,6 +72,20 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       providesTags: ['OrderDetails'],
     }),
+    updateProcessOrder: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/process-order`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'OrderDetails'],
+    }),
+    updateProcessDelivery: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/process-delivery`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'OrderDetails'],
+    }),
   }),
 });
 
@@ -84,4 +99,6 @@ export const {
   useLazyGetAllMerchantTransactionHistoryQuery,
   useGetMerchantOrderDetailsQuery,
   useLazyGetMerchantOrderDetailsQuery,
+  useUpdateProcessOrderMutation,
+  useUpdateProcessDeliveryMutation,
 } = myShopApi;

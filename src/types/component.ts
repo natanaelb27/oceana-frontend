@@ -205,6 +205,8 @@ export interface OrderList {
   shop_name: string;
   user_id: string;
   user_full_name: string;
+  courier_service_id: number;
+  courier_description: string;
   order_details: OrderDetail[];
   transaction_datetime: string;
   order_status: string;
@@ -226,6 +228,7 @@ export interface OrderListDetail {
   order_details: OrderDetail[];
   transaction_datetime: string;
   order_status: string;
+  courier_service_id: number;
   courier_description: string;
   order_tracking_history: OrderTracking[];
   address: {

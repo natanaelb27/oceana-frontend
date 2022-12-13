@@ -368,3 +368,14 @@ export type GetAllUserPendingPaymentResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type UpdateOrderStatusResponse = {
+  data: {
+    id: string;
+    status: string;
+  };
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};

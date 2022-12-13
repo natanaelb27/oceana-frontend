@@ -33,6 +33,7 @@ import {
   HiOutlineClock,
   HiOutlineCheck,
   HiOutlineReceiptRefund,
+  HiOutlineTruck,
 } from 'react-icons/hi';
 import {
   DELIVERY_STATUS,
@@ -50,6 +51,8 @@ import { useGetAllMerchantVoucherQuery } from '../../../store/services/shopServi
 import {
   useDeleteMerchantVoucherMutation,
   useGetAllMerchantTransactionHistoryQuery,
+  useUpdateProcessDeliveryMutation,
+  useUpdateProcessOrderMutation,
 } from '../../../store/services/myShopService';
 import {
   toMerchantVoucherQuery,
@@ -66,8 +69,25 @@ import useOutsideAlerter from '../../../hooks/OutsideAlerter';
 import moment from 'moment';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
 
+type OpenModal = {
+  processOrder: boolean;
+  cancelOrder: boolean;
+  processDelivery: boolean;
+  refundOrder: boolean;
+  detailOrder: boolean;
+};
+
 const OrderContent = () => {
   const navigate = useNavigate();
+
+  const [openModal, setOpenModal] = useState<OpenModal>({
+    processOrder: false,
+    cancelOrder: false,
+    processDelivery: false,
+    refundOrder: false,
+    detailOrder: false,
+  });
+
   const [filterStatus, setFilterStatus] = useState<string>(VOUCHER_STATUS.ALL);
 
   const [transactionHistoryQuery, setTransactionHistoryQuery] =
@@ -95,7 +115,7 @@ const OrderContent = () => {
     });
   };
 
-  const [merchantVoucherID, setMerchantVoucherID] = useState<number | null>(
+  const [orderID, setOrderID] = useState<string | null>(
     null
   );
 
@@ -298,6 +318,21 @@ const OrderContent = () => {
     return 'warning';
   };
 
+  const [updateProcessOrder, {isLoading: updateProcessOrderLoading}] = useUpdateProcessOrderMutation();
+
+  const [updateProcessDelivery, {isLoading: updateProcessDeliveryLoading}] = useUpdateProcessDeliveryMutation();
+
+  const handleProcessOrderClick = (orderID: string) => {
+    // updateProcessOrder(orderID);
+  };
+  const handleProcessDeliveryClick = (orderID: string) => {
+    // updateProcessDelivery(orderID);
+  };
+
+  const handleOrderDetailClick = (orderID: string) => {
+    console.log(orderID);
+  };
+
   return (
     <div className='p-4 md:p-10'>
       <div className='flex flex-col md:flex-row gap-y-3 justify-between items-center'>
@@ -360,6 +395,7 @@ const OrderContent = () => {
               <span>Products</span>
               <span>Order Total</span>
               <span>Transaction Date</span>
+              <span>Courier Service</span>
               <span></span>
             </Table.Head>
             <Table.Body>
@@ -372,6 +408,7 @@ const OrderContent = () => {
                   shop_name,
                   user_id,
                   user_full_name,
+                  courier_description,
                   order_details,
                   transaction_datetime,
                   order_status,
@@ -424,12 +461,15 @@ const OrderContent = () => {
                         </Badge>
                       </div>
                       <div className='flex text-sm'>
+                        {courier_description}
+                      </div>
+                      <div className='flex text-sm'>
                         <div className='flex gap-1'>
                           <Tooltip message='Process Order'>
                             <Button
                               color='success'
                               size='sm'
-                              // onClick={() => handleCancelVoucherClick(id)}
+                              onClick={() => handleProcessOrderClick(order_id)}
                               disabled={
                                 !stringCompare(
                                   order_status,
@@ -455,9 +495,24 @@ const OrderContent = () => {
                               <HiOutlineXCircle className='text-lg' />
                             </Button>
                           </Tooltip>
+                          <Tooltip message='Process Delivery'>
+                            <Button
+                              color='success'
+                              size='sm'
+                              onClick={() => handleProcessDeliveryClick(order_id)}
+                              disabled={
+                                !stringCompare(
+                                  order_status,
+                                  DELIVERY_STATUS.ON_PROCESS
+                                )
+                              }
+                            >
+                              <HiOutlineTruck className='text-lg' />
+                            </Button>
+                          </Tooltip>
                           <Tooltip message='Process Refund'>
                             <Button
-                              color='info'
+                              color='warning'
                               size='sm'
                               // onClick={() => handleDetailVoucherClick(id)}
                               disabled={
@@ -474,7 +529,7 @@ const OrderContent = () => {
                             <Button
                               color='info'
                               size='sm'
-                              // onClick={() => handleDetailVoucherClick(id)}
+                              onClick={() => handleOrderDetailClick(order_id)}
                             >
                               <HiOutlineClipboardList className='text-lg' />
                             </Button>
@@ -487,183 +542,33 @@ const OrderContent = () => {
               )}
             </Table.Body>
           </Table>
-        ) : (
+        ) : transactionHistoryQuery.filterOrderStatus === DELIVERY_STATUS.ALL && transactionHistoryQuery.filterStartTransactionDate === '' && transactionHistoryQuery.filterEndTransactionDate === '' && transactionHistoryQuery.filterOngoingOrderStatus === '' ? (
           <NoData
             title='No orders'
             message='Hang in there, fortune will not go away as long as you never give up.'
           />
-        )}
-      </div>
-
-      {/* <div className='overflow-x-auto'>
-        {getAllMerchantVoucherData?.data &&
-        getAllMerchantVoucherData?.data.merchant_voucher.length > 0 ? (
-          <Table className='w-[100%]'>
-            <Table.Head>
-              <span>Voucher Information</span>
-              <span>Quota</span>
-              <span>Period &#38; Status</span>
-              <span></span>
-            </Table.Head>
-            <Table.Body>
-              {getAllMerchantVoucherData?.data.merchant_voucher.map(
-                ({
-                  id,
-                  code,
-                  start_datetime,
-                  end_datetime,
-                  discount_type,
-                  discount,
-                  maximum_discount_amount,
-                  maximum_quota,
-                  current_quota,
-                  voucher_status,
-                }) => {
-                  const getBadgeColor = (voucherStatus: string) => {
-                    if (stringCompare(voucherStatus, VOUCHER_STATUS.UPCOMING)) {
-                      return undefined;
-                    } else if (
-                      stringCompare(voucherStatus, VOUCHER_STATUS.ONGOING)
-                    ) {
-                      return 'warning';
-                    }
-                    return 'success';
-                  };
-
-                  return (
-                    <Table.Row key={id}>
-                      <div className='flex items-center space-x-3'>
-                        {stringCompare(discount_type, DISCOUNT_TYPE.NOMINAL) ? (
-                          <HiOutlineCurrencyDollar className='text-white bg-accent h-12 w-12 md:h-15 md:w-15 rounded-md' />
-                        ) : (
-                          <CgMathPercent className='text-white bg-secondary h-12 w-12 md:h-15 md:w-15 rounded-md' />
-                        )}
-                        <div>
-                          <div className='font-bold text-sm'>{code}</div>
-                          {stringCompare(
-                            discount_type,
-                            DISCOUNT_TYPE.NOMINAL
-                          ) ? (
-                            <div className='text-sm opacity-50'>
-                              Discount {toRupiah(discount)}
-                            </div>
-                          ) : (
-                            <div className='text-sm opacity-50'>
-                              Discount {discount}% till{' '}
-                              {toRupiah(maximum_discount_amount)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className='flex gap-1'>
-                        <span className='text-sm'>Quota Used:</span>
-                        <span className='text-sm font-bold'>
-                          {current_quota}/{maximum_quota}
-                        </span>
-                      </div>
-                      <div className='flex flex-col gap-2'>
-                        <div className='flex gap-3 items-center text-sm'>
-                          <div className='flex flex-col'>
-                            <span className='font-bold'>
-                              {toStringDate(start_datetime)}
-                            </span>
-                            <span className='text-sm opacity-50'>
-                              {toStringTime(start_datetime)}
-                            </span>
-                          </div>
-                          <div className='w-2 border-t border-black'></div>
-                          <div className='flex flex-col'>
-                            <span className='font-bold'>
-                              {toStringDate(end_datetime)}
-                            </span>
-                            <span className='text-sm opacity-50'>
-                              {toStringTime(end_datetime)}
-                            </span>
-                          </div>
-                        </div>
-                        <Badge
-                          size='xs'
-                          className='font-bold p-2'
-                          color={getBadgeColor(voucher_status)}
-                        >
-                          {capitalizeFirstLetter(voucher_status)}
-                        </Badge>
-                      </div>
-                      <div className='flex gap-1 justify-left'>
-                        <div className='flex gap-1'>
-                          <Tooltip message='Edit'>
-                            <Button
-                              color='warning'
-                              size='sm'
-                              onClick={() => handleEditVoucherClick(id)}
-                              disabled={stringCompare(
-                                voucher_status,
-                                VOUCHER_STATUS.ENDED
-                              )}
-                            >
-                              <HiOutlinePencil className='text-lg' />
-                            </Button>
-                          </Tooltip>
-                          <Tooltip message='Cancel'>
-                            <Button
-                              color='error'
-                              size='sm'
-                              onClick={() => handleCancelVoucherClick(id)}
-                              disabled={
-                                !stringCompare(
-                                  voucher_status,
-                                  VOUCHER_STATUS.UPCOMING
-                                )
-                              }
-                            >
-                              <HiOutlineXCircle className='text-lg' />
-                            </Button>
-                          </Tooltip>
-                          <Tooltip message='Detail'>
-                            <Button
-                              color='info'
-                              size='sm'
-                              onClick={() => handleDetailVoucherClick(id)}
-                            >
-                              <HiOutlineClipboardList className='text-lg' />
-                            </Button>
-                          </Tooltip>
-                          <Tooltip message='Duplicate'>
-                            <Button
-                              color='accent'
-                              size='sm'
-                              onClick={() => handleDuplicateVoucherClick(id)}
-                            >
-                              <HiOutlineClipboardCopy className='text-lg' />
-                            </Button>
-                          </Tooltip>
-                        </div>
-                      </div>
-                    </Table.Row>
-                  );
-                }
-              )}
-            </Table.Body>
-          </Table>
+        
         ) : (
           <NoData
-            title='No vouchers?'
-            message='Try add new voucher to see some secrets!'
-          />
-        )}
-      </div> */}
-      {/* <div className='mt-6 flex justify-center'>
+            title='Oops, there are no transactions that match the filter'
+            message='Try to reset or change your filter'
+            buttonMessage='Reset Filter'
+            />
+        )
+        }
+      </div>
+      <div className='mt-6 flex justify-center'>
         <Pager
-          page={voucherQuery.page}
+          page={transactionHistoryQuery.page}
           totalPage={
-            getAllMerchantVoucherData?.metadata?.total_pages
-              ? getAllMerchantVoucherData.metadata.total_pages
+            getAllMerchantTransactionHistoryData?.metadata?.total_pages
+              ? getAllMerchantTransactionHistoryData.metadata.total_pages
               : 0
           }
           onPageChange={handlePageChange}
         />
       </div>
-      <ConfirmationModal
+      {/* <ConfirmationModal
         open={openModal.delete}
         title='Are you sure?'
         message='This action cannot be undone.'
