@@ -1,59 +1,15 @@
+import { Badge, Button, Card, Divider, Dropdown } from 'react-daisyui';
 import {
-  ChangeEvent,
-  createElement,
-  forwardRef,
-  FormEvent,
-  ReactNode,
-  Ref,
-  useState,
-  useRef,
-} from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  Divider,
-  Dropdown,
-  Form,
-  Input,
-  InputGroup,
-  Modal,
-  Radio,
-  Steps,
-} from 'react-daisyui';
-import { useOutsideAlerter } from '../../hooks';
-import { Pager } from '../../components/common';
-import {
-  HiOutlineCalendar,
   HiOutlineClock,
-  HiOutlineChevronDown,
-  HiOutlineChevronUp,
-  HiOutlineChevronRight,
   HiOutlineShoppingBag,
-  HiSearch,
   HiOutlineDotsVertical,
   HiOutlineDotsHorizontal,
 } from 'react-icons/hi';
-import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../constants';
-import { TransactionHistoryQuery } from '../../types/query';
-import {
-  useGetAllTransactionHistoryQuery,
-  useGetAllUserPendingPaymentQuery,
-  useGetOrderDetailsQuery,
-} from '../../store/services/orderService';
-import { toTransactionHistoryQuery } from '../../utils/mapperDTO';
-import {
-  toRupiah,
-  toLongStringDatetime,
-  toStringDate,
-  toStringDatetime,
-} from '../../utils/convert';
-import { CgClose } from 'react-icons/cg';
+import { useGetAllUserPendingPaymentQuery } from '../../store/services/orderService';
+import { toRupiah, toStringDate } from '../../utils/convert';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
-import DatePicker, { CalendarContainer } from 'react-datepicker';
 import moment from 'moment';
 import NoData from '../common/NoData';
-import { stringCompare } from '../../utils/validation';
 import DateCountdown from '../common/DateCountdown';
 
 const PendingPaymentContent = () => {

@@ -32,6 +32,7 @@ import {
   HiOutlineCalendar,
   HiOutlineClock,
   HiOutlineCheck,
+  HiOutlineReceiptRefund,
 } from 'react-icons/hi';
 import {
   DELIVERY_STATUS,
@@ -256,11 +257,11 @@ const OrderContent = () => {
   const handleFilterStatusClick = (status: string) => {
     if (
       [
+        DELIVERY_STATUS.PENDING_PAYMENT,
         DELIVERY_STATUS.PENDING_SELLER,
         DELIVERY_STATUS.ON_PROCESS,
         DELIVERY_STATUS.OUT_FOR_DELIVERY,
         DELIVERY_STATUS.DELIVERED,
-        DELIVERY_STATUS.COMPLAINED,
       ].indexOf(status) >= 0
     ) {
       setTransactionHistoryQuery({
@@ -341,6 +342,7 @@ const OrderContent = () => {
         className='mb-3 border-b-2'
       >
         <Tabs.Tab value={VOUCHER_STATUS.ALL}>All</Tabs.Tab>
+        <Tabs.Tab value={DELIVERY_STATUS.PENDING_PAYMENT}>Unpaid</Tabs.Tab>
         <Tabs.Tab value={DELIVERY_STATUS.PENDING_SELLER}>New Order</Tabs.Tab>
         <Tabs.Tab value={DELIVERY_STATUS.ON_PROCESS}>To Ship</Tabs.Tab>
         <Tabs.Tab value={DELIVERY_STATUS.OUT_FOR_DELIVERY}>Shipping</Tabs.Tab>
@@ -453,6 +455,21 @@ const OrderContent = () => {
                               <HiOutlineXCircle className='text-lg' />
                             </Button>
                           </Tooltip>
+                          <Tooltip message='Process Refund'>
+                            <Button
+                              color='info'
+                              size='sm'
+                              // onClick={() => handleDetailVoucherClick(id)}
+                              disabled={
+                                !stringCompare(
+                                  order_status,
+                                  DELIVERY_STATUS.COMPLAINED
+                                )
+                              }
+                            >
+                              <HiOutlineReceiptRefund className='text-lg' />
+                            </Button>
+                          </Tooltip>
                           <Tooltip message='Detail'>
                             <Button
                               color='info'
@@ -472,8 +489,8 @@ const OrderContent = () => {
           </Table>
         ) : (
           <NoData
-            title='No vouchers?'
-            message='Try add new voucher to see some secrets!'
+            title='No orders'
+            message='Hang in there, fortune will not go away as long as you never give up.'
           />
         )}
       </div>
