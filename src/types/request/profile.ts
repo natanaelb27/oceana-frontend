@@ -11,3 +11,12 @@ export type UpdateProfileEmailRequest = {
 export type UpdateProfileUsernameRequest = {
   username: string;
 };
+
+export type UpdateProfilePasswordRequest = {
+  password: string;
+  verification_code: string;
+};
+
+export type CheckPasswordVerificationCodeRequest = {
+  verification_code: string;
+};

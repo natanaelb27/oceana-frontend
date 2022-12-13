@@ -1,10 +1,15 @@
 import {
+  CheckPasswordVerificationCodeRequest,
   UpdateProfileEmailRequest,
+  UpdateProfilePasswordRequest,
   UpdateProfileRequest,
   UpdateProfileUsernameRequest,
 } from '../../types/request';
 import {
+  CheckPasswordVerificationCodeResponse,
   GetProfileResponse,
+  RequestPasswordVerificationCodeResponse,
+  UpdateProfilePasswordResponse,
   UpdateProfileResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
@@ -60,6 +65,38 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+    updateProfilePassword: builder.mutation<
+      UpdateProfilePasswordResponse,
+      UpdateProfilePasswordRequest
+    >({
+      query: (request) => ({
+        url: '/profile/password',
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    requestVerificationCode: builder.mutation<
+      RequestPasswordVerificationCodeResponse,
+      void
+    >({
+      query: () => ({
+        url: '/profile/password/request-verification-code',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    checkVerificationCode: builder.mutation<
+      CheckPasswordVerificationCodeResponse,
+      CheckPasswordVerificationCodeRequest
+    >({
+      query: (request) => ({
+        url: '/profile/password/check-verification-code',
+        method: 'POST',
+        body: request,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
     logout: builder.mutation<void, void>({
       query: () => ({
         url: '/profile/logout',
@@ -77,5 +114,8 @@ export const {
   useUpdateProfileEmailMutation,
   useUpdateProfileUsernameMutation,
   useUpdateProfileImageMutation,
+  useUpdateProfilePasswordMutation,
+  useRequestVerificationCodeMutation,
+  useCheckVerificationCodeMutation,
   useLogoutMutation,
 } = profileApi;
