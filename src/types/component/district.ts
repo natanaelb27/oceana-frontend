@@ -1,8 +1,8 @@
-import { City } from '../component';
+import { CityDetails } from '../component';
 
-export interface District {
+export interface DistrictDetails {
   id: number;
   name: string;
   city_id: number;
-  city: City;
+  city: CityDetails;
 }

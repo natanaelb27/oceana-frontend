@@ -14,9 +14,13 @@ export interface Product {
   price_maximum: number;
   price_minimum_after_discount: number;
   price_maximum_after_discount: number;
+  product_merchant_promotion_id: number;
+  merchant_promotion_name: string;
   discount: number;
   discount_type: string;
   total_view_count: number;
+  total_purchase_count: number;
+  rating_star: number;
   merchant: {
     id: number;
     name: string;
@@ -49,6 +53,7 @@ export interface ProductDetail {
   weight: number;
   package_size: string;
   condition: string;
+  category_id: number;
   category: string;
   images: string[];
   description: string;

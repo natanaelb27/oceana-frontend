@@ -1,5 +1,7 @@
 export * from './address';
 export * from './auth';
+export * from './category';
+export * from './city';
 export * from './merchantVoucher';
 export * from './order';
 export * from './product';

@@ -5,3 +5,10 @@ export interface Category {
   level: number;
   category: Category[];
 }
+
+export interface CategoryDetails {
+  id: number;
+  media_url: string;
+  name: string;
+  parent_id: number;
+}

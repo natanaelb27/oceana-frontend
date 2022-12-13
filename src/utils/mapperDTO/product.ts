@@ -12,6 +12,7 @@ export const toProductQuery = (query: ProductQuery) => {
   result += '&category-id=' + query.categoryID;
   result += '&price-minimum=' + query.priceMinimum;
   result += '&price-maximum=' + query.priceMaximum;
+  result += '&rating-star-minimum=' + query.rating;
   result += '&merchant-cities=' + query.merchantCities.join(',');
   result += '&courier-services=' + query.courierServices.join(',');
 

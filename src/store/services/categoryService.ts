@@ -1,4 +1,7 @@
-import { GetAllCategoryResponse } from '../../types/response';
+import {
+  GetAllCategoryResponse,
+  GetAncestorsCategoryResponse,
+} from '../../types/response';
 import { baseApi } from '../store';
 
 export const categoryApi = baseApi.injectEndpoints({
@@ -10,8 +13,19 @@ export const categoryApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Category'],
     }),
+    getAncestorsCategory: builder.query<GetAncestorsCategoryResponse, string>({
+      query: (id) => ({
+        url: `/categories/ancestors/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['Category'],
+    }),
   }),
 });
 
-export const { useGetAllCategoryQuery, useLazyGetAllCategoryQuery } =
-  categoryApi;
+export const {
+  useGetAllCategoryQuery,
+  useLazyGetAllCategoryQuery,
+  useGetAncestorsCategoryQuery,
+  useLazyGetAncestorsCategoryQuery,
+} = categoryApi;

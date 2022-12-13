@@ -1,9 +1,9 @@
-import { District } from '../component';
+import { DistrictDetails } from '../component';
 
-export interface SubDistrict {
+export interface SubDistrictDetails {
   id: number;
   name: string;
   district_id: number;
-  district: District;
+  district: DistrictDetails;
   zip_code: string;
 }
