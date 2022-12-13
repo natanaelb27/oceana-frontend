@@ -10,6 +10,7 @@ export * from './product';
 export * from './profile';
 export * from './province';
 export * from './role';
+export * from './sealabsPay';
 export * from './shop';
 export * from './subDistrict';
 export * from './user';

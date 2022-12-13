@@ -1,4 +1,6 @@
 export { default as ConfirmationModal } from './ConfirmationModal';
+export { default as SuccessModal } from './SuccessModal';
+export { default as FailedModal } from './FailedModal';
 export { default as Footer } from './Footer';
 export { default as Header } from './Header';
 export { default as Loading } from './Loading';
@@ -7,3 +9,5 @@ export { default as ProductCard } from './ProductCard';
 export { default as SortBar } from './SortBar';
 export { default as Slider } from './Slider';
 export { default as Tiles } from './Tiles';
+export { default as SealabsPayImg } from './SealabsPayImg';
+export { default as SealabsPayCardImg } from './SealabsPayCardImg';

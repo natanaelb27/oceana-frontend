@@ -8,7 +8,7 @@ import {
   FormTitleContainer,
   InputGroup,
 } from '../../components/common/Form';
-import { PHONE_REGEX } from '../../constants';
+import { PHONE_REGEX } from '../../constants/regex';
 import { useRegisterWithGoogleMutation } from '../../store/services/authService';
 import { selectRegisterGoogleState } from '../../store/slices/registerGoogleSlice';
 import { useAppSelector } from '../../store/store';

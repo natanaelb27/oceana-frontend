@@ -1,9 +1,16 @@
-import { ActivateWalletRequest } from '../../types/request';
+import { ActivateWalletRequest, WalletTopUpRequest } from '../../types/request';
 import { GetWalletDetailsResponse } from '../../types/response';
 import { baseApi } from '../store';
 
 export const walletApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    walletTopUp: builder.mutation<void, WalletTopUpRequest>({
+      query: (request) => ({
+        url: '/wallet/topup',
+        method: 'POST',
+        body: request,
+      }),
+    }),
     getWalletDetails: builder.query<GetWalletDetailsResponse, void>({
       query: () => ({
         url: '/profile/wallet',
@@ -29,4 +36,5 @@ export const {
   useGetWalletDetailsQuery,
   useLazyGetWalletDetailsQuery,
   useActivateWalletMutation,
+  useWalletTopUpMutation,
 } = walletApi;
