@@ -41,25 +41,25 @@ export interface Province {
   name: string;
 }
 
-export interface City {
+export interface CityDetails {
   id: number;
   name: string;
   province_id: number;
   province: Province;
 }
 
-export interface District {
+export interface DistrictDetails {
   id: number;
   name: string;
   city_id: number;
-  city: City;
+  city: CityDetails;
 }
 
-export interface SubDistrict {
+export interface SubDistrictDetails {
   id: number;
   name: string;
   district_id: number;
-  district: District;
+  district: DistrictDetails;
   zip_code: string;
 }
 
