@@ -41,25 +41,25 @@ export interface Province {
   name: string;
 }
 
-export interface City {
+export interface CityDetails {
   id: number;
   name: string;
   province_id: number;
   province: Province;
 }
 
-export interface District {
+export interface DistrictDetails {
   id: number;
   name: string;
   city_id: number;
-  city: City;
+  city: CityDetails;
 }
 
-export interface SubDistrict {
+export interface SubDistrictDetails {
   id: number;
   name: string;
   district_id: number;
-  district: District;
+  district: DistrictDetails;
   zip_code: string;
 }
 
@@ -104,9 +104,13 @@ export interface Product {
   price_maximum: number;
   price_minimum_after_discount: number;
   price_maximum_after_discount: number;
+  product_merchant_promotion_id: number;
+  merchant_promotion_name: string;
   discount: number;
   discount_type: string;
   total_view_count: number;
+  total_purchase_count: number;
+  rating_star: number;
   merchant: {
     id: number;
     name: string;
@@ -243,6 +247,18 @@ export interface Merchant {
   name: string;
   address_id: string;
   photo: string;
+}
+
+export interface CategoryDetails {
+  id: number;
+  media_url: string;
+  name: string;
+  parent_id: number;
+}
+
+export interface City {
+  id: number;
+  name: string;
 }
 
 export interface PurchasedQuantities {
