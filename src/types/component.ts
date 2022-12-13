@@ -304,7 +304,7 @@ export interface Review {
   product_id: number;
   rating: number;
   review: string;
-  product_review_media: string[];
+  product_review_media: string[] | null;
   product_variations: string;
   created_at: string;
 }

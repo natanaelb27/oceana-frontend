@@ -21,6 +21,7 @@ type ProductDescriptionProps = {
   selectedVariations: number[];
   purchasedQuantitiesPrice?: number;
   productItemPrice?: number;
+  getPurchasedQuantitiesIsFetching?: boolean;
 };
 
 const ProductDescription = ({
@@ -31,6 +32,7 @@ const ProductDescription = ({
   selectedVariations,
   purchasedQuantitiesPrice,
   productItemPrice,
+  getPurchasedQuantitiesIsFetching,
 }: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
 
@@ -73,8 +75,11 @@ const ProductDescription = ({
         </Tooltip>{' '}
         {productDetail.rating_star} ({productDetail.rating_count} rating)
       </div>
-      {purchasedQuantitiesPrice &&
+      {getPurchasedQuantitiesIsFetching &&
       selectedVariations.length === productVariations.length ? (
+        <div className='h-10 w-2/5 bg-base-300 rounded-full animate-pulse mb-2.5'></div>
+      ) : purchasedQuantitiesPrice &&
+        selectedVariations.length === productVariations.length ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(purchasedQuantitiesPrice)}
         </h4>
@@ -100,6 +105,7 @@ const ProductDescription = ({
           {toRupiah(productDetail.price_max)}
         </h4>
       )}
+
       {productDetail.price_after_discount ? (
         <div className='flex items-center'>
           <Tooltip message='Murah Lebay' color='success'>
@@ -111,7 +117,8 @@ const ProductDescription = ({
             <h5 className='text-lg line-through ml-1'>
               {toRupiah(productDetail.price)}
             </h5>
-          ) : selectedVariations.length === productVariations.length && productItemPrice ? (
+          ) : selectedVariations.length === productVariations.length &&
+            productItemPrice ? (
             <h5 className='text-lg line-through ml-1'>
               {toRupiah(productItemPrice)}
             </h5>

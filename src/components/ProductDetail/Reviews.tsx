@@ -2,16 +2,32 @@ import moment from 'moment';
 import { useState } from 'react';
 import { Avatar, Rating, Select } from 'react-daisyui';
 import Zoom from 'react-medium-image-zoom';
+import { Metadata, Review } from '../../types/component';
 
 import { ReviewsSort } from '../../types/sort';
-import { Pager } from '../common';
+import { titleCase } from '../../utils/titleCase';
+import { Pager, NoData } from '../common';
 
-const Reviews = () => {
+type ReviewsProps = {
+  reviewData?: Review[] | null;
+  reviewMetadata?: Metadata | null;
+  handlePageChange: (n: number) => void;
+};
+
+const Reviews = ({
+  reviewData,
+  reviewMetadata,
+  handlePageChange,
+}: ReviewsProps) => {
   const [sort, setSort] = useState<ReviewsSort>(ReviewsSort.Latest);
 
   const handleSortChange = (sort: ReviewsSort) => {
     setSort(Number(sort));
   };
+
+  if (!reviewData || !reviewMetadata) {
+    return <NoData title={'No Reviews Yet...'} />;
+  }
 
   return (
     <div>
@@ -36,10 +52,10 @@ const Reviews = () => {
         </div>
       </div>
       <div className='grid grid-cols-1 gap-10 mt-8'>
-        {Array.from({ length: 5 }, (_, index) => index + 1).map((i) => (
+        {reviewData.map((review, i) => (
           <div key={i}>
             <div className='flex items-center mb-4'>
-              <Rating value={3} size='sm'>
+              <Rating value={review.rating} size='sm'>
                 <Rating.Item
                   name='rating-1'
                   className='mask mask-star-2 bg-warning'
@@ -62,52 +78,43 @@ const Reviews = () => {
                 />
               </Rating>
               <span className='text-sm ml-2.5'>
-                {moment('20120620', 'YYYYMMDD').fromNow()}
+                {moment(review.created_at, 'YYYYMMDD').fromNow()}
               </span>
             </div>
             <div className='flex items-center mb-4'>
-              <Avatar
-                src='https://picsum.photos/200'
-                shape='circle'
-                size='sm'
-              />
-              <span className='font-medium ml-2.5'>Sebut Saja Mawar</span>
+              {review.photo ? (
+                <Avatar src={review.photo} shape='circle' size='sm' />
+              ) : (
+                <Avatar
+                  letters={review.full_name[0]}
+                  shape='circle'
+                  size='sm'
+                />
+              )}
+              <span className='font-medium ml-2.5'>{review.full_name}</span>
             </div>
-            <span className='font-light text-sm mb-4'>Variant: Black</span>
-            <p className='prose-sm mb-4'>
-              Kualitas produk bagus. Nyaman dipakai. Warnanya mantap. Ukuran
-              sesuai. Bahannya adem. Tidak menerawang. Bahan menyerap keringat.
-              Bahannya lembut.
-            </p>
-            <div className='flex gap-2'>
-              <Zoom>
-                <img src='https://picsum.photos/200' className='w-12 rounded' />
-              </Zoom>
-              <Zoom>
-                <img src='https://picsum.photos/200' className='w-12 rounded' />
-              </Zoom>
-              <Zoom>
-                <img src='https://picsum.photos/200' className='w-12 rounded' />
-              </Zoom>
-              <Zoom>
-                <img src='https://picsum.photos/200' className='w-12 rounded' />
-              </Zoom>
-              <Zoom>
-                <img src='https://picsum.photos/200' className='w-12 rounded' />
-              </Zoom>
-              <Zoom>
-                <img src='https://picsum.photos/200' className='w-12 rounded' />
-              </Zoom>
-            </div>
+            {review.product_variations && (
+              <span className='font-light text-sm mb-4'>
+                Variant: {titleCase(review.product_variations)}
+              </span>
+            )}
+            <p className='prose-sm mb-4'>{review.review}</p>
+            {review.product_review_media && (
+              <div className='flex gap-2'>
+                {review.product_review_media.map((media, i) => (
+                  <Zoom key={i}>
+                    <img src={media} className='w-12 rounded' />
+                  </Zoom>
+                ))}
+              </div>
+            )}
           </div>
         ))}
         <div className='mx-auto'>
           <Pager
-            page={1}
-            totalPage={10}
-            onPageChange={() => {
-              console.log('');
-            }}
+            page={reviewMetadata.page}
+            totalPage={reviewMetadata.total_pages}
+            onPageChange={handlePageChange}
           />
         </div>
       </div>
