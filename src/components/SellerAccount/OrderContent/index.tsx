@@ -12,15 +12,18 @@ import { useNavigate } from 'react-router-dom';
 import {
   Badge,
   Button,
+  Card,
   Divider,
   Form,
   Input,
   InputGroup,
+  Modal,
+  Steps,
   Table,
   Tabs,
   Tooltip,
 } from 'react-daisyui';
-import { CgMathPercent } from 'react-icons/cg';
+import { CgClose, CgMathPercent } from 'react-icons/cg';
 import {
   HiOutlineClipboardCopy,
   HiOutlineCurrencyDollar,
@@ -34,6 +37,9 @@ import {
   HiOutlineCheck,
   HiOutlineReceiptRefund,
   HiOutlineTruck,
+  HiOutlineChevronUp,
+  HiOutlineChevronDown,
+  HiOutlineChevronRight,
 } from 'react-icons/hi';
 import {
   DELIVERY_STATUS,
@@ -61,18 +67,30 @@ import {
 import { ConfirmationModal, Pager } from '../../common';
 import { stringCompare } from '../../../utils/validation';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
-import { toRupiah, toStringDate, toStringTime } from '../../../utils/convert';
+import {
+  toLongStringDatetime,
+  toRupiah,
+  toStringDate,
+  toStringDatetime,
+  toStringTime,
+} from '../../../utils/convert';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
-import { DeleteMerchantVoucherResponse } from '../../../types/response';
+import {
+  DeleteMerchantVoucherResponse,
+  UpdateOrderStatusResponse,
+} from '../../../types/response';
 import NoData from '../../common/NoData';
 import useOutsideAlerter from '../../../hooks/OutsideAlerter';
 import moment from 'moment';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
+import { IoWalletOutline } from 'react-icons/io5';
+import { useGetOrderDetailsQuery } from '../../../store/services/orderService';
 
 type OpenModal = {
   processOrder: boolean;
   cancelOrder: boolean;
   processDelivery: boolean;
+  claimFunds: boolean;
   refundOrder: boolean;
   detailOrder: boolean;
 };
@@ -80,10 +98,13 @@ type OpenModal = {
 const OrderContent = () => {
   const navigate = useNavigate();
 
+  const [openOrderTracking, setOpenOrderTracking] = useState<boolean>(false);
+
   const [openModal, setOpenModal] = useState<OpenModal>({
     processOrder: false,
     cancelOrder: false,
     processDelivery: false,
+    claimFunds: false,
     refundOrder: false,
     detailOrder: false,
   });
@@ -115,9 +136,10 @@ const OrderContent = () => {
     });
   };
 
-  const [orderID, setOrderID] = useState<string | null>(
-    null
-  );
+  const [orderID, setOrderID] = useState<string | null>(null);
+
+  const { data: getOrderDetailsData, isLoading: getOrderDetailsLoading } =
+    useGetOrderDetailsQuery(orderID || '');
 
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
 
@@ -318,19 +340,236 @@ const OrderContent = () => {
     return 'warning';
   };
 
-  const [updateProcessOrder, {isLoading: updateProcessOrderLoading}] = useUpdateProcessOrderMutation();
+  const [
+    updateProcessOrder,
+    { isLoading: updateProcessOrderLoading, error: updateProcessOrderError },
+  ] = useUpdateProcessOrderMutation();
 
-  const [updateProcessDelivery, {isLoading: updateProcessDeliveryLoading}] = useUpdateProcessDeliveryMutation();
+  const [
+    updateProcessDelivery,
+    {
+      isLoading: updateProcessDeliveryLoading,
+      error: updateProcessDeliveryError,
+    },
+  ] = useUpdateProcessDeliveryMutation();
+
+  const handleModalClose = () => {
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: false,
+      processDelivery: false,
+      claimFunds: false,
+      refundOrder: false,
+      detailOrder: false,
+    });
+
+    setOpenOrderTracking(false);
+
+    setOrderID(null);
+  };
 
   const handleProcessOrderClick = (orderID: string) => {
-    // updateProcessOrder(orderID);
+    setOrderID(orderID);
+
+    setOpenModal({
+      processOrder: true,
+      cancelOrder: false,
+      processDelivery: false,
+      claimFunds: false,
+      refundOrder: false,
+      detailOrder: false,
+    });
   };
+
+  const handleProcessOrder = () => {
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: false,
+      processDelivery: false,
+      claimFunds: false,
+      refundOrder: false,
+      detailOrder: false,
+    });
+
+    if (!orderID) {
+      return;
+    }
+
+    updateProcessOrder(orderID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Order has been updated to processed!');
+      })
+      .catch((err) => {
+        if (err && 'data' in err) {
+          const response = err.data as UpdateOrderStatusResponse;
+
+          notifyErrorToast(response.message);
+        }
+      })
+      .finally(() => {
+        setOrderID(null);
+      });
+  };
+
+  const handleCancelOrderClick = (orderID: string) => {
+    setOrderID(orderID);
+
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: true,
+      processDelivery: false,
+      claimFunds: false,
+      refundOrder: false,
+      detailOrder: false,
+    });
+  };
+
+  const handleCancelOrder = () => {
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: false,
+      processDelivery: false,
+      claimFunds: false,
+      refundOrder: false,
+      detailOrder: false,
+    });
+
+    if (!orderID) {
+      return;
+    }
+  };
+
   const handleProcessDeliveryClick = (orderID: string) => {
-    // updateProcessDelivery(orderID);
+    setOrderID(orderID);
+
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: false,
+      processDelivery: true,
+      claimFunds: false,
+      refundOrder: false,
+      detailOrder: false,
+    });
+  };
+
+  const handleProcessDelivery = () => {
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: false,
+      processDelivery: false,
+      claimFunds: false,
+      refundOrder: false,
+      detailOrder: false,
+    });
+
+    if (!orderID) {
+      return;
+    }
+
+    updateProcessDelivery(orderID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Order has been updated to delivered!');
+      })
+      .catch((err) => {
+        if (err && 'data' in err) {
+          const response = err.data as UpdateOrderStatusResponse;
+
+          notifyErrorToast(response.message);
+        }
+      })
+      .finally(() => {
+        setOrderID(null);
+      });
+  };
+
+  const handleClaimFundsClick = (orderID: string) => {
+    setOrderID(orderID);
+
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: false,
+      processDelivery: false,
+      claimFunds: true,
+      refundOrder: false,
+      detailOrder: false,
+    });
+  };
+
+  const handleClaimFunds = () => {
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: false,
+      processDelivery: false,
+      claimFunds: false,
+      refundOrder: false,
+      detailOrder: false,
+    });
+
+    if (!orderID) {
+      return;
+    }
   };
 
   const handleOrderDetailClick = (orderID: string) => {
-    console.log(orderID);
+    setOrderID(orderID);
+
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: false,
+      processDelivery: false,
+      claimFunds: false,
+      refundOrder: false,
+      detailOrder: true,
+    });
+  };
+
+  const handleProcessRefundClick = (orderID: string) => {
+    setOrderID(orderID);
+
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: false,
+      processDelivery: false,
+      claimFunds: false,
+      refundOrder: true,
+      detailOrder: false,
+    });
+  };
+
+  const handleProcessRefund = () => {
+    setOpenModal({
+      processOrder: false,
+      cancelOrder: false,
+      processDelivery: false,
+      claimFunds: false,
+      refundOrder: false,
+      detailOrder: false,
+    });
+
+    if (!orderID) {
+      return;
+    }
+  };
+
+  const handleViewOrderTrackingClick = () => {
+    setOpenOrderTracking(!openOrderTracking);
+  };
+
+  const handleResetFilterClick = () => {
+    setDateRange([null, null]);
+    setFilterStatus(DELIVERY_STATUS.ALL);
+
+    setTransactionHistoryQuery({
+      limit: LIMIT_TRANSACTION_HISTORY,
+      page: 1,
+      search: '',
+      filterOrderStatus: DELIVERY_STATUS.ALL,
+      filterOngoingOrderStatus: '',
+      filterStartTransactionDate: '',
+      filterEndTransactionDate: '',
+    });
   };
 
   return (
@@ -413,6 +652,8 @@ const OrderContent = () => {
                   transaction_datetime,
                   order_status,
                   total_price,
+                  refund_id,
+                  claim_status,
                 }) => {
                   const productCount = order_details.length;
                   const firstProduct = order_details.at(0);
@@ -460,9 +701,7 @@ const OrderContent = () => {
                           {order_status}
                         </Badge>
                       </div>
-                      <div className='flex text-sm'>
-                        {courier_description}
-                      </div>
+                      <div className='flex text-sm'>{courier_description}</div>
                       <div className='flex text-sm'>
                         <div className='flex gap-1'>
                           <Tooltip message='Process Order'>
@@ -484,7 +723,7 @@ const OrderContent = () => {
                             <Button
                               color='error'
                               size='sm'
-                              // onClick={() => handleCancelVoucherClick(id)}
+                              onClick={() => handleCancelOrderClick(order_id)}
                               disabled={
                                 !stringCompare(
                                   order_status,
@@ -499,7 +738,9 @@ const OrderContent = () => {
                             <Button
                               color='success'
                               size='sm'
-                              onClick={() => handleProcessDeliveryClick(order_id)}
+                              onClick={() =>
+                                handleProcessDeliveryClick(order_id)
+                              }
                               disabled={
                                 !stringCompare(
                                   order_status,
@@ -514,7 +755,7 @@ const OrderContent = () => {
                             <Button
                               color='warning'
                               size='sm'
-                              // onClick={() => handleDetailVoucherClick(id)}
+                              onClick={() => handleProcessRefundClick(order_id)}
                               disabled={
                                 !stringCompare(
                                   order_status,
@@ -523,6 +764,21 @@ const OrderContent = () => {
                               }
                             >
                               <HiOutlineReceiptRefund className='text-lg' />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip message='Claim Funds'>
+                            <Button
+                              color='success'
+                              size='sm'
+                              onClick={() => handleClaimFundsClick(order_id)}
+                              disabled={
+                                !stringCompare(
+                                  order_status,
+                                  DELIVERY_STATUS.COMPLETED
+                                ) || claim_status
+                              }
+                            >
+                              <IoWalletOutline className='text-lg' />
                             </Button>
                           </Tooltip>
                           <Tooltip message='Detail'>
@@ -542,20 +798,22 @@ const OrderContent = () => {
               )}
             </Table.Body>
           </Table>
-        ) : transactionHistoryQuery.filterOrderStatus === DELIVERY_STATUS.ALL && transactionHistoryQuery.filterStartTransactionDate === '' && transactionHistoryQuery.filterEndTransactionDate === '' && transactionHistoryQuery.filterOngoingOrderStatus === '' ? (
+        ) : transactionHistoryQuery.filterOrderStatus === DELIVERY_STATUS.ALL &&
+          transactionHistoryQuery.filterStartTransactionDate === '' &&
+          transactionHistoryQuery.filterEndTransactionDate === '' &&
+          transactionHistoryQuery.filterOngoingOrderStatus === '' ? (
           <NoData
             title='No orders'
             message='Hang in there, fortune will not go away as long as you never give up.'
           />
-        
         ) : (
           <NoData
             title='Oops, there are no transactions that match the filter'
             message='Try to reset or change your filter'
             buttonMessage='Reset Filter'
-            />
-        )
-        }
+            buttonHandleClick={handleResetFilterClick}
+          />
+        )}
       </div>
       <div className='mt-6 flex justify-center'>
         <Pager
@@ -568,13 +826,314 @@ const OrderContent = () => {
           onPageChange={handlePageChange}
         />
       </div>
-      {/* <ConfirmationModal
-        open={openModal.delete}
+      <ConfirmationModal
+        open={openModal.processOrder}
         title='Are you sure?'
         message='This action cannot be undone.'
         onClose={handleModalClose}
-        onAccepted={handleDeleteMerchantVoucher}
-      /> */}
+        onAccepted={handleProcessOrder}
+      />
+      <ConfirmationModal
+        open={openModal.cancelOrder}
+        title='Are you sure?'
+        message='This action cannot be undone.'
+        onClose={handleModalClose}
+        onAccepted={handleCancelOrder}
+      />
+      <ConfirmationModal
+        open={openModal.processDelivery}
+        title='Are you sure?'
+        message='This action cannot be undone.'
+        onClose={handleModalClose}
+        onAccepted={handleProcessDelivery}
+      />
+
+      <Modal
+        open={openModal.detailOrder}
+        responsive
+        className='md:w-9/12 md:max-w-2xl px-0'
+        onClickBackdrop={handleModalClose}
+      >
+        <Button
+          size='sm'
+          shape='circle'
+          color='ghost'
+          className='absolute right-2 top-2'
+          onClick={handleModalClose}
+        >
+          <CgClose className='text-lg' />
+        </Button>
+        <Modal.Header className='text-center font-bold'>
+          Transaction Detail
+        </Modal.Header>
+        <Modal.Body className='max-h-[48rem] overflow-y-scroll'>
+          {getOrderDetailsLoading && (
+            <Card className='col-span-12 shadow animate-pulse'>
+              <div className='p-4'>
+                <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+              </div>
+            </Card>
+          )}
+          {getOrderDetailsData?.data && (
+            <div className='flex flex-col gap-2'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+                <div className='flex justify-between items-center'>
+                  <span className='font-bold'>
+                    {capitalizeFirstLetter(
+                      getOrderDetailsData?.data.order_status
+                    )}
+                  </span>
+                  <div
+                    className='flex cursor-pointer text-primary items-center gap-1'
+                    onClick={handleViewOrderTrackingClick}
+                  >
+                    <span className='text-sm'>
+                      {openOrderTracking ? 'Hide' : 'View Detail'}
+                    </span>
+                    {openOrderTracking ? (
+                      <HiOutlineChevronUp className='text-sm' />
+                    ) : (
+                      <HiOutlineChevronDown className='text-sm' />
+                    )}
+                  </div>
+                </div>
+                {openOrderTracking ? (
+                  <div className='border-solid border-2 rounded p-3'>
+                    <Steps vertical={true}>
+                      {getOrderDetailsData?.data.order_tracking_history.map(
+                        (history, n) => (
+                          <Steps.Step
+                            value=''
+                            key={n}
+                            color='primary'
+                            className='h-[5rem]'
+                          >
+                            <div className='flex flex-col'>
+                              <span className='text-sm font-bold text-left'>
+                                {history.title}
+                              </span>
+                              <span className='text-sm font-light text-left'>
+                                {toStringDatetime(history.datetime)}
+                              </span>
+                              <span className='text-sm text-left'>
+                                {history.description}
+                              </span>
+                            </div>
+                          </Steps.Step>
+                        )
+                      )}
+                    </Steps>
+                  </div>
+                ) : null}
+                <Divider className='m-0'></Divider>
+                <div className='flex justify-between items-center'>
+                  <span className='text-sm'>No. Invoice</span>
+                  <span className='text-sm text-primary cursor-pointer'>
+                    {getOrderDetailsData?.data.invoice_number}
+                  </span>
+                </div>
+                <div className='flex justify-between items-center'>
+                  <span className='text-sm'>Purchase Date</span>
+                  <span className='text-sm'>
+                    {toLongStringDatetime(
+                      getOrderDetailsData?.data.transaction_datetime
+                    )}
+                  </span>
+                </div>
+              </div>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+                <div className='flex justify-between items-center'>
+                  <span className='font-bold'>Product Details</span>
+                  <div className='flex items-center gap-1 cursor-pointer hover:text-primary'>
+                    <span className='font-bold text-sm'>
+                      {getOrderDetailsData?.data.shop_name}
+                    </span>
+                    <HiOutlineChevronRight className='text-sm' />
+                  </div>
+                </div>
+                <div className='flex flex-col gap-4'>
+                  {getOrderDetailsData?.data.order_details.map(
+                    (orderDetail, n) => {
+                      return (
+                        <Card
+                          className='flex gap-3 p-4 shadow border-r-0 border-b-4 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
+                          key={n}
+                        >
+                          <div className='grid grid-cols-5 md:grid-cols-8'>
+                            <div className='mr-5 col-span-1'>
+                              <img
+                                src={orderDetail.product_image || ''}
+                                alt={orderDetail.product_name || ''}
+                                className='h-12 w-12 md:h-18 md:w-18 rounded-md'
+                                onError={({ currentTarget }) => {
+                                  currentTarget.onerror = null;
+                                  currentTarget.src =
+                                    'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+                                }}
+                              />
+                            </div>
+                            <div className='flex flex-col col-span-4'>
+                              <span className='font-bold line-clamp-2 md:line-clamp-1  cursor-pointer'>
+                                {orderDetail.product_name || ''}
+                              </span>
+                              <span className='font-light text-sm line-clamp-2 md:line-clamp-1'>
+                                {orderDetail.product_variations || ''}
+                              </span>
+                              <span className='font-light text-sm'>
+                                {orderDetail.quantity} &times;{' '}
+                                {toRupiah(orderDetail.price || 0)}
+                              </span>
+                            </div>
+                            <div className='hidden md:flex items-center justify-end md:col-span-3'>
+                              <div className='divider divider-horizontal'></div>
+                              <div className='flex flex-col gap-2'>
+                                <div className='flex flex-col text-right'>
+                                  <span className='font-light text-sm'>
+                                    Total Amount
+                                  </span>
+                                  <span className='font-bold'>
+                                    {toRupiah(
+                                      Math.round(orderDetail.total_price)
+                                    )}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className='flex md:hidden items-center justify-between'>
+                            <div className='flex flex-col text-right'>
+                              <span className='font-light text-sm'>
+                                Total Amount
+                              </span>
+                              <span className='font-bold'>
+                                {toRupiah(Math.round(orderDetail.total_price))}
+                              </span>
+                            </div>
+                            <Button
+                              className='normal-case md:w-auto'
+                              color='primary'
+                            >
+                              Buy Again
+                            </Button>
+                          </div>
+                        </Card>
+                      );
+                    }
+                  )}
+                </div>
+              </div>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+                <span className='font-bold'>Shipping Info</span>
+                <div className='flex flex-col gap-2'>
+                  <div className='grid grid-cols-10'>
+                    <span className='text-sm col-span-1'>Courier</span>
+                    <span className='text-sm col-span-1 text-right mr-2'>
+                      :
+                    </span>
+                    <span className='text-sm col-span-8'>
+                      {getOrderDetailsData?.data.courier_description}
+                    </span>
+                  </div>
+                  <div className='grid grid-cols-10'>
+                    <span className='text-sm col-span-1'>
+                      Buyer&apos;s Name
+                    </span>
+                    <span className='text-sm col-span-1 text-right mr-2'>
+                      :
+                    </span>
+                    <span className='text-sm col-span-8'>
+                      {getOrderDetailsData?.data.user_full_name}
+                    </span>
+                  </div>
+                  <div className='grid grid-cols-10'>
+                    <span className='text-sm col-span-1'>Address</span>
+                    <span className='text-sm col-span-1 text-right mr-2'>
+                      :
+                    </span>
+                    <span className='text-sm col-span-8'>
+                      {getOrderDetailsData?.data.address.detail} <br />
+                      {getOrderDetailsData?.data.address.city}
+                      {', '}
+                      {getOrderDetailsData?.data.address.district}
+                      {', '}
+                      {getOrderDetailsData?.data.address.province}
+                      {', '}
+                      {getOrderDetailsData?.data.address.zip_code}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-col gap-2 p-5'>
+                <span className='font-bold'>Payment Details</span>
+                <div>
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm font-light'>Payment Method</span>
+                    <span className='text-sm'>
+                      {capitalizeFirstLetter(
+                        getOrderDetailsData?.data.payment_method
+                      )}
+                    </span>
+                  </div>
+                  <Divider className='m-0'></Divider>
+                  <div className='flex flex-col gap-2'>
+                    <div className='flex justify-between items-center'>
+                      <span className='text-sm font-light'>Total Price</span>
+                      <span className='text-sm'>
+                        {toRupiah(
+                          Math.round(
+                            getOrderDetailsData?.data
+                              .total_price_before_discount
+                          )
+                        )}
+                      </span>
+                    </div>
+                    {getOrderDetailsData?.data
+                      .total_merchant_promotion_discount +
+                      getOrderDetailsData?.data
+                        .total_merchant_voucher_discount >
+                    0 ? (
+                      <div className='flex justify-between items-center'>
+                        <span className='text-sm font-light'>
+                          Total Discount
+                        </span>
+                        <span className='text-sm'>
+                          -
+                          {toRupiah(
+                            Math.round(
+                              getOrderDetailsData?.data
+                                .total_merchant_promotion_discount +
+                                getOrderDetailsData?.data
+                                  .total_merchant_voucher_discount
+                            )
+                          )}
+                        </span>
+                      </div>
+                    ) : null}
+                  </div>
+                  <Divider className='m-0'></Divider>
+                  <div className='flex justify-between items-center'>
+                    <span className='font-bold'>Total Order</span>
+                    <span className='text-sm'>
+                      {toRupiah(
+                        Math.round(
+                          getOrderDetailsData?.data
+                            .total_price_before_discount -
+                            getOrderDetailsData?.data
+                              .total_merchant_promotion_discount -
+                            getOrderDetailsData?.data
+                              .total_merchant_voucher_discount
+                        )
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
