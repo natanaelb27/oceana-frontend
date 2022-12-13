@@ -1,3 +1,4 @@
+import { ActivateWalletRequest } from '../../types/request';
 import { GetWalletDetailsResponse } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -10,8 +11,22 @@ export const walletApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Profile'],
     }),
+    activateWallet: builder.mutation<
+      GetWalletDetailsResponse,
+      ActivateWalletRequest
+    >({
+      query: (request) => ({
+        url: '/profile/wallet/activate',
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
   }),
 });
 
-export const { useGetWalletDetailsQuery, useLazyGetWalletDetailsQuery } =
-  walletApi;
+export const {
+  useGetWalletDetailsQuery,
+  useLazyGetWalletDetailsQuery,
+  useActivateWalletMutation,
+} = walletApi;

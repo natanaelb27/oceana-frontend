@@ -11,6 +11,7 @@ import { useLazyGetWalletDetailsQuery } from '../../../store/services/walletServ
 import { toRupiah } from '../../../utils/convert';
 import { Pager } from '../../common';
 import NoData from '../../common/NoData';
+import ActivateWalletModal from './ActivateWalletModal';
 
 const WalletContent = () => {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
@@ -283,6 +284,7 @@ const WalletContent = () => {
           </Card>
         </div>
       </div>
+      <ActivateWalletModal data={getWalletDetailsData.data} />
     </div>
   );
 };
