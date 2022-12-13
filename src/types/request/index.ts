@@ -4,3 +4,4 @@ export * from './cart';
 export * from './merchantVoucher';
 export * from './profile';
 export * from './wallet';
+export * from './review';

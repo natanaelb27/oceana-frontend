@@ -12,3 +12,4 @@ export * from './role';
 export * from './shop';
 export * from './subDistrict';
 export * from './wallet';
+export * from './review';
