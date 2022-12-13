@@ -17,6 +17,7 @@ import {
   BuyerRefund,
   BuyerWallet,
   Category,
+  CategorySearch,
   Home,
   Login,
   NotFound,
@@ -70,6 +71,10 @@ const Routes = () => {
         {
           path: '/category',
           element: <Category />,
+        },
+        {
+          path: '/category/:categoryPath',
+          element: <CategorySearch />,
         },
         {
           path: '/search',

@@ -42,3 +42,8 @@ export const PHONE_REGEX =
 
 // status codes
 export const STATUS_SEE_OTHER = 303;
+
+export const WALLET_TRANSACTION_HISTORY_TYPE = {
+  DEBIT: 'Debit',
+  CREDIT: 'Credit',
+};

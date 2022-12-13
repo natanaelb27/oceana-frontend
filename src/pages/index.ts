@@ -7,6 +7,8 @@ export { default as Product } from './Product';
 export { default as Search } from './Search';
 export { default as Shop } from './Shop';
 
+export { default as CategorySearch } from './Category/CategorySearch';
+
 export { default as BuyerAddress } from './buyer/BuyerAddress';
 export { default as BuyerCart } from './buyer/BuyerCart';
 export { default as BuyerCheckout } from './buyer/BuyerCheckout';

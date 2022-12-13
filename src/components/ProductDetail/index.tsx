@@ -266,7 +266,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
         viewPost(productID);
       }
       getProductDetail(productID).then(({ data }) => {
-        console.log({ data: data?.data });
         if (!data?.data) {
           return;
         }
@@ -302,6 +301,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             categoryID: data.data.category_id,
             priceMinimum: 0,
             priceMaximum: 0,
+            rating: 0,
             merchantCities: [],
             courierServices: [],
           })
@@ -324,6 +324,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             categoryID: data.data.category_id,
             priceMinimum: 0,
             priceMaximum: 0,
+            rating: 0,
             merchantCities: [],
             courierServices: [],
           })

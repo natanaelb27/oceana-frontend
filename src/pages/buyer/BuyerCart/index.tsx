@@ -145,7 +145,6 @@ const BuyerCart = () => {
       newSelectedItems.selectAll = false;
     }
     setSelectedItems(newSelectedItems);
-    console.log({ newSelectedItems });
   };
 
   const handleClickProduct = (e: React.SyntheticEvent) => {
@@ -179,7 +178,6 @@ const BuyerCart = () => {
       }
       return merchant;
     });
-    console.log({ newSelectedItems });
     setSelectedItems(newSelectedItems);
     selectedItems.selectItem.forEach((merchant) => {
       if (merchant.selectAll === true) {
@@ -213,10 +211,9 @@ const BuyerCart = () => {
               .then(() => {
                 notifySuccessToast('1 Item has been added to cart');
               })
-              .catch((err) => {
+              .catch(() => {
                 product.quantity = product.stock_quantity;
                 notifyErrorToast('Your quantity is over the available stock!');
-                console.error(err);
               });
           }
           return product;
@@ -256,7 +253,6 @@ const BuyerCart = () => {
                 })
                 .catch((err) => {
                   notifyErrorToast(err.data.message);
-                  console.error(err);
                 });
             }
           }
@@ -310,12 +306,11 @@ const BuyerCart = () => {
                 .then(() => {
                   notifySuccessToast('Successfully updated your cart!');
                 })
-                .catch((err) => {
+                .catch(() => {
                   notifyErrorToast(
                     'Your quantity is over the available stock!'
                   );
                   product.quantity = product.stock_quantity;
-                  console.error(err);
                 });
             }, 100);
           }
@@ -329,7 +324,6 @@ const BuyerCart = () => {
 
   const handleClickDelete = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLTextAreaElement;
-    console.log(target.type);
     const merchantID = Number(
       target.parentElement?.parentElement?.parentElement?.id
     );
@@ -363,9 +357,8 @@ const BuyerCart = () => {
       .then(() => {
         notifySuccessToast('Item was succesfully deleted from cart');
       })
-      .catch((err) => {
+      .catch(() => {
         notifyErrorToast('Error deleting item from cart');
-        console.error(err);
       })
       .finally(() => {
         setModal({
@@ -449,6 +442,11 @@ const BuyerCart = () => {
                     <img
                       src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
                       className='rounded-lg h-full w-full'
+                      onError={({ currentTarget }) => {
+                        currentTarget.onerror = null;
+                        currentTarget.src =
+                          'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+                      }}
                     />
                   </div>
                   <div className='h-24 flex flex-col'>
@@ -466,7 +464,7 @@ const BuyerCart = () => {
                         <h5 className='text-base line-through ml-1'>
                           {toRupiah(product.price)}
                         </h5>
-                      </div>
+                      </div> // prevents looping
                     ) : (
                       <div className='text-lg font-bold'>
                         {toRupiah(product.price_after_discount)}
