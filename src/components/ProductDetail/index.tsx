@@ -242,6 +242,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             categoryID: data.data.category_id,
             priceMinimum: 0,
             priceMaximum: 0,
+            rating: 0,
             merchantCities: [],
             courierServices: [],
           })
@@ -264,6 +265,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             categoryID: data.data.category_id,
             priceMinimum: 0,
             priceMaximum: 0,
+            rating: 0,
             merchantCities: [],
             courierServices: [],
           })
