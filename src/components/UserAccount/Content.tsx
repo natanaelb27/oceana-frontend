@@ -5,6 +5,7 @@ import AddressContent from './AddressContent';
 import PurchaseContent from './PurchaseContent';
 import ProfileContent from './ProfileContent';
 import PendingPaymentContent from './PendingPaymentContent';
+import WalletContent from './WalletContent';
 
 type ContentProps = {
   profile: Profile | null | undefined;
@@ -22,7 +23,7 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === UserAccountContent.Wallet) {
-      return null;
+      return <WalletContent />;
     }
 
     if (content === UserAccountContent.Purchase) {

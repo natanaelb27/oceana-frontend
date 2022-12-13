@@ -169,10 +169,10 @@ const AddressContent = () => {
     getSubDistrict(toSubDistrictQuery(subDistrictQuery))
       .unwrap()
       .then((res) => {
-        setProvinces(res.data.provinces);
-        setCities(res.data.cities);
-        setDistricts(res.data.districts);
-        setSubDistricts(res.data.sub_districts);
+        setProvinces(res.data?.provinces ? res.data.provinces : []);
+        setCities(res.data?.cities ? res.data.cities : []);
+        setDistricts(res.data?.districts ? res.data.districts : []);
+        setSubDistricts(res.data?.sub_districts ? res.data.sub_districts : []);
       });
   }, [subDistrictQuery]);
 
@@ -313,9 +313,6 @@ const AddressContent = () => {
       .then(() => {
         notifySuccessToast('Address has been deleted!');
       })
-      .catch((err) => {
-        console.error(err);
-      })
       .finally(() => {
         setAddressID(null);
         if (deleteAddressError && 'data' in deleteAddressError) {
@@ -343,9 +340,6 @@ const AddressContent = () => {
       .unwrap()
       .then(() => {
         notifySuccessToast('Default address has been changed!');
-      })
-      .catch((err) => {
-        console.error(err);
       })
       .finally(() => {
         setAddressID(null);
@@ -375,9 +369,6 @@ const AddressContent = () => {
       .unwrap()
       .then(() => {
         notifySuccessToast('Shop address has been changed!');
-      })
-      .catch((err) => {
-        console.error(err);
       })
       .finally(() => {
         setAddressID(null);

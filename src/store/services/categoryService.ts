@@ -1,4 +1,3 @@
-import { CategoryQuery } from '../../types/query';
 import {
   GetAllCategoryResponse,
   GetAncestorsCategoryResponse,

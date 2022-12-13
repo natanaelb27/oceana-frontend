@@ -18,7 +18,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <svg
             className='w-12 h-12 text-base-content'
             xmlns='http://www.w3.org/2000/svg'
-            aria-hidden='true'
             fill='currentColor'
             viewBox='0 0 640 512'
           >
@@ -47,6 +46,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <img
             src={product.media_url}
             className='object-cover max-h-64 w-full'
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+              currentTarget.src =
+                'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+            }}
           />
         </figure>
         <div className='pt-2.5 pb-4 px-4'>

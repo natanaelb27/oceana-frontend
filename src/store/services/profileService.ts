@@ -1,4 +1,8 @@
-import { UpdateProfileRequest } from '../../types/request';
+import {
+  UpdateProfileEmailRequest,
+  UpdateProfileRequest,
+  UpdateProfileUsernameRequest,
+} from '../../types/request';
 import {
   GetProfileResponse,
   UpdateProfileResponse,
@@ -26,6 +30,28 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+    updateProfileEmail: builder.mutation<
+      UpdateProfileResponse,
+      UpdateProfileEmailRequest
+    >({
+      query: (request) => ({
+        url: '/profile/email',
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    updateProfileUsername: builder.mutation<
+      UpdateProfileResponse,
+      UpdateProfileUsernameRequest
+    >({
+      query: (request) => ({
+        url: '/profile/username',
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
     updateProfileImage: builder.mutation<UpdateProfileResponse, FormData>({
       query: (request) => ({
         url: '/profile',
@@ -48,6 +74,8 @@ export const {
   useGetProfileQuery,
   useLazyGetProfileQuery,
   useUpdateProfileMutation,
+  useUpdateProfileEmailMutation,
+  useUpdateProfileUsernameMutation,
   useUpdateProfileImageMutation,
   useLogoutMutation,
 } = profileApi;
