@@ -13,6 +13,7 @@ import {
   Button,
   Card,
   Divider,
+  Dropdown,
   Form,
   Input,
   InputGroup,
@@ -30,6 +31,8 @@ import {
   HiOutlineChevronRight,
   HiOutlineShoppingBag,
   HiSearch,
+  HiOutlineDotsVertical,
+  HiOutlineDotsHorizontal,
 } from 'react-icons/hi';
 import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../constants';
 import { TransactionHistoryQuery } from '../../types/query';
@@ -105,6 +108,18 @@ const PendingPaymentContent = () => {
                             ).toDate()}
                           ></DateCountdown>
                         </Badge>
+                        <Dropdown
+                          horizontal='center'
+                          vertical='end'
+                          className='flex md:hidden'
+                        >
+                          <Dropdown.Toggle color='ghost'>
+                            <HiOutlineDotsVertical></HiOutlineDotsVertical>
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu className='w-52'>
+                            <Dropdown.Item>Cancel Payment</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
                       </div>
                     </div>
                   </div>
@@ -120,7 +135,7 @@ const PendingPaymentContent = () => {
                         </div>
                         <div className='flex items-center'>
                           <div className='flex flex-col'>
-                            <span className='font-light text-sm'>
+                            <span className='font-light text-sm hidden md:flex'>
                               Payment Method
                             </span>
                             <span className='font-bold'>
@@ -128,10 +143,13 @@ const PendingPaymentContent = () => {
                                 transaction.payment_method_name
                               )}
                             </span>
+                            <span className='font-light'>
+                              {transaction.card_number}
+                            </span>
                           </div>
                         </div>
                       </div>
-                      <div className='flex items-center'>
+                      <div className='hidden md:flex items-center'>
                         <div className='hidden md:flex divider divider-horizontal'></div>
                         <div className='flex flex-col'>
                           <span className='font-light text-sm'>
@@ -143,7 +161,7 @@ const PendingPaymentContent = () => {
                         </div>
                       </div>
                     </div>
-                    <div className='flex items-center'>
+                    <div className='flex items-center justify-between'>
                       <div className='hidden md:flex divider divider-horizontal'></div>
                       <div className='flex flex-col'>
                         <span className='font-light text-sm'>
@@ -153,21 +171,33 @@ const PendingPaymentContent = () => {
                           {toRupiah(Math.round(transaction.total_payment))}
                         </span>
                       </div>
+                      <Button
+                        className='normal-case md:w-auto md:pl-7 md:pr-7 flex md:hidden'
+                        color='primary'
+                      >
+                        Pay
+                      </Button>
                     </div>
                   </div>
                   <div className='flex mt-3 gap-3 items-center justify-between md:justify-end'>
-                    <Button
-                      className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
-                      color='error'
-                    >
-                      Cancel Payment
-                    </Button>
                     <Button
                       className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
                       color='primary'
                     >
                       Pay
                     </Button>
+                    <Dropdown
+                      horizontal='center'
+                      vertical='end'
+                      className='hidden md:flex'
+                    >
+                      <Dropdown.Toggle color='ghost'>
+                        <HiOutlineDotsHorizontal></HiOutlineDotsHorizontal>
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu className='w-52'>
+                        <Dropdown.Item>Cancel Payment</Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
                   </div>
                   {/* <div className='flex mt-3 gap-3 items-center justify-between md:justify-end'>
                     <span
