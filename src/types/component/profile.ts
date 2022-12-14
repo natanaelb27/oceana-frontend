@@ -11,3 +11,17 @@ export interface Profile {
   created_at: string;
   updated_at: string;
 }
+
+export interface UpdateProfilePassword {
+  id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RequestPasswordVerificationCode {
+  status: boolean;
+}
+
+export interface CheckPasswordVerificationCode {
+  status: boolean;
+}
