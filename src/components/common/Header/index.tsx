@@ -15,10 +15,9 @@ import { CgLogOut, CgProfile } from 'react-icons/cg';
 
 import { useLocalStorage, useScrollPosition } from '../../../hooks';
 import { selectRole, unsetCredentials } from '../../../store/slices/authSlice';
-import { useAppDispatch, useAppSelector } from '../../../store/store';
-import { validateUserRole } from '../../../utils/auth';
-import { Role } from '../../../types/role';
+import { baseApi, useAppDispatch, useAppSelector } from '../../../store/store';
 import { useLogoutMutation } from '../../../store/services/profileService';
+import { TAG_TYPES } from '../../../constants/tags';
 import { BsShop } from 'react-icons/bs';
 
 const Header = () => {
@@ -60,11 +59,8 @@ const Header = () => {
     await dispatch(unsetCredentials());
     await logout()
       .unwrap()
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
+      .then(() => {
+        dispatch(baseApi.util.invalidateTags(TAG_TYPES));
       });
     navigate('/');
   };

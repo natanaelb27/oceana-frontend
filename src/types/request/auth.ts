@@ -29,34 +29,3 @@ export type RegisterWithGoogleRequest = {
   role: string;
   image_url: string;
 };
-
-export type UpdateProfileRequest = {
-  full_name?: string;
-  gender?: string;
-  birthdate?: string;
-};
-
-export type UpdateProfileEmailRequest = {
-  email: string;
-};
-
-export type CreateAddressRequest = {
-  name: string;
-  detail: string;
-  sub_district_id: number;
-};
-
-export type UpdateAddressRequest = {
-  name: string;
-  detail: string;
-  sub_district_id: number;
-};
-
-export type MerchantCreateRequest = {
-  name: string;
-  address_id: string
-}
-export type UpdateUserCartRequest = {
-  product_item_id: number;
-  quantity: number;
-}

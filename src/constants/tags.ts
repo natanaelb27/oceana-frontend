@@ -1,4 +1,6 @@
 export const TAG_TYPES = [
+  'Cart',
+  'City',
   'Category',
   'MyShop',
   'Order',

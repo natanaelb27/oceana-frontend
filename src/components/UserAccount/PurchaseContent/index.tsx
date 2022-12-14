@@ -20,8 +20,8 @@ import {
   Radio,
   Steps,
 } from 'react-daisyui';
-import { useOutsideAlerter } from '../../hooks';
-import { Pager } from '../../components/common';
+import { useOutsideAlerter } from '../../../hooks';
+import { Pager } from '../../common';
 import {
   HiOutlineCalendar,
   HiOutlineClock,
@@ -31,25 +31,25 @@ import {
   HiOutlineShoppingBag,
   HiSearch,
 } from 'react-icons/hi';
-import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../constants';
-import { TransactionHistoryQuery } from '../../types/query';
+import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../../constants';
+import { TransactionHistoryQuery } from '../../../types/query';
 import {
   useGetAllTransactionHistoryQuery,
   useGetOrderDetailsQuery,
-} from '../../store/services/orderService';
-import { toTransactionHistoryQuery } from '../../utils/mapperDTO';
+} from '../../../store/services/orderService';
+import { toTransactionHistoryQuery } from '../../../utils/mapperDTO';
 import {
   toRupiah,
   toLongStringDatetime,
   toStringDate,
   toStringDatetime,
-} from '../../utils/convert';
+} from '../../../utils/convert';
 import { CgClose } from 'react-icons/cg';
-import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
 import moment from 'moment';
-import NoData from '../common/NoData';
-import { stringCompare } from '../../utils/validation';
+import NoData from '../../common/NoData';
+import { stringCompare } from '../../../utils/validation';
 
 const PurchaseContent = () => {
   const [transactionHistoryQuery, setTransactionHistoryQuery] =
@@ -140,7 +140,7 @@ const PurchaseContent = () => {
     });
   };
 
-  const [isDateOpen, setisDateOpen] = useState<boolean>(false);
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
 
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
     null,
@@ -167,7 +167,7 @@ const PurchaseContent = () => {
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
     });
-    setisDateOpen(false);
+    setIsDateOpen(false);
   };
 
   const handleApplyFilterDate = () => {
@@ -177,7 +177,7 @@ const PurchaseContent = () => {
       filterStartTransactionDate: moment(startDate).format('YYYY-MM-DD'),
       filterEndTransactionDate: moment(endDate).format('YYYY-MM-DD'),
     });
-    setisDateOpen(false);
+    setIsDateOpen(false);
   };
 
   type DateContainerProps = {
@@ -269,7 +269,7 @@ const PurchaseContent = () => {
         ).toDate(),
       ]);
     }
-    setisDateOpen(false);
+    setIsDateOpen(false);
   };
 
   useOutsideAlerter(dateWrapperRef, handleDateOutsideClick);
@@ -283,7 +283,7 @@ const PurchaseContent = () => {
         className='normal-case flex gap-2 w-[100%] md:w-auto md:pl-7 md:pr-7 btn-outline no-animation'
         onClick={() => {
           onClick;
-          setisDateOpen(!isDateOpen);
+          setIsDateOpen(!isDateOpen);
         }}
         ref={ref}
       >
@@ -398,8 +398,24 @@ const PurchaseContent = () => {
           <div ref={dateWrapperRef} className='w-[100%] md:w-auto'>
             <DatePicker
               selectsRange={true}
-              startDate={startDate}
-              endDate={endDate}
+              startDate={
+                isDateOpen
+                  ? startDate
+                  : moment(
+                      transactionHistoryQuery.filterStartTransactionDate === ''
+                        ? new Date()
+                        : transactionHistoryQuery.filterStartTransactionDate
+                    ).toDate()
+              }
+              endDate={
+                isDateOpen
+                  ? endDate
+                  : moment(
+                      transactionHistoryQuery.filterEndTransactionDate === ''
+                        ? new Date()
+                        : transactionHistoryQuery.filterEndTransactionDate
+                    ).toDate()
+              }
               dateFormat='dd MMM yyyy'
               maxDate={new Date()}
               calendarContainer={DateContainer}
@@ -562,7 +578,7 @@ const PurchaseContent = () => {
             </div>
           </Card>
         )}
-        {getAllTransactionHistoryData?.data &&
+        {getAllTransactionHistoryData?.data?.order_list &&
         getAllTransactionHistoryData?.data.order_list.length > 0 ? (
           getAllTransactionHistoryData?.data.order_list.map(
             (transactionHistory, n) => {
@@ -610,6 +626,11 @@ const PurchaseContent = () => {
                           src={firstProduct?.product_image || ''}
                           alt={firstProduct?.product_name || ''}
                           className='h-12 w-12 md:h-20 md:w-20 rounded-md'
+                          onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src =
+                              'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+                          }}
                         />
                       </div>
                       <div className='flex flex-col w-[70%]'>
@@ -686,7 +707,7 @@ const PurchaseContent = () => {
           dateRange.at(1) === null &&
           search === '' ? (
           <div className='col-span-12'>
-            <NoData title='Oops, it seems that you have never made a purchase'></NoData>
+            <NoData title='Oops, it seems that you have never made a purchase' />
           </div>
         ) : (
           <div className='col-span-12'>
@@ -961,6 +982,11 @@ const PurchaseContent = () => {
                                 src={orderDetail.product_image || ''}
                                 alt={orderDetail.product_name || ''}
                                 className='h-12 w-12 md:h-18 md:w-18 rounded-md'
+                                onError={({ currentTarget }) => {
+                                  currentTarget.onerror = null;
+                                  currentTarget.src =
+                                    'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+                                }}
                               />
                             </div>
                             <div className='flex flex-col col-span-4'>

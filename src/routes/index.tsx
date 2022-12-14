@@ -15,13 +15,19 @@ import {
   BuyerProfile,
   BuyerPurchaseHistory,
   BuyerRefund,
+  BuyerSealabsPay,
   BuyerWallet,
   Category,
+  CategorySearch,
   Home,
   Login,
   NotFound,
   Product,
   Register,
+  SealabsPayPaymentRedirect,
+  SealabsPayRegisterRedirect,
+  SealabsPayTopup,
+  SealabsPayTopupRedirect,
   Search,
   SellerRegistration,
   Shop,
@@ -37,6 +43,7 @@ import {
   ShopProfile,
   ShopPromotionList,
   ShopShipmentSetting,
+  ShopVoucherDetail,
   ShopVoucherList,
 } from '../pages';
 import { selectRole } from '../store/slices/authSlice';
@@ -67,8 +74,16 @@ const Routes = () => {
           element: <Home />,
         },
         {
+          path: '/sealabs-pay',
+          element: <SealabsPayTopup />,
+        },
+        {
           path: '/category',
           element: <Category />,
+        },
+        {
+          path: '/category/:categoryPath',
+          element: <CategorySearch />,
         },
         {
           path: '/search',
@@ -79,7 +94,7 @@ const Routes = () => {
           element: <Navigate to='/' />,
         },
         {
-          path: '/products/:productID',
+          path: '/products/:productPath',
           element: <Product />,
         },
         {
@@ -118,6 +133,10 @@ const Routes = () => {
             {
               path: '/user/account/wallet',
               element: <BuyerWallet />,
+            },
+            {
+              path: '/user/account/sealabs-pay',
+              element: <BuyerSealabsPay />,
             },
             {
               path: '/user/account/address',
@@ -220,12 +239,24 @@ const Routes = () => {
                   element: <ShopVoucherList />,
                 },
                 {
+                  path: '/seller/marketing/vouchers/detail',
+                  element: <Navigate to='/seller/marketing/vouchers/list' />,
+                },
+                {
+                  path: '/seller/marketing/vouchers/detail/:voucherID',
+                  element: <ShopVoucherDetail />,
+                },
+                {
                   path: '/seller/marketing/vouchers/add',
                   element: <ShopAddVoucher />,
                 },
                 {
-                  path: '/seller/marketing/vouchers/edit',
+                  path: '/seller/marketing/vouchers/edit/:voucherID',
                   element: <ShopEditVoucher />,
+                },
+                {
+                  path: '/seller/marketing/vouchers/duplicate/:voucherID',
+                  element: <ShopAddVoucher />,
                 },
                 {
                   path: '/seller/marketing/promotions',
@@ -319,6 +350,45 @@ const Routes = () => {
           redirectTo='/'
         >
           <Register />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/register',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayRegisterRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/topup',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayTopupRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/payment',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayPaymentRedirect />
         </ProtectedRoute>
       ),
     },
