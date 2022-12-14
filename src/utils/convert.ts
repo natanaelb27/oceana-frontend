@@ -23,5 +23,4 @@ export const toStringTime = (d: string) => moment(d).format('HH:mm A');
 export const toCardNumber = (n: string, dashes = true) =>
   dashes ? n.match(/.{1,4}/g)?.join('-') : n.match(/.{1,4}/g)?.join(' ');
 
-export const toPhoneNumber = (n: string) =>
-  n.length !== 0 ? `+(62)${n.slice(1)}` : '';
+export const toPhoneNumber = (n: string) => (n ? `+(62)${n.slice(1)}` : '');
