@@ -29,3 +29,11 @@ export type RegisterWithGoogleRequest = {
   role: string;
   image_url: string;
 };
+
+export type VerifyResetPasswordRequest = {
+  email: string;
+};
+
+export type ResetPasswordRequest = {
+  password: string;
+};

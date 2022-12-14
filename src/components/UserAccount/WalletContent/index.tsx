@@ -221,7 +221,16 @@ const WalletContent = () => {
                 <>
                   <div className='grid grid-cols-12 gap-4 mb-4'>
                     {getWalletDetailsData.data.wallet_transaction_history
+
                       .filter((row) => (type ? row.type === type : true))
+                      .filter((row) =>
+                        startDate && endDate
+                          ? moment(row.transaction_date).isBetween(
+                              moment(startDate),
+                              moment(endDate)
+                            )
+                          : null
+                      )
                       .map((row) =>
                         row.type === WALLET_TRANSACTION_HISTORY_TYPE.DEBIT ? (
                           <Card className='col-span-12 shadow border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-error border-b-error transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'>
