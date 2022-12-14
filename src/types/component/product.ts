@@ -59,8 +59,7 @@ export interface ProductDetail {
   description: string;
   total_stock: number;
   like_count: number;
-  rating_count: number;
-  rating_star: number;
+  product_review_details: ProductReviewDetails;
   discount_type: string | null;
   discount: number | null;
   price: number;
@@ -71,6 +70,18 @@ export interface ProductDetail {
   price_min_after_discount: number | null;
   product_model: ProductModel[];
   product_variation: ProductVariation[];
+}
+
+export interface ProductReviewDetails {
+  rating_count: number;
+  review_count: number;
+  rating_star: number;
+  satisfied_percentage: number;
+  star_5: number;
+  star_4: number;
+  star_3: number;
+  star_2: number;
+  star_1: number;
 }
 
 export interface PurchasedQuantities {

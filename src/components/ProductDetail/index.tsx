@@ -586,6 +586,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               handleChangeFilterReviewComments={
                 handleChangeFilterReviewComments
               }
+              productReviewDetails={getProductDetailData.data.product_review_details}
             />
           </div>
           <div className='col-span-12 md:col-span-6'>

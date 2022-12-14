@@ -1,4 +1,5 @@
 import React from 'react';
+import { ProductReviewDetails } from '../../types/component';
 import ReviewFilter from './ReviewFilter';
 import ReviewStats from './ReviewStats';
 
@@ -7,6 +8,7 @@ type ReviewStatsAndFilterProps = {
   handleChangeFilterReviewRating?: (e: React.SyntheticEvent) => void;
   handleChangeFilterReviewComments?: () => void;
   isLoading?: boolean;
+  productReviewDetails?: ProductReviewDetails;
 };
 
 const ReviewStatsAndFilter = ({
@@ -14,6 +16,7 @@ const ReviewStatsAndFilter = ({
   handleChangeFilterReviewWithMedia,
   handleChangeFilterReviewRating,
   handleChangeFilterReviewComments,
+  productReviewDetails
 }: ReviewStatsAndFilterProps) => {
   if (isLoading) {
     return (
@@ -30,7 +33,7 @@ const ReviewStatsAndFilter = ({
       <h5 className='font-medium uppercase text-xl mb-4 text-center'>
         Buyer&apos;s Reviews
       </h5>
-      <ReviewStats />
+      <ReviewStats productReviewDetails={productReviewDetails} />
       <ReviewFilter
         handleChangeFilterReviewWithMedia={handleChangeFilterReviewWithMedia}
         handleChangeFilterReviewRating={handleChangeFilterReviewRating}
