@@ -26,6 +26,10 @@ const ShopDetailCard = ({ merchant }: ShopDetailCardProps) => {
                     <div className="text-2xl font-bold">{merchant?.product_count}</div>
                     <div>Products</div>
                 </RightContentAttribute>
+                <RightContentAttribute>
+                    <div className="text-2xl font-bold">{merchant?.total_rating}</div>
+                    <div>No. of Ratings</div>
+                </RightContentAttribute>
             </ShopDetailCardContentRight>
         </ShopDetailCardContent>
     </ShopDetailCardContainer>

@@ -11,6 +11,8 @@ import { toMerchantProductQuery, toMerchantVoucherQuery, toProductQuery } from '
 const ShopDetail = () => {
   const { shopID } = useParams();
 
+ 
+
   const [merchantVoucherQuery] = useState<MerchantVoucherQuery>({
     search: '',
     sort: '',
@@ -22,22 +24,9 @@ const ShopDetail = () => {
     page: 1,
   });
 
-  const [merchantProductQuery] = useState<MerchantProductQuery>({
-    search: '',
-    sort: 'desc',
-    sortBy: 'most-buy',
-    limit: 20,
-    page: 1,
-    categoryID: 0,
-    priceMinimum: 0,
-    priceMaximum: 0,
-    merchantCities: [],
-    courierServices: [],
-  });
-
   const { data: getMerchantData } = useGetMerchantByIDQuery(String(shopID));
   const { data: getMerchantVoucherData} = useGetAllMerchantVouchersQuery(toMerchantVoucherQuery(merchantVoucherQuery));
-  const { data: getAllMerchantProducts } = useGetAllMerchantProductsQuery({ id: String(shopID), query: toMerchantProductQuery(merchantProductQuery)});
+
 
 
   return (
@@ -49,7 +38,7 @@ const ShopDetail = () => {
         <ShopVouchers vouchers={getMerchantVoucherData?.data?.merchant_voucher}/>
       </div>
       <div className='flex justify-center items-start'>
-        <ShopProducts products={getAllMerchantProducts?.data}/>
+        <ShopProducts merchantID={shopID}/>
       </div>
     </div>
   );
