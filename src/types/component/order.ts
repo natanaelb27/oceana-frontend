@@ -23,6 +23,9 @@ export interface OrderList {
   total_price: number;
   refund_id: string | null;
   claim_status: boolean;
+  seller_confirmation_expiration_datetime: string | null;
+  on_process_expiration_datetime: string | null;
+  delivered_expiration_datetime: string | null;
 }
 
 export interface OrderTracking {
@@ -62,6 +65,9 @@ export interface OrderListDetail {
   total_payment: number;
   refund_id: string | null;
   claim_status: boolean;
+  seller_confirmation_expiration_datetime: string | null;
+  on_process_expiration_datetime: string | null;
+  delivered_expiration_datetime: string | null;
 }
 
 export interface PendingPayment {

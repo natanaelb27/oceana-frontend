@@ -12,6 +12,7 @@ import {
   Badge,
   Button,
   Card,
+  Countdown,
   Divider,
   Form,
   Input,
@@ -19,6 +20,7 @@ import {
   Modal,
   Radio,
   Steps,
+  Tooltip,
 } from 'react-daisyui';
 import { useOutsideAlerter } from '../../../hooks';
 import { Pager } from '../../common';
@@ -50,6 +52,8 @@ import DatePicker, { CalendarContainer } from 'react-datepicker';
 import moment from 'moment';
 import NoData from '../../common/NoData';
 import { stringCompare } from '../../../utils/validation';
+import { computeDatetime, getDateDiffNow } from '../../../utils/date';
+import DateCountdown from '../../common/DateCountdown';
 
 const PurchaseContent = () => {
   const [transactionHistoryQuery, setTransactionHistoryQuery] =
@@ -608,6 +612,135 @@ const PurchaseContent = () => {
                     <span className='font-light text-sm hidden md:block'>
                       {transactionHistory?.invoice_number}
                     </span>
+                    {transactionHistory?.refund_id ? (
+                      <Badge
+                        color='error'
+                        size='xs'
+                        className='font-bold p-2 rounded-none text-white'
+                      >
+                        refund
+                      </Badge>
+                    ) : null}
+
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.PENDING_SELLER
+                    ) ? (
+                      <Tooltip message='auto cancel countdown'>
+                        <Badge
+                          color='warning'
+                          className='flex gap-1 bg-opacity-50'
+                        >
+                          <HiOutlineClock />
+                          {computeDatetime(
+                            getDateDiffNow(
+                              transactionHistory?.seller_confirmation_expiration_datetime ||
+                                ''
+                            )
+                          ).days > 0 ? (
+                            <div className='font-bold'>
+                              <Countdown
+                                value={
+                                  computeDatetime(
+                                    getDateDiffNow(
+                                      transactionHistory?.seller_confirmation_expiration_datetime ||
+                                        ''
+                                    )
+                                  ).days
+                                }
+                              ></Countdown>{' '}
+                              days
+                            </div>
+                          ) : (
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.seller_confirmation_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          )}
+                        </Badge>
+                      </Tooltip>
+                    ) : null}
+
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.ON_PROCESS
+                    ) ? (
+                      <Tooltip message='auto cancel countdown'>
+                        <Badge
+                          color='warning'
+                          className='flex gap-1 bg-opacity-50'
+                        >
+                          <HiOutlineClock />
+                          {computeDatetime(
+                            getDateDiffNow(
+                              transactionHistory?.on_process_expiration_datetime ||
+                                ''
+                            )
+                          ).days > 0 ? (
+                            <div className='font-bold'>
+                              <Countdown
+                                value={
+                                  computeDatetime(
+                                    getDateDiffNow(
+                                      transactionHistory?.on_process_expiration_datetime ||
+                                        ''
+                                    )
+                                  ).days
+                                }
+                              ></Countdown>{' '}
+                              days
+                            </div>
+                          ) : (
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.on_process_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          )}
+                        </Badge>
+                      </Tooltip>
+                    ) : null}
+
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.DELIVERED
+                    ) ? (
+                      <Tooltip message='auto complete countdown'>
+                        <Badge
+                          color='warning'
+                          className='flex gap-1 bg-opacity-50'
+                        >
+                          <HiOutlineClock />
+                          {computeDatetime(
+                            getDateDiffNow(
+                              transactionHistory?.delivered_expiration_datetime ||
+                                ''
+                            )
+                          ).days > 0 ? (
+                            <div className='font-bold'>
+                              <Countdown
+                                value={
+                                  computeDatetime(
+                                    getDateDiffNow(
+                                      transactionHistory?.delivered_expiration_datetime ||
+                                        ''
+                                    )
+                                  ).days
+                                }
+                              ></Countdown>{' '}
+                              days
+                            </div>
+                          ) : (
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.delivered_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          )}
+                        </Badge>
+                      </Tooltip>
+                    ) : null}
                   </div>
                   <div className='mb-1'>
                     <span className='font-bold'>
@@ -884,11 +1017,155 @@ const PurchaseContent = () => {
             <div className='flex flex-col gap-2'>
               <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
                 <div className='flex justify-between items-center'>
-                  <span className='font-bold'>
-                    {capitalizeFirstLetter(
-                      getOrderDetailsData?.data.order_status
-                    )}
-                  </span>
+                  <div className='flex gap-2 items-center'>
+                    <span className='font-bold'>
+                      {capitalizeFirstLetter(
+                        getOrderDetailsData?.data.order_status
+                      )}
+                    </span>
+                    {getOrderDetailsData?.data.refund_id ? (
+                      <Badge
+                        color='error'
+                        size='xs'
+                        className='font-bold p-2 rounded-none text-white'
+                      >
+                        refund
+                      </Badge>
+                    ) : null}
+
+                    {stringCompare(
+                      getOrderDetailsData?.data.order_status,
+                      DELIVERY_STATUS.PENDING_SELLER
+                    ) ? (
+                      <Tooltip
+                        position='bottom'
+                        message='auto cancel countdown'
+                      >
+                        <Badge
+                          color='warning'
+                          className='flex gap-1 bg-opacity-50'
+                        >
+                          <HiOutlineClock />
+                          {computeDatetime(
+                            getDateDiffNow(
+                              getOrderDetailsData?.data
+                                .seller_confirmation_expiration_datetime || ''
+                            )
+                          ).days > 0 ? (
+                            <div className='font-bold'>
+                              <Countdown
+                                value={
+                                  computeDatetime(
+                                    getDateDiffNow(
+                                      getOrderDetailsData?.data
+                                        .seller_confirmation_expiration_datetime ||
+                                        ''
+                                    )
+                                  ).days
+                                }
+                              ></Countdown>{' '}
+                              days
+                            </div>
+                          ) : (
+                            <DateCountdown
+                              date={moment(
+                                getOrderDetailsData?.data
+                                  .seller_confirmation_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          )}
+                        </Badge>
+                      </Tooltip>
+                    ) : null}
+
+                    {stringCompare(
+                      getOrderDetailsData?.data.order_status,
+                      DELIVERY_STATUS.ON_PROCESS
+                    ) ? (
+                      <Tooltip
+                        position='bottom'
+                        message='auto cancel countdown'
+                      >
+                        <Badge
+                          color='warning'
+                          className='flex gap-1 bg-opacity-50'
+                        >
+                          <HiOutlineClock />
+                          {computeDatetime(
+                            getDateDiffNow(
+                              getOrderDetailsData?.data
+                                .on_process_expiration_datetime || ''
+                            )
+                          ).days > 0 ? (
+                            <div className='font-bold'>
+                              <Countdown
+                                value={
+                                  computeDatetime(
+                                    getDateDiffNow(
+                                      getOrderDetailsData?.data
+                                        .on_process_expiration_datetime || ''
+                                    )
+                                  ).days
+                                }
+                              ></Countdown>{' '}
+                              days
+                            </div>
+                          ) : (
+                            <DateCountdown
+                              date={moment(
+                                getOrderDetailsData?.data
+                                  .on_process_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          )}
+                        </Badge>
+                      </Tooltip>
+                    ) : null}
+
+                    {stringCompare(
+                      getOrderDetailsData?.data.order_status,
+                      DELIVERY_STATUS.DELIVERED
+                    ) ? (
+                      <Tooltip
+                        position='bottom'
+                        message='auto complete countdown'
+                      >
+                        <Badge
+                          color='warning'
+                          className='flex gap-1 bg-opacity-50'
+                        >
+                          <HiOutlineClock />
+                          {computeDatetime(
+                            getDateDiffNow(
+                              getOrderDetailsData?.data
+                                .delivered_expiration_datetime || ''
+                            )
+                          ).days > 0 ? (
+                            <div className='font-bold'>
+                              <Countdown
+                                value={
+                                  computeDatetime(
+                                    getDateDiffNow(
+                                      getOrderDetailsData?.data
+                                        .delivered_expiration_datetime || ''
+                                    )
+                                  ).days
+                                }
+                              ></Countdown>{' '}
+                              days
+                            </div>
+                          ) : (
+                            <DateCountdown
+                              date={moment(
+                                getOrderDetailsData?.data
+                                  .delivered_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          )}
+                        </Badge>
+                      </Tooltip>
+                    ) : null}
+                  </div>
                   <div
                     className='flex cursor-pointer text-primary items-center gap-1'
                     onClick={handleViewOrderTrackingClick}
