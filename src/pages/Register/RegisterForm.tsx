@@ -110,7 +110,7 @@ const RegisterForm = ({
         <div className='md:flex md:justify-between'>
           <InputGroup className='md:inline'>
             <Input
-              className='input-sm md:input-md'
+              className='input-sm md:input-md max-w-[240px]'
               color='primary'
               name='firstName'
               onChange={formik.handleChange}
@@ -125,7 +125,7 @@ const RegisterForm = ({
           </InputGroup>
           <InputGroup className='md:inline'>
             <Input
-              className='input-sm md:input-md'
+              className='input-sm md:input-md max-w-[240px]'
               color='primary'
               name='lastName'
               onChange={formik.handleChange}
