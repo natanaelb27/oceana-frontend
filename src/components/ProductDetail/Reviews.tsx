@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useState } from 'react';
+import { ChangeEvent } from 'react';
 import { Avatar, Rating, Select } from 'react-daisyui';
 import Zoom from 'react-medium-image-zoom';
 import { Metadata, Review } from '../../types/component';
@@ -11,19 +11,33 @@ import { Pager, NoData } from '../common';
 type ReviewsProps = {
   reviewData?: Review[] | null;
   reviewMetadata?: Metadata | null;
-  handlePageChange: (n: number) => void;
+  handleChangeReviewPage?: (n: number) => void;
+  handleChangeReviewSort?: (e: ChangeEvent<HTMLSelectElement>) => void;
+  isLoading?: boolean;
+  sortValue?: ReviewsSort;
 };
 
 const Reviews = ({
   reviewData,
   reviewMetadata,
-  handlePageChange,
+  handleChangeReviewPage,
+  handleChangeReviewSort,
+  isLoading,
+  sortValue,
 }: ReviewsProps) => {
-  const [sort, setSort] = useState<ReviewsSort>(ReviewsSort.Latest);
-
-  const handleSortChange = (sort: ReviewsSort) => {
-    setSort(Number(sort));
-  };
+  if (isLoading || !handleChangeReviewPage || !handleChangeReviewSort) {
+    return (
+      <div className='grid grid-cols-12 gap-4 mb-10'>
+        <div className='h-16 w-16 bg-base-200 rounded-full col-span-12'></div>
+        <div className='col-span-12'>
+          <div className='h-6 bg-base-200 rounded-full w-2/5 mb-2.5'></div>
+          <div className='h-4 bg-base-200 rounded-full mb-2.5'></div>
+          <div className='h-4 bg-base-200 rounded-full mb-2.5'></div>
+          <div className='h-4 bg-base-200 rounded-full mb-2.5'></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!reviewData || !reviewMetadata) {
     return <NoData title={'No Reviews Yet...'} />;
@@ -35,20 +49,15 @@ const Reviews = ({
         <span className='text-sm truncate'>Showing 5 out 5 reviews</span>
         <div className='flex items-center'>
           <span className='text-sm font-bold mr-2.5'>Sort</span>
-          <Select
-            value={sort}
-            onChange={handleSortChange}
-            size='sm'
-            className='font-normal'
+          <select
+            value={sortValue}
+            onChange={handleChangeReviewSort}
+            className='select select-sm font-normal'
           >
-            <Select.Option value={ReviewsSort.Latest}>Latest</Select.Option>
-            <Select.Option value={ReviewsSort.HighestRating}>
-              Highest Rating
-            </Select.Option>
-            <Select.Option value={ReviewsSort.LowestRating}>
-              Lowest Rating
-            </Select.Option>
-          </Select>
+            <option value={ReviewsSort.Latest}>Latest</option>
+            <option value={ReviewsSort.HighestRating}>Highest Rating</option>
+            <option value={ReviewsSort.LowestRating}>Lowest Rating</option>
+          </select>
         </div>
       </div>
       <div className='grid grid-cols-1 gap-10 mt-8'>
@@ -114,7 +123,7 @@ const Reviews = ({
           <Pager
             page={reviewMetadata.page}
             totalPage={reviewMetadata.total_pages}
-            onPageChange={handlePageChange}
+            onPageChange={handleChangeReviewPage}
           />
         </div>
       </div>

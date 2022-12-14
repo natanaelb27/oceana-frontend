@@ -8,10 +8,11 @@ import { ShopInformation } from '../../types/component';
 
 type ShopBannerProps = {
   shopInformation?: ShopInformation;
+  isLoading?: boolean;
 };
 
-const ShopBanner = ({ shopInformation }: ShopBannerProps) => {
-  if (!shopInformation) {
+const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
+  if (!shopInformation || isLoading) {
     return (
       <div className='animate-pulse'>
         <div className='flex items-center gap-4'>

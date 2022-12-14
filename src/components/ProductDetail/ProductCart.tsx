@@ -93,7 +93,7 @@ const ProductCart = ({
           </div>
         )}
         <div className='mb-2 font-bold text-lg'>Quantity</div>
-        <div className='flex justify-between items-center'>
+        <div className='flex justify-between items-center flex-wrap gap-2'>
           <InputGroup size='sm' className='max-w-fit'>
             <Button
               size='sm'

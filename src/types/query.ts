@@ -59,6 +59,7 @@ export type PurchasedQuantitiesQuery = {
 
 export type ReviewQuery = {
   sort: string;
+  sort_by: string;
   limit: number;
   page: number;
   media: boolean;

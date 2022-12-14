@@ -1,11 +1,20 @@
+import React from 'react';
 import ReviewFilter from './ReviewFilter';
 import ReviewStats from './ReviewStats';
 
 type ReviewStatsAndFilterProps = {
+  handleChangeFilterReviewWithMedia?: () => void;
+  handleChangeFilterReviewRating?: (e: React.SyntheticEvent) => void;
+  handleChangeFilterReviewComments?: () => void;
   isLoading?: boolean;
 };
 
-const ReviewStatsAndFilter = ({ isLoading }: ReviewStatsAndFilterProps) => {
+const ReviewStatsAndFilter = ({
+  isLoading,
+  handleChangeFilterReviewWithMedia,
+  handleChangeFilterReviewRating,
+  handleChangeFilterReviewComments,
+}: ReviewStatsAndFilterProps) => {
   if (isLoading) {
     return (
       <div>
@@ -22,7 +31,11 @@ const ReviewStatsAndFilter = ({ isLoading }: ReviewStatsAndFilterProps) => {
         Buyer&apos;s Reviews
       </h5>
       <ReviewStats />
-      <ReviewFilter />
+      <ReviewFilter
+        handleChangeFilterReviewWithMedia={handleChangeFilterReviewWithMedia}
+        handleChangeFilterReviewRating={handleChangeFilterReviewRating}
+        handleChangeFilterReviewComments={handleChangeFilterReviewComments}
+      />
     </div>
   );
 };
