@@ -162,15 +162,15 @@ const BuyerCheckout = () => {
       </Card>
 
       {/* Total and make order button sticky bottom */}
-      <Card className='p-4 px-10 w-full fixed bottom-0 left-0 flex justify-end rounded-b-none rounded-t-3xl bg-primary'>
-        <Card.Title className='flex justify-between text-base-100'>
+      <Card className='p-4 px-10 w-full fixed bottom-0 left-0 flex justify-end rounded-b-none rounded-t-3xl bg-base-300'>
+        <Card.Title className='flex justify-between'>
           <div className='flex items-center gap-2'>
             <ImPriceTags />
             <h2>Rp. 420000</h2>
           </div>
           <Button
             className='flex items-center gap-2 rounded-full shadow-md'
-            color='secondary'
+            color='primary'
             size='md'
           >
             <IoBagCheckOutline className='text-2xl' />

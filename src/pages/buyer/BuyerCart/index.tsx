@@ -39,7 +39,8 @@ type ModalInformation = {
 };
 
 const BuyerCart = () => {
-  const { data, error } = useGetUserCartQuery();
+  const { data: getUserCartData, error: getUserCartError } =
+    useGetUserCartQuery();
   const [updateUserCart] = useUpdateUserCartMutation();
   const [selectedItems, setSelectedItems] = useState<SelectCartItems>({
     selectAll: false,
@@ -51,18 +52,18 @@ const BuyerCart = () => {
     productItemID: 0,
   });
 
-  if (error && 'data' in error) {
-    const response = error.data as GetUserCartResponse;
+  if (getUserCartError && 'data' in getUserCartError) {
+    const response = getUserCartError.data as GetUserCartResponse;
 
     notifyErrorToast(response.message);
   }
 
   useEffect(() => {
     const selectedMerchantItems: SelectMerchantItems[] = [];
-    if (!data?.data) {
+    if (!getUserCartData?.data) {
       return;
     }
-    data.data.forEach((value) => {
+    getUserCartData.data.forEach((value) => {
       const selectedItems: SelectItem[] = [];
       value.products.forEach((product) => {
         selectedItems.push({
@@ -84,7 +85,7 @@ const BuyerCart = () => {
       selectAll: false,
       selectItem: selectedMerchantItems,
     });
-  }, [data]);
+  }, [getUserCartData]);
 
   const handleClickAll = () => {
     const newSelectedItems = { ...selectedItems };
@@ -378,7 +379,7 @@ const BuyerCart = () => {
     });
   };
 
-  if (!data?.data || data?.data?.length === 0) {
+  if (!getUserCartData?.data || getUserCartData?.data?.length === 0) {
     return (
       <div className='py-10'>
         <NoData
@@ -405,7 +406,7 @@ const BuyerCart = () => {
         <div className='pl-2'>Select All</div>
       </div>
       <Divider className='border-none' />
-      {data.data.map((merchant, merchantIndex) => (
+      {getUserCartData.data.map((merchant, merchantIndex) => (
         <div id={merchant.merchant_id.toString()} key={merchant.merchant_id}>
           <div className='flex items-center'>
             <input
