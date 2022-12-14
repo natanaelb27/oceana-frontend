@@ -209,7 +209,7 @@ const BuyerCart = () => {
             })
               .unwrap()
               .then(() => {
-                notifySuccessToast('1 Item has been added to cart');
+                notifySuccessToast('1 item has been added to your cart');
               })
               .catch(() => {
                 product.quantity = product.stock_quantity;
@@ -249,7 +249,7 @@ const BuyerCart = () => {
               })
                 .unwrap()
                 .then(() => {
-                  notifySuccessToast('1 Item has been removed from cart');
+                  notifySuccessToast('1 item has been removed from your cart');
                 })
                 .catch((err) => {
                   notifyErrorToast(err.data.message);
@@ -379,7 +379,7 @@ const BuyerCart = () => {
 
   if (isLoading) {
     return (
-      <div className='container px-2 animate-pulse'>
+      <div className='container mx-auto animate-pulse py-10'>
         <div className='grid grid-col-12 gap-4 mb-10'>
           <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
           <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
@@ -389,6 +389,17 @@ const BuyerCart = () => {
           <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
           <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
         </div>
+        <Divider />
+        <div className='grid grid-col-12 gap-4 mb-10'>
+          <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+        </div>
+        <Divider />
         <div className='grid grid-col-12 gap-4 mb-10'>
           <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
           <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
