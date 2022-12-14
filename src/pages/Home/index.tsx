@@ -5,9 +5,10 @@ import { CategoryCard, HomeCard, PromoBanner } from '../../components/Home';
 import { LIMIT_HOME_RECOMMENDED_PRODUCTS } from '../../constants';
 import { useGetAllCategoryQuery } from '../../store/services/categoryService';
 import { useGetAllProductsQuery } from '../../store/services/productService';
-import { ProductQuery } from '../../types/query';
+import { CategoryQuery, ProductQuery } from '../../types/query';
 import { ProductsSortByString } from '../../types/sort';
-import { toProductQuery } from '../../utils/mapperDTO';
+import { toCategoryQuery, toProductQuery } from '../../utils/mapperDTO';
+import { toUrl } from '../../utils/toUrl';
 
 const Home = () => {
   const [productQuery] = useState<ProductQuery>({
@@ -20,10 +21,19 @@ const Home = () => {
     categoryID: 0,
     priceMinimum: 0,
     priceMaximum: 0,
+    rating: 0,
     merchantCities: [],
     courierServices: [],
   });
-  const { data: resGetAllCategory } = useGetAllCategoryQuery();
+
+  const [categoryQuery] = useState<CategoryQuery>({
+    categoryID: 0,
+    levelDepth: 0,
+  });
+
+  const { data: resGetAllCategory } = useGetAllCategoryQuery(
+    toCategoryQuery(categoryQuery)
+  );
   const { data: resGetRecommendedProducts } = useGetAllProductsQuery(
     toProductQuery(productQuery)
   );
@@ -34,12 +44,15 @@ const Home = () => {
         <PromoBanner />
       </div>
       <div className='my-5'>
-        <HomeCard title='Category' navigateSeeAll='/'>
+        <HomeCard title='Category' navigateSeeAll='/category'>
           <Slider id='category'>
             {resGetAllCategory?.data &&
               resGetAllCategory.data.map((category, n) => (
                 <Carousel.Item key={n}>
-                  <CategoryCard category={category} to={'/'} />
+                  <CategoryCard
+                    category={category}
+                    to={`/category/${toUrl(category.name)}-i.${category.id}`}
+                  />
                 </Carousel.Item>
               ))}
           </Slider>

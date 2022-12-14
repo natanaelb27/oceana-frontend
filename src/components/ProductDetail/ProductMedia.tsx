@@ -1,5 +1,5 @@
 import Zoom from 'react-medium-image-zoom';
-import { HiHeart } from 'react-icons/hi';
+import { HiHeart, HiOutlineHeart } from 'react-icons/hi';
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -13,7 +13,19 @@ import { Button } from 'react-daisyui';
 import { toCompact } from '../../utils/convert';
 import { notifyInfoToast } from '../../utils/toast';
 
-const ProductMedia = () => {
+type ProductMediaProps = {
+  images: string[];
+  selectedVariantImage: string;
+  handleClickFavoriteProduct: () => void;
+  favoriteProductValue: boolean;
+};
+
+const ProductMedia = ({
+  images,
+  selectedVariantImage,
+  handleClickFavoriteProduct,
+  favoriteProductValue,
+}: ProductMediaProps) => {
   const handleCopyClick = () => {
     navigator.clipboard.writeText(window.location.href);
 
@@ -25,43 +37,35 @@ const ProductMedia = () => {
       <div className='mb-2'>
         <Zoom>
           <img
-            src='https://picsum.photos/300/300'
+            src={`${
+              selectedVariantImage === '' ? images[0] : selectedVariantImage
+            }`}
             className='w-full rounded-lg'
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+              currentTarget.src =
+                'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+            }}
           />
         </Zoom>
       </div>
-      <div className='grid grid-cols-5 gap-2 mb-4'>
-        <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
-        </Zoom>
-        <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
-        </Zoom>
-        <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
-        </Zoom>
-        <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
-        </Zoom>
-        <Zoom>
-          <img
-            src='https://picsum.photos/300/300'
-            className='w-full rounded-lg'
-          />
-        </Zoom>
-      </div>
+      {images.length > 1 && (
+        <div className='grid grid-cols-5 gap-2 mb-4'>
+          {images.slice(1).map((image, index) => (
+            <Zoom key={index}>
+              <img
+                src={image}
+                className='w-full rounded-lg'
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null;
+                  currentTarget.src =
+                    'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+                }}
+              />
+            </Zoom>
+          ))}
+        </div>
+      )}
       <div className='flex justify-center items-center mb-2.5'>
         <span className='mr-2'>Share:</span>
         <FacebookShareButton url={window.location.href} className='mr-1'>
@@ -82,8 +86,17 @@ const ProductMedia = () => {
           <IoCopyOutline className='text-sm' />
         </Button>
         <span className='mx-2'>|</span>
-        <Button shape='circle' size='sm' color='ghost'>
-          <HiHeart className='text-2xl text-secondary' />
+        <Button
+          shape='circle'
+          size='sm'
+          color='ghost'
+          onClick={handleClickFavoriteProduct}
+        >
+          {favoriteProductValue === true ? (
+            <HiHeart className='text-2xl text-secondary' />
+          ) : (
+            <HiOutlineHeart className='text-2xl' />
+          )}
         </Button>
         <span className='ml-1'>Favorite ({toCompact(10000)})</span>
       </div>

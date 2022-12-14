@@ -6,6 +6,7 @@ export const MOBILE_WIDTH = 480;
 export const SCROLL_SLIDER = 360;
 export const LIMIT_HOME_RECOMMENDED_PRODUCTS = 18;
 export const LIMIT_SEARCH_PRODUCTS_LIST = 30;
+export const LIMIT_SIMILAR_PRODUCTS_IN_PRODUCT_PAGE = 12;
 export const LIMIT_SELLER_VOUCHER_LIST = 10;
 
 export const VOUCHER_STATUS = {
@@ -35,8 +36,8 @@ export const DELIVERY_STATUS = {
   CANCELED_SELLER: 'Canceled by Seller',
   COMPLETED: 'Completed',
 };
-export const PHONE_REGEX =
-  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
-// status codes
-export const STATUS_SEE_OTHER = 303;
+export const WALLET_TRANSACTION_HISTORY_TYPE = {
+  DEBIT: 'Debit',
+  CREDIT: 'Credit',
+};

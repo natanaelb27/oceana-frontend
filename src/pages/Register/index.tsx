@@ -10,7 +10,7 @@ import {
   AuthContainer,
   FormContainer,
 } from '../../components/common/Container';
-import { STATUS_SEE_OTHER } from '../../constants';
+import { STATUS_SEE_OTHER } from '../../constants/statusCodes';
 import { useLoginWithGoogleMutation } from '../../store/services/authService';
 import { setCredentials } from '../../store/slices/authSlice';
 import { setRegisterGoogleState } from '../../store/slices/registerGoogleSlice';
@@ -49,7 +49,6 @@ const Register = () => {
     )
       .unwrap()
       .then((response) => {
-        console.log(response);
         const { data: loginResponseData } = response;
         const { role } = loginResponseData as Role;
         dispatch(setCredentials({ role }));
