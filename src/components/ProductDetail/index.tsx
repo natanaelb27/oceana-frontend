@@ -40,6 +40,7 @@ import {
 } from '../../constants';
 import { ProductCard } from '../common';
 import { ReviewsSort } from '../../types/sort';
+import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 
 type ProductDetailProps = {
   merchantID?: string;
@@ -216,7 +217,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
   };
 
-  const handleClckAddToCart = () => {
+  const handleClickAddToCart = () => {
     let productItemID = 0;
     if (getProductDetailData?.data?.product_variation.length === 0) {
       productItemID =
@@ -235,7 +236,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       .catch((err) => {
         if (err && 'data' in err) {
           const data = err.data as UpdateUserCartResponse;
-          notifyErrorToast(data.message);
+          notifyErrorToast(capitalizeFirstLetter(data.message));
         }
       });
   };
@@ -574,7 +575,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               maxPurchaseQuantity={
                 getPurchasedQuantitiesData?.data?.max_purchase_quantity
               }
-              handleClickAddToCart={handleClckAddToCart}
+              handleClickAddToCart={handleClickAddToCart}
               defaultImage={getProductDetailData.data.images[0]}
               selectedVariantImage={selectedVariantImage}
             />

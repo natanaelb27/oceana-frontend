@@ -355,10 +355,10 @@ const BuyerCart = () => {
     })
       .unwrap()
       .then(() => {
-        notifySuccessToast('Item was succesfully deleted from cart');
+        notifySuccessToast('Product was successfully deleted from your cart');
       })
       .catch(() => {
-        notifyErrorToast('Error deleting item from cart');
+        notifyErrorToast('Error deleting product from cart');
       })
       .finally(() => {
         setModal({
@@ -427,9 +427,6 @@ const BuyerCart = () => {
   return (
     <div className='px-2 container mx-auto flex flex-col'>
       <h5 className='font-bold text-2xl text-primary my-4'>Cart</h5>
-      {/* <Alert className='bg-red-100 border-2 border-red-300 my-2'>
-        :( There was 1 item that could not be processed
-      </Alert> */}
       <div className='flex'>
         <input
           type='checkbox'
@@ -533,10 +530,6 @@ const BuyerCart = () => {
                     }
                     size='sm'
                   >
-                    {/* <BiTrash
-                      size='1.5em'
-                      className='text-error cursor-pointer'
-                    /> */}
                     DELETE
                   </Button>
                   <Button
