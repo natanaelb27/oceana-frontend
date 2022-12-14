@@ -159,6 +159,10 @@ const Routes = () => {
               element: <BuyerCart />,
             },
             {
+              path: '/checkout',
+              element: <BuyerCheckout />,
+            },
+            {
               path: '/',
               element: (
                 <ProtectedRoute
@@ -385,20 +389,6 @@ const Routes = () => {
           redirectTo='/'
         >
           <SealabsPayPaymentRedirect />
-        </ProtectedRoute>
-      ),
-    },
-
-    {
-      path: '/checkout',
-      element: (
-        <ProtectedRoute
-          roleCode={roleCode}
-          isTokenExist={isTokenExist}
-          allowedRoles={[Role.Buyer]}
-          redirectTo='/'
-        >
-          <BuyerCheckout />
         </ProtectedRoute>
       ),
     },

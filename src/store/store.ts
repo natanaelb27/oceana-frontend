@@ -6,6 +6,7 @@ import baseQueryInterceptor from './baseQuery';
 
 import { authApi } from './services/authService';
 import authReducer from './slices/authSlice';
+import cartReducer from './slices/cartSlice';
 import registerGoogleReducer from './slices/registerGoogleSlice';
 import sealabsPayReducer from './slices/sealabsPaySlice';
 import sellerSidebarReducer from './slices/sellerSidebarSlice';
@@ -22,6 +23,7 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [baseApi.reducerPath]: baseApi.reducer,
     auth: authReducer,
+    cart: cartReducer,
     registerGoogle: registerGoogleReducer,
     sealabsPay: sealabsPayReducer,
     sellerSidebar: sellerSidebarReducer,

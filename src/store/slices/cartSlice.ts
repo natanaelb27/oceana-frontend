@@ -15,10 +15,10 @@ const slice = createSlice({
     setCart: (
       state,
       {
-        payload: { cardGroupedByMerchants },
-      }: PayloadAction<{ cardGroupedByMerchants: CartGroupedByMerchant[] }>
+        payload: { cartGroupedByMerchants },
+      }: PayloadAction<{ cartGroupedByMerchants: CartGroupedByMerchant[] }>
     ) => {
-      state.cartGroupedByMerchants = cardGroupedByMerchants;
+      state.cartGroupedByMerchants = cartGroupedByMerchants;
     },
     unsetCart: (state) => {
       state.cartGroupedByMerchants = [];
@@ -26,7 +26,8 @@ const slice = createSlice({
   },
 });
 
-export const selectCart = (state: RootState) => state.sealabsPay.cardNumber;
+export const selectCart = (state: RootState) =>
+  state.cart.cartGroupedByMerchants;
 
 export const { setCart, unsetCart } = slice.actions;
 

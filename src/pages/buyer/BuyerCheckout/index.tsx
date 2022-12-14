@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Tooltip } from 'react-daisyui';
+import { AiOutlineShop } from 'react-icons/ai';
 import { BiReceipt } from 'react-icons/bi';
 import { FaAddressBook, FaListUl } from 'react-icons/fa';
 import { HiOutlineLocationMarker, HiOutlineTruck } from 'react-icons/hi';
@@ -11,14 +12,20 @@ import {
 } from 'react-icons/io5';
 import { MdOutlineAddLocationAlt } from 'react-icons/md';
 import { TbDiscount2 } from 'react-icons/tb';
+import { Link } from 'react-router-dom';
 import NoData from '../../../components/common/NoData';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
+import { selectCart } from '../../../store/slices/cartSlice';
+import { useAppDispatch, useAppSelector } from '../../../store/store';
 import { Address } from '../../../types/component';
-import { toPhoneNumber } from '../../../utils/convert';
+import { toPhoneNumber, toRupiah } from '../../../utils/convert';
+import { titleCase } from '../../../utils/titleCase';
 
 const BuyerCheckout = () => {
-  const { data: getAddressesData } = useGetAddressesQuery();
   const [defaultAddress, setDefaultAddress] = useState<Address | null>(null);
+  const { data: getAddressesData } = useGetAddressesQuery();
+  const cart = useAppSelector(selectCart);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!getAddressesData?.data) {
@@ -63,7 +70,9 @@ const BuyerCheckout = () => {
   }
   return (
     <div className='px-2 container mx-auto flex flex-col'>
-      <h1 className='font-bold text-2xl text-primary my-4'>Checkout</h1>
+      <h1 className='font-bold text-2xl text-primary my-4'>
+        <Link to='/'>Checkout</Link>
+      </h1>
       {/* Shipping address */}
       <Card className='p-4 mb-4 shadow-lg'>
         <Card.Title className='flex justify-between'>
@@ -102,33 +111,92 @@ const BuyerCheckout = () => {
       </Card>
 
       {/* Checked out products card */}
-      <Card className='p-4 mb-4 shadow-lg'>
-        <Card.Title className='flex justify-between'>
-          <div className='flex items-center gap-2'>
-            <BiReceipt />
-            <h2>Order 1</h2>
-          </div>
-          <Tooltip message='Delivery service' position='left'>
-            <Button
-              className='shadow-md'
-              color='primary'
-              shape='circle'
-              size='md'
-            >
-              <HiOutlineTruck className='text-2xl' />
-            </Button>
-          </Tooltip>
-        </Card.Title>
-      </Card>
+      {cart.map(({ merchant_id, merchant_province, name, products }, index) => (
+        <Card key={merchant_id} className='p-4 mb-4 shadow-lg'>
+          <Card.Title className='flex justify-between'>
+            <div className='flex items-center gap-2'>
+              <BiReceipt />
+              <h2>Order {index + 1}</h2>
+            </div>
+            <Tooltip message='Delivery service' position='left'>
+              <Button
+                className='shadow-md'
+                color='primary'
+                shape='circle'
+                size='md'
+              >
+                <HiOutlineTruck className='text-2xl' />
+              </Button>
+            </Tooltip>
+          </Card.Title>
+          <Card.Body className='p-0 pl-2'>
+            <div id={`merchant-${name}`}>
+              <div className='flex items-center gap-2'>
+                <AiOutlineShop className='text-primary' />
+                <h3 className='font-bold'>{name}</h3>
+              </div>
+              <p className='text-neutral'>{merchant_province}</p>
+            </div>
+            <div id='products'>
+              {products.map((product) => {
+                console.log(product.product_variation);
+                return (
+                  <div
+                    key={product.carts_id}
+                    className='flex items-center py-3'
+                  >
+                    <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2 h-'>
+                      <img
+                        src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
+                        className='rounded-lg h-full w-full'
+                        onError={({ currentTarget }) => {
+                          currentTarget.onerror = null;
+                          currentTarget.src =
+                            'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+                        }}
+                      />
+                    </div>
+                    <div className='h-24 flex flex-col'>
+                      <div className='justify-start mt-2 md:mt-0'>
+                        {titleCase(product.product_name)}
+                      </div>
+                      <div className='text-sm mt-0.5'>
+                        {titleCase(product.product_variation)}
+                      </div>
+                      {product.price !== product.price_after_discount ? (
+                        <div className='flex items-center'>
+                          <div className='text-lg font-bold'>
+                            {toRupiah(product.price_after_discount)}
+                          </div>
+                          <h5 className='text-base line-through ml-1'>
+                            {toRupiah(product.price)}
+                          </h5>
+                        </div> // prevents looping
+                      ) : (
+                        <div className='text-lg font-bold'>
+                          {toRupiah(product.price_after_discount)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card.Body>
+        </Card>
+      ))}
 
       {/* Voucher card */}
       <Card className='p-4 mb-4 shadow-lg'>
         <Card.Title className='flex justify-between'>
           <div className='flex items-center gap-2'>
-            <TbDiscount2 />
+            <div className='flex items-center text-primary gap-1'>
+              <TbDiscount2 />
+              <span className='font-main italic'>Oceana</span>
+            </div>
             <h2>Vouchers</h2>
           </div>
-          <Tooltip message='Add a voucher' position='left'>
+          <Tooltip message="Add a voucher, it's on us!" position='left'>
             <Button
               className='shadow-md'
               color='primary'
@@ -162,8 +230,8 @@ const BuyerCheckout = () => {
       </Card>
 
       {/* Total and make order button sticky bottom */}
-      <Card className='p-4 px-10 w-full fixed bottom-0 left-0 flex justify-end rounded-b-none rounded-t-3xl bg-base-300'>
-        <Card.Title className='flex justify-between'>
+      <Card className='p-4 w-full fixed bottom-0 left-0 flex justify-end rounded-b-none rounded-t-3xl bg-neutral'>
+        <Card.Title className='flex justify-between text-neutral-content'>
           <div className='flex items-center gap-2'>
             <ImPriceTags />
             <h2>Rp. 420000</h2>
