@@ -66,7 +66,7 @@ const Header = () => {
   };
 
   const handleShopClick = () => {
-    navigate('/seller/registration');
+    navigate('/seller');
   };
 
   return (
@@ -220,6 +220,10 @@ const Header = () => {
                   <Dropdown.Item onClick={handleProfileClick}>
                     <CgProfile className='text-xl' />
                     <span>Profile</span>
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleShopClick}>
+                    <BsShop className='text-xl' />
+                    <span>My Shop</span>
                   </Dropdown.Item>
                   <Dropdown.Item onClick={handleLogoutClick}>
                     <CgLogOut className='text-xl' />
