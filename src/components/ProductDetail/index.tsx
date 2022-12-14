@@ -575,6 +575,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                 getPurchasedQuantitiesData?.data?.max_purchase_quantity
               }
               handleClickAddToCart={handleClckAddToCart}
+              defaultImage={getProductDetailData.data.images[0]}
+              selectedVariantImage={selectedVariantImage}
             />
           </div>
           <div className='col-span-12 md:col-span-3'>

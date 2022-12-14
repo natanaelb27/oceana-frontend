@@ -29,6 +29,8 @@ type ProductCartProps = {
   userMaxPurchaseQuantity?: number;
   maxPurchaseQuantity?: number;
   handleClickAddToCart: () => void;
+  defaultImage: string;
+  selectedVariantImage: string;
 };
 
 const ProductCart = ({
@@ -47,6 +49,8 @@ const ProductCart = ({
   userMaxPurchaseQuantity,
   maxPurchaseQuantity,
   handleClickAddToCart,
+  defaultImage,
+  selectedVariantImage,
 }: ProductCartProps) => {
   const renderPurchaseButtons = () => {
     if (
@@ -81,7 +85,19 @@ const ProductCart = ({
         {productVariations.length !== 0 && (
           <div>
             <div className='flex items-center gap-2'>
-              <Avatar src='https://picsum.photos/200' size='sm' />
+              <img
+                src={`${
+                  selectedVariantImage === ''
+                    ? defaultImage
+                    : selectedVariantImage
+                }`}
+                className='w-20'
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null;
+                  currentTarget.src =
+                    'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+                }}
+              />
               {productVariation &&
               productVariations.length === selectedVariations.length ? (
                 <p className='line-clamp-1'>{titleCase(productVariation)}</p>
