@@ -35,7 +35,7 @@ const ProductMedia = ({
   };
 
   return (
-    <div>
+    <div className='sticky top-14'>
       <div className='mb-2'>
         <Zoom>
           <img

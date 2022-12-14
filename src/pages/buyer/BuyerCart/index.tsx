@@ -38,7 +38,7 @@ type ModalInformation = {
 };
 
 const BuyerCart = () => {
-  const { data, error } = useGetUserCartQuery();
+  const { data, error, isLoading } = useGetUserCartQuery();
   const [updateUserCart] = useUpdateUserCartMutation();
   const [selectedItems, setSelectedItems] = useState<SelectCartItems>({
     selectAll: false,
@@ -376,6 +376,31 @@ const BuyerCart = () => {
       productItemID: 0,
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className='container px-2 animate-pulse'>
+        <div className='grid grid-col-12 gap-4 mb-10'>
+          <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+        </div>
+        <div className='grid grid-col-12 gap-4 mb-10'>
+          <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!data?.data || data?.data?.length === 0) {
     return (
