@@ -73,13 +73,15 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
     <div className='flex w-3/5 flex-col'>
       <div className='flex flex-row justify-between'>
         <h1 className='text-2xl font-bold mb-3'>Products</h1>
-        <h1 className='text-lg font-bold'>Sort By:</h1>
-        <select className='select select-bordered' onChange={(e) => handleSortChange(e.target.value)}>
-          <option value='most-buy'>Most Purchased</option>
-          <option value='newest'>Most Recent</option>
-          <option value='most-expensive'>Most Expensive</option>
-          <option value='cheapest'>Cheapest</option>
-        </select>
+        <div className='flex flex-row flex-start items-center'>
+          <h1 className='text-lg font-bold mr-3'>Sort By:</h1>
+          <select className='select select-bordered' onChange={(e) => handleSortChange(e.target.value)}>
+            <option value='most-buy'>Most Purchased</option>
+            <option value='newest'>Most Recent</option>
+            <option value='most-expensive'>Most Expensive</option>
+            <option value='cheapest'>Cheapest</option>
+          </select>
+        </div>
       </div>
       <div className='flex flex-row flex-wrap justify-start'>
         {getAllMerchantProducts?.data?.map((product, i) => {
