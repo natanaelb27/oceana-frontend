@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Tooltip } from 'react-daisyui';
+import { Button, Card, Divider, Tooltip } from 'react-daisyui';
 import { AiOutlineShop } from 'react-icons/ai';
 import { BiReceipt } from 'react-icons/bi';
 import { FaAddressBook, FaListUl } from 'react-icons/fa';
 import { HiOutlineLocationMarker, HiOutlineTruck } from 'react-icons/hi';
-import { ImPriceTags } from 'react-icons/im';
+import { ImPriceTag, ImPriceTags } from 'react-icons/im';
 import {
   IoAddSharp,
   IoBagCheckOutline,
@@ -16,16 +16,128 @@ import { Link } from 'react-router-dom';
 import NoData from '../../../components/common/NoData';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
 import { selectCart } from '../../../store/slices/cartSlice';
-import { useAppDispatch, useAppSelector } from '../../../store/store';
+import { useAppSelector } from '../../../store/store';
 import { Address } from '../../../types/component';
 import { toPhoneNumber, toRupiah } from '../../../utils/convert';
 import { titleCase } from '../../../utils/titleCase';
+import ShippingAddressModal from './ShippingAddressModal';
+
+type OpenCheckoutModal = {
+  shippingAddress: {
+    add: boolean;
+    change: boolean;
+  };
+  deliveryService: boolean;
+  shopVoucher: boolean;
+  marketplaceVoucher: boolean;
+  paymentMethod: boolean;
+};
 
 const BuyerCheckout = () => {
-  const [defaultAddress, setDefaultAddress] = useState<Address | null>(null);
+  const [openModal, setOpenModal] = useState<OpenCheckoutModal>({
+    shippingAddress: {
+      add: false,
+      change: false,
+    },
+    deliveryService: false,
+    shopVoucher: false,
+    marketplaceVoucher: false,
+    paymentMethod: false,
+  });
+  const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
   const { data: getAddressesData } = useGetAddressesQuery();
   const cart = useAppSelector(selectCart);
-  const dispatch = useAppDispatch();
+
+  const handleAddAddressClick = () => {
+    setOpenModal({
+      shippingAddress: {
+        add: true,
+        change: false,
+      },
+      deliveryService: false,
+      shopVoucher: false,
+      marketplaceVoucher: false,
+      paymentMethod: false,
+    });
+  };
+
+  const handleChangeAddressClick = () => {
+    setOpenModal({
+      shippingAddress: {
+        add: false,
+        change: true,
+      },
+      deliveryService: false,
+      shopVoucher: false,
+      marketplaceVoucher: false,
+      paymentMethod: false,
+    });
+  };
+
+  const handleDeliveryServiceClick = () => {
+    setOpenModal({
+      shippingAddress: {
+        add: false,
+        change: false,
+      },
+      deliveryService: true,
+      shopVoucher: false,
+      marketplaceVoucher: false,
+      paymentMethod: false,
+    });
+  };
+
+  const handleShopVoucherClick = () => {
+    setOpenModal({
+      shippingAddress: {
+        add: false,
+        change: false,
+      },
+      deliveryService: false,
+      shopVoucher: true,
+      marketplaceVoucher: false,
+      paymentMethod: false,
+    });
+  };
+
+  const handleMarketplaceVoucherClick = () => {
+    setOpenModal({
+      shippingAddress: {
+        add: false,
+        change: false,
+      },
+      deliveryService: false,
+      shopVoucher: false,
+      marketplaceVoucher: true,
+      paymentMethod: false,
+    });
+  };
+
+  const handlePaymentMethodClick = () => {
+    setOpenModal({
+      shippingAddress: {
+        add: false,
+        change: false,
+      },
+      deliveryService: false,
+      shopVoucher: false,
+      marketplaceVoucher: false,
+      paymentMethod: true,
+    });
+  };
+
+  const handleModalClose = () => {
+    setOpenModal({
+      shippingAddress: {
+        add: false,
+        change: false,
+      },
+      deliveryService: false,
+      shopVoucher: false,
+      marketplaceVoucher: false,
+      paymentMethod: false,
+    });
+  };
 
   useEffect(() => {
     if (!getAddressesData?.data) {
@@ -51,17 +163,17 @@ const BuyerCheckout = () => {
         is_default: false,
         is_shop_address: false,
       };
-      setDefaultAddress(emptyAddress);
+      setShippingAddress(emptyAddress);
     }
     addresses.forEach((address) => {
       if (address.is_default) {
-        setDefaultAddress(address);
+        setShippingAddress(address);
         return;
       }
     });
   }, [getAddressesData]);
 
-  if (!getAddressesData?.data || !defaultAddress) {
+  if (!getAddressesData?.data || !shippingAddress) {
     return (
       <div className='px-2 container mx-auto flex flex-col animate-pulse'>
         <div className='h-6 bg-base-200 rounded-full w-36 max-w-3/5'></div>
@@ -80,28 +192,39 @@ const BuyerCheckout = () => {
             <HiOutlineLocationMarker />
             <h2>Shipping Address</h2>
           </div>
-          <Tooltip message='Change shipping address' position='left'>
-            <Button
-              className='shadow-md'
-              color='primary'
-              shape='circle'
-              size='md'
-            >
-              {defaultAddress.id ? (
+          {shippingAddress.id ? (
+            <Tooltip message='Change shipping address' position='left'>
+              <Button
+                className='shadow-md'
+                color='primary'
+                shape='circle'
+                size='md'
+                onClick={handleChangeAddressClick}
+              >
                 <FaAddressBook className='text-xl' />
-              ) : (
+              </Button>
+            </Tooltip>
+          ) : (
+            <Tooltip message='Add a shipping address' position='left'>
+              <Button
+                className='shadow-md'
+                color='primary'
+                shape='circle'
+                size='md'
+                onClick={handleAddAddressClick}
+              >
                 <MdOutlineAddLocationAlt className='text-xl' />
-              )}
-            </Button>
-          </Tooltip>
+              </Button>
+            </Tooltip>
+          )}
         </Card.Title>
-        <Card.Body className='p-0 mt-2 flex flex-col gap-0'>
-          {defaultAddress.id ? (
-            <div className='mt-4'>
-              <h3 className='font-bold'>{defaultAddress.name}</h3>
-              <div className='text-neutral'>
-                <p>{toPhoneNumber(defaultAddress.phone_number as string)}</p>
-                <p>{`${defaultAddress.sub_district}, ${defaultAddress.district}, ${defaultAddress.city}, ${defaultAddress.province} ${defaultAddress.zip_code}`}</p>
+        <Card.Body className='p-0 flex flex-col gap-0'>
+          {shippingAddress.id ? (
+            <div>
+              <h3 className='font-bold'>{shippingAddress.name}</h3>
+              <div>
+                <p>{toPhoneNumber(shippingAddress.phone_number as string)}</p>
+                <p>{`${shippingAddress.sub_district}, ${shippingAddress.district}, ${shippingAddress.city}, ${shippingAddress.province} ${shippingAddress.zip_code}`}</p>
               </div>
             </div>
           ) : (
@@ -135,7 +258,7 @@ const BuyerCheckout = () => {
                 <AiOutlineShop className='text-primary' />
                 <h3 className='font-bold'>{name}</h3>
               </div>
-              <p className='text-neutral'>{merchant_province}</p>
+              <p>{merchant_province}</p>
             </div>
             <div id='products'>
               {products.map((product) => {
@@ -183,6 +306,22 @@ const BuyerCheckout = () => {
               })}
             </div>
           </Card.Body>
+          <Divider />
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-1'>
+              <ImPriceTag />
+              <p>Subtotal</p>
+            </div>
+            <p className='text-xl font-bold'>
+              {toRupiah(
+                products.reduce(
+                  (currentSubtotal, current) =>
+                    currentSubtotal + current.price_after_discount,
+                  0
+                )
+              )}
+            </p>
+          </div>
         </Card>
       ))}
 
@@ -191,7 +330,7 @@ const BuyerCheckout = () => {
         <Card.Title className='flex justify-between'>
           <div className='flex items-center gap-2'>
             <div className='flex items-center text-primary gap-1'>
-              <TbDiscount2 />
+              <TbDiscount2 className='text-primary' />
               <span className='font-main italic'>Oceana</span>
             </div>
             <h2>Vouchers</h2>
@@ -246,6 +385,12 @@ const BuyerCheckout = () => {
           </Button>
         </Card.Title>
       </Card>
+
+      {/* Shipping Address Modal */}
+      <ShippingAddressModal
+        open={openModal.shippingAddress}
+        onClose={handleModalClose}
+      />
     </div>
   );
 };
