@@ -135,68 +135,45 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
                     getMerchantVoucherDetailsData?.data.voucher_status,
                     VOUCHER_STATUS.ONGOING
                   ) ? (
-                    <Badge color='warning' className='flex gap-1 bg-opacity-50'>
-                      <HiOutlineClock />
-                      {computeDatetime(
-                        getDateDiffNow(
-                          getMerchantVoucherDetailsData?.data.end_datetime
-                        )
-                      ).days > 0 ? (
-                        <div className='font-bold'>
-                          <Countdown
-                            value={
-                              computeDatetime(
-                                getDateDiffNow(
-                                  getMerchantVoucherDetailsData?.data
-                                    .end_datetime
-                                )
-                              ).days
-                            }
-                          ></Countdown>{' '}
-                          days
-                        </div>
-                      ) : (
-                        // <div className='font-bold'>
-                        //   <Countdown
-                        //     value={
-                        //       computeDatetime(
-                        //         getDateDiffNow(
-                        //           getMerchantVoucherDetailsData?.data
-                        //             .end_datetime
-                        //         )
-                        //       ).hours
-                        //     }
-                        //   ></Countdown>
-                        //   {':'}
-                        //   <Countdown
-                        //     value={
-                        //       computeDatetime(
-                        //         getDateDiffNow(
-                        //           getMerchantVoucherDetailsData?.data
-                        //             .end_datetime
-                        //         )
-                        //       ).minutes
-                        //     }
-                        //   ></Countdown>
-                        //   {':'}
-                        //   <Countdown
-                        //     value={
-                        //       computeDatetime(
-                        //         getDateDiffNow(
-                        //           getMerchantVoucherDetailsData?.data
-                        //             .end_datetime
-                        //         )
-                        //       ).seconds
-                        //     }
-                        //   ></Countdown>
-                        // </div>
-                        <DateCountdown
-                          date={moment(
-                            getMerchantVoucherDetailsData?.data.end_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      )}
-                    </Badge>
+                    // <div className='font-bold'>
+                    //   <Countdown
+                    //     value={
+                    //       computeDatetime(
+                    //         getDateDiffNow(
+                    //           getMerchantVoucherDetailsData?.data
+                    //             .end_datetime
+                    //         )
+                    //       ).hours
+                    //     }
+                    //   ></Countdown>
+                    //   {':'}
+                    //   <Countdown
+                    //     value={
+                    //       computeDatetime(
+                    //         getDateDiffNow(
+                    //           getMerchantVoucherDetailsData?.data
+                    //             .end_datetime
+                    //         )
+                    //       ).minutes
+                    //     }
+                    //   ></Countdown>
+                    //   {':'}
+                    //   <Countdown
+                    //     value={
+                    //       computeDatetime(
+                    //         getDateDiffNow(
+                    //           getMerchantVoucherDetailsData?.data
+                    //             .end_datetime
+                    //         )
+                    //       ).seconds
+                    //     }
+                    //   ></Countdown>
+                    // </div>
+                    <DateCountdown
+                      date={moment(
+                        getMerchantVoucherDetailsData?.data.end_datetime
+                      ).toDate()}
+                    ></DateCountdown>
                   ) : null}
                 </div>
                 <div className='flex flex-col text-sm'>

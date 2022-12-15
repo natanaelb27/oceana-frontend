@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Divider, Dropdown } from 'react-daisyui';
+import { Badge, Button, Card, Divider, Dropdown, Tooltip } from 'react-daisyui';
 import {
   HiOutlineClock,
   HiOutlineShoppingBag,
@@ -11,12 +11,18 @@ import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import moment from 'moment';
 import NoData from '../common/NoData';
 import DateCountdown from '../common/DateCountdown';
+import { useNavigate } from 'react-router-dom';
 
 const PendingPaymentContent = () => {
+  const navigate = useNavigate();
   const {
     data: getAllUserPendingPaymentData,
     isLoading: getAllUserPendingPaymentLoading,
   } = useGetAllUserPendingPaymentQuery();
+
+  const handleStartShoppingClick = () => {
+    navigate('/');
+  };
 
   return (
     <div className='p-4 md:p-10'>
@@ -53,17 +59,13 @@ const PendingPaymentContent = () => {
                         <span className='font-light text-sm hidden md:flex'>
                           Payment expired at
                         </span>
-                        <Badge
-                          color='warning'
-                          className='flex gap-1 bg-opacity-50'
-                        >
-                          <HiOutlineClock />
+                        <Tooltip message='auto cancel countdown'>
                           <DateCountdown
                             date={moment(
                               transaction?.payment_expiration_datetime
                             ).toDate()}
                           ></DateCountdown>
-                        </Badge>
+                        </Tooltip>
                         <Dropdown
                           horizontal='center'
                           vertical='end'
@@ -196,7 +198,7 @@ const PendingPaymentContent = () => {
               title='There are no transactions'
               message='Start shopping and fulfill your needs at Oceana'
               buttonMessage='Start Shopping'
-              // buttonHandleClick={handleResetFilterClick}
+              buttonHandleClick={handleStartShoppingClick}
             ></NoData>
           </div>
         )}
