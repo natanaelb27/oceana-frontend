@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Divider, Tooltip } from 'react-daisyui';
-import { AiOutlineShop } from 'react-icons/ai';
+import { AiOutlineHome, AiOutlineShop } from 'react-icons/ai';
 import { BiReceipt } from 'react-icons/bi';
 import { FaAddressBook, FaListUl } from 'react-icons/fa';
 import { HiOutlineLocationMarker, HiOutlineTruck } from 'react-icons/hi';
@@ -18,6 +18,7 @@ import { useGetAddressesQuery } from '../../../store/services/addressService';
 import { selectCart } from '../../../store/slices/cartSlice';
 import { useAppSelector } from '../../../store/store';
 import { Address } from '../../../types/component';
+import { calculateSubtotal, calculateTotal } from '../../../utils/cart';
 import { toPhoneNumber, toRupiah } from '../../../utils/convert';
 import { titleCase } from '../../../utils/titleCase';
 import ShippingAddressModal from './ShippingAddressModal';
@@ -218,10 +219,13 @@ const BuyerCheckout = () => {
             </Tooltip>
           )}
         </Card.Title>
-        <Card.Body className='p-0 flex flex-col gap-0'>
+        <Card.Body className='p-0 pl-2 flex flex-col gap-0'>
           {shippingAddress.id ? (
             <div>
-              <h3 className='font-bold'>{shippingAddress.name}</h3>
+              <div className='flex items-center gap-2'>
+                <AiOutlineHome className='text-secondary' />
+                <h3 className='font-bold'>{shippingAddress.name}</h3>
+              </div>
               <div>
                 <p>{toPhoneNumber(shippingAddress.phone_number as string)}</p>
                 <p>{`${shippingAddress.sub_district}, ${shippingAddress.district}, ${shippingAddress.city}, ${shippingAddress.province} ${shippingAddress.zip_code}`}</p>
@@ -255,14 +259,13 @@ const BuyerCheckout = () => {
           <Card.Body className='p-0 pl-2'>
             <div id={`merchant-${name}`}>
               <div className='flex items-center gap-2'>
-                <AiOutlineShop className='text-primary' />
+                <AiOutlineShop className='text-secondary' />
                 <h3 className='font-bold'>{name}</h3>
               </div>
               <p>{merchant_province}</p>
             </div>
             <div id='products'>
               {products.map((product) => {
-                console.log(product.product_variation);
                 return (
                   <div
                     key={product.carts_id}
@@ -279,27 +282,24 @@ const BuyerCheckout = () => {
                         }}
                       />
                     </div>
-                    <div className='h-24 flex flex-col'>
+                    <div className='h-24 w-full flex flex-col'>
                       <div className='justify-start mt-2 md:mt-0'>
                         {titleCase(product.product_name)}
                       </div>
                       <div className='text-sm mt-0.5'>
                         {titleCase(product.product_variation)}
                       </div>
-                      {product.price !== product.price_after_discount ? (
-                        <div className='flex items-center'>
-                          <div className='text-lg font-bold'>
-                            {toRupiah(product.price_after_discount)}
-                          </div>
-                          <h5 className='text-base line-through ml-1'>
-                            {toRupiah(product.price)}
-                          </h5>
-                        </div> // prevents looping
-                      ) : (
+                      <div className='font-bold'>
+                        {toRupiah(product.price_after_discount)}
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <div>{`x${product.quantity}`}</div>
                         <div className='text-lg font-bold'>
-                          {toRupiah(product.price_after_discount)}
+                          {toRupiah(
+                            product.price_after_discount * product.quantity
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -313,13 +313,7 @@ const BuyerCheckout = () => {
               <p>Subtotal</p>
             </div>
             <p className='text-xl font-bold'>
-              {toRupiah(
-                products.reduce(
-                  (currentSubtotal, current) =>
-                    currentSubtotal + current.price_after_discount,
-                  0
-                )
-              )}
+              {toRupiah(calculateSubtotal(products))}
             </p>
           </div>
         </Card>
@@ -373,7 +367,7 @@ const BuyerCheckout = () => {
         <Card.Title className='flex justify-between text-neutral-content'>
           <div className='flex items-center gap-2'>
             <ImPriceTags />
-            <h2>Rp. 420000</h2>
+            <h2>{toRupiah(calculateTotal(cart))}</h2>
           </div>
           <Button
             className='flex items-center gap-2 rounded-full shadow-md'
