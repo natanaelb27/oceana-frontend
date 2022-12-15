@@ -344,8 +344,9 @@ const ShippingAddressModal = ({
           Change Address
         </Modal.Header>
         <Modal.Body>
-          {addresses.map((address) => (
+          {addresses.map((address, index) => (
             <>
+              {index > 0 && <Divider />}
               <div
                 key={address.id}
                 className={`p-4 rounded-3xl cursor-pointer ${
@@ -368,7 +369,6 @@ const ShippingAddressModal = ({
                   <p>{`${address.sub_district}, ${address.district}, ${address.city}, ${address.province} ${address.zip_code}`}</p>
                 </div>
               </div>
-              <Divider />
             </>
           ))}
         </Modal.Body>
