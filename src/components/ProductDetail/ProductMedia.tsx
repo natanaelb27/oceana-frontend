@@ -12,6 +12,7 @@ import { IoCopyOutline } from 'react-icons/io5';
 import { Button } from 'react-daisyui';
 import { toCompact } from '../../utils/convert';
 import { notifyInfoToast } from '../../utils/toast';
+import { Image } from '../common';
 
 type ProductMediaProps = {
   images: string[];
@@ -36,16 +37,11 @@ const ProductMedia = ({
     <div>
       <div className='mb-2'>
         <Zoom>
-          <img
+          <Image
             src={`${
               selectedVariantImage === '' ? images[0] : selectedVariantImage
             }`}
             className='w-full rounded-lg'
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null;
-              currentTarget.src =
-                'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-            }}
           />
         </Zoom>
       </div>
@@ -53,15 +49,7 @@ const ProductMedia = ({
         <div className='grid grid-cols-5 gap-2 mb-4'>
           {images.slice(1).map((image, index) => (
             <Zoom key={index}>
-              <img
-                src={image}
-                className='w-full rounded-lg'
-                onError={({ currentTarget }) => {
-                  currentTarget.onerror = null;
-                  currentTarget.src =
-                    'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-                }}
-              />
+              <Image src={image} className='w-full rounded-lg' />
             </Zoom>
           ))}
         </div>

@@ -552,10 +552,9 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
               editUsernameFormik.handleSubmit();
             }}
           >
-            <HiOutlineFaceSmile className='mx-auto text-9xl text-secondary hover:animate-pulse' />
+            <CgProfile className='mx-auto text-9xl text-secondary hover:animate-pulse' />
             <span className='text-center mb-8'>
-              Make sure your username is unique and represent you as it will be
-              shown to other users.
+              Your username will represent you in Oceana
             </span>
             <Form.Label title='Username' />
             <Input

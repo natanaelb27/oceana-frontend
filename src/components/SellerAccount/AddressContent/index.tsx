@@ -50,6 +50,7 @@ import { Role } from '../../../types/role';
 import { useLazyGetSubDistrictsQuery } from '../../../store/services/subDistrictService';
 import { toCreateAddress, toSubDistrictQuery } from '../../../utils/mapperDTO';
 import { SubDistrictQuery } from '../../../types/query';
+import NoData from '../../common/NoData';
 
 type OpenAddressModal = {
   add: boolean;
@@ -456,7 +457,7 @@ const AddressContent = () => {
             </div>
           </Card>
         )}
-        {getAddressesData?.data &&
+        {getAddressesData?.data && getAddressesData.data.length > 0 ? (
           getAddressesData.data
             .filter(({ name }) =>
               name.toLowerCase().includes(search.toLowerCase())
@@ -605,7 +606,15 @@ const AddressContent = () => {
                     </div>
                   </Card>
                 )
-            )}
+            )
+        ) : (
+          <div className='col-span-12'>
+            <NoData
+              title='No address?'
+              message='Oh no, the couriers would not know where to send your package'
+            />
+          </div>
+        )}
       </div>
       <Modal
         open={openModal.add || openModal.edit}

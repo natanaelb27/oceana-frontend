@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Link } from 'react-daisyui';
+import { Link } from 'react-router-dom';
 import { HomeCardContainer, HomeCardTitle } from './style';
 
 type HomeCardProps = {
@@ -13,8 +13,8 @@ const HomeCard = ({ children, title, navigateSeeAll }: HomeCardProps) => {
     <HomeCardContainer>
       <div className='flex items-start gap-2'>
         <Link
-          href={navigateSeeAll}
-          className='hover:text-secondary hover:no-underline'
+          to={navigateSeeAll || '/'}
+          className='link no-underline hover:text-secondary hover:no-underline'
         >
           <HomeCardTitle>{title}</HomeCardTitle>
         </Link>
