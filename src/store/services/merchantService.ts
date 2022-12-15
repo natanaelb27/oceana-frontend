@@ -1,5 +1,8 @@
 import { CreateMerchantRequest } from '../../types/request';
-import { CreateMerchantResponse } from '../../types/response';
+import {
+  CreateMerchantResponse,
+  MerchantGetInformationByIDResponse,
+} from '../../types/response';
 import { baseApi } from '../store';
 
 export const merchantApi = baseApi.injectEndpoints({
@@ -15,7 +18,18 @@ export const merchantApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Merchant', 'Profile'],
     }),
+    getMerchantByID: builder.query<MerchantGetInformationByIDResponse, string>({
+      query: (id) => ({
+        url: `/shop/information/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['Merchant', 'MyShop'],
+    }),
   }),
 });
 
-export const { useCreateMerchantMutation } = merchantApi;
+export const {
+  useCreateMerchantMutation,
+  useGetMerchantByIDQuery,
+  useLazyGetMerchantByIDQuery,
+} = merchantApi;

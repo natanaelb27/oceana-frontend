@@ -4,6 +4,7 @@ import {
   CreateMerchantVoucherResponse,
   DeleteMerchantVoucherResponse,
   GetMerchantResponse,
+  UpdateMerchantResponse,
   UpdateMerchantVoucherResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
@@ -16,6 +17,14 @@ export const myShopApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
       providesTags: ['MyShop'],
+    }),
+    updateMyShopPhoto: builder.mutation<UpdateMerchantResponse, FormData>({
+      query: (request) => ({
+        url: '/my-shop/profile/photo',
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['MyShop', 'Merchant'],
     }),
     createMerchantVoucher: builder.mutation<
       CreateMerchantVoucherResponse,
@@ -61,4 +70,5 @@ export const {
   useCreateMerchantVoucherMutation,
   useUpdateMerchantVoucherMutation,
   useDeleteMerchantVoucherMutation,
+  useUpdateMyShopPhotoMutation,
 } = myShopApi;
