@@ -75,7 +75,7 @@ const App = () => {
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [role]);
 
   return (
     <BrowserRouter>
