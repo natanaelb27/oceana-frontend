@@ -1,6 +1,15 @@
-import { UpdateProfileRequest } from '../../types/request';
 import {
+  CheckPasswordVerificationCodeRequest,
+  UpdateProfileEmailRequest,
+  UpdateProfilePasswordRequest,
+  UpdateProfileRequest,
+  UpdateProfileUsernameRequest,
+} from '../../types/request';
+import {
+  CheckPasswordVerificationCodeResponse,
   GetProfileResponse,
+  RequestPasswordVerificationCodeResponse,
+  UpdateProfilePasswordResponse,
   UpdateProfileResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
@@ -26,10 +35,64 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+    updateProfileEmail: builder.mutation<
+      UpdateProfileResponse,
+      UpdateProfileEmailRequest
+    >({
+      query: (request) => ({
+        url: '/profile/email',
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    updateProfileUsername: builder.mutation<
+      UpdateProfileResponse,
+      UpdateProfileUsernameRequest
+    >({
+      query: (request) => ({
+        url: '/profile/username',
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
     updateProfileImage: builder.mutation<UpdateProfileResponse, FormData>({
       query: (request) => ({
         url: '/profile',
         method: 'PUT',
+        body: request,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    updateProfilePassword: builder.mutation<
+      UpdateProfilePasswordResponse,
+      UpdateProfilePasswordRequest
+    >({
+      query: (request) => ({
+        url: '/profile/password',
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    requestVerificationCode: builder.mutation<
+      RequestPasswordVerificationCodeResponse,
+      void
+    >({
+      query: () => ({
+        url: '/profile/password/request-verification-code',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    checkVerificationCode: builder.mutation<
+      CheckPasswordVerificationCodeResponse,
+      CheckPasswordVerificationCodeRequest
+    >({
+      query: (request) => ({
+        url: '/profile/password/check-verification-code',
+        method: 'POST',
         body: request,
       }),
       invalidatesTags: ['Profile'],
@@ -48,6 +111,11 @@ export const {
   useGetProfileQuery,
   useLazyGetProfileQuery,
   useUpdateProfileMutation,
+  useUpdateProfileEmailMutation,
+  useUpdateProfileUsernameMutation,
   useUpdateProfileImageMutation,
+  useUpdateProfilePasswordMutation,
+  useRequestVerificationCodeMutation,
+  useCheckVerificationCodeMutation,
   useLogoutMutation,
 } = profileApi;

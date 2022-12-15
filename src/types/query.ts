@@ -11,15 +11,51 @@ export type ProductQuery = {
   categoryID: number;
   priceMinimum: number;
   priceMaximum: number;
+  rating: number;
   merchantCities: string[];
   courierServices: string[];
 } & Query;
 
 export type MerchantVoucherQuery = {
+  limit: number;
+  page: number;
+  sortBy: string;
+  sort: string;
+  searchVoucherCode: string;
   filterVoucherStatus: string;
   merchantID: number;
-  searchVoucherCode: string;
-} & Query;
+};
+
+export type TransactionHistoryQuery = {
+  search: string;
+  filterOrderStatus: string;
+  filterOngoingOrderStatus: string;
+  filterStartTransactionDate: string;
+  filterEndTransactionDate: string;
+  limit: number;
+  page: number;
+};
+
+export type CategoryQuery = {
+  categoryID?: number;
+  levelDepth: number;
+};
+
+export type CityQuery = {
+  search: string;
+};
+
+export type SubDistrictQuery = {
+  province: string;
+  city: string;
+  district: string;
+};
+
+export type PurchasedQuantitiesQuery = {
+  product_id: number;
+  product_item_id: number;
+  quantity: number;
+};
 
 export type MerchantProductQuery = {
   categoryID: number;

@@ -6,3 +6,38 @@ export const MOBILE_WIDTH = 480;
 export const SCROLL_SLIDER = 360;
 export const LIMIT_HOME_RECOMMENDED_PRODUCTS = 18;
 export const LIMIT_SEARCH_PRODUCTS_LIST = 30;
+export const LIMIT_SIMILAR_PRODUCTS_IN_PRODUCT_PAGE = 12;
+export const LIMIT_SELLER_VOUCHER_LIST = 10;
+
+export const VOUCHER_STATUS = {
+  ALL: 'All',
+  ONGOING: 'Ongoing',
+  UPCOMING: 'Upcoming',
+  ENDED: 'Ended',
+};
+
+export const DISCOUNT_TYPE = {
+  NOMINAL: 'Nominal',
+  PERCENTAGE: 'Percentage',
+};
+
+export const LIMIT_TRANSACTION_HISTORY = 10;
+export const DELIVERY_STATUS = {
+  ALL: 'All',
+  ONGOING: 'Ongoing',
+  PENDING_PAYMENT: 'Pending Payment',
+  PENDING_SELLER: 'Pending Seller',
+  ON_PROCESS: 'On Process',
+  OUT_FOR_DELIVERY: 'Out for Delivery',
+  DELIVERED: 'Delivered',
+  COMPLAINED: 'Complained',
+  CANCELED: 'Canceled',
+  CANCELED_BUYER: 'Canceled by Buyer',
+  CANCELED_SELLER: 'Canceled by Seller',
+  COMPLETED: 'Completed',
+};
+
+export const WALLET_TRANSACTION_HISTORY_TYPE = {
+  DEBIT: 'Debit',
+  CREDIT: 'Credit',
+};

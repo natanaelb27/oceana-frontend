@@ -1,10 +1,10 @@
-import { GetAllMerchantProductRequest, MerchantCreateRequest } from '../../types/request';
-import { GetAllProductsResponse, MerchantCreateResponse, MerchantGetInformationByIDResponse } from '../../types/response';
+import { GetAllMerchantProductRequest, CreateMerchantRequest } from '../../types/request';
+import { GetAllProductsResponse, CreateMerchantResponse, MerchantGetInformationByIDResponse } from '../../types/response';
 import { baseApi } from '../store';
 
 export const merchantApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        createMerchant: builder.mutation<MerchantCreateResponse, MerchantCreateRequest>({
+        createMerchant: builder.mutation<CreateMerchantResponse, CreateMerchantRequest>({
             query: (request) => ({
                 url: '/profile/register-shop',
                 method: 'POST',

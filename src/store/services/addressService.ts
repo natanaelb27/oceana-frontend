@@ -8,6 +8,7 @@ import {
   GetAddressesResponse,
   GetAddressResponse,
   UpdateAddressResponse,
+  UpdateMerchantResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -63,6 +64,13 @@ export const addressApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+    setShopAddress: builder.mutation<UpdateMerchantResponse, string>({
+      query: (id) => ({
+        url: `/profile/addresses/${id}/default-shop`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['MyShop', 'Profile'],
+    }),
   }),
 });
 
@@ -75,4 +83,5 @@ export const {
   useUpdateAddressMutation,
   useDeleteAddressMutation,
   useSetAddressDefaultMutation,
+  useSetShopAddressMutation,
 } = addressApi;

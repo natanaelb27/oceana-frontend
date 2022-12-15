@@ -4,13 +4,15 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import { toCompact } from '../../utils/convert';
+import { ShopInformation } from '../../types/component';
+import { Image } from '../common';
 
 type ShopBannerProps = {
-  isLoading?: boolean;
+  shopInformation?: ShopInformation;
 };
 
-const ShopBanner = ({ isLoading }: ShopBannerProps) => {
-  if (isLoading) {
+const ShopBanner = ({ shopInformation }: ShopBannerProps) => {
+  if (!shopInformation) {
     return (
       <div className='animate-pulse'>
         <div className='flex items-center gap-4'>
@@ -26,17 +28,30 @@ const ShopBanner = ({ isLoading }: ShopBannerProps) => {
 
   return (
     <div className='flex flex-row gap-4 md:items-center'>
-      <Avatar size='sm' shape='circle' src='https://picsum.photos/200'></Avatar>
+      {shopInformation.photo ? (
+        <div className='avatar'>
+          <div className='w-14 rounded-full'>
+            <Image src={shopInformation.photo} />
+          </div>
+        </div>
+      ) : (
+        <Avatar
+          size='sm'
+          shape='circle'
+          letters={shopInformation.name.charAt(0)}
+        />
+      )}
       <div>
         <Link to='/' className='font-bold mb-2.5 line-clamp-1 link link-hover'>
-          PINZY Official Store
+          {shopInformation.name}
         </Link>
         <div className='flex items-center text-sm w-full'>
           <Tooltip message='Rating' className='mr-1' color='warning'>
             <HiStar className='text-warning text-lg' />
           </Tooltip>
           <p className='line-clamp-1'>
-            4.7 | {toCompact(500)} products | Joined since{' '}
+            {shopInformation.rating_star} |{' '}
+            {toCompact(shopInformation.product_count)} products | Joined since{' '}
             {moment().format('MMMM YYYY')}
           </p>
         </div>

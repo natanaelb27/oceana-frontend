@@ -19,4 +19,5 @@ export const FilterSidebarContainer = tw.div<any>`
   md:top-0
   md:left-0
   md:rounded-lg
+  md:z-0
 `;
