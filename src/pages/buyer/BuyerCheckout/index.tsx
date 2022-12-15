@@ -388,8 +388,11 @@ const BuyerCheckout = () => {
 
       {/* Shipping Address Modal */}
       <ShippingAddressModal
+        addresses={getAddressesData.data}
+        currentShippingAddress={shippingAddress}
         open={openModal.shippingAddress}
         onClose={handleModalClose}
+        onChangeShippingAddress={setShippingAddress}
       />
     </div>
   );

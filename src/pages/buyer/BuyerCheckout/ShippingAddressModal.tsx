@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Button, Form, Input, Modal, Textarea } from 'react-daisyui';
+import { Button, Divider, Form, Input, Modal, Textarea } from 'react-daisyui';
 import { useCreateAddressMutation } from '../../../store/services/addressService';
 import { toCreateAddress, toSubDistrictQuery } from '../../../utils/mapperDTO';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
@@ -14,16 +14,28 @@ import {
 import { useLazyGetSubDistrictsQuery } from '../../../store/services/subDistrictService';
 import { SubDistrictQuery } from '../../../types/query';
 import { ChangeEvent, useEffect, useState } from 'react';
+import { Address } from '../../../types/component';
+import { toPhoneNumber } from '../../../utils/convert';
+import { ConfirmationModal } from '../../../components/common';
 
 type ShippingAddressModalProps = {
+  addresses: Address[];
+  currentShippingAddress: Address;
   open: {
     add: boolean;
     change: boolean;
   };
   onClose: () => void;
+  onChangeShippingAddress: (address: Address) => void;
 };
 
-const ShippingAddressModal = ({ open, onClose }: ShippingAddressModalProps) => {
+const ShippingAddressModal = ({
+  addresses,
+  currentShippingAddress,
+  open,
+  onClose,
+  onChangeShippingAddress,
+}: ShippingAddressModalProps) => {
   const [getSubDistrict] = useLazyGetSubDistrictsQuery();
   const [createAddress, { isLoading: createAddressIsLoading }] =
     useCreateAddressMutation();
@@ -36,6 +48,9 @@ const ShippingAddressModal = ({ open, onClose }: ShippingAddressModalProps) => {
   const [cities, setCities] = useState<CityResponse[]>([]);
   const [districts, setDistricts] = useState<DistrictResponse[]>([]);
   const [subDistricts, setSubDistricts] = useState<SubDistrictResponse[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [openConfirmationModal, setOpenConfirmationModal] =
+    useState<boolean>(false);
 
   const handleProvinceChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setSubDistrictQuery({
@@ -70,6 +85,17 @@ const ShippingAddressModal = ({ open, onClose }: ShippingAddressModalProps) => {
 
     addressFormik.setFieldValue('district', e.target.value);
     addressFormik.handleChange(e);
+  };
+
+  const handleChangeShippingAddress = () => {
+    if (!selectedAddress) return;
+    onChangeShippingAddress(selectedAddress);
+    setOpenConfirmationModal(false);
+    onClose();
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setOpenConfirmationModal(false);
   };
 
   const addressFormik = useFormik({
@@ -304,13 +330,52 @@ const ShippingAddressModal = ({ open, onClose }: ShippingAddressModalProps) => {
           </Button>
         </Modal.Actions>
       </Modal>
+
       <Modal
         open={open.change}
         responsive
         className='max-w-sm'
         onClickBackdrop={onClose}
       >
-        <Modal.Body>Change Address</Modal.Body>
+        <Modal.Body>
+          <h2 className='mb-4 text-xl text-primary font-bold'>
+            Change Address
+          </h2>
+          {addresses.map((address) => (
+            <>
+              <div
+                key={address.id}
+                className={`p-4 rounded-3xl cursor-pointer ${
+                  currentShippingAddress.id === address.id
+                    ? 'bg-primary/10 border border-primary active:bg-primary/20'
+                    : 'hover:bg-primary/20 active:bg-primary/10'
+                }`}
+                onClick={
+                  currentShippingAddress.id === address.id
+                    ? onClose
+                    : () => {
+                        setSelectedAddress(address);
+                        setOpenConfirmationModal(true);
+                      }
+                }
+              >
+                <h3 className='font-bold'>{address.name}</h3>
+                <div>
+                  <p>{toPhoneNumber(address.phone_number as string)}</p>
+                  <p>{`${address.sub_district}, ${address.district}, ${address.city}, ${address.province} ${address.zip_code}`}</p>
+                </div>
+              </div>
+              <Divider />
+            </>
+          ))}
+        </Modal.Body>
+        <ConfirmationModal
+          open={openConfirmationModal}
+          title='Change shipping address?'
+          message=''
+          onClose={handleCloseConfirmationModal}
+          onAccepted={handleChangeShippingAddress}
+        />
       </Modal>
     </>
   );
