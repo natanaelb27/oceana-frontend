@@ -14,7 +14,7 @@ import { CartGroupedByMerchant, CartProduct } from '../../../types/component';
 import { GetUserCartResponse } from '../../../types/response';
 import { toRupiah } from '../../../utils/convert';
 import { titleCase } from '../../../utils/titleCase';
-import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import { notifyErrorToast } from '../../../utils/toast';
 
 type SelectItem = {
   productID: number;
@@ -222,9 +222,6 @@ const BuyerCart = () => {
               quantity: product.quantity,
             })
               .unwrap()
-              .then(() => {
-                notifySuccessToast('1 Item has been added to cart');
-              })
               .catch(() => {
                 product.quantity = product.stockQuantity;
                 notifyErrorToast('Your quantity is over the available stock!');
@@ -262,9 +259,6 @@ const BuyerCart = () => {
                 quantity: product.quantity,
               })
                 .unwrap()
-                .then(() => {
-                  notifySuccessToast('1 Item has been removed from cart');
-                })
                 .catch((err) => {
                   notifyErrorToast(err.data.message);
                 });
@@ -317,9 +311,6 @@ const BuyerCart = () => {
                 quantity: product.quantity,
               })
                 .unwrap()
-                .then(() => {
-                  notifySuccessToast('Successfully updated your cart!');
-                })
                 .catch(() => {
                   notifyErrorToast(
                     'Your quantity is over the available stock!'
@@ -368,9 +359,6 @@ const BuyerCart = () => {
       quantity: 0,
     })
       .unwrap()
-      .then(() => {
-        notifySuccessToast('Item was succesfully deleted from cart');
-      })
       .catch(() => {
         notifyErrorToast('Error deleting item from cart');
       })
