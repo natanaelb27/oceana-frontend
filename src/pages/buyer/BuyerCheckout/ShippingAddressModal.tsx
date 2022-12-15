@@ -26,7 +26,7 @@ type ShippingAddressModalProps = {
     change: boolean;
   };
   onClose: () => void;
-  onChangeShippingAddress: (address: Address) => void;
+  setShippingAddress: (address: Address) => void;
 };
 
 const ShippingAddressModal = ({
@@ -34,7 +34,7 @@ const ShippingAddressModal = ({
   currentShippingAddress,
   open,
   onClose,
-  onChangeShippingAddress,
+  setShippingAddress: onChangeShippingAddress,
 }: ShippingAddressModalProps) => {
   const [getSubDistrict] = useLazyGetSubDistrictsQuery();
   const [createAddress, { isLoading: createAddressIsLoading }] =
@@ -175,7 +175,10 @@ const ShippingAddressModal = ({
         className='max-w-sm'
         onClickBackdrop={onClose}
       >
-        <Modal.Body>
+        <Modal.Header className='mb-4 text-xl text-primary font-bold'>
+          Add Address
+        </Modal.Header>
+        <Modal.Body className='h-96 overflow-y-auto'>
           <Form
             id='addAddressForm'
             className='grid grid-cols-12 gap-4'
@@ -337,10 +340,10 @@ const ShippingAddressModal = ({
         className='max-w-sm'
         onClickBackdrop={onClose}
       >
+        <Modal.Header className='mb-4 text-xl text-primary font-bold'>
+          Change Address
+        </Modal.Header>
         <Modal.Body>
-          <h2 className='mb-4 text-xl text-primary font-bold'>
-            Change Address
-          </h2>
           {addresses.map((address) => (
             <>
               <div

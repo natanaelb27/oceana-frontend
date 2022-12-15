@@ -392,7 +392,7 @@ const BuyerCheckout = () => {
         currentShippingAddress={shippingAddress}
         open={openModal.shippingAddress}
         onClose={handleModalClose}
-        onChangeShippingAddress={setShippingAddress}
+        setShippingAddress={setShippingAddress}
       />
     </div>
   );
