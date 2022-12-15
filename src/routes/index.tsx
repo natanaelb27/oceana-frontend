@@ -16,6 +16,7 @@ import {
   BuyerProfile,
   BuyerPurchaseHistory,
   BuyerRefund,
+  BuyerSealabsPay,
   BuyerWallet,
   Category,
   CategorySearch,
@@ -24,6 +25,10 @@ import {
   NotFound,
   Product,
   Register,
+  SealabsPayPaymentRedirect,
+  SealabsPayRegisterRedirect,
+  SealabsPayTopup,
+  SealabsPayTopupRedirect,
   Search,
   SellerRegistration,
   Shop,
@@ -39,8 +44,8 @@ import {
   ShopProfile,
   ShopPromotionList,
   ShopShipmentSetting,
-  ShopVoucherList,
   ShopVoucherDetail,
+  ShopVoucherList,
 } from '../pages';
 import { selectRole } from '../store/slices/authSlice';
 import { useAppSelector } from '../store/store';
@@ -68,6 +73,10 @@ const Routes = () => {
         {
           path: '/',
           element: <Home />,
+        },
+        {
+          path: '/sealabs-pay',
+          element: <SealabsPayTopup />,
         },
         {
           path: '/category',
@@ -125,6 +134,10 @@ const Routes = () => {
             {
               path: '/user/account/wallet',
               element: <BuyerWallet />,
+            },
+            {
+              path: '/user/account/sealabs-pay',
+              element: <BuyerSealabsPay />,
             },
             {
               path: '/user/account/address',
@@ -342,6 +355,45 @@ const Routes = () => {
           redirectTo='/'
         >
           <Register />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/register',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayRegisterRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/topup',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayTopupRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/payment',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayPaymentRedirect />
         </ProtectedRoute>
       ),
     },

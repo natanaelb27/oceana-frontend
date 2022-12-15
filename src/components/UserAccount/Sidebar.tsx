@@ -1,11 +1,16 @@
 import { Avatar, Card, Divider, Menu } from 'react-daisyui';
+import { BsCreditCard2Back } from 'react-icons/bs';
 import { CgProfile } from 'react-icons/cg';
 import { IoWalletOutline } from 'react-icons/io5';
 import { GoHome, GoHistory } from 'react-icons/go';
-import { HiOutlineCurrencyDollar, HiOutlineReceiptRefund } from 'react-icons/hi';
+import {
+  HiOutlineCurrencyDollar,
+  HiOutlineReceiptRefund,
+} from 'react-icons/hi';
 import { NavLink } from 'react-router-dom';
 
 import { Profile } from '../../types/component';
+import { Image } from '../common';
 
 type SidebarProps = {
   profile: Profile | null | undefined;
@@ -39,7 +44,11 @@ const Sidebar = ({ profile }: SidebarProps) => {
       <div className='p-4'>
         <div className='flex items-center gap-4'>
           {profile.photo ? (
-            <Avatar src={profile.photo} size='sm' shape='circle' />
+            <div className='avatar'>
+              <div className='w-14 rounded-full'>
+                <Image src={profile.photo} />
+              </div>
+            </div>
           ) : (
             <Avatar
               size='sm'
@@ -72,6 +81,12 @@ const Sidebar = ({ profile }: SidebarProps) => {
             <NavLink to='/user/account/wallet'>
               <IoWalletOutline />
               Wallet
+            </NavLink>
+          </Menu.Item>
+          <Menu.Item>
+            <NavLink to='/user/account/sealabs-pay'>
+              <BsCreditCard2Back />
+              Sealabs Pay
             </NavLink>
           </Menu.Item>
           <Menu.Item>

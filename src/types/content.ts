@@ -2,6 +2,7 @@ export enum UserAccountContent {
   Profile = 0,
   Address,
   Wallet,
+  SealabsPay,
   Purchase,
   PendingPayment,
   Refunds,

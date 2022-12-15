@@ -3,11 +3,12 @@ import { useFormik } from 'formik';
 import moment from 'moment';
 import { Button, Card, Divider, Form, Input, Modal } from 'react-daisyui';
 import * as Yup from 'yup';
-import { HiOutlineMail } from 'react-icons/hi';
+import { HiOutlinePhotograph, HiOutlineMail } from 'react-icons/hi';
 import { HiOutlineFaceSmile } from 'react-icons/hi2';
-import { CgClose, CgProfile } from 'react-icons/cg';
+import { CgClose, CgPassword, CgProfile } from 'react-icons/cg';
 
 import {
+  useRequestVerificationCodeMutation,
   useUpdateProfileEmailMutation,
   useUpdateProfileImageMutation,
   useUpdateProfileMutation,
@@ -19,7 +20,11 @@ import {
   toUpdateProfileRequest,
 } from '../../../utils/mapperDTO';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
-import { UpdateProfileResponse } from '../../../types/response';
+import {
+  RequestPasswordVerificationCodeResponse,
+  UpdateProfileResponse,
+} from '../../../types/response';
+import ChangePasswordModal from './ChangePasswordModal';
 
 type ProfileContentProps = {
   profile: Profile | null | undefined;
@@ -29,6 +34,7 @@ type OpenProfileModal = {
   editProfile: boolean;
   editUsername: boolean;
   editEmail: boolean;
+  editPassword: boolean;
 };
 
 const ProfileContent = ({ profile }: ProfileContentProps) => {
@@ -36,6 +42,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
     editProfile: false,
     editUsername: false,
     editEmail: false,
+    editPassword: false,
   });
   const photoFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -47,6 +54,10 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
     useUpdateProfileUsernameMutation();
   const [updateProfileImage, { isLoading: updateProfileImageIsLoading }] =
     useUpdateProfileImageMutation();
+  const [
+    requestVerificationCode,
+    { isLoading: requestVerificationCodeIsLoading },
+  ] = useRequestVerificationCodeMutation();
 
   const editProfileFormik = useFormik({
     initialValues: {
@@ -70,6 +81,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
             editProfile: false,
             editUsername: false,
             editEmail: false,
+            editPassword: false,
           });
         })
         .catch((err) => {
@@ -100,6 +112,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
             editProfile: false,
             editUsername: false,
             editEmail: false,
+            editPassword: false,
           });
         })
         .catch((err) => {
@@ -132,6 +145,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
             editProfile: false,
             editUsername: false,
             editEmail: false,
+            editPassword: false,
           });
         })
         .catch((err) => {
@@ -182,6 +196,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
           editProfile: false,
           editUsername: false,
           editEmail: false,
+          editPassword: false,
         });
       })
       .catch((err) => {
@@ -198,6 +213,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       editProfile: true,
       editUsername: false,
       editEmail: false,
+      editPassword: false,
     });
   };
 
@@ -206,6 +222,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       editProfile: false,
       editUsername: true,
       editEmail: false,
+      editPassword: false,
     });
   };
 
@@ -214,7 +231,29 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       editProfile: false,
       editUsername: false,
       editEmail: true,
+      editPassword: false,
     });
+  };
+
+  const handlePasswordClick = () => {
+    requestVerificationCode()
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Verification code has been sent to your email');
+        setOpenModal({
+          editProfile: false,
+          editUsername: false,
+          editEmail: false,
+          editPassword: true,
+        });
+      })
+      .catch((err) => {
+        if ('data' in err) {
+          const response = err.data as RequestPasswordVerificationCodeResponse;
+
+          notifyErrorToast(response.message);
+        }
+      });
   };
 
   const handleModalClose = () => {
@@ -222,6 +261,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       editProfile: false,
       editUsername: false,
       editEmail: false,
+      editPassword: false,
     });
   };
 
@@ -284,11 +324,21 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
             />
             <div className='p-4'>
               <Button
-                className='w-full normal-case font-medium'
+                className='w-full normal-case font-medium mb-2.5'
+                color='primary'
                 loading={updateProfileImageIsLoading}
                 onClick={handleUploadImageClick}
+                startIcon={<HiOutlinePhotograph className='text-xl' />}
               >
                 Choose Image
+              </Button>
+              <Button
+                className='w-full normal-case font-medium'
+                onClick={handlePasswordClick}
+                loading={requestVerificationCodeIsLoading}
+                startIcon={<CgPassword className='text-xl' />}
+              >
+                Change Password
               </Button>
               <input
                 type='file'
@@ -502,10 +552,9 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
               editUsernameFormik.handleSubmit();
             }}
           >
-            <HiOutlineFaceSmile className='mx-auto text-9xl text-secondary hover:animate-pulse' />
+            <CgProfile className='mx-auto text-9xl text-secondary hover:animate-pulse' />
             <span className='text-center mb-8'>
-              Make sure your username is unique and represent you as it will be
-              shown to other users.
+              Your username will represent you in Oceana
             </span>
             <Form.Label title='Username' />
             <Input
@@ -582,6 +631,10 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
           </Button>
         </Modal.Actions>
       </Modal>
+      <ChangePasswordModal
+        open={openModal.editPassword}
+        onClose={handleModalClose}
+      />
     </div>
   );
 };

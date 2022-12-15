@@ -23,7 +23,7 @@ import {
   Tooltip,
 } from 'react-daisyui';
 import { useOutsideAlerter } from '../../../hooks';
-import { Pager } from '../../common';
+import { Image, Pager } from '../../common';
 import {
   HiOutlineCalendar,
   HiOutlineClock,
@@ -1093,15 +1093,10 @@ const PurchaseContent = () => {
                         >
                           <div className='grid grid-cols-5 md:grid-cols-8'>
                             <div className='mr-5 col-span-1'>
-                              <img
+                              <Image
                                 src={orderDetail.product_image || ''}
                                 alt={orderDetail.product_name || ''}
                                 className='h-12 w-12 md:h-18 md:w-18 rounded-md'
-                                onError={({ currentTarget }) => {
-                                  currentTarget.onerror = null;
-                                  currentTarget.src =
-                                    'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-                                }}
                               />
                             </div>
                             <div className='flex flex-col col-span-4'>
