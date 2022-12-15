@@ -723,37 +723,11 @@ const OrderContent = () => {
                           DELIVERY_STATUS.PENDING_SELLER
                         ) ? (
                           <Tooltip message='auto cancel countdown'>
-                            <Badge
-                              color='warning'
-                              className='flex gap-1 bg-opacity-50'
-                            >
-                              <HiOutlineClock />
-                              {computeDatetime(
-                                getDateDiffNow(
-                                  seller_confirmation_expiration_datetime || ''
-                                )
-                              ).days > 0 ? (
-                                <div className='font-bold'>
-                                  <Countdown
-                                    value={
-                                      computeDatetime(
-                                        getDateDiffNow(
-                                          seller_confirmation_expiration_datetime ||
-                                            ''
-                                        )
-                                      ).days
-                                    }
-                                  ></Countdown>{' '}
-                                  days
-                                </div>
-                              ) : (
-                                <DateCountdown
-                                  date={moment(
-                                    seller_confirmation_expiration_datetime
-                                  ).toDate()}
-                                ></DateCountdown>
-                              )}
-                            </Badge>
+                            <DateCountdown
+                              date={moment(
+                                seller_confirmation_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
                           </Tooltip>
                         ) : null}
 
@@ -762,36 +736,11 @@ const OrderContent = () => {
                           DELIVERY_STATUS.ON_PROCESS
                         ) ? (
                           <Tooltip message='auto cancel countdown'>
-                            <Badge
-                              color='warning'
-                              className='flex gap-1 bg-opacity-50'
-                            >
-                              <HiOutlineClock />
-                              {computeDatetime(
-                                getDateDiffNow(
-                                  on_process_expiration_datetime || ''
-                                )
-                              ).days > 0 ? (
-                                <div className='font-bold'>
-                                  <Countdown
-                                    value={
-                                      computeDatetime(
-                                        getDateDiffNow(
-                                          on_process_expiration_datetime || ''
-                                        )
-                                      ).days
-                                    }
-                                  ></Countdown>{' '}
-                                  days
-                                </div>
-                              ) : (
-                                <DateCountdown
-                                  date={moment(
-                                    on_process_expiration_datetime
-                                  ).toDate()}
-                                ></DateCountdown>
-                              )}
-                            </Badge>
+                            <DateCountdown
+                              date={moment(
+                                on_process_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
                           </Tooltip>
                         ) : null}
 
@@ -800,36 +749,11 @@ const OrderContent = () => {
                           DELIVERY_STATUS.DELIVERED
                         ) ? (
                           <Tooltip message='auto complete countdown'>
-                            <Badge
-                              color='warning'
-                              className='flex gap-1 bg-opacity-50'
-                            >
-                              <HiOutlineClock />
-                              {computeDatetime(
-                                getDateDiffNow(
-                                  delivered_expiration_datetime || ''
-                                )
-                              ).days > 0 ? (
-                                <div className='font-bold'>
-                                  <Countdown
-                                    value={
-                                      computeDatetime(
-                                        getDateDiffNow(
-                                          delivered_expiration_datetime || ''
-                                        )
-                                      ).days
-                                    }
-                                  ></Countdown>{' '}
-                                  days
-                                </div>
-                              ) : (
-                                <DateCountdown
-                                  date={moment(
-                                    delivered_expiration_datetime
-                                  ).toDate()}
-                                ></DateCountdown>
-                              )}
-                            </Badge>
+                            <DateCountdown
+                              date={moment(
+                                delivered_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
                           </Tooltip>
                         ) : null}
                       </div>
@@ -1049,40 +973,12 @@ const OrderContent = () => {
                         position='bottom'
                         message='auto cancel countdown'
                       >
-                        <Badge
-                          color='warning'
-                          className='flex gap-1 bg-opacity-50'
-                        >
-                          <HiOutlineClock />
-                          {computeDatetime(
-                            getDateDiffNow(
-                              getOrderDetailsData?.data
-                                .seller_confirmation_expiration_datetime || ''
-                            )
-                          ).days > 0 ? (
-                            <div className='font-bold'>
-                              <Countdown
-                                value={
-                                  computeDatetime(
-                                    getDateDiffNow(
-                                      getOrderDetailsData?.data
-                                        .seller_confirmation_expiration_datetime ||
-                                        ''
-                                    )
-                                  ).days
-                                }
-                              ></Countdown>{' '}
-                              days
-                            </div>
-                          ) : (
-                            <DateCountdown
-                              date={moment(
-                                getOrderDetailsData?.data
-                                  .seller_confirmation_expiration_datetime
-                              ).toDate()}
-                            ></DateCountdown>
-                          )}
-                        </Badge>
+                        <DateCountdown
+                          date={moment(
+                            getOrderDetailsData?.data
+                              .seller_confirmation_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
                       </Tooltip>
                     ) : null}
 
@@ -1094,39 +990,12 @@ const OrderContent = () => {
                         position='bottom'
                         message='auto cancel countdown'
                       >
-                        <Badge
-                          color='warning'
-                          className='flex gap-1 bg-opacity-50'
-                        >
-                          <HiOutlineClock />
-                          {computeDatetime(
-                            getDateDiffNow(
-                              getOrderDetailsData?.data
-                                .on_process_expiration_datetime || ''
-                            )
-                          ).days > 0 ? (
-                            <div className='font-bold'>
-                              <Countdown
-                                value={
-                                  computeDatetime(
-                                    getDateDiffNow(
-                                      getOrderDetailsData?.data
-                                        .on_process_expiration_datetime || ''
-                                    )
-                                  ).days
-                                }
-                              ></Countdown>{' '}
-                              days
-                            </div>
-                          ) : (
-                            <DateCountdown
-                              date={moment(
-                                getOrderDetailsData?.data
-                                  .on_process_expiration_datetime
-                              ).toDate()}
-                            ></DateCountdown>
-                          )}
-                        </Badge>
+                        <DateCountdown
+                          date={moment(
+                            getOrderDetailsData?.data
+                              .on_process_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
                       </Tooltip>
                     ) : null}
 
@@ -1138,39 +1007,12 @@ const OrderContent = () => {
                         position='bottom'
                         message='auto complete countdown'
                       >
-                        <Badge
-                          color='warning'
-                          className='flex gap-1 bg-opacity-50'
-                        >
-                          <HiOutlineClock />
-                          {computeDatetime(
-                            getDateDiffNow(
-                              getOrderDetailsData?.data
-                                .delivered_expiration_datetime || ''
-                            )
-                          ).days > 0 ? (
-                            <div className='font-bold'>
-                              <Countdown
-                                value={
-                                  computeDatetime(
-                                    getDateDiffNow(
-                                      getOrderDetailsData?.data
-                                        .delivered_expiration_datetime || ''
-                                    )
-                                  ).days
-                                }
-                              ></Countdown>{' '}
-                              days
-                            </div>
-                          ) : (
-                            <DateCountdown
-                              date={moment(
-                                getOrderDetailsData?.data
-                                  .delivered_expiration_datetime
-                              ).toDate()}
-                            ></DateCountdown>
-                          )}
-                        </Badge>
+                        <DateCountdown
+                          date={moment(
+                            getOrderDetailsData?.data
+                              .delivered_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
                       </Tooltip>
                     ) : null}
                   </div>
