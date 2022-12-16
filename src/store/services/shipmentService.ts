@@ -1,4 +1,8 @@
-import { GetShipmentResponse } from '../../types/response';
+import { UpdateShipmentRequest } from '../../types/request/shipment';
+import {
+  GetShipmentResponse,
+  UpdateShipmentResponse,
+} from '../../types/response';
 import { baseApi } from '../store';
 
 export const shipmentApi = baseApi.injectEndpoints({
@@ -10,7 +14,18 @@ export const shipmentApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Shipment'],
     }),
+    updateShipment: builder.mutation<
+      UpdateShipmentResponse,
+      { request: UpdateShipmentRequest }
+    >({
+      query: ({ request }) => ({
+        url: '/my-shop/logistics',
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['Shipment'],
+    }),
   }),
 });
 
-export const { useGetShipmentQuery } = shipmentApi;
+export const { useGetShipmentQuery, useUpdateShipmentMutation } = shipmentApi;

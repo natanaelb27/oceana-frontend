@@ -8,3 +8,5 @@ export type GetShipmentResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type UpdateShipmentResponse = GetShipmentResponse;
