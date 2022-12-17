@@ -17,7 +17,7 @@ export interface Courier {
 }
 
 export interface Shipment {
-  province_id: number;
+  preorder_day: number;
   is_print_label: boolean;
   couriers: Courier[];
 }

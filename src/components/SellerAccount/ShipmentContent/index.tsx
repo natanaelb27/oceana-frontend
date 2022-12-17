@@ -1,6 +1,16 @@
+import { useFormik } from 'formik';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Button, Checkbox, Collapse, Divider } from 'react-daisyui';
-import { BiSave } from 'react-icons/bi';
+import {
+  Button,
+  Checkbox,
+  Collapse,
+  Divider,
+  Input,
+  Toggle,
+} from 'react-daisyui';
+import { BiPackage, BiSave } from 'react-icons/bi';
+import { IoCalendarNumberOutline, IoDocumentsOutline } from 'react-icons/io5';
+import * as Yup from 'yup';
 import {
   useGetShipmentQuery,
   useUpdateShipmentMutation,
@@ -8,6 +18,9 @@ import {
 import { Shipment } from '../../../types/component/shipment';
 import { UpdateShipmentResponse } from '../../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import Img from '../../common/Img';
+import Skeleton from '../../common/Loading/Skeleton';
+import SectionHeading from '../../common/SectionHeading/index';
 
 const ShipmentContent = () => {
   const [data, setData] = useState<Shipment | null | undefined>(null);
@@ -16,6 +29,38 @@ const ShipmentContent = () => {
     useGetShipmentQuery();
   const [updateShipment, { isLoading: updateShipmentIsLoading }] =
     useUpdateShipmentMutation();
+  const shipmentFormik = useFormik({
+    initialValues: {
+      preorderDay: 0,
+    },
+    validationSchema: Yup.object({
+      preorderDay: Yup.number().test({
+        name: 'preorderDay',
+        test(value, ctx) {
+          if (!value) {
+            return ctx.createError({
+              message: 'Process Day cannot be empty',
+            });
+          }
+          if ((value > 2 && value < 7) || value > 30) {
+            return ctx.createError({
+              message:
+                'Process Day must be 2 days for non-Pre-order product or between 7 to 30 days for Pre-order product',
+            });
+          }
+          return true;
+        },
+      }),
+    }),
+    onSubmit: () => {
+      handleShipmentSubmit();
+      return;
+    },
+  });
+
+  const deepCopyShipmentData = (data: Shipment | null | undefined) => {
+    return data ? (JSON.parse(JSON.stringify(data)) as typeof data) : null;
+  };
 
   const handleCourierOnChange = (
     e: ChangeEvent<HTMLInputElement>,
@@ -91,6 +136,43 @@ const ShipmentContent = () => {
     setData(newData);
   };
 
+  const handleProcessDayOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newData = deepCopyShipmentData(data);
+
+    let value = parseInt(e.target.value);
+    if (!value) {
+      value = 0;
+    }
+
+    // if not exist then do nothing
+    if (newData?.preorder_day === null || newData?.preorder_day === undefined) {
+      return;
+    }
+
+    newData.preorder_day = value;
+
+    setData(newData);
+
+    shipmentFormik.touched.preorderDay = true;
+    shipmentFormik.setFieldValue('preorderDay', e.target.value);
+    shipmentFormik.handleChange(e);
+  };
+
+  const handlePrintLabelOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newData = deepCopyShipmentData(data);
+
+    if (
+      newData?.is_print_label === null ||
+      newData?.is_print_label === undefined
+    ) {
+      return;
+    }
+
+    newData.is_print_label = e.target.checked;
+
+    setData(newData);
+  };
+
   const handleShipmentSubmit = () => {
     updateShipment({
       request: data as Shipment,
@@ -107,6 +189,27 @@ const ShipmentContent = () => {
         }
       })
       .finally();
+  };
+
+  const renderLoading = () => {
+    return (
+      <div className='p-4 md:p-10'>
+        <div className='flex flex-col gap-4'>
+          <Skeleton className='h-20' />
+          <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+            <Skeleton className='h-14' />
+            <Skeleton className='h-14' />
+            <Skeleton className='h-14' />
+            <Skeleton className='h-14' />
+          </div>
+          <Skeleton className='h-20' />
+          <Skeleton className='h-20' />
+          <div className='flex justify-end'>
+            <Skeleton className='h-[3rem] w-[8rem]' />
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const renderCourier = () => {
@@ -131,7 +234,7 @@ const ShipmentContent = () => {
                   checked={courier.is_selected}
                   onChange={(e) => handleCourierOnChange(e, indexCourier)}
                 />
-                <img src={courier.logo_url} className='h-12' />
+                <Img src={courier.logo_url} className='h-12' />
                 <div>
                   <p className='text-xl font-medium'>{courier.name}</p>
                   <p className='text-sm font-medium text-gray-500'>
@@ -184,27 +287,90 @@ const ShipmentContent = () => {
       return;
     }
 
+    shipmentFormik.setFieldValue(
+      'preorderDay',
+      getShipmentData?.data.preorder_day || 0
+    );
+    console.log('use');
     setData({ ...getShipmentData?.data });
   }, [getShipmentData]);
 
+  const getShipmentLoadingIsFinished =
+    !getShipmentIsLoading && data !== undefined && data !== null;
+
+  if (!getShipmentLoadingIsFinished) {
+    return renderLoading();
+  }
+
   return (
     <div className='p-4 md:p-10'>
-      <h5 className='font-bold text-2xl text-primary'>Shipment</h5>
-      <Divider />
-      <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-        {!getShipmentIsLoading && renderCourier()}
-      </div>
-      <Divider />
-      <div className='flex justify-end'>
-        <Button
-          className='w-full md:w-auto'
-          startIcon={<BiSave className='text-xl' />}
-          color='primary'
-          onClick={handleShipmentSubmit}
-        >
-          Save
-        </Button>
-      </div>
+      {getShipmentLoadingIsFinished && (
+        <>
+          <SectionHeading
+            title='Shipment'
+            description='Configure your preferred shipment method.'
+            icon={<BiPackage />}
+          />
+          <Divider />
+          <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+            {renderCourier()}
+          </div>
+          <Divider />
+          <div className='flex flex-col lg:flex-row items-start lg:items-center justify-start lg:justify-between'>
+            <SectionHeading
+              title='Process Day'
+              description='Change process day for all product in your shop.'
+              icon={<IoCalendarNumberOutline />}
+            />
+            <Divider />
+            <div className='flex flex-col gap-2 w-full lg:w-[50%]'>
+              <div className='flex items-center gap-5'>
+                <Input
+                  type='number'
+                  name='preorderDay'
+                  className='w-full'
+                  value={shipmentFormik.values.preorderDay}
+                  onChange={handleProcessDayOnChange}
+                  onFocus={() => (shipmentFormik.touched.preorderDay = true)}
+                />
+                <span>days</span>
+              </div>
+              {shipmentFormik.touched.preorderDay &&
+                shipmentFormik.errors.preorderDay && (
+                  <label className='label-text-alt text-error'>
+                    {shipmentFormik.errors.preorderDay}
+                  </label>
+                )}
+            </div>
+          </div>
+          <Divider />
+          {/* Print Label */}
+          <div className='flex items-center justify-between'>
+            <SectionHeading
+              title='Print Label'
+              description='Print label delivery service or all orders.'
+              icon={<IoDocumentsOutline />}
+            />
+            <Toggle
+              checked={data.is_print_label}
+              onChange={handlePrintLabelOnChange}
+              className='w-20 h-10'
+            />
+          </div>
+          <Divider />
+          <div className='flex justify-end'>
+            <Button
+              className='w-full md:w-auto'
+              startIcon={<BiSave className='text-xl' />}
+              color='primary'
+              onClick={shipmentFormik.submitForm}
+              loading={updateShipmentIsLoading}
+            >
+              Save
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
