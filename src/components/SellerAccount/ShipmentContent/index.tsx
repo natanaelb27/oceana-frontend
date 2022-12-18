@@ -21,6 +21,7 @@ import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import Img from '../../common/Img';
 import Skeleton from '../../common/Loading/Skeleton';
 import SectionHeading from '../../common/SectionHeading/index';
+import { formikProcessDayAnndPreorderDay } from '../../../utils/yupValidation';
 
 const ShipmentContent = () => {
   const [data, setData] = useState<Shipment | null | undefined>(null);
@@ -37,18 +38,7 @@ const ShipmentContent = () => {
       preorderDay: Yup.number().test({
         name: 'preorderDay',
         test(value, ctx) {
-          if (!value) {
-            return ctx.createError({
-              message: 'Process Day cannot be empty',
-            });
-          }
-          if ((value > 2 && value < 7) || value > 30) {
-            return ctx.createError({
-              message:
-                'Process Day must be 2 days for non-Pre-order product or between 7 to 30 days for Pre-order product',
-            });
-          }
-          return true;
+          return formikProcessDayAnndPreorderDay(ctx, value);
         },
       }),
     }),
