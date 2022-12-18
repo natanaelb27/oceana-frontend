@@ -1,9 +1,9 @@
 import { AiFillStar } from 'react-icons/ai';
-import { Merchant } from '../../types/component';
+import { MerchantDetail } from '../../types/component';
 import { RatingField, RightContentAttribute, ShopDetailCardContainer, ShopDetailCardContent, ShopDetailCardContentLeft, ShopDetailCardContentRight } from './style';
 
 type ShopDetailCardProps = {
-    merchant: Merchant | null | undefined;
+    merchant: MerchantDetail | null | undefined;
 };
 
 const ShopDetailCard = ({ merchant }: ShopDetailCardProps) => {

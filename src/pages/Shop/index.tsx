@@ -11,10 +11,7 @@ import { toMerchantProductQuery, toMerchantVoucherQuery, toProductQuery } from '
 const ShopDetail = () => {
   const { shopID } = useParams();
 
- 
-
   const [merchantVoucherQuery] = useState<MerchantVoucherQuery>({
-    search: '',
     sort: '',
     sortBy: '',
     filterVoucherStatus: 'all',

@@ -4,5 +4,6 @@ export * from './cart';
 export * from './merchant';
 export * from './merchantVoucher';
 export * from './profile';
+export * from './product';
 export * from './sealabsPay';
 export * from './wallet';
