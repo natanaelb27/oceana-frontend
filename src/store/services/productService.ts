@@ -1,8 +1,10 @@
+import { UpsertProductRequest } from '../../types/request/product';
 import {
   FavoriteProductResponse,
   GetAllProductsResponse,
   GetFavoriteProductResponse,
   GetProductDetailsResponse,
+  GetProductUpsertModelResponse,
   GetPurchasedQuantitiesResponse,
   ViewPostResponse,
 } from '../../types/response';
@@ -53,6 +55,35 @@ export const productApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
       providesTags: ['Product'],
+    }),
+    getProductUpsertModel: builder.query<GetProductUpsertModelResponse, void>({
+      query: (id) => ({
+        url: `/products/${id}/model`,
+        method: 'GET',
+      }),
+      providesTags: ['ProductUpsertModel'],
+    }),
+    createProductUpsertModel: builder.mutation<
+      GetProductUpsertModelResponse,
+      { merchantID: number; request: UpsertProductRequest }
+    >({
+      query: ({ merchantID, request }) => ({
+        url: `/my-shop/${merchantID}/products/`,
+        method: 'POST',
+        body: request,
+      }),
+      invalidatesTags: ['ProductUpsertModel'],
+    }),
+    updateProductUpsertModel: builder.mutation<
+      GetProductUpsertModelResponse,
+      { id: number; request: UpsertProductRequest }
+    >({
+      query: ({ id, request }) => ({
+        url: `/my-shop/products/${id}`,
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['ProductUpsertModel'],
     }),
   }),
 });

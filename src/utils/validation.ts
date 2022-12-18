@@ -1,4 +1,5 @@
 import { KeyboardEvent } from 'react';
+import * as Yup from 'yup';
 
 // true: if password in username
 export const passwordInUsername = (
