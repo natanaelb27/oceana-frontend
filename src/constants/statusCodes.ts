@@ -1,2 +1,3 @@
 export const STATUS_SEE_OTHER = 303;
 export const STATUS_CONFLICT = 409;
+export const STATUS_INTERNAL_SERVER_ERROR = 500;

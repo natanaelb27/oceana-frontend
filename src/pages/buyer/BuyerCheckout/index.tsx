@@ -14,6 +14,7 @@ import { MdOutlineAddLocationAlt } from 'react-icons/md';
 import { TbDiscount2 } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
 import NoData from '../../../components/common/NoData';
+import { STATUS_INTERNAL_SERVER_ERROR } from '../../../constants/statusCodes';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
 import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
 import { selectCart } from '../../../store/slices/cartSlice';
@@ -24,11 +25,17 @@ import {
   CheckoutCartProduct,
   CheckoutCartProductItem,
 } from '../../../types/component/checkout';
+import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import { calculateSubtotal, calculateTotal } from '../../../utils/cart';
 import { toPhoneNumber, toRupiah } from '../../../utils/convert';
 import { toPayCartWithWalletRequest } from '../../../utils/mapperDTO';
 import { titleCase } from '../../../utils/titleCase';
-import { notifyInfoToast } from '../../../utils/toast';
+import {
+  notifyErrorToast,
+  notifyInfoToast,
+  notifySuccessToast,
+} from '../../../utils/toast';
+import PaymentWalletPinModal from './PaymentWalletPinModal';
 import ShippingAddressModal from './ShippingAddressModal';
 
 type OpenCheckoutModal = {
@@ -40,11 +47,13 @@ type OpenCheckoutModal = {
   shopVoucher: boolean;
   marketplaceVoucher: boolean;
   paymentMethod: boolean;
+  paymentWalletPin: boolean;
 };
 
 const BuyerCheckout = () => {
   const { data: getAddressesData } = useGetAddressesQuery();
-  const [payCartWithWallet] = usePayCartWithWalletMutation();
+  const [payCartWithWallet, { isLoading: payCartWithWalletLoading }] =
+    usePayCartWithWalletMutation();
   const cart = useAppSelector(selectCart);
   const [openModal, setOpenModal] = useState<OpenCheckoutModal>({
     shippingAddress: {
@@ -55,6 +64,7 @@ const BuyerCheckout = () => {
     shopVoucher: false,
     marketplaceVoucher: false,
     paymentMethod: false,
+    paymentWalletPin: false,
   });
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
   const [totalPayment, setTotalPayment] = useState<number>(0);
@@ -69,6 +79,7 @@ const BuyerCheckout = () => {
       shopVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: false,
+      paymentWalletPin: false,
     });
   };
 
@@ -82,6 +93,7 @@ const BuyerCheckout = () => {
       shopVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: false,
+      paymentWalletPin: false,
     });
   };
 
@@ -95,6 +107,7 @@ const BuyerCheckout = () => {
       shopVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: false,
+      paymentWalletPin: false,
     });
   };
 
@@ -108,6 +121,7 @@ const BuyerCheckout = () => {
       shopVoucher: true,
       marketplaceVoucher: false,
       paymentMethod: false,
+      paymentWalletPin: false,
     });
   };
 
@@ -121,6 +135,7 @@ const BuyerCheckout = () => {
       shopVoucher: false,
       marketplaceVoucher: true,
       paymentMethod: false,
+      paymentWalletPin: false,
     });
   };
 
@@ -134,6 +149,21 @@ const BuyerCheckout = () => {
       shopVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: true,
+      paymentWalletPin: false,
+    });
+  };
+
+  const handlePaymentWalletPinClick = () => {
+    setOpenModal({
+      shippingAddress: {
+        add: false,
+        change: false,
+      },
+      deliveryService: false,
+      shopVoucher: false,
+      marketplaceVoucher: false,
+      paymentMethod: false,
+      paymentWalletPin: true,
     });
   };
 
@@ -147,6 +177,7 @@ const BuyerCheckout = () => {
       shopVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: false,
+      paymentWalletPin: false,
     });
   };
 
@@ -155,7 +186,13 @@ const BuyerCheckout = () => {
       notifyInfoToast('Shipping address required');
       return;
     }
+    // validate delivery service
+    // validate payment method
 
+    handlePaymentWalletPinClick();
+  };
+
+  const handleSuccessPaymentWalletPin = (pin: string) => {
     const cartIDs: number[] = [];
     const checkoutCartOrderItems = cart.map(
       (cartGroupedByMerchant): CheckoutCartOrderItem => {
@@ -208,20 +245,31 @@ const BuyerCheckout = () => {
       }
     );
     const marketplaceVoucherID = null;
-    const pin = '123456';
 
     // debugging
     const dbgReq = toPayCartWithWalletRequest(
       checkoutCartOrderItems,
       cartIDs,
       marketplaceVoucherID,
-      shippingAddress.id,
+      shippingAddress?.id as string,
       pin,
       totalPayment
     );
     console.log(dbgReq);
 
-    payCartWithWallet(dbgReq);
+    payCartWithWallet(dbgReq)
+      .unwrap()
+      .then(() => notifySuccessToast('Payment success!'))
+      .catch((err) => {
+        const { data } = err;
+        if (data.code === STATUS_INTERNAL_SERVER_ERROR) {
+          notifyErrorToast('Payment failed, please try again');
+          return;
+        }
+        const { message } = data;
+        const messageCapitalized = capitalizeFirstLetter(message);
+        notifyErrorToast(messageCapitalized);
+      });
   };
 
   useEffect(() => setTotalPayment(calculateTotal(cart)), []);
@@ -474,6 +522,17 @@ const BuyerCheckout = () => {
         open={openModal.shippingAddress}
         onClose={handleModalClose}
         setShippingAddress={setShippingAddress}
+      />
+      {/* Delivery Service Modal */}
+      {/* Shop Promotion/Voucher Modal */}
+      {/* Marketplace Voucher Modal */}
+      {/* Payment Method Modal */}
+      {/* Payment Wallet Pin Modal */}
+      <PaymentWalletPinModal
+        open={openModal.paymentWalletPin}
+        isLoading={payCartWithWalletLoading}
+        onClose={handleModalClose}
+        onSuccess={handleSuccessPaymentWalletPin}
       />
     </div>
   );
