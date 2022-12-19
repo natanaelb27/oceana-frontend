@@ -51,7 +51,7 @@ const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
             <HiStar className='text-warning text-lg' />
           </Tooltip>
           <p className='line-clamp-1'>
-            {shopInformation.rating_star} |{' '}
+            {shopInformation.rating_star.toFixed(1)} |{' '}
             {toCompact(shopInformation.product_count)} products | Joined since{' '}
             {moment().format('MMMM YYYY')}
           </p>

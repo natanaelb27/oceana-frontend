@@ -12,6 +12,7 @@ import { ProductVariation } from '../../types/component';
 
 import { toRupiah } from '../../utils/convert';
 import { titleCase } from '../../utils/titleCase';
+import { Image } from '../common';
 
 type ProductCartProps = {
   stock: number;
@@ -85,7 +86,7 @@ const ProductCart = ({
         {productVariations.length !== 0 && (
           <div>
             <div className='flex items-center gap-2'>
-              <img
+              {/* <img
                 src={`${
                   selectedVariantImage === ''
                     ? defaultImage
@@ -97,7 +98,8 @@ const ProductCart = ({
                   currentTarget.src =
                     'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
                 }}
-              />
+              /> */}
+              <Image src={`${selectedVariantImage === '' ? defaultImage : selectedVariantImage}`} className='w-20' />
               {productVariation &&
               productVariations.length === selectedVariations.length ? (
                 <p className='line-clamp-1'>{titleCase(productVariation)}</p>

@@ -73,7 +73,7 @@ const ProductDescription = ({
         <Tooltip message='Rating' color='warning'>
           <HiStar className='text-warning text-lg' />
         </Tooltip>{' '}
-        {productDetail.product_review_details.rating_star} ({productDetail.product_review_details.rating_count} ratings)
+        {productDetail.product_review_details.rating_star.toFixed(1)} ({productDetail.product_review_details.rating_count} ratings)
       </div>
       {getPurchasedQuantitiesIsFetching &&
       selectedVariations.length === productVariations.length ? (

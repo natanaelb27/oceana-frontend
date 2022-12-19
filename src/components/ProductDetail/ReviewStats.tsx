@@ -84,12 +84,12 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
       <div className='flex items-center justify-center mb-4'>
         <HiStar className='text-4xl text-warning' />
         <div className='flex items-end'>
-          <h2 className='text-6xl'>{productReviewDetails.rating_star}</h2>
+          <h2 className='text-6xl'>{productReviewDetails.rating_star.toFixed(1)}</h2>
           <p>/5.0</p>
         </div>
       </div>
       <p className='font-bold text-sm text-center mb-2'>
-        {productReviewDetails.satisfied_percentage} % buyers were satisfied
+        {productReviewDetails.satisfied_percentage.toFixed(1)} % of buyers were satisfied
       </p>
       <p className='text-sm text-center mb-4'>{productReviewDetails.rating_count} ratings | {productReviewDetails.review_count} reviews</p>
       <div className='flex flex-col gap-y-1'>

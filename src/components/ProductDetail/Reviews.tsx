@@ -43,10 +43,20 @@ const Reviews = ({
     return <NoData title={'No Reviews Yet...'} />;
   }
 
+  console.log({ reviewMetadata });
+  console.log(reviewData[0]);
+  console.log(reviewData[0].created_at);
+
   return (
     <div>
       <div className='flex items-center justify-between'>
-        <span className='text-sm truncate'>Showing 5 out 5 reviews</span>
+        {
+          reviewMetadata.total_pages === 1 ? (
+            <span className='text-sm truncate'>Showing {reviewMetadata.total_rows} out of {reviewMetadata.total_rows} reviews</span>
+          ) : (
+            <span className='text-sm truncate'>Showing 5 out of {reviewMetadata.total_rows} reviews</span>
+          )
+        }
         <div className='flex items-center'>
           <span className='text-sm font-bold mr-2.5'>Sort</span>
           <select
