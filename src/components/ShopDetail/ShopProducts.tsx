@@ -17,7 +17,8 @@ type ShopProductsCardProps = {
 
 const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
   const [sort, setSort] = useState('desc');
-  const [sortBy, setSortBy] = useState('most-buy');
+  const [sortBy] = useState('most-buy');
+  const [limit] = useState(6);
 
   const [mostPurchasedTab, setMostPurchasedTab] = useState(true);
   const [allProductsTab, setAllProductsTab] = useState(false);
@@ -28,7 +29,7 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
       search: '',
       sort: sort,
       sortBy: sortBy,
-      limit: 20,
+      limit: limit,
       page: 1,
       categoryID: 0,
       priceMinimum: 0,
@@ -46,14 +47,16 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
 
   const sortByParam = searchParams.get('sort-by') || '';
   const sortParam = searchParams.get('sort') || '';
+  const limitParam = searchParams.get('limit') || '';
 
   useEffect(() => {
     setMerchantProductQuery({
       ...merchantProductQuery,
       sortBy,
       sort,
+      limit,
     });
-  }, [sortByParam, sortParam]);
+  }, [sortByParam, sortParam, limitParam]);
 
   const handleSortChange = (value: string) => {
     let sortBy = '';
@@ -87,19 +90,50 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
   ) => {
     event.preventDefault();
 
+    let limit = 0;
+    let sortBy = '';
+    let sort = '';
+
     if (identifier === 'mostPurchased') {
       setMostPurchasedTab(true);
       setAllProductsTab(false);
       setReviewTab(false);
+
+      limit = 6;
+      sortBy = ProductsSortByString.BestSeller;
+      sort = ProductsSortByString.Default;
     } else if (identifier === 'allProducts') {
       setMostPurchasedTab(false);
       setAllProductsTab(true);
       setReviewTab(false);
+
+      limit = 20;
+      sortBy = ProductsSortByString.BestSeller;
+      sort = ProductsSortByString.Default;
     } else if (identifier === 'review') {
       setMostPurchasedTab(false);
       setAllProductsTab(false);
       setReviewTab(true);
     }
+
+    setSort(sort);
+    setMerchantProductQuery({
+      ...merchantProductQuery,
+      limit,
+      sortBy,
+      sort,
+    });
+  };
+
+  const handleSeeMoreMostPurchased = () => {
+    let limit = 0;
+
+    limit = 0;
+
+    setMerchantProductQuery({
+      ...merchantProductQuery,
+      limit,
+    });
   };
 
   return (
@@ -145,10 +179,33 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
         </div>
         <hr className='border border-solid border-gray-300' />
       </div>
+      {mostPurchasedTab && (
+        <>
+          <div className='flex flex-row flex-wrap justify-start'>
+            {getAllMerchantProducts?.data?.map((product, i) => {
+              return (
+                <div className='mr-3 mb-3 w-64' key={i}>
+                  <ProductCard product={product} key={product.id} />
+                </div>
+              );
+            })}
+            {getAllMerchantProducts?.data?.length === 6 && (
+              <div className='flex items-center'>
+                <button
+                  className='ml-3 bg-secondary px-10 py-5 text-white rounded-lg'
+                  onClick={handleSeeMoreMostPurchased}
+                >
+                  More Products {'>'}
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
       {allProductsTab && (
         <>
           <div className='flex flex-row justify-end'>
-            <div className='flex flex-row flex-start items-center'>
+            <div className='flex flex-row flex-start items-center mb-5'>
               <h1 className='text-lg font-bold mr-3'>Sort By:</h1>
               <select
                 className='select select-bordered'

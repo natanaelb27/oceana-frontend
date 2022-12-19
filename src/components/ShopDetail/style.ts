@@ -10,19 +10,28 @@ export const ShopDetailCardContent = tw.div<any>`
     py-5
     px-5
     flex
-    flex-row
+    flex-col
+    sm:flex-row
     text-white
-    justify-between
+    items-center
+    sm:justify-between
+
 `;
 
 export const ShopDetailCardContentLeft = tw.div<any>`
     flex
     flex-wrap
+    flex-col
+    sm:flex-row
     items-center
+    justify-center
+    mb-5
+    sm:mb-0
 `;
 
 export const ShopDetailCardContentRight = tw(ShopDetailCardContentLeft)<any>`
-    flex-column
+    flex-col
+    sm:flex-row
 `;
 
 export const RightContentAttribute = tw.div<any>`
@@ -30,14 +39,16 @@ export const RightContentAttribute = tw.div<any>`
     flex-col
     items-center
     justify-center
-    mr-5
+    mr-0
+    mb-3
+    sm:mr-5
 `;
 
 export const RatingField = tw.div<any>`
     flex
     flex-row
     items-center
-    justify-between
+    justify-center
 `;
 
 export const ShopVouchersCardContainer = tw.div<any>`
