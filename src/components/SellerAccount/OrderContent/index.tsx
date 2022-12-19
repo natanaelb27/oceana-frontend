@@ -58,6 +58,7 @@ import { useGetAllMerchantVoucherQuery } from '../../../store/services/shopServi
 import {
   useDeleteMerchantVoucherMutation,
   useGetAllMerchantTransactionHistoryQuery,
+  useSellerCancelOrderMutation,
   useUpdateProcessDeliveryMutation,
   useUpdateProcessOrderMutation,
 } from '../../../store/services/myShopService';
@@ -335,6 +336,7 @@ const OrderContent = () => {
     if (
       stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_BUYER) ||
       stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SELLER) ||
+      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SYSTEM) ||
       stringCompare(orderStatus, DELIVERY_STATUS.COMPLAINED)
     ) {
       return 'error';
@@ -355,6 +357,14 @@ const OrderContent = () => {
       error: updateProcessDeliveryError,
     },
   ] = useUpdateProcessDeliveryMutation();
+
+  const [
+    sellerCancelOrder,
+    {
+      isLoading: sellerCancelOrderLoading,
+      error: sellerCancelOrderError,
+    },
+  ] = useSellerCancelOrderMutation();
 
   const handleModalClose = () => {
     setOpenModal({
@@ -441,6 +451,23 @@ const OrderContent = () => {
     if (!orderID) {
       return;
     }
+
+
+    sellerCancelOrder(orderID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Order has been canceled!');
+      })
+      .catch((err) => {
+        if (err && 'data' in err) {
+          const response = err.data as UpdateOrderStatusResponse;
+
+          notifyErrorToast(response.message);
+        }
+      })
+      .finally(() => {
+        setOrderID(null);
+      });
   };
 
   const handleProcessDeliveryClick = (orderID: string) => {

@@ -86,6 +86,13 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Order', 'OrderDetails'],
     }),
+    sellerCancelOrder: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/cancel-order`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'OrderDetails'],
+    }),
   }),
 });
 
@@ -101,4 +108,5 @@ export const {
   useLazyGetMerchantOrderDetailsQuery,
   useUpdateProcessOrderMutation,
   useUpdateProcessDeliveryMutation,
+  useSellerCancelOrderMutation,
 } = myShopApi;

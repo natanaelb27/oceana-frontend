@@ -14,6 +14,7 @@ import {
   Card,
   Countdown,
   Divider,
+  Dropdown,
   Form,
   Input,
   InputGroup,
@@ -32,6 +33,8 @@ import {
   HiOutlineChevronRight,
   HiOutlineShoppingBag,
   HiSearch,
+  HiOutlineDotsHorizontal,
+  HiOutlineDotsVertical,
 } from 'react-icons/hi';
 import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../../constants';
 import { TransactionHistoryQuery } from '../../../types/query';
@@ -89,7 +92,9 @@ const PurchaseContent = () => {
 
     if (
       stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_BUYER) ||
-      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SELLER)
+      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SELLER) ||
+      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SYSTEM) ||
+      stringCompare(orderStatus, DELIVERY_STATUS.COMPLAINED)
     ) {
       return 'error';
     }
@@ -386,6 +391,10 @@ const PurchaseContent = () => {
 
   const handleStartShoppingClick = () => {
     navigate('/');
+  };
+
+  const handleNavigateShop = (merchantID: number) => {
+    navigate(`/shops/${merchantID}`);
   };
 
   return (
@@ -730,12 +739,38 @@ const PurchaseContent = () => {
                         {toRupiah(Math.round(transactionHistory?.total_price))}
                       </span>
                     </div>
-                    <Button
-                      className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
-                      color='primary'
-                    >
-                      Buy Again
-                    </Button>
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.DELIVERED
+                    ) ? (
+                      <div className='flex gap-1'>
+                        <Button
+                          className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
+                          color='primary'
+                        >
+                          Complete
+                        </Button>
+                        <Dropdown
+                          horizontal='left'
+                          vertical='end'
+                          className='hidden md:flex'
+                        >
+                          <Dropdown.Toggle color='ghost'>
+                            <HiOutlineDotsHorizontal></HiOutlineDotsHorizontal>
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu className='w-52'>
+                            <Dropdown.Item>Refund</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
+                    ) : (
+                      <Button
+                        className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
+                        color='primary'
+                      >
+                        Buy Again
+                      </Button>
+                    )}
                     <Button
                       className='normal-case md:w-auto md:pl-7 md:pr-7 flex md:hidden'
                       color='primary'
@@ -745,6 +780,26 @@ const PurchaseContent = () => {
                     >
                       View Details
                     </Button>
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.DELIVERED
+                    ) ? (
+                      <div className='flex gap-1'>
+                        <Dropdown
+                          horizontal='left'
+                          vertical='end'
+                          className='flex md:hidden'
+                        >
+                          <Dropdown.Toggle color='ghost'>
+                            <HiOutlineDotsVertical></HiOutlineDotsVertical>
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu className='w-52'>
+                            <Dropdown.Item>Complete</Dropdown.Item>
+                            <Dropdown.Item>Refund</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </Card>
@@ -1076,7 +1131,14 @@ const PurchaseContent = () => {
               <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>Product Details</span>
-                  <div className='flex items-center gap-1 cursor-pointer hover:text-primary'>
+                  <div
+                    className='flex items-center gap-1 cursor-pointer hover:text-primary'
+                    onClick={() => {
+                      handleNavigateShop(
+                        getOrderDetailsData?.data?.merchant_id || 0
+                      );
+                    }}
+                  >
                     <span className='font-bold text-sm'>
                       {getOrderDetailsData?.data.shop_name}
                     </span>

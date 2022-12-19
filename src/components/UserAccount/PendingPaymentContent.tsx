@@ -67,7 +67,7 @@ const PendingPaymentContent = () => {
                           ></DateCountdown>
                         </Tooltip>
                         <Dropdown
-                          horizontal='center'
+                          horizontal='left'
                           vertical='end'
                           className='flex md:hidden'
                         >
@@ -101,7 +101,7 @@ const PendingPaymentContent = () => {
                                 transaction.payment_method_name
                               )}
                             </span>
-                            <span className='font-light'>
+                            <span className='font-light flex md:hidden'>
                               {transaction.card_number}
                             </span>
                           </div>
@@ -145,7 +145,7 @@ const PendingPaymentContent = () => {
                       Pay
                     </Button>
                     <Dropdown
-                      horizontal='center'
+                      horizontal='left'
                       vertical='end'
                       className='hidden md:flex'
                     >

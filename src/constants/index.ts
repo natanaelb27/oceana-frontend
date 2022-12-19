@@ -34,6 +34,7 @@ export const DELIVERY_STATUS = {
   CANCELED: 'canceled',
   CANCELED_BUYER: 'canceled by buyer',
   CANCELED_SELLER: 'canceled by seller',
+  CANCELED_SYSTEM: 'canceled by system',
   COMPLETED: 'completed',
 };
 
