@@ -10,7 +10,7 @@ const BuyerRefund = () => {
   }
 
   return (
-    <UserAccount profile={data.data} content={UserAccountContent.Refunds} />
+    <UserAccount profile={data.data} content={UserAccountContent.Refund} />
   );
 };
 

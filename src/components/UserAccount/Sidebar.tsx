@@ -92,6 +92,12 @@ const Sidebar = ({ profile }: SidebarProps) => {
               Purchase
             </NavLink>
           </Menu.Item>
+          {/* <Menu.Item>
+            <NavLink to='/user/review'>
+              <GoHistory />
+              Review
+            </NavLink>
+          </Menu.Item> */}
           <Menu.Item>
             <NavLink to='/user/refund'>
               <HiOutlineReceiptRefund />

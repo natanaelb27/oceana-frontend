@@ -15,6 +15,7 @@ import {
   BuyerProfile,
   BuyerPurchaseHistory,
   BuyerRefund,
+  BuyerReview,
   BuyerSealabsPay,
   BuyerWallet,
   Category,
@@ -153,6 +154,10 @@ const Routes = () => {
             {
               path: '/user/refund',
               element: <BuyerRefund />,
+            },
+            {
+              path: '/user/review',
+              element: <BuyerReview />,
             },
             {
               path: '/cart',

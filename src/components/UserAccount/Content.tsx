@@ -34,7 +34,11 @@ const Content = ({ profile, content }: ContentProps) => {
       return <PurchaseContent />;
     }
 
-    if (content === UserAccountContent.Refunds) {
+    if (content === UserAccountContent.Refund) {
+      return null;
+    }
+
+    if (content === UserAccountContent.Review) {
       return null;
     }
 
