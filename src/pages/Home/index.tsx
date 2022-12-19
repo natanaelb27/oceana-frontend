@@ -28,7 +28,7 @@ const Home = () => {
 
   const [categoryQuery] = useState<CategoryQuery>({
     categoryID: 0,
-    levelDepth: 0,
+    levelDepth: 100,
   });
 
   const { data: resGetAllCategory } = useGetAllCategoryQuery(

@@ -14,6 +14,7 @@ import {
   SealabsPayCardImg,
   SealabsPayImg,
 } from '../../common';
+import NoData from '../../common/NoData';
 import SealabsPayRegisterModal from './SealabsPayRegisterModal';
 
 type OpenSealabsPayModal = {
@@ -181,63 +182,72 @@ const SealabsPayContent = () => {
         </Button>
       </div>
       <div className='gap-4 grid md:grid-cols-2'>
-        {getAllSealabsPayData.data?.map(
-          ({ id, card_number, name_on_card, is_default, active_date }) => (
-            <Card
-              key={id}
-              className={`p-6 w-[320px] h-[200px] glass text-base-100 rounded-3xl md:w-[420px] md:h-[240px] hover:shadow-2xl ${
-                is_default
-                  ? 'bg-secondary hover:bg-secondary'
-                  : 'bg-primary/80 hover:bg-primary/80 cursor-pointer'
-              }`}
-              onDoubleClick={() =>
-                is_default ? null : handleDefaultSealabsPayClick(id)
-              }
-            >
-              <Card.Title className='flex justify-between text-4xl'>
-                <h1 className='text-2xl md:text-3xl'>{name_on_card}</h1>
-                <SealabsPayCardImg className='w-14' />
-              </Card.Title>
-              <Card.Body className='p-0 pt-6 md:pt-10'>
-                <h2 className='text-xl font-mono md:text-3xl'>
-                  {toCardNumber(card_number, false)}
-                </h2>
-                <div className='mt-4 md:mt-8 flex justify-between'>
-                  <p>Since: {toStringDate(active_date)}</p>
-                  <div className='flex gap-1'>
-                    {!is_default && (
-                      <Tooltip message='Set as default'>
+        {getAllSealabsPayData.data.length > 0 ? (
+          getAllSealabsPayData.data.map(
+            ({ id, card_number, name_on_card, is_default, active_date }) => (
+              <Card
+                key={id}
+                className={`p-6 w-[320px] h-[200px] glass text-base-100 rounded-3xl md:w-[420px] md:h-[240px] hover:shadow-2xl ${
+                  is_default
+                    ? 'bg-secondary hover:bg-secondary'
+                    : 'bg-primary/80 hover:bg-primary/80 cursor-pointer'
+                }`}
+                onDoubleClick={() =>
+                  is_default ? null : handleDefaultSealabsPayClick(id)
+                }
+              >
+                <Card.Title className='flex justify-between text-4xl'>
+                  <h1 className='text-2xl md:text-3xl'>{name_on_card}</h1>
+                  <SealabsPayCardImg className='w-14' />
+                </Card.Title>
+                <Card.Body className='p-0 pt-6 md:pt-10'>
+                  <h2 className='text-xl font-mono md:text-3xl'>
+                    {toCardNumber(card_number, false)}
+                  </h2>
+                  <div className='mt-4 md:mt-8 flex justify-between'>
+                    <p>Since: {toStringDate(active_date)}</p>
+                    <div className='flex gap-1'>
+                      {!is_default && (
+                        <Tooltip message='Set as default'>
+                          <Button
+                            className={
+                              is_default ? '' : 'bg-transparent border-none'
+                            }
+                            color='primary'
+                            shape='circle'
+                            size='sm'
+                            onClick={() => handleDefaultSealabsPayClick(id)}
+                          >
+                            <HiOutlineClipboardList className='text-xl' />
+                          </Button>
+                        </Tooltip>
+                      )}
+                      <Tooltip message='Delete'>
                         <Button
                           className={
                             is_default ? '' : 'bg-transparent border-none'
                           }
-                          color='primary'
+                          color={is_default ? 'secondary' : 'primary'}
                           shape='circle'
                           size='sm'
-                          onClick={() => handleDefaultSealabsPayClick(id)}
+                          onClick={() => handleDeleteSealabsPayClick(id)}
                         >
-                          <HiOutlineClipboardList className='text-xl' />
+                          <HiOutlineTrash className='text-xl' />
                         </Button>
                       </Tooltip>
-                    )}
-                    <Tooltip message='Delete'>
-                      <Button
-                        className={
-                          is_default ? '' : 'bg-transparent border-none'
-                        }
-                        color={is_default ? 'secondary' : 'primary'}
-                        shape='circle'
-                        size='sm'
-                        onClick={() => handleDeleteSealabsPayClick(id)}
-                      >
-                        <HiOutlineTrash className='text-xl' />
-                      </Button>
-                    </Tooltip>
+                    </div>
                   </div>
-                </div>
-              </Card.Body>
-            </Card>
+                </Card.Body>
+              </Card>
+            )
           )
+        ) : (
+          <div className='col-span-2 justify-center'>
+            <NoData
+              title='No Sealabs Pay?'
+              message='How about creating a new account?'
+            />
+          </div>
         )}
       </div>
       <SealabsPayRegisterModal

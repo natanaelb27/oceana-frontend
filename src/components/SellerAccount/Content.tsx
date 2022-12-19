@@ -9,8 +9,6 @@ import VoucherContent from './VoucherContent';
 import VoucherDetailContent from './VoucherDetailContent';
 import VoucherFormContent from './VoucherFormContent';
 
-// import ProfileContent from './ProfileContent';
-
 type ContentProps = {
   profile: Merchant;
   content: SellerAccountContent;
@@ -57,7 +55,11 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === SellerAccountContent.Promotion) {
-      // return <AddressContent />;
+      // return <PromotionContent profile={profile} />;
+    }
+
+    if (content === SellerAccountContent.PromotionDetail) {
+      // return <PromotionDetailContent profile={profile} />;
     }
 
     if (content === SellerAccountContent.Order) {

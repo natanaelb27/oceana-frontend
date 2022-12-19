@@ -28,7 +28,7 @@ export const HomeCardTitle = tw.h2`
   font-bold
 
   md:mb-4
-  md:text-3xl
+  md:text-2xl
 `;
 
 export const StyledCategoryCard = tw(Card)<any>`
