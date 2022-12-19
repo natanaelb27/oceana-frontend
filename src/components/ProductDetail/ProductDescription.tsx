@@ -21,7 +21,6 @@ type ProductDescriptionProps = {
   selectedVariations: number[];
   purchasedQuantitiesPrice?: number;
   productItemPrice?: number;
-  getPurchasedQuantitiesIsFetching?: boolean;
 };
 
 const ProductDescription = ({

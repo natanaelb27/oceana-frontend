@@ -81,35 +81,21 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       isFetching: getProductDetailIsFetching,
     },
   ] = useLazyGetProductDetailQuery();
-  const [
-    getPurchasedQuantities,
-    {
-      data: getPurchasedQuantitiesData,
-      isFetching: getPurchasedQuantitiesIsFetching,
-    },
-  ] = useLazyGetPurchasedQuantitiesQuery();
-  const [
-    getReviews,
-    {
-      data: getReviewsData,
-      isLoading: getReviewsIsLoading,
-      isFetching: getReviewsIsFetching,
-    },
-  ] = useLazyGetAllReviewsQuery();
+  const [getPurchasedQuantities, { data: getPurchasedQuantitiesData }] =
+    useLazyGetPurchasedQuantitiesQuery();
+  const [getReviews, { data: getReviewsData }] = useLazyGetAllReviewsQuery();
   const [updateUserCart] = useUpdateUserCartMutation();
   const [incrementUserCart] = useIncrementUserCartMutation();
   const {
     data: getShopInformationData,
     isLoading: getShopInformationIsLoading,
   } = useGetShopInformationQuery(merchantID);
-  const { data: getFavoriteProduct, isLoading: getFavoriteProductIsLoading } =
-    useGetFavoriteProductQuery(productID);
+  const { data: getFavoriteProduct } = useGetFavoriteProductQuery(productID);
   const [
     getAllSimilarProducts,
     {
       data: getAllSimilarProductsData,
       isLoading: getAllSimilarProductsIsLoading,
-      isFetching: getAllSimilarProductsIsFetching,
     },
   ] = useLazyGetAllProductsQuery();
   const [
@@ -117,7 +103,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     {
       data: getMerchantSimilarProductsData,
       isLoading: getMerchantSimilarProductsIsLoading,
-      isFetching: getMerchantSimilarProductsIsFetching,
     },
   ] = useLazyGetAllProductsQuery();
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
@@ -587,9 +572,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                     getPurchasedQuantitiesData?.data?.price
                   }
                   productItemPrice={productItemPrice}
-                  getPurchasedQuantitiesIsFetching={
-                    getPurchasedQuantitiesIsFetching
-                  }
                 />
               </div>
               <div className='col-span-12 md:hidden relative'>
