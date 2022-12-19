@@ -1,5 +1,8 @@
+import { AdminVoucherForm } from '../../../components';
+import { SellerAccountVoucherFormContent } from '../../../types/content';
+
 const AdminEditVoucher = () => {
-  return <div>AdminEditVoucher</div>;
+  return <AdminVoucherForm content={SellerAccountVoucherFormContent.Edit} />;
 };
 
 export default AdminEditVoucher;

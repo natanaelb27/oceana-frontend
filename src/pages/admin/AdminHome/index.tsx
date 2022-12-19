@@ -1,9 +1,12 @@
 import { Button, Divider } from 'react-daisyui';
 import { HiOutlineUserCircle, HiOutlineMail } from 'react-icons/hi';
 import { AdminVouchers, AdminRefunds } from '../../../components';
-import { Image } from '../../../components/common';
+import { Image, Loading } from '../../../components/common';
+import { useGetProfileQuery } from '../../../store/services/profileService';
 
 const AdminHome = () => {
+  const { data: getProfile } = useGetProfileQuery();
+
   const handleScrollClick = (id: string) => {
     const element = document.getElementById(id);
     console.log(element);
@@ -12,19 +15,28 @@ const AdminHome = () => {
     }
   };
 
+  if (!getProfile?.data) {
+    return <Loading isLoading />;
+  }
+
   return (
     <div className='container mx-auto'>
       <div className='px-4 py-10'>
         <div className='flex flex-col-reverse md:flex-row items-center justify-center gap-8 md:gap-12 py-8 md:py-24'>
           <div className='flex-1'>
             <h3 className='text-2xl md:text-4xl text-center md:text-left mb-2.5'>
-              Welcome, <span className='font-bold text-primary'>Sugma</span>!
+              Welcome,{' '}
+              <span className='font-bold text-primary'>
+                {getProfile.data.full_name}
+              </span>
+              !
             </h3>
             <span className='flex items-center justify-center md:justify-start mb-12 text-secondary'>
               <HiOutlineUserCircle className='text-xl mr-2' />
-              sugma<span className='mx-2'>|</span>
+              {getProfile.data.username}
+              <span className='mx-2'>|</span>
               <HiOutlineMail className='text-xl mr-2' />
-              sugma@email.com
+              {getProfile.data.email}
             </span>
             <p className='mb-4 text-center md:text-left'>
               &quot;Nothing in the world can take the place of Persistence.
@@ -60,7 +72,7 @@ const AdminHome = () => {
           </div>
         </div>
         <Divider />
-        <div id='promotions'>
+        <div id='promotions' className='p-4 bg-base-200 rounded-xl'>
           <AdminVouchers />
         </div>
         <Divider />

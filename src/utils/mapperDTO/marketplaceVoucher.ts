@@ -1,4 +1,5 @@
 import { MarketplaceVoucherQuery } from '../../types/query';
+import { CreateMarketplaceVoucherRequest } from '../../types/request';
 
 export const toMarketplaceVoucherQuery = (query: MarketplaceVoucherQuery) => {
   let result = '';
@@ -12,3 +13,23 @@ export const toMarketplaceVoucherQuery = (query: MarketplaceVoucherQuery) => {
 
   return result;
 };
+
+export const toCreateMarketplaceVoucherRequest = (
+  name: string,
+  startDateTime: Date,
+  endDateTime: Date,
+  discountType: string,
+  discount: number,
+  minimumSpendAmount: number,
+  maximumDiscountAmount: number | null,
+  maximumQuota: number
+): CreateMarketplaceVoucherRequest => ({
+  name,
+  start_datetime: startDateTime.toISOString(),
+  end_datetime: endDateTime.toISOString(),
+  discount_type: discountType,
+  discount,
+  minimum_spend_amount: minimumSpendAmount,
+  maximum_quota: maximumQuota,
+  maximum_discount_amount: maximumDiscountAmount,
+});

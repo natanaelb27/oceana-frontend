@@ -43,6 +43,11 @@ const AdminDetailVoucher = () => {
     navigate('/seller/marketing/vouchers/list', { replace: true });
   }
 
+  console.log({ discount: getMarketplaceVoucherDetailsData?.data.discount });
+  console.log({
+    quota: getMarketplaceVoucherDetailsData?.data.maximum_quota,
+  });
+
   return (
     <div className='container mx-auto'>
       <div className='p-4 md:p-10'>
@@ -354,8 +359,10 @@ const AdminDetailVoucher = () => {
                       </span>
                     </div>
                     <span className='font-bold'>
-                      {getMarketplaceVoucherDetailsData.data.discount_type ===
-                      DISCOUNT_TYPE.NOMINAL
+                      {stringCompare(
+                        getMarketplaceVoucherDetailsData.data.discount_type,
+                        DISCOUNT_TYPE.NOMINAL
+                      )
                         ? toRupiah(
                             getMarketplaceVoucherDetailsData?.data.discount *
                               getMarketplaceVoucherDetailsData?.data
