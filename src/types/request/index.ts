@@ -1,6 +1,7 @@
 export * from './address';
 export * from './auth';
 export * from './cart';
+export * from './merchant';
 export * from './merchantVoucher';
 export * from './profile';
 export * from './sealabsPay';

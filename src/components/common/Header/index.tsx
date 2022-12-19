@@ -18,6 +18,7 @@ import { selectRole, unsetCredentials } from '../../../store/slices/authSlice';
 import { baseApi, useAppDispatch, useAppSelector } from '../../../store/store';
 import { useLogoutMutation } from '../../../store/services/profileService';
 import { TAG_TYPES } from '../../../constants/tags';
+import { BsShop } from 'react-icons/bs';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -54,7 +55,6 @@ const Header = () => {
   const handleProfileClick = () => {
     navigate('/user/account/profile');
   };
-
   const handleLogoutClick = async () => {
     await dispatch(unsetCredentials());
     await logout()
@@ -63,6 +63,10 @@ const Header = () => {
         dispatch(baseApi.util.invalidateTags(TAG_TYPES));
       });
     navigate('/');
+  };
+
+  const handleShopClick = () => {
+    navigate('/seller');
   };
 
   return (
@@ -143,6 +147,10 @@ const Header = () => {
                     <CgProfile className='text-xl' />
                     <span>Profile</span>
                   </Dropdown.Item>
+                  <Dropdown.Item onClick={handleShopClick}>
+                    <BsShop className='text-xl' />
+                    <span>My Shop</span>
+                  </Dropdown.Item>
                   <Dropdown.Item onClick={handleLogoutClick}>
                     <CgLogOut className='text-xl' />
                     <span>Logout</span>
@@ -212,6 +220,10 @@ const Header = () => {
                   <Dropdown.Item onClick={handleProfileClick}>
                     <CgProfile className='text-xl' />
                     <span>Profile</span>
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleShopClick}>
+                    <BsShop className='text-xl' />
+                    <span>My Shop</span>
                   </Dropdown.Item>
                   <Dropdown.Item onClick={handleLogoutClick}>
                     <CgLogOut className='text-xl' />

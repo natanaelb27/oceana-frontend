@@ -79,7 +79,8 @@ const RegisterGoogle = ({
           const { message } = errorResponse;
           const messageCapitalized = capitalizeFirstLetter(message);
           handleFailedRegister(messageCapitalized, setFieldValue);
-        });
+        })
+        .finally(() => window.location.reload());
     },
   });
 
