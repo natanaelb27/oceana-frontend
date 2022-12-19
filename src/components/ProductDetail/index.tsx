@@ -463,7 +463,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     getProductDetailIsFetching
   ) {
     return (
-      <div className='container mx-auto py-10 animate-pulse'>
+      <div className='container mx-auto py-10 px-4 animate-pulse'>
         <div className='grid grid-cols-12 gap-4 md:gap-10'>
           <div className='col-span-12 md:col-span-3'>
             <Card className='shadow max-w-sm'>
