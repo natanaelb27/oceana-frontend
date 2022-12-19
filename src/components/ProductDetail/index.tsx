@@ -401,6 +401,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     setReviewQuery({
       ...reviewQuery,
       media: !reviewQuery.media,
+      page: 1,
     });
   };
 
@@ -419,6 +420,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     setReviewQuery({
       ...reviewQuery,
       rating: ratingCopy,
+      page: 1,
     });
   };
 
@@ -426,6 +428,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     setReviewQuery({
       ...reviewQuery,
       comment: !reviewQuery.comment,
+      page: 1,
     });
   };
 

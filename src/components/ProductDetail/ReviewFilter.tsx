@@ -1,5 +1,6 @@
 import React from 'react';
 import { Checkbox, Collapse, Divider, Form } from 'react-daisyui';
+import { AiOutlineComment } from 'react-icons/ai';
 
 type ReviewFilterProps = {
   handleChangeFilterReviewWithMedia?: () => void;
@@ -42,7 +43,7 @@ const ReviewFilter = ({
         <Collapse.Content>
           <Form>
             <Form.Label title='With Photo & Video'>
-              <Checkbox onClick={handleChangeFilterReviewWithMedia}/>
+              <Checkbox onClick={handleChangeFilterReviewWithMedia} />
             </Form.Label>
           </Form>
         </Collapse.Content>
@@ -63,19 +64,22 @@ const ReviewFilter = ({
             <Form.Label title='⭐ 2'>
               <Checkbox value={2} onClick={handleChangeFilterReviewRating} />
             </Form.Label>
-            <Form.Label title='⭐ 2'>
+            <Form.Label title='⭐ 1'>
               <Checkbox value={1} onClick={handleChangeFilterReviewRating} />
             </Form.Label>
           </Form>
         </Collapse.Content>
       </Collapse>
       <Collapse checkbox icon='arrow'>
-        <Collapse.Title className='font-medium'>Comments</Collapse.Title>
+        <Collapse.Title className='font-medium truncate'>
+          Comments
+        </Collapse.Title>
         <Collapse.Content>
           <Form>
-            <Form.Label title='With Comments'>
-              <Checkbox onClick={handleChangeFilterReviewComments}/>
-            </Form.Label>
+            <div className='flex justify-between'>
+              <div className='truncate text-sm ml-1.5'>With Comments</div>
+              <Checkbox onClick={handleChangeFilterReviewComments} />
+            </div>
           </Form>
         </Collapse.Content>
       </Collapse>

@@ -5,6 +5,7 @@ import Zoom from 'react-medium-image-zoom';
 import { Metadata, Review } from '../../types/component';
 
 import { ReviewsSort } from '../../types/sort';
+import { toUpdateEmailRequest } from '../../utils/mapperDTO';
 import { titleCase } from '../../utils/titleCase';
 import { Pager, NoData } from '../common';
 
@@ -53,6 +54,8 @@ const Reviews = ({
         {
           reviewMetadata.total_pages === 1 ? (
             <span className='text-sm truncate'>Showing {reviewMetadata.total_rows} out of {reviewMetadata.total_rows} reviews</span>
+          ) : reviewMetadata.page === reviewMetadata.total_pages ? (
+            <span className='text-sm truncate'>Showing {reviewMetadata.total_rows % 5} out of {reviewMetadata.total_rows} reviews</span>
           ) : (
             <span className='text-sm truncate'>Showing 5 out of {reviewMetadata.total_rows} reviews</span>
           )

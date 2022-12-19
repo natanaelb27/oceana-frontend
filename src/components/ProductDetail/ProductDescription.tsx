@@ -69,7 +69,7 @@ const ProductDescription = ({
         {productDetail.name}
       </h5>
       <div className='flex flex-row items-center mb-2.5'>
-        {toCompact(50000)} sold |{' '}
+        {toCompact(1)} sold |{' '}
         <Tooltip message='Rating' color='warning'>
           <HiStar className='text-warning text-lg' />
         </Tooltip>{' '}
