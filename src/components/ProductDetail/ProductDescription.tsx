@@ -32,7 +32,6 @@ const ProductDescription = ({
   selectedVariations,
   purchasedQuantitiesPrice,
   productItemPrice,
-  getPurchasedQuantitiesIsFetching,
 }: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
 
