@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useGetAllMerchantProductsQuery } from '../../store/services/merchantService';
-import { Product } from '../../types/component';
+import { Pager } from '../../components/common';
 import { useSearchParams } from 'react-router-dom';
 import { MerchantProductQuery } from '../../types/query';
 import { toMerchantProductQuery } from '../../utils/mapperDTO';
@@ -136,6 +136,13 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
     });
   };
 
+  const handlePageChange = (n: number) => {
+    setMerchantProductQuery({
+      ...merchantProductQuery,
+      page: n,
+    });
+  };
+
   return (
     <div className='flex w-3/5 flex-col'>
       <div className='mb-3'>
@@ -179,56 +186,69 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
         </div>
         <hr className='border border-solid border-gray-300' />
       </div>
-      {mostPurchasedTab && (
-        <>
-          <div className='flex flex-row flex-wrap justify-start'>
-            {getAllMerchantProducts?.data?.map((product, i) => {
-              return (
-                <div className='mr-3 mb-3 w-64' key={i}>
-                  <ProductCard product={product} key={product.id} />
+      <div className='mb-5'>
+        {mostPurchasedTab && (
+          <>
+            <div className='flex flex-row flex-wrap justify-start'>
+              {getAllMerchantProducts?.data?.map((product, i) => {
+                return (
+                  <div className='mr-3 mb-3 w-64' key={i}>
+                    <ProductCard product={product} key={product.id} />
+                  </div>
+                );
+              })}
+              {getAllMerchantProducts?.data?.length === 6 && (
+                <div className='flex items-center'>
+                  <button
+                    className='ml-3 bg-secondary px-10 py-5 text-white rounded-lg'
+                    onClick={handleSeeMoreMostPurchased}
+                  >
+                    More Products {'>'}
+                  </button>
                 </div>
-              );
-            })}
-            {getAllMerchantProducts?.data?.length === 6 && (
-              <div className='flex items-center'>
-                <button
-                  className='ml-3 bg-secondary px-10 py-5 text-white rounded-lg'
-                  onClick={handleSeeMoreMostPurchased}
-                >
-                  More Products {'>'}
-                </button>
-              </div>
-            )}
-          </div>
-        </>
-      )}
-      {allProductsTab && (
-        <>
-          <div className='flex flex-row justify-end'>
-            <div className='flex flex-row flex-start items-center mb-5'>
-              <h1 className='text-lg font-bold mr-3'>Sort By:</h1>
-              <select
-                className='select select-bordered'
-                onChange={(e) => handleSortChange(e.target.value)}
-              >
-                <option value='most-buy'>Most Purchased</option>
-                <option value='newest'>Most Recent</option>
-                <option value='most-expensive'>Most Expensive</option>
-                <option value='cheapest'>Cheapest</option>
-              </select>
+              )}
             </div>
-          </div>
-          <div className='flex flex-row flex-wrap justify-start'>
-            {getAllMerchantProducts?.data?.map((product, i) => {
-              return (
-                <div className='mr-3 mb-3 w-64' key={i}>
-                  <ProductCard product={product} key={product.id} />
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
+          </>
+        )}
+        {allProductsTab && (
+          <>
+            <div className='flex flex-row justify-end'>
+              <div className='flex flex-row flex-start items-center mb-5'>
+                <h1 className='text-lg font-bold mr-3'>Sort By:</h1>
+                <select
+                  className='select select-bordered'
+                  onChange={(e) => handleSortChange(e.target.value)}
+                >
+                  <option value='most-buy'>Most Purchased</option>
+                  <option value='newest'>Most Recent</option>
+                  <option value='most-expensive'>Most Expensive</option>
+                  <option value='cheapest'>Cheapest</option>
+                </select>
+              </div>
+            </div>
+            <div className='flex flex-row flex-wrap justify-start'>
+              {getAllMerchantProducts?.data?.map((product, i) => {
+                return (
+                  <div className='mr-3 mb-3 w-64' key={i}>
+                    <ProductCard product={product} key={product.id} />
+                  </div>
+                );
+              })}
+            </div>
+            <div className='mt-6 flex justify-center'>
+              <Pager
+                page={merchantProductQuery.page}
+                totalPage={
+                  getAllMerchantProducts?.metadata?.total_pages
+                    ? getAllMerchantProducts.metadata.total_pages
+                    : 0
+                }
+                onPageChange={handlePageChange}
+              />
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
