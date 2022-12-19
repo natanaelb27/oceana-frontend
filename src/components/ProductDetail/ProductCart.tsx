@@ -30,6 +30,7 @@ type ProductCartProps = {
   userMaxPurchaseQuantity?: number;
   maxPurchaseQuantity?: number;
   handleClickAddToCart: () => void;
+  handleClickBuyNow: () => void;
   defaultImage: string;
   selectedVariantImage: string;
 };
@@ -50,6 +51,7 @@ const ProductCart = ({
   userMaxPurchaseQuantity,
   maxPurchaseQuantity,
   handleClickAddToCart,
+  handleClickBuyNow,
   defaultImage,
   selectedVariantImage,
 }: ProductCartProps) => {
@@ -73,6 +75,7 @@ const ProductCart = ({
             variant='outline'
             endIcon={<HiShoppingBag className='text-lg' />}
             className='w-full mb-2.5 text-xs lg:text-sm'
+            onClick={handleClickBuyNow}
           >
             Buy Now
           </Button>

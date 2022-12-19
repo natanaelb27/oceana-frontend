@@ -12,7 +12,10 @@ import {
 } from '../../store/services/favoriteProductService';
 import { useLazyGetAllReviewsQuery } from '../../store/services/reviewService';
 import { useGetShopInformationQuery } from '../../store/services/shopService';
-import { useIncrementUserCartMutation, useUpdateUserCartMutation } from '../../store/services/cartService';
+import {
+  useIncrementUserCartMutation,
+  useUpdateUserCartMutation,
+} from '../../store/services/cartService';
 import {
   toProductQuery,
   toPurchasedQuantitiesQuery,
@@ -41,6 +44,7 @@ import {
 import { ProductCard } from '../common';
 import { ReviewsSort } from '../../types/sort';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import { useNavigate } from 'react-router-dom';
 
 type ProductDetailProps = {
   merchantID?: string;
@@ -121,6 +125,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   const [productItemName, setProductItemName] = useState<string>('');
   const [productItemPrice, setProductItemPrice] = useState<number>(0);
   const [productLikeCount, setProductLikeCount] = useState(0);
+  const navigate = useNavigate();
   const [sort, setSort] = useState<ReviewsSort>(ReviewsSort.Latest);
 
   const roleCode = useAppSelector(selectRole);
@@ -218,6 +223,30 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
   };
 
+  const handleClickBuyNow = () => {
+    let productItemID = 0;
+    if (getProductDetailData?.data?.product_variation.length === 0) {
+      productItemID =
+        getProductDetailData.data.product_model[0].product_item_id;
+    } else {
+      productItemID = purchasedQuantitiesQuery.product_item_id;
+    }
+    updateUserCart({
+      product_item_id: productItemID,
+      quantity: purchasedQuantitiesQuery.quantity,
+    })
+      .unwrap()
+      .then(() => {
+        navigate('/checkout');
+      })
+      .catch((err) => {
+        if (err && 'data' in err) {
+          const data = err.data as UpdateUserCartResponse;
+          notifyErrorToast(capitalizeFirstLetter(data.message));
+        }
+      });
+  };
+
   const handleClickAddToCart = () => {
     let productItemID = 0;
     if (getProductDetailData?.data?.product_variation.length === 0) {
@@ -226,24 +255,10 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     } else {
       productItemID = purchasedQuantitiesQuery.product_item_id;
     }
-    // updateUserCart({
-    //   product_item_id: productItemID,
-    //   quantity: purchasedQuantitiesQuery.quantity,
-    // })
-    //   .unwrap()
-    //   .then(() => {
-    //     notifySuccessToast('Product has been added to cart');
-    //   })
-    //   .catch((err) => {
-    //     if (err && 'data' in err) {
-    //       const data = err.data as UpdateUserCartResponse;
-    //       notifyErrorToast(capitalizeFirstLetter(data.message));
-    //     }
-    //   });
     incrementUserCart({
       product_item_id: productItemID,
       quantity: purchasedQuantitiesQuery.quantity,
-      action: 'increment'
+      action: 'increment',
     })
       .unwrap()
       .then(() => {
@@ -607,6 +622,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                     getPurchasedQuantitiesData?.data?.max_purchase_quantity
                   }
                   handleClickAddToCart={handleClickAddToCart}
+                  handleClickBuyNow={handleClickBuyNow}
                   defaultImage={getProductDetailData.data.images[0]}
                   selectedVariantImage={selectedVariantImage}
                 />
@@ -661,6 +677,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                 getPurchasedQuantitiesData?.data?.max_purchase_quantity
               }
               handleClickAddToCart={handleClickAddToCart}
+              handleClickBuyNow={handleClickBuyNow}
               defaultImage={getProductDetailData.data.images[0]}
               selectedVariantImage={selectedVariantImage}
             />
