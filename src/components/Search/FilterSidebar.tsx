@@ -307,7 +307,7 @@ const FilterSidebar = ({
                   <Input
                     name='priceMaximum'
                     type='text'
-                    className='w-full focus:border-primary'
+                    className='w-full focus:border-primary text-sm'
                     value={priceMaximum || ''}
                     placeholder='Price Maximum'
                     onChange={handlePriceMaximumChange}

@@ -4,6 +4,7 @@ import { UserAccountContent } from '../../types/content';
 import AddressContent from './AddressContent';
 import PurchaseContent from './PurchaseContent';
 import ProfileContent from './ProfileContent';
+import PendingPaymentContent from './PendingPaymentContent';
 import SealabsPayContent from './SealabsPayContent';
 import WalletContent from './WalletContent';
 
@@ -41,8 +42,11 @@ const Content = ({ profile, content }: ContentProps) => {
     if (content === UserAccountContent.Refund) {
       return null;
     }
+    
+    if (content === UserAccountContent.PendingPayment) {
+      return <PendingPaymentContent />;
+    }
 
-    return null;
   };
   return <Card className='shadow'>{renderContent()}</Card>;
 };

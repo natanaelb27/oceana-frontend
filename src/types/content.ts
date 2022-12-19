@@ -6,6 +6,7 @@ export enum UserAccountContent {
   Purchase,
   Review,
   Refund,
+  PendingPayment,
 }
 
 export enum SellerAccountContent {

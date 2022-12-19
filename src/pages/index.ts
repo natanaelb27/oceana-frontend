@@ -18,6 +18,7 @@ export { default as BuyerAddress } from './buyer/BuyerAddress';
 export { default as BuyerCart } from './buyer/BuyerCart';
 export { default as BuyerCheckout } from './buyer/BuyerCheckout';
 export { default as BuyerPassword } from './buyer/BuyerPassword';
+export { default as BuyerPendingPayment } from './buyer/BuyerPendingPayment';
 export { default as BuyerProfile } from './buyer/BuyerProfile';
 export { default as BuyerPurchaseHistory } from './buyer/BuyerPurchaseHistory';
 export { default as BuyerRefund } from './buyer/BuyerRefund';

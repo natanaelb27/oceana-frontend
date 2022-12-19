@@ -12,6 +12,7 @@ import {
   BuyerCart,
   BuyerCheckout,
   BuyerPassword,
+  BuyerPendingPayment,
   BuyerProfile,
   BuyerPurchaseHistory,
   BuyerRefund,
@@ -150,6 +151,10 @@ const Routes = () => {
             {
               path: '/user/purchase',
               element: <BuyerPurchaseHistory />,
+            },
+            {
+              path: '/user/pending-payment',
+              element: <BuyerPendingPayment />
             },
             {
               path: '/user/refund',

@@ -5,6 +5,7 @@ import {
   SellerAccountVoucherFormContent,
 } from '../../types/content';
 import AddressContent from './AddressContent';
+import OrderContent from './OrderContent';
 import VoucherContent from './VoucherContent';
 import VoucherDetailContent from './VoucherDetailContent';
 import VoucherFormContent from './VoucherFormContent';
@@ -61,7 +62,7 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === SellerAccountContent.Order) {
-      // return <AddressContent />;
+      return <OrderContent />;
     }
 
     return null;

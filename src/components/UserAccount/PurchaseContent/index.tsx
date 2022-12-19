@@ -12,13 +12,16 @@ import {
   Badge,
   Button,
   Card,
+  Countdown,
   Divider,
+  Dropdown,
   Form,
   Input,
   InputGroup,
   Modal,
   Radio,
   Steps,
+  Tooltip,
 } from 'react-daisyui';
 import { useOutsideAlerter } from '../../../hooks';
 import { Image, Pager } from '../../common';
@@ -30,6 +33,8 @@ import {
   HiOutlineChevronRight,
   HiOutlineShoppingBag,
   HiSearch,
+  HiOutlineDotsHorizontal,
+  HiOutlineDotsVertical,
 } from 'react-icons/hi';
 import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../../constants';
 import { TransactionHistoryQuery } from '../../../types/query';
@@ -50,8 +55,13 @@ import DatePicker, { CalendarContainer } from 'react-datepicker';
 import moment from 'moment';
 import NoData from '../../common/NoData';
 import { stringCompare } from '../../../utils/validation';
+import { computeDatetime, getDateDiffNow } from '../../../utils/date';
+import DateCountdown from '../../common/DateCountdown';
+import { useNavigate } from 'react-router-dom';
 
 const PurchaseContent = () => {
+  const navigate = useNavigate();
+
   const [transactionHistoryQuery, setTransactionHistoryQuery] =
     useState<TransactionHistoryQuery>({
       limit: LIMIT_TRANSACTION_HISTORY,
@@ -82,7 +92,9 @@ const PurchaseContent = () => {
 
     if (
       stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_BUYER) ||
-      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SELLER)
+      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SELLER) ||
+      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SYSTEM) ||
+      stringCompare(orderStatus, DELIVERY_STATUS.COMPLAINED)
     ) {
       return 'error';
     }
@@ -171,13 +183,15 @@ const PurchaseContent = () => {
   };
 
   const handleApplyFilterDate = () => {
-    setTransactionHistoryQuery({
-      ...transactionHistoryQuery,
-      page: 1,
-      filterStartTransactionDate: moment(startDate).format('YYYY-MM-DD'),
-      filterEndTransactionDate: moment(endDate).format('YYYY-MM-DD'),
-    });
-    setIsDateOpen(false);
+    if (startDate && endDate) {
+      setTransactionHistoryQuery({
+        ...transactionHistoryQuery,
+        page: 1,
+        filterStartTransactionDate: moment(startDate).format('YYYY-MM-DD'),
+        filterEndTransactionDate: moment(endDate).format('YYYY-MM-DD'),
+      });
+      setIsDateOpen(false);
+    }
   };
 
   type DateContainerProps = {
@@ -375,6 +389,14 @@ const PurchaseContent = () => {
     });
   };
 
+  const handleStartShoppingClick = () => {
+    navigate('/');
+  };
+
+  const handleNavigateShop = (merchantID: number) => {
+    navigate(`/shops/${merchantID}`);
+  };
+
   return (
     <div className='p-4 md:p-10'>
       <h5 className='font-bold text-2xl text-primary'>Transaction History</h5>
@@ -401,19 +423,19 @@ const PurchaseContent = () => {
               startDate={
                 isDateOpen
                   ? startDate
+                  : transactionHistoryQuery.filterStartTransactionDate === ''
+                  ? null
                   : moment(
-                      transactionHistoryQuery.filterStartTransactionDate === ''
-                        ? new Date()
-                        : transactionHistoryQuery.filterStartTransactionDate
+                      transactionHistoryQuery.filterStartTransactionDate
                     ).toDate()
               }
               endDate={
                 isDateOpen
                   ? endDate
+                  : transactionHistoryQuery.filterEndTransactionDate === ''
+                  ? null
                   : moment(
-                      transactionHistoryQuery.filterEndTransactionDate === ''
-                        ? new Date()
-                        : transactionHistoryQuery.filterEndTransactionDate
+                      transactionHistoryQuery.filterEndTransactionDate
                     ).toDate()
               }
               dateFormat='dd MMM yyyy'
@@ -494,7 +516,7 @@ const PurchaseContent = () => {
               : 'hidden md:flex gap-2 overflow-x-auto overflow-y-hidden px-1'
           }
         >
-          <Button
+          {/* <Button
             className={
               'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
               (activeOngoingStatusButton === DELIVERY_STATUS.PENDING_PAYMENT
@@ -506,7 +528,7 @@ const PurchaseContent = () => {
             }
           >
             Waiting for Payment
-          </Button>
+          </Button> */}
           <Button
             className={
               'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
@@ -578,97 +600,121 @@ const PurchaseContent = () => {
             </div>
           </Card>
         )}
-        {getAllTransactionHistoryData?.data?.order_list &&
-        getAllTransactionHistoryData?.data.order_list.length > 0 ? (
-          getAllTransactionHistoryData?.data.order_list.map(
-            (transactionHistory, n) => {
-              const productCount = transactionHistory.order_details.length;
-              const firstProduct = transactionHistory.order_details.at(0);
-              return (
-                <Card
-                  className='col-span-12 shadow border-r-0 border-b-4 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
-                  key={n}
-                >
-                  <div className='p-4'>
-                    <div className='flex items-center mb-2.5 gap-3 justify-between md:justify-start'>
-                      <div className='flex gap-3 items-center'>
-                        <HiOutlineShoppingBag className='text-info text-xl' />
-                        <span className='font-light text-sm'>
-                          {toStringDate(
-                            transactionHistory.transaction_datetime
-                          )}
-                        </span>
-                      </div>
-                      <Badge
-                        color={getBadgeColor(transactionHistory.order_status)}
-                        size='sm'
-                        className='truncate'
-                      >
-                        {transactionHistory.order_status}
-                      </Badge>
-                      <span className='font-light text-sm hidden md:block'>
-                        {transactionHistory?.invoice_number}
+        {getAllTransactionHistoryData?.data &&
+        getAllTransactionHistoryData?.data.length > 0 ? (
+          getAllTransactionHistoryData?.data.map((transactionHistory, n) => {
+            const productCount = transactionHistory.order_details.length;
+            const firstProduct = transactionHistory.order_details.at(0);
+            return (
+              <Card
+                className='col-span-12 shadow border-r-0 border-b-4 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
+                key={n}
+              >
+                <div className='p-4'>
+                  <div className='flex items-center mb-2.5 gap-3 justify-between md:justify-start'>
+                    <div className='flex gap-3 items-center'>
+                      <HiOutlineShoppingBag className='text-info text-xl' />
+                      <span className='font-light text-sm'>
+                        {toStringDate(transactionHistory.transaction_datetime)}
                       </span>
                     </div>
-                    <div className='mb-1'>
-                      <span className='font-bold'>
-                        {transactionHistory.shop_name}
-                      </span>
-                    </div>
-                    <div
-                      className='flex cursor-pointer'
-                      onClick={() =>
-                        handleViewDetailsClick(transactionHistory.order_id)
-                      }
+                    <Badge
+                      color={getBadgeColor(transactionHistory.order_status)}
+                      size='sm'
+                      className='truncate p-2 font-bold'
                     >
-                      <div className='mr-5'>
-                        <Image
-                          src={firstProduct?.product_image || ''}
-                          alt={firstProduct?.product_name || ''}
-                          className='h-12 w-12 md:h-20 md:w-20 rounded-md'
-                        />
-                      </div>
-                      <div className='flex flex-col w-[70%]'>
-                        <span className='font-bold line-clamp-2 md:line-clamp-1 mt-0'>
-                          {firstProduct?.product_name || ''}
-                        </span>
-                        <span className='font-light text-sm'>
-                          {firstProduct?.quantity} item
-                          {firstProduct?.quantity || 0 > 1
-                            ? 's'
-                            : null} &times; {toRupiah(firstProduct?.price || 0)}
-                        </span>
-                        {productCount > 1 ? (
-                          <span className='font-light text-sm'>
-                            +{productCount - 1} other product
-                            {productCount > 2 ? 's' : null}
-                          </span>
-                        ) : null}
-                      </div>
-                      <div className='hidden md:flex items-center'>
-                        <div className='divider divider-horizontal'></div>
-                        <div className='flex flex-col'>
-                          <span className='font-light text-sm'>
-                            Total Amount
-                          </span>
-                          <span className='font-bold'>
-                            {toRupiah(
-                              Math.round(transactionHistory?.total_price)
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className='flex mt-3 gap-3 items-center justify-between md:justify-end'>
-                      <span
-                        className='hidden text-primary font-medium text-sm cursor-pointer md:block'
-                        onClick={() =>
-                          handleViewDetailsClick(transactionHistory.order_id)
-                        }
+                      {transactionHistory.order_status}
+                    </Badge>
+                    <span className='font-light text-sm hidden md:block'>
+                      {transactionHistory?.invoice_number}
+                    </span>
+                    {transactionHistory?.refund_id ? (
+                      <Badge
+                        color='error'
+                        size='xs'
+                        className='font-bold p-2 rounded-none text-white'
                       >
-                        View Transaction Details
+                        refund
+                      </Badge>
+                    ) : null}
+
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.PENDING_SELLER
+                    ) ? (
+                      <Tooltip message='auto cancel countdown'>
+                        <DateCountdown
+                          date={moment(
+                            transactionHistory?.seller_confirmation_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
+                      </Tooltip>
+                    ) : null}
+
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.ON_PROCESS
+                    ) ? (
+                      <Tooltip message='auto cancel countdown'>
+                        <DateCountdown
+                          date={moment(
+                            transactionHistory?.on_process_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
+                      </Tooltip>
+                    ) : null}
+
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.DELIVERED
+                    ) ? (
+                      <Tooltip message='auto complete countdown'>
+                        <DateCountdown
+                          date={moment(
+                            transactionHistory?.delivered_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
+                      </Tooltip>
+                    ) : null}
+                  </div>
+                  <div className='mb-1'>
+                    <span className='font-bold'>
+                      {transactionHistory.shop_name}
+                    </span>
+                  </div>
+                  <div
+                    className='flex cursor-pointer'
+                    onClick={() =>
+                      handleViewDetailsClick(transactionHistory.order_id)
+                    }
+                  >
+                    <div className='mr-5'>
+                      <img
+                        src={firstProduct?.product_image || ''}
+                        alt={firstProduct?.product_name || ''}
+                        className='h-12 w-12 md:h-20 md:w-20 rounded-md'
+                      />
+                    </div>
+                    <div className='flex flex-col w-[70%]'>
+                      <span className='font-bold line-clamp-2 md:line-clamp-1 mt-0'>
+                        {firstProduct?.product_name || ''}
                       </span>
-                      <div className='flex flex-col md:hidden'>
+                      <span className='font-light text-sm'>
+                        {firstProduct?.quantity} item
+                        {firstProduct?.quantity || 0 > 1
+                          ? 's'
+                          : null} &times; {toRupiah(firstProduct?.price || 0)}
+                      </span>
+                      {productCount > 1 ? (
+                        <span className='font-light text-sm'>
+                          +{productCount - 1} other product
+                          {productCount > 2 ? 's' : null}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className='hidden md:flex items-center'>
+                      <div className='divider divider-horizontal'></div>
+                      <div className='flex flex-col'>
                         <span className='font-light text-sm'>Total Amount</span>
                         <span className='font-bold'>
                           {toRupiah(
@@ -676,33 +722,100 @@ const PurchaseContent = () => {
                           )}
                         </span>
                       </div>
+                    </div>
+                  </div>
+                  <div className='flex mt-3 gap-3 items-center justify-between md:justify-end'>
+                    <span
+                      className='hidden text-primary font-medium text-sm cursor-pointer md:block'
+                      onClick={() =>
+                        handleViewDetailsClick(transactionHistory.order_id)
+                      }
+                    >
+                      View Transaction Details
+                    </span>
+                    <div className='flex flex-col md:hidden'>
+                      <span className='font-light text-sm'>Total Amount</span>
+                      <span className='font-bold'>
+                        {toRupiah(Math.round(transactionHistory?.total_price))}
+                      </span>
+                    </div>
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.DELIVERED
+                    ) ? (
+                      <div className='flex gap-1'>
+                        <Button
+                          className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
+                          color='primary'
+                        >
+                          Complete
+                        </Button>
+                        <Dropdown
+                          horizontal='left'
+                          vertical='end'
+                          className='hidden md:flex'
+                        >
+                          <Dropdown.Toggle color='ghost'>
+                            <HiOutlineDotsHorizontal></HiOutlineDotsHorizontal>
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu className='w-52'>
+                            <Dropdown.Item>Refund</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
+                    ) : (
                       <Button
                         className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
                         color='primary'
                       >
                         Buy Again
                       </Button>
-                      <Button
-                        className='normal-case md:w-auto md:pl-7 md:pr-7 flex md:hidden'
-                        color='primary'
-                        onClick={() =>
-                          handleViewDetailsClick(transactionHistory.order_id)
-                        }
-                      >
-                        View Details
-                      </Button>
-                    </div>
+                    )}
+                    <Button
+                      className='normal-case md:w-auto md:pl-7 md:pr-7 flex md:hidden'
+                      color='primary'
+                      onClick={() =>
+                        handleViewDetailsClick(transactionHistory.order_id)
+                      }
+                    >
+                      View Details
+                    </Button>
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.DELIVERED
+                    ) ? (
+                      <div className='flex gap-1'>
+                        <Dropdown
+                          horizontal='left'
+                          vertical='end'
+                          className='flex md:hidden'
+                        >
+                          <Dropdown.Toggle color='ghost'>
+                            <HiOutlineDotsVertical></HiOutlineDotsVertical>
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu className='w-52'>
+                            <Dropdown.Item>Complete</Dropdown.Item>
+                            <Dropdown.Item>Refund</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
+                    ) : null}
                   </div>
-                </Card>
-              );
-            }
-          )
+                </div>
+              </Card>
+            );
+          })
         ) : stringCompare(activeStatusButton, DELIVERY_STATUS.ALL) &&
           dateRange.at(0) === null &&
           dateRange.at(1) === null &&
           search === '' ? (
           <div className='col-span-12'>
-            <NoData title='Oops, it seems that you have never made a purchase' />
+            <NoData
+              title='Oops, it seems that you have never made a purchase'
+              message='Start shopping and fulfill your needs at Oceana'
+              buttonMessage='Start Shopping'
+              buttonHandleClick={handleStartShoppingClick}
+            />
           </div>
         ) : (
           <div className='col-span-12'>
@@ -765,7 +878,7 @@ const PurchaseContent = () => {
             </label>
             <Divider className='m-0'></Divider>
             <div className='flex flex-col'>
-              <label
+              {/* <label
                 className='flex flex-row justify-between label cursor-pointer ml-6'
                 onClick={() =>
                   handleModalFilterOngoingStatusClick(
@@ -775,7 +888,7 @@ const PurchaseContent = () => {
               >
                 <span className='font-light'>Pending Payment</span>
                 <Radio size='md' color='primary' name='filter-status' />
-              </label>
+              </label> */}
               <Divider className='m-0'></Divider>
               <label
                 className='flex flex-row justify-between label cursor-pointer ml-6'
@@ -890,11 +1003,73 @@ const PurchaseContent = () => {
             <div className='flex flex-col gap-2'>
               <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
                 <div className='flex justify-between items-center'>
-                  <span className='font-bold'>
-                    {capitalizeFirstLetter(
-                      getOrderDetailsData?.data.order_status
-                    )}
-                  </span>
+                  <div className='flex gap-2 items-center'>
+                    <span className='font-bold'>
+                      {capitalizeFirstLetter(
+                        getOrderDetailsData?.data.order_status
+                      )}
+                    </span>
+                    {getOrderDetailsData?.data.refund_id ? (
+                      <Badge
+                        color='error'
+                        size='xs'
+                        className='font-bold p-2 rounded-none text-white'
+                      >
+                        refund
+                      </Badge>
+                    ) : null}
+
+                    {stringCompare(
+                      getOrderDetailsData?.data.order_status,
+                      DELIVERY_STATUS.PENDING_SELLER
+                    ) ? (
+                      <Tooltip
+                        position='bottom'
+                        message='auto cancel countdown'
+                      >
+                        <DateCountdown
+                          date={moment(
+                            getOrderDetailsData?.data
+                              .seller_confirmation_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
+                      </Tooltip>
+                    ) : null}
+
+                    {stringCompare(
+                      getOrderDetailsData?.data.order_status,
+                      DELIVERY_STATUS.ON_PROCESS
+                    ) ? (
+                      <Tooltip
+                        position='bottom'
+                        message='auto cancel countdown'
+                      >
+                        <DateCountdown
+                          date={moment(
+                            getOrderDetailsData?.data
+                              .on_process_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
+                      </Tooltip>
+                    ) : null}
+
+                    {stringCompare(
+                      getOrderDetailsData?.data.order_status,
+                      DELIVERY_STATUS.DELIVERED
+                    ) ? (
+                      <Tooltip
+                        position='bottom'
+                        message='auto complete countdown'
+                      >
+                        <DateCountdown
+                          date={moment(
+                            getOrderDetailsData?.data
+                              .delivered_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
+                      </Tooltip>
+                    ) : null}
+                  </div>
                   <div
                     className='flex cursor-pointer text-primary items-center gap-1'
                     onClick={handleViewOrderTrackingClick}
@@ -956,7 +1131,14 @@ const PurchaseContent = () => {
               <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>Product Details</span>
-                  <div className='flex items-center gap-1 cursor-pointer hover:text-primary'>
+                  <div
+                    className='flex items-center gap-1 cursor-pointer hover:text-primary'
+                    onClick={() => {
+                      handleNavigateShop(
+                        getOrderDetailsData?.data?.merchant_id || 0
+                      );
+                    }}
+                  >
                     <span className='font-bold text-sm'>
                       {getOrderDetailsData?.data.shop_name}
                     </span>
