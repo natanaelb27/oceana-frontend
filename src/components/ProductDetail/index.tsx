@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Card, Divider } from 'react-daisyui';
 import {
-  useFavoriteProductMutation,
-  useGetFavoriteProductQuery,
   useLazyGetAllProductsQuery,
   useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
   useViewPostMutation,
 } from '../../store/services/productService';
 import {
+  useFavoriteProductMutation,
+  useGetFavoriteProductQuery,
+} from '../../store/services/favoriteProductService';
+import { useLazyGetAllReviewsQuery } from '../../store/services/reviewService';
+import { useGetShopInformationQuery } from '../../store/services/shopService';
+import {
+  useIncrementUserCartMutation,
+  useUpdateUserCartMutation,
+} from '../../store/services/cartService';
+import {
   toProductQuery,
   toPurchasedQuantitiesQuery,
+  toReviewQuery,
 } from '../../utils/mapperDTO';
 import ProductCart from './ProductCart';
 import ProductDescription from './ProductDescription';
@@ -18,9 +27,7 @@ import ProductMedia from './ProductMedia';
 import Reviews from './Reviews';
 import ReviewStatsAndFilter from './ReviewStatsAndFilter';
 import ShopBanner from './ShopBanner';
-import { PurchasedQuantitiesQuery } from '../../types/query';
-import { useGetShopInformationQuery } from '../../store/services/shopService';
-import { useUpdateUserCartMutation } from '../../store/services/cartService';
+import { PurchasedQuantitiesQuery, ReviewQuery } from '../../types/query';
 import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
 import { useAppSelector } from '../../store/store';
 import { selectRole } from '../../store/slices/authSlice';
@@ -30,8 +37,14 @@ import {
   GetPurchasedQuantitiesResponse,
   UpdateUserCartResponse,
 } from '../../types/response';
-import { LIMIT_SIMILAR_PRODUCTS_IN_PRODUCT_PAGE } from '../../constants';
+import {
+  LIMIT_REVIEWS_IN_PRODUCT_PAGE,
+  LIMIT_SIMILAR_PRODUCTS_IN_PRODUCT_PAGE,
+} from '../../constants';
 import { ProductCard } from '../common';
+import { ReviewsSort } from '../../types/sort';
+import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import { useNavigate } from 'react-router-dom';
 
 type ProductDetailProps = {
   merchantID?: string;
@@ -49,6 +62,15 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       product_item_id: 0,
       quantity: 1,
     });
+  const [reviewQuery, setReviewQuery] = useState<ReviewQuery>({
+    sort: '',
+    sort_by: '',
+    limit: LIMIT_REVIEWS_IN_PRODUCT_PAGE,
+    page: 1,
+    media: false,
+    comment: false,
+    rating: [],
+  });
   const [viewPost] = useViewPostMutation();
   const [favoriteProduct] = useFavoriteProductMutation();
   const [
@@ -61,19 +83,19 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   ] = useLazyGetProductDetailQuery();
   const [getPurchasedQuantities, { data: getPurchasedQuantitiesData }] =
     useLazyGetPurchasedQuantitiesQuery();
+  const [getReviews, { data: getReviewsData }] = useLazyGetAllReviewsQuery();
   const [updateUserCart] = useUpdateUserCartMutation();
+  const [incrementUserCart] = useIncrementUserCartMutation();
   const {
     data: getShopInformationData,
     isLoading: getShopInformationIsLoading,
   } = useGetShopInformationQuery(merchantID);
-  const { data: getFavoriteProduct, isLoading: getFavoriteProductIsLoading } =
-    useGetFavoriteProductQuery(productID);
+  const { data: getFavoriteProduct } = useGetFavoriteProductQuery(productID);
   const [
     getAllSimilarProducts,
     {
       data: getAllSimilarProductsData,
       isLoading: getAllSimilarProductsIsLoading,
-      isFetching: getAllSimilarProductsIsFetching,
     },
   ] = useLazyGetAllProductsQuery();
   const [
@@ -81,13 +103,16 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     {
       data: getMerchantSimilarProductsData,
       isLoading: getMerchantSimilarProductsIsLoading,
-      isFetching: getMerhantSimilarProductsIsFetching,
     },
   ] = useLazyGetAllProductsQuery();
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
   const [selectedVariantImage, setSelectedVariantImage] = useState<string>('');
-  const [productItemName, setProductItemName] = useState('');
-  const [productItemPrice, setProductItemPrice] = useState(0);
+  const [productItemName, setProductItemName] = useState<string>('');
+  const [productItemPrice, setProductItemPrice] = useState<number>(0);
+  const [productLikeCount, setProductLikeCount] = useState(0);
+  const navigate = useNavigate();
+  const [sort, setSort] = useState<ReviewsSort>(ReviewsSort.Latest);
+
   const roleCode = useAppSelector(selectRole);
   const role = validateUserRole(roleCode);
 
@@ -183,7 +208,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
   };
 
-  const handleClckAddToCart = () => {
+  const handleClickBuyNow = () => {
     let productItemID = 0;
     if (getProductDetailData?.data?.product_variation.length === 0) {
       productItemID =
@@ -197,12 +222,37 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     })
       .unwrap()
       .then(() => {
+        navigate('/checkout');
+      })
+      .catch((err) => {
+        if (err && 'data' in err) {
+          const data = err.data as UpdateUserCartResponse;
+          notifyErrorToast(capitalizeFirstLetter(data.message));
+        }
+      });
+  };
+
+  const handleClickAddToCart = () => {
+    let productItemID = 0;
+    if (getProductDetailData?.data?.product_variation.length === 0) {
+      productItemID =
+        getProductDetailData.data.product_model[0].product_item_id;
+    } else {
+      productItemID = purchasedQuantitiesQuery.product_item_id;
+    }
+    incrementUserCart({
+      product_item_id: productItemID,
+      quantity: purchasedQuantitiesQuery.quantity,
+      action: 'increment',
+    })
+      .unwrap()
+      .then(() => {
         notifySuccessToast('Product has been added to cart');
       })
       .catch((err) => {
         if (err && 'data' in err) {
           const data = err.data as UpdateUserCartResponse;
-          notifyErrorToast(data.message);
+          notifyErrorToast(capitalizeFirstLetter(data.message));
         }
       });
   };
@@ -214,11 +264,29 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
         if (!res.data) {
           return;
         }
-        notifySuccessToast('Product was added to favorite list');
+        if (res.data.is_favorite) {
+          notifySuccessToast('Product added to favorite list');
+          setProductLikeCount(productLikeCount + 1);
+        } else {
+          notifySuccessToast('Product removed from favorite list');
+          setProductLikeCount(productLikeCount - 1);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
       });
   };
 
   useEffect(() => {
+    setSelectedVariations([]);
+    setSelectedVariantImage('');
+    setProductItemName('');
+    setProductItemPrice(0);
+    setPurchasedQuantitiesQuery({
+      product_id: Number(productID),
+      product_item_id: 0,
+      quantity: 1,
+    });
     const fetchData = () => {
       if (role === Role.Buyer || role === Role.Seller) {
         viewPost(productID);
@@ -226,6 +294,28 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       getProductDetail(productID).then(({ data }) => {
         if (!data?.data) {
           return;
+        }
+        setProductLikeCount(data.data.like_count);
+        if (data.data.product_variation.length === 0) {
+          getPurchasedQuantities(
+            toPurchasedQuantitiesQuery({
+              product_item_id: data.data.product_model[0].product_item_id,
+              product_id: Number(productID),
+              quantity: purchasedQuantitiesQuery.quantity,
+            })
+          )
+            .unwrap()
+            .then(({ data }) => {
+              if (!data) {
+                return;
+              }
+            })
+            .catch((err) => {
+              if (err && 'data' in err) {
+                const data = err.data as GetPurchasedQuantitiesResponse;
+                notifyErrorToast(data.message);
+              }
+            });
         }
         getAllSimilarProducts(
           toProductQuery({
@@ -273,23 +363,17 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
           .catch((err) => {
             console.error(err);
           });
-        if (data.data.product_variation.length === 0) {
-          getPurchasedQuantities(
-            toPurchasedQuantitiesQuery({
-              product_item_id: data.data.product_model[0].product_item_id,
-              product_id: Number(productID),
-              quantity: purchasedQuantitiesQuery.quantity,
-            })
-          )
-            .unwrap()
-            .catch((err) => {
-              if (err && 'data' in err) {
-                const data = err.data as GetPurchasedQuantitiesResponse;
-                notifyErrorToast(data.message);
-              }
-            });
-        }
       });
+      getReviews({
+        id: Number(productID),
+        query: toReviewQuery(reviewQuery),
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     };
 
     fetchData();
@@ -299,27 +383,105 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     if (purchasedQuantitiesQuery.product_item_id === 0) {
       return;
     }
-    getPurchasedQuantities(
-      toPurchasedQuantitiesQuery(purchasedQuantitiesQuery)
-    );
+    getPurchasedQuantities(toPurchasedQuantitiesQuery(purchasedQuantitiesQuery))
+      .unwrap()
+      .then(({ data }) => {
+        if (!data) {
+          return;
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }, [purchasedQuantitiesQuery]);
 
+  useEffect(() => {
+    getReviews({ id: Number(productID), query: toReviewQuery(reviewQuery) })
+      .unwrap()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [reviewQuery]);
+
+  const handleChangeReviewPage = (n: number) => {
+    setReviewQuery({
+      ...reviewQuery,
+      page: n,
+    });
+  };
+
+  const handleChangeFilterReviewWithMedia = () => {
+    setReviewQuery({
+      ...reviewQuery,
+      media: !reviewQuery.media,
+      page: 1,
+    });
+  };
+
+  const handleChangeFilterReviewRating = (e: React.SyntheticEvent) => {
+    const target = e.target as HTMLInputElement;
+    const value = Number(target.value);
+    const ratingCopy = [...reviewQuery.rating];
+    if (ratingCopy.includes(value)) {
+      const index = ratingCopy.indexOf(value);
+      if (index > -1) {
+        ratingCopy.splice(index, 1);
+      }
+    } else {
+      ratingCopy.push(value);
+    }
+    setReviewQuery({
+      ...reviewQuery,
+      rating: ratingCopy,
+      page: 1,
+    });
+  };
+
+  const handleChangeFilterReviewComments = () => {
+    setReviewQuery({
+      ...reviewQuery,
+      comment: !reviewQuery.comment,
+      page: 1,
+    });
+  };
+
+  const handleChangeReviewSort = (e: ChangeEvent<HTMLSelectElement>) => {
+    const sort = Number(e.target.value);
+    if (sort === ReviewsSort.Latest) {
+      setReviewQuery({
+        ...reviewQuery,
+        sort_by: 'latest',
+      });
+    } else if (sort === ReviewsSort.HighestRating) {
+      setReviewQuery({
+        ...reviewQuery,
+        sort_by: 'highest-rating',
+      });
+    } else if (sort === ReviewsSort.LowestRating) {
+      setReviewQuery({
+        ...reviewQuery,
+        sort_by: 'lowest-rating',
+      });
+    }
+    setSort(sort);
+  };
+
   if (
-    getProductDetailIsLoading ||
     !getProductDetailData?.data ||
     !getShopInformationData?.data ||
-    getShopInformationIsLoading ||
-    getFavoriteProductIsLoading ||
-    getProductDetailIsFetching ||
-    getAllSimilarProductsIsLoading ||
-    getMerchantSimilarProductsIsLoading ||
-    getMerhantSimilarProductsIsFetching ||
-    getAllSimilarProductsIsFetching ||
     !getMerchantSimilarProductsData?.data ||
-    !getAllSimilarProductsData?.data
+    !getAllSimilarProductsData?.data ||
+    getProductDetailIsLoading ||
+    getShopInformationIsLoading ||
+    getMerchantSimilarProductsIsLoading ||
+    getAllSimilarProductsIsLoading ||
+    getProductDetailIsFetching
   ) {
     return (
-      <div className='p-4 md:p-10 animate-pulse'>
+      <div className='container mx-auto py-10 px-4 animate-pulse'>
         <div className='grid grid-cols-12 gap-4 md:gap-10'>
           <div className='col-span-12 md:col-span-3'>
             <Card className='shadow max-w-sm'>
@@ -344,7 +506,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
             </div>
             <Divider />
-            <div className='grid grid-col-12 gap-4 mb-10'>
+            <div className='grid grid-cols-12 gap-4 mb-10'>
               <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
               <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
               <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
@@ -356,7 +518,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
             </div>
             <Divider />
-            <ShopBanner />
+            <ShopBanner isLoading={true} />
           </div>
           <div className='col-span-12 md:col-span-3'>
             <Card className='shadow max-w-sm'>
@@ -368,37 +530,113 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               </div>
             </Card>
           </div>
+          <div className='col-span-12 md:col-span-3'>
+            <ReviewStatsAndFilter isLoading={true} />
+          </div>
+          <div className='col-span-12 md:col-span-6'>
+            <Reviews isLoading={true} />
+            <Reviews isLoading={true} />
+            <Reviews isLoading={true} />
+          </div>
         </div>
       </div>
     );
   }
-
   return (
     <div className='container mx-auto'>
       <div className='px-4 py-10'>
-        <div className='grid grid-cols-12 gap-4 gap-y-10 md:gap-10'>
-          <div className='col-span-12 md:col-span-3'>
-            <ProductMedia
-              images={getProductDetailData.data.images}
-              selectedVariantImage={selectedVariantImage}
-              handleClickFavoriteProduct={handleClickFavoriteProduct}
-              favoriteProductValue={Boolean(
-                getFavoriteProduct?.data?.is_favorite
-              )}
-            />
+        <div className='grid grid-cols-12 gap-4 gap-y-10 md:gap-10 relative'>
+          <div className='col-span-12 md:col-span-9'>
+            <div className='grid grid-cols-12 gap-4 gap-y-10'>
+              <div className='col-span-12 md:col-span-4'>
+                <ProductMedia
+                  images={getProductDetailData.data.images}
+                  selectedVariantImage={selectedVariantImage}
+                  handleClickFavoriteProduct={handleClickFavoriteProduct}
+                  favoriteProductValue={Boolean(
+                    getFavoriteProduct?.data?.is_favorite
+                  )}
+                  productLikeCount={productLikeCount}
+                />
+              </div>
+              <div className='col-span-12 md:col-span-8'>
+                <ProductDescription
+                  productVariations={
+                    getProductDetailData.data.product_variation
+                  }
+                  productDetail={getProductDetailData.data}
+                  shopInformation={getShopInformationData.data}
+                  handleClickVariation={handleClickVariation}
+                  selectedVariations={selectedVariations}
+                  purchasedQuantitiesPrice={
+                    getPurchasedQuantitiesData?.data?.price
+                  }
+                  productItemPrice={productItemPrice}
+                />
+              </div>
+              <div className='col-span-12 md:hidden relative'>
+                <ProductCart
+                  stock={getProductDetailData.data.total_stock}
+                  quantity={purchasedQuantitiesQuery.quantity}
+                  handleClickAddQuantity={handleClickAddQuantity}
+                  handleClickDecreaseQuantity={handleClickDecreaseQuantity}
+                  handleChangeQuantity={handleChangeQuantity}
+                  purchasedQuantitiesStock={
+                    getPurchasedQuantitiesData?.data?.stock
+                  }
+                  purchasedQuantitiesPrice={
+                    getPurchasedQuantitiesData?.data?.price
+                  }
+                  productVariation={productItemName}
+                  productVariations={
+                    getProductDetailData.data.product_variation
+                  }
+                  productPrice={getProductDetailData.data.price}
+                  selectedVariations={selectedVariations}
+                  productMerchantPromotionID={
+                    getPurchasedQuantitiesData?.data
+                      ?.product_merchant_promotion_id
+                  }
+                  userMaxPurchaseQuantity={
+                    getPurchasedQuantitiesData?.data?.user_max_purchase_quantity
+                  }
+                  maxPurchaseQuantity={
+                    getPurchasedQuantitiesData?.data?.max_purchase_quantity
+                  }
+                  handleClickAddToCart={handleClickAddToCart}
+                  handleClickBuyNow={handleClickBuyNow}
+                  defaultImage={getProductDetailData.data.images[0]}
+                  selectedVariantImage={selectedVariantImage}
+                />
+              </div>
+              <div className='col-span-12 md:col-span-4'>
+                <ReviewStatsAndFilter
+                  handleChangeFilterReviewWithMedia={
+                    handleChangeFilterReviewWithMedia
+                  }
+                  handleChangeFilterReviewRating={
+                    handleChangeFilterReviewRating
+                  }
+                  handleChangeFilterReviewComments={
+                    handleChangeFilterReviewComments
+                  }
+                  productReviewDetails={
+                    getProductDetailData.data.product_review_details
+                  }
+                />
+              </div>
+              <div className='col-span-12 md:col-span-8'>
+                <Reviews
+                  reviewData={getReviewsData?.data}
+                  reviewMetadata={getReviewsData?.metadata}
+                  handleChangeReviewPage={handleChangeReviewPage}
+                  handleChangeReviewSort={handleChangeReviewSort}
+                  sortValue={sort}
+                />
+              </div>
+            </div>
           </div>
-          <div className='col-span-12 md:col-span-6'>
-            <ProductDescription
-              productVariations={getProductDetailData.data.product_variation}
-              productDetail={getProductDetailData.data}
-              shopInformation={getShopInformationData.data}
-              handleClickVariation={handleClickVariation}
-              selectedVariations={selectedVariations}
-              purchasedQuantitiesPrice={getPurchasedQuantitiesData?.data?.price}
-              productItemPrice={productItemPrice}
-            />
-          </div>
-          <div className='col-span-12 md:col-span-3'>
+          <div className='hidden md:block md:col-span-3 relative'>
             <ProductCart
               stock={getProductDetailData.data.total_stock}
               quantity={purchasedQuantitiesQuery.quantity}
@@ -420,14 +658,11 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               maxPurchaseQuantity={
                 getPurchasedQuantitiesData?.data?.max_purchase_quantity
               }
-              handleClickAddToCart={handleClckAddToCart}
+              handleClickAddToCart={handleClickAddToCart}
+              handleClickBuyNow={handleClickBuyNow}
+              defaultImage={getProductDetailData.data.images[0]}
+              selectedVariantImage={selectedVariantImage}
             />
-          </div>
-          <div className='col-span-12 md:col-span-3'>
-            <ReviewStatsAndFilter />
-          </div>
-          <div className='col-span-12 md:col-span-6'>
-            <Reviews />
           </div>
         </div>
         {getAllSimilarProductsData.data.length > 1 && (
@@ -435,7 +670,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             <div className='font-bold text-2xl my-3'>
               Similar Products For You
             </div>
-            <div className='grid grid-cols-2 md:grid-cols-6 gap-4'>
+            <div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4'>
               {getAllSimilarProductsData?.data?.map((product, n) => {
                 if (product.id !== Number(productID)) {
                   return <ProductCard key={n} product={product} />;
@@ -444,13 +679,12 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             </div>
           </>
         )}
-
-        {getMerchantSimilarProductsData?.data?.length > 1 && (
+        {getMerchantSimilarProductsData.data.length > 1 && (
           <>
             <div className='font-bold text-2xl my-3'>
               Similar Products From This Store
             </div>
-            <div className='grid grid-cols-2 md:grid-cols-6 gap-4'>
+            <div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4'>
               {getMerchantSimilarProductsData?.data?.map((product, n) => {
                 if (product.id !== Number(productID)) {
                   return <ProductCard key={n} product={product} />;

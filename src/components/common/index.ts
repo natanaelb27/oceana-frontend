@@ -10,5 +10,6 @@ export { default as ProductCard } from './ProductCard';
 export { default as SortBar } from './SortBar';
 export { default as Slider } from './Slider';
 export { default as Tiles } from './Tiles';
+export { default as NoData } from './NoData';
 export { default as SealabsPayImg } from './SealabsPayImg';
 export { default as SealabsPayCardImg } from './SealabsPayCardImg';

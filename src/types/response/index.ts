@@ -13,3 +13,4 @@ export * from './sealabsPay';
 export * from './shop';
 export * from './subDistrict';
 export * from './wallet';
+export * from './review';
