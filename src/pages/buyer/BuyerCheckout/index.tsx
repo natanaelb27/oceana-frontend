@@ -13,10 +13,15 @@ import {
 import { MdOutlineAddLocationAlt } from 'react-icons/md';
 import { TbDiscount2 } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
+import { SealabsPayImg } from '../../../components/common';
 import NoData from '../../../components/common/NoData';
 import { STATUS_INTERNAL_SERVER_ERROR } from '../../../constants/statusCodes';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
 import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
+import {
+  useGetWalletDetailsQuery,
+  useLazyGetWalletDetailsQuery,
+} from '../../../store/services/walletService';
 import { selectCart } from '../../../store/slices/cartSlice';
 import { useAppSelector } from '../../../store/store';
 import { Address } from '../../../types/component';
@@ -25,9 +30,14 @@ import {
   CheckoutCartProduct,
   CheckoutCartProductItem,
 } from '../../../types/component/checkout';
+import { PaymentMethod } from '../../../types/paymentMethod';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import { calculateSubtotal, calculateTotal } from '../../../utils/cart';
-import { toPhoneNumber, toRupiah } from '../../../utils/convert';
+import {
+  pascalCaseToTitleCase,
+  toPhoneNumber,
+  toRupiah,
+} from '../../../utils/convert';
 import { toPayCartWithWalletRequest } from '../../../utils/mapperDTO';
 import { titleCase } from '../../../utils/titleCase';
 import {
@@ -35,6 +45,7 @@ import {
   notifyInfoToast,
   notifySuccessToast,
 } from '../../../utils/toast';
+import PaymentMethodModal from './PaymentMethodModal';
 import PaymentWalletPinModal from './PaymentWalletPinModal';
 import ShippingAddressModal from './ShippingAddressModal';
 
@@ -52,6 +63,8 @@ type OpenCheckoutModal = {
 
 const BuyerCheckout = () => {
   const { data: getAddressesData } = useGetAddressesQuery();
+  const { data: getWalletDetailsData, refetch: refetchGetWalletDetails } =
+    useGetWalletDetailsQuery();
   const [payCartWithWallet, { isLoading: payCartWithWalletLoading }] =
     usePayCartWithWalletMutation();
   const cart = useAppSelector(selectCart);
@@ -67,7 +80,11 @@ const BuyerCheckout = () => {
     paymentWalletPin: false,
   });
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
+    PaymentMethod.Wallet
+  );
   const [totalPayment, setTotalPayment] = useState<number>(0);
+  const [walletBalance, setWalletBalance] = useState<number>(0);
 
   const handleAddAddressClick = () => {
     setOpenModal({
@@ -272,7 +289,14 @@ const BuyerCheckout = () => {
       });
   };
 
-  useEffect(() => setTotalPayment(calculateTotal(cart)), []);
+  useEffect(() => {
+    if (!getWalletDetailsData?.data) {
+      refetchGetWalletDetails();
+      return;
+    }
+    setWalletBalance(getWalletDetailsData.data.balance);
+    setTotalPayment(calculateTotal(cart));
+  }, [getWalletDetailsData, cart]);
 
   useEffect(() => {
     if (!getAddressesData?.data) {
@@ -480,7 +504,11 @@ const BuyerCheckout = () => {
       <Card className='p-4 mb-4 shadow-lg'>
         <Card.Title className='flex justify-between'>
           <div className='flex items-center gap-2'>
-            <IoWalletOutline />
+            {paymentMethod === PaymentMethod.Wallet ? (
+              <IoWalletOutline className='w-5 h-5' />
+            ) : (
+              <SealabsPayImg className='w-5 h-5' />
+            )}
             <h2>Payment Method</h2>
           </div>
           <Tooltip message='Change payment method' position='left'>
@@ -489,15 +517,36 @@ const BuyerCheckout = () => {
               color='primary'
               shape='circle'
               size='md'
+              onClick={handlePaymentMethodClick}
             >
               <FaListUl className='text-xl' />
             </Button>
           </Tooltip>
         </Card.Title>
+        <Card.Body className='p-0 pl-2'>
+          <div className='flex flex-col gap-2'>
+            <div className='text-lg'>
+              {pascalCaseToTitleCase(PaymentMethod[paymentMethod])}
+            </div>
+            {paymentMethod === PaymentMethod.Wallet ? (
+              <div className='flex justify-between items-center'>
+                <div className='text-sm font-light'>Balance</div>
+                <div className='text-sm font-bold'>
+                  {toRupiah(walletBalance)}
+                </div>
+              </div>
+            ) : (
+              <div className='flex justify-between items-center'>
+                <div className='text-sm font-light'>Card Number</div>
+                <div className='text-sm'>1234-1234-1234-1234</div>
+              </div>
+            )}
+          </div>
+        </Card.Body>
       </Card>
 
       {/* Total and make order button sticky bottom */}
-      <Card className='p-4 w-full fixed bottom-0 left-0 flex justify-end rounded-b-none rounded-t-3xl bg-neutral'>
+      <Card className='container p-4 fixed bottom-0 left-0 rounded-b-none rounded-t-3xl bg-neutral md:relative'>
         <Card.Title className='flex justify-between text-neutral-content'>
           <div className='flex items-center gap-2'>
             <ImPriceTags />
@@ -527,6 +576,12 @@ const BuyerCheckout = () => {
       {/* Shop Promotion/Voucher Modal */}
       {/* Marketplace Voucher Modal */}
       {/* Payment Method Modal */}
+      <PaymentMethodModal
+        currentPaymentMethod={paymentMethod}
+        open={openModal.paymentMethod}
+        onClose={handleModalClose}
+        setPaymentMethod={setPaymentMethod}
+      />
       {/* Payment Wallet Pin Modal */}
       <PaymentWalletPinModal
         open={openModal.paymentWalletPin}

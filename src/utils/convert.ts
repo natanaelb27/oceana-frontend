@@ -24,3 +24,6 @@ export const toCardNumber = (n: string, dashes = true) =>
   dashes ? n.match(/.{1,4}/g)?.join('-') : n.match(/.{1,4}/g)?.join(' ');
 
 export const toPhoneNumber = (n: string) => (n ? `+(62)${n.slice(1)}` : '');
+
+export const pascalCaseToTitleCase = (n: string) =>
+  n.replace(/([A-Z])/g, ' $1');
