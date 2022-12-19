@@ -1,4 +1,4 @@
-import { Button, Card, Carousel } from 'react-daisyui';
+import { Button, Carousel } from 'react-daisyui';
 
 const PromoBanner = () => {
   const handleButtonClick = (value: string) => {

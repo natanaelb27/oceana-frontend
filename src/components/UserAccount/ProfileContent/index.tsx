@@ -4,7 +4,6 @@ import moment from 'moment';
 import { Button, Card, Divider, Form, Input, Modal } from 'react-daisyui';
 import * as Yup from 'yup';
 import { HiOutlinePhotograph, HiOutlineMail } from 'react-icons/hi';
-import { HiOutlineFaceSmile } from 'react-icons/hi2';
 import { CgClose, CgPassword, CgProfile } from 'react-icons/cg';
 
 import {

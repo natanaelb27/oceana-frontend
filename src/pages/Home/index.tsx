@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Button, Carousel, Divider } from 'react-daisyui';
+import { Button, Divider } from 'react-daisyui';
 import { useNavigate } from 'react-router-dom';
 import { ProductCard, Slider } from '../../components/common';
 import { CategoryCard, HomeCard, PromoBanner } from '../../components/Home';
@@ -76,7 +75,7 @@ const Home = () => {
             subtitle='There are various products with special prices waiting for you!'
             navigateSeeAll='/category'
           >
-            <Slider id='category'>
+            <Slider>
               {resGetAllCategory?.data &&
                 resGetAllCategory.data.map((category, n) => (
                   <div className='carousel-item' key={n}>
@@ -96,7 +95,7 @@ const Home = () => {
             subtitle='These are the most seen products!'
             navigateSeeAll='/search?sort-by=recommended'
           >
-            <Slider id='recommended'>
+            <Slider>
               {resGetRecommendedProducts?.data
                 ? resGetRecommendedProducts.data.map((product, n) => (
                     <div key={n} className='carousel-item max-w-xs w-full'>

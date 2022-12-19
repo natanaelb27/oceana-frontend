@@ -1,15 +1,10 @@
 import { ReactNode } from 'react';
-import { Carousel } from 'react-daisyui';
-import { MdNavigateNext, MdNavigateBefore } from 'react-icons/md';
-import { SCROLL_SLIDER } from '../../../constants';
-import { SliderNavBtn, StyledCarousel } from './style';
 
 type SliderProps = {
   children: ReactNode;
-  id: string;
 };
 
-const Slider = ({ children, id }: SliderProps) => {
+const Slider = ({ children }: SliderProps) => {
   if (!children || (children as Array<ReactNode>).length === 0)
     return (
       <div className='carousel rounded-box gap-4 animate-pulse'>
