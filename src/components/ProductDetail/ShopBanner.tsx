@@ -5,6 +5,7 @@ import moment from 'moment';
 
 import { toCompact } from '../../utils/convert';
 import { ShopInformation } from '../../types/component';
+import { Image } from '../common';
 
 type ShopBannerProps = {
   shopInformation?: ShopInformation;
@@ -29,7 +30,11 @@ const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
   return (
     <div className='flex flex-row gap-4 md:items-center'>
       {shopInformation.photo ? (
-        <Avatar size='sm' shape='circle' src={shopInformation.photo}></Avatar>
+        <div className='avatar'>
+          <div className='w-14 rounded-full'>
+            <Image src={shopInformation.photo} />
+          </div>
+        </div>
       ) : (
         <Avatar
           size='sm'
