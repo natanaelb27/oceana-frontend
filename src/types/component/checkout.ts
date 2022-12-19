@@ -1,19 +1,19 @@
-export interface PayCartProductItem {
+export interface CheckoutCartProductItem {
   product_item_id: number;
   quantity: number;
-  message: string | null;
+  message: string;
 }
 
-export interface PayCartProduct {
+export interface CheckoutCartProduct {
   product_id: number;
   product_merchant_promotion_id: number | null;
-  product_items: PayCartProductItem[];
+  product_items: CheckoutCartProductItem[];
 }
 
-export interface PayCartOrderItem {
+export interface CheckoutCartOrderItem {
   merchant_id: number;
   merchant_voucher_id: number | null;
   courier_service_id: number;
   shipping_fee: number;
-  products: PayCartProduct[];
+  products: CheckoutCartProduct[];
 }

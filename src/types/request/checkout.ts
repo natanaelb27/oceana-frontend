@@ -1,7 +1,7 @@
-import { PayCartOrderItem } from '../component/checkout';
+import { CheckoutCartOrderItem } from '../component/checkout';
 
 export type PayCartWithWalletRequest = {
-  cart_order_items: PayCartOrderItem[];
+  cart_order_items: CheckoutCartOrderItem[];
   cart_ids: number[];
   marketplace_voucher_id: number | null;
   address_id: string;

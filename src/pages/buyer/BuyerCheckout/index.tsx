@@ -15,12 +15,20 @@ import { TbDiscount2 } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
 import NoData from '../../../components/common/NoData';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
+import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
 import { selectCart } from '../../../store/slices/cartSlice';
 import { useAppSelector } from '../../../store/store';
 import { Address } from '../../../types/component';
+import {
+  CheckoutCartOrderItem,
+  CheckoutCartProduct,
+  CheckoutCartProductItem,
+} from '../../../types/component/checkout';
 import { calculateSubtotal, calculateTotal } from '../../../utils/cart';
 import { toPhoneNumber, toRupiah } from '../../../utils/convert';
+import { toPayCartWithWalletRequest } from '../../../utils/mapperDTO';
 import { titleCase } from '../../../utils/titleCase';
+import { notifyInfoToast } from '../../../utils/toast';
 import ShippingAddressModal from './ShippingAddressModal';
 
 type OpenCheckoutModal = {
@@ -35,6 +43,9 @@ type OpenCheckoutModal = {
 };
 
 const BuyerCheckout = () => {
+  const { data: getAddressesData } = useGetAddressesQuery();
+  const [payCartWithWallet] = usePayCartWithWalletMutation();
+  const cart = useAppSelector(selectCart);
   const [openModal, setOpenModal] = useState<OpenCheckoutModal>({
     shippingAddress: {
       add: false,
@@ -46,8 +57,7 @@ const BuyerCheckout = () => {
     paymentMethod: false,
   });
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
-  const { data: getAddressesData } = useGetAddressesQuery();
-  const cart = useAppSelector(selectCart);
+  const [totalPayment, setTotalPayment] = useState<number>(0);
 
   const handleAddAddressClick = () => {
     setOpenModal({
@@ -139,6 +149,82 @@ const BuyerCheckout = () => {
       paymentMethod: false,
     });
   };
+
+  const handleOrderClick = () => {
+    if (!shippingAddress?.id) {
+      notifyInfoToast('Shipping address required');
+      return;
+    }
+
+    const cartIDs: number[] = [];
+    const checkoutCartOrderItems = cart.map(
+      (cartGroupedByMerchant): CheckoutCartOrderItem => {
+        const checkoutCartProducts: CheckoutCartProduct[] = [];
+        cartGroupedByMerchant.products.forEach((product) => {
+          // if product_id already exist (different variation), skip and add to CheckoutCartProductItem
+          const productIndex = checkoutCartProducts.findIndex(
+            (checkoutCartProduct) =>
+              checkoutCartProduct.product_id === product.product_id
+          );
+          if (productIndex < 0) {
+            const checkoutCartProductItems: CheckoutCartProductItem[] = [];
+            checkoutCartProductItems.push({
+              product_item_id: product.product_item_id,
+              quantity: product.quantity,
+              message: '',
+            });
+            // add to array of cart IDs for BE request
+            cartIDs.push(product.carts_id);
+
+            const checkoutCartProduct: CheckoutCartProduct = {
+              product_id: product.product_id,
+              product_merchant_promotion_id: null, //NOTE: what's promo_id in getCartByUserID
+              product_items: checkoutCartProductItems,
+            };
+            checkoutCartProducts.push(checkoutCartProduct);
+          } else {
+            const checkoutCartProductItem: CheckoutCartProductItem = {
+              product_item_id: product.product_item_id,
+              quantity: product.quantity,
+              message: '',
+            };
+
+            // TODO: message for each product item
+
+            checkoutCartProducts
+              .at(productIndex)
+              ?.product_items.push(checkoutCartProductItem);
+          }
+        });
+
+        const checkoutCartOrderItem: CheckoutCartOrderItem = {
+          merchant_id: cartGroupedByMerchant.merchant_id,
+          merchant_voucher_id: null,
+          courier_service_id: 1,
+          shipping_fee: 0,
+          products: checkoutCartProducts,
+        };
+        return checkoutCartOrderItem;
+      }
+    );
+    const marketplaceVoucherID = null;
+    const pin = '123456';
+
+    // debugging
+    const dbgReq = toPayCartWithWalletRequest(
+      checkoutCartOrderItems,
+      cartIDs,
+      marketplaceVoucherID,
+      shippingAddress.id,
+      pin,
+      totalPayment
+    );
+    console.log(dbgReq);
+
+    payCartWithWallet(dbgReq);
+  };
+
+  useEffect(() => setTotalPayment(calculateTotal(cart)), []);
 
   useEffect(() => {
     if (!getAddressesData?.data) {
@@ -367,12 +453,13 @@ const BuyerCheckout = () => {
         <Card.Title className='flex justify-between text-neutral-content'>
           <div className='flex items-center gap-2'>
             <ImPriceTags />
-            <h2>{toRupiah(calculateTotal(cart))}</h2>
+            <h2>{toRupiah(totalPayment)}</h2>
           </div>
           <Button
             className='flex items-center gap-2 rounded-full shadow-md'
             color='primary'
             size='md'
+            onClick={handleOrderClick}
           >
             <IoBagCheckOutline className='text-2xl' />
             <h2 className='inline'>Order</h2>
