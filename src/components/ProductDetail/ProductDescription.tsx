@@ -55,7 +55,7 @@ const ProductDescription = ({
     if (tab === ProductTab.Description) {
       return (
         <div className='bg-base-200 p-4 text-sm'>
-          <p className='prose-sm'>{productDetail.description}</p>
+          <p className='prose-sm whitespace-pre-line'>{productDetail.description}</p>
         </div>
       );
     }
@@ -69,16 +69,13 @@ const ProductDescription = ({
         {productDetail.name}
       </h5>
       <div className='flex flex-row items-center mb-2.5'>
-        {toCompact(1)} sold |{' '}
+        {toCompact(productDetail.total_purchased)} sold |{' '}
         <Tooltip message='Rating' color='warning'>
           <HiStar className='text-warning text-lg' />
         </Tooltip>{' '}
         {productDetail.product_review_details.rating_star.toFixed(1)} ({productDetail.product_review_details.rating_count} ratings)
       </div>
-      {getPurchasedQuantitiesIsFetching &&
-      selectedVariations.length === productVariations.length ? (
-        <div className='h-10 w-2/5 bg-base-300 rounded-full animate-pulse mb-2.5'></div>
-      ) : purchasedQuantitiesPrice &&
+      {purchasedQuantitiesPrice &&
         selectedVariations.length === productVariations.length ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(purchasedQuantitiesPrice)}

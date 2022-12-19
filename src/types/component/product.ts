@@ -59,6 +59,7 @@ export interface ProductDetail {
   description: string;
   total_stock: number;
   like_count: number;
+  total_purchased: number;
   product_review_details: ProductReviewDetails;
   discount_type: string | null;
   discount: number | null;

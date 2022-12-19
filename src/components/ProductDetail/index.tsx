@@ -12,7 +12,7 @@ import {
 } from '../../store/services/favoriteProductService';
 import { useLazyGetAllReviewsQuery } from '../../store/services/reviewService';
 import { useGetShopInformationQuery } from '../../store/services/shopService';
-import { useUpdateUserCartMutation } from '../../store/services/cartService';
+import { useIncrementUserCartMutation, useUpdateUserCartMutation } from '../../store/services/cartService';
 import {
   toProductQuery,
   toPurchasedQuantitiesQuery,
@@ -93,6 +93,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     },
   ] = useLazyGetAllReviewsQuery();
   const [updateUserCart] = useUpdateUserCartMutation();
+  const [incrementUserCart] = useIncrementUserCartMutation();
   const {
     data: getShopInformationData,
     isLoading: getShopInformationIsLoading,
@@ -225,9 +226,24 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     } else {
       productItemID = purchasedQuantitiesQuery.product_item_id;
     }
-    updateUserCart({
+    // updateUserCart({
+    //   product_item_id: productItemID,
+    //   quantity: purchasedQuantitiesQuery.quantity,
+    // })
+    //   .unwrap()
+    //   .then(() => {
+    //     notifySuccessToast('Product has been added to cart');
+    //   })
+    //   .catch((err) => {
+    //     if (err && 'data' in err) {
+    //       const data = err.data as UpdateUserCartResponse;
+    //       notifyErrorToast(capitalizeFirstLetter(data.message));
+    //     }
+    //   });
+    incrementUserCart({
       product_item_id: productItemID,
       quantity: purchasedQuantitiesQuery.quantity,
+      action: 'increment'
     })
       .unwrap()
       .then(() => {
@@ -433,7 +449,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   };
 
   const handleChangeReviewSort = (e: ChangeEvent<HTMLSelectElement>) => {
-    console.log('test');
     const sort = Number(e.target.value);
     if (sort === ReviewsSort.Latest) {
       setReviewQuery({
@@ -531,32 +546,99 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     <div className='container mx-auto'>
       <div className='px-4 py-10'>
         <div className='grid grid-cols-12 gap-4 gap-y-10 md:gap-10 relative'>
-          <div className='col-span-12 md:col-span-3'>
-            <ProductMedia
-              images={getProductDetailData.data.images}
-              selectedVariantImage={selectedVariantImage}
-              handleClickFavoriteProduct={handleClickFavoriteProduct}
-              favoriteProductValue={Boolean(
-                getFavoriteProduct?.data?.is_favorite
-              )}
-              productLikeCount={productLikeCount}
-            />
+          <div className='col-span-12 md:col-span-9'>
+            <div className='grid grid-cols-12 gap-4 gap-y-10'>
+              <div className='col-span-12 md:col-span-4'>
+                <ProductMedia
+                  images={getProductDetailData.data.images}
+                  selectedVariantImage={selectedVariantImage}
+                  handleClickFavoriteProduct={handleClickFavoriteProduct}
+                  favoriteProductValue={Boolean(
+                    getFavoriteProduct?.data?.is_favorite
+                  )}
+                  productLikeCount={productLikeCount}
+                />
+              </div>
+              <div className='col-span-12 md:col-span-8'>
+                <ProductDescription
+                  productVariations={
+                    getProductDetailData.data.product_variation
+                  }
+                  productDetail={getProductDetailData.data}
+                  shopInformation={getShopInformationData.data}
+                  handleClickVariation={handleClickVariation}
+                  selectedVariations={selectedVariations}
+                  purchasedQuantitiesPrice={
+                    getPurchasedQuantitiesData?.data?.price
+                  }
+                  productItemPrice={productItemPrice}
+                  getPurchasedQuantitiesIsFetching={
+                    getPurchasedQuantitiesIsFetching
+                  }
+                />
+              </div>
+              <div className='col-span-12 md:hidden relative'>
+                <ProductCart
+                  stock={getProductDetailData.data.total_stock}
+                  quantity={purchasedQuantitiesQuery.quantity}
+                  handleClickAddQuantity={handleClickAddQuantity}
+                  handleClickDecreaseQuantity={handleClickDecreaseQuantity}
+                  handleChangeQuantity={handleChangeQuantity}
+                  purchasedQuantitiesStock={
+                    getPurchasedQuantitiesData?.data?.stock
+                  }
+                  purchasedQuantitiesPrice={
+                    getPurchasedQuantitiesData?.data?.price
+                  }
+                  productVariation={productItemName}
+                  productVariations={
+                    getProductDetailData.data.product_variation
+                  }
+                  productPrice={getProductDetailData.data.price}
+                  selectedVariations={selectedVariations}
+                  productMerchantPromotionID={
+                    getPurchasedQuantitiesData?.data
+                      ?.product_merchant_promotion_id
+                  }
+                  userMaxPurchaseQuantity={
+                    getPurchasedQuantitiesData?.data?.user_max_purchase_quantity
+                  }
+                  maxPurchaseQuantity={
+                    getPurchasedQuantitiesData?.data?.max_purchase_quantity
+                  }
+                  handleClickAddToCart={handleClickAddToCart}
+                  defaultImage={getProductDetailData.data.images[0]}
+                  selectedVariantImage={selectedVariantImage}
+                />
+              </div>
+              <div className='col-span-12 md:col-span-4'>
+                <ReviewStatsAndFilter
+                  handleChangeFilterReviewWithMedia={
+                    handleChangeFilterReviewWithMedia
+                  }
+                  handleChangeFilterReviewRating={
+                    handleChangeFilterReviewRating
+                  }
+                  handleChangeFilterReviewComments={
+                    handleChangeFilterReviewComments
+                  }
+                  productReviewDetails={
+                    getProductDetailData.data.product_review_details
+                  }
+                />
+              </div>
+              <div className='col-span-12 md:col-span-8'>
+                <Reviews
+                  reviewData={getReviewsData?.data}
+                  reviewMetadata={getReviewsData?.metadata}
+                  handleChangeReviewPage={handleChangeReviewPage}
+                  handleChangeReviewSort={handleChangeReviewSort}
+                  sortValue={sort}
+                />
+              </div>
+            </div>
           </div>
-          <div className='col-span-12 md:col-span-6'>
-            <ProductDescription
-              productVariations={getProductDetailData.data.product_variation}
-              productDetail={getProductDetailData.data}
-              shopInformation={getShopInformationData.data}
-              handleClickVariation={handleClickVariation}
-              selectedVariations={selectedVariations}
-              purchasedQuantitiesPrice={getPurchasedQuantitiesData?.data?.price}
-              productItemPrice={productItemPrice}
-              getPurchasedQuantitiesIsFetching={
-                getPurchasedQuantitiesIsFetching
-              }
-            />
-          </div>
-          <div className='col-span-12 md:col-span-3'>
+          <div className='hidden md:block md:col-span-3 relative'>
             <ProductCart
               stock={getProductDetailData.data.total_stock}
               quantity={purchasedQuantitiesQuery.quantity}
@@ -581,27 +663,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               handleClickAddToCart={handleClickAddToCart}
               defaultImage={getProductDetailData.data.images[0]}
               selectedVariantImage={selectedVariantImage}
-            />
-          </div>
-          <div className='col-span-12 md:col-span-3'>
-            <ReviewStatsAndFilter
-              handleChangeFilterReviewWithMedia={
-                handleChangeFilterReviewWithMedia
-              }
-              handleChangeFilterReviewRating={handleChangeFilterReviewRating}
-              handleChangeFilterReviewComments={
-                handleChangeFilterReviewComments
-              }
-              productReviewDetails={getProductDetailData.data.product_review_details}
-            />
-          </div>
-          <div className='col-span-12 md:col-span-6'>
-            <Reviews
-              reviewData={getReviewsData?.data}
-              reviewMetadata={getReviewsData?.metadata}
-              handleChangeReviewPage={handleChangeReviewPage}
-              handleChangeReviewSort={handleChangeReviewSort}
-              sortValue={sort}
             />
           </div>
         </div>

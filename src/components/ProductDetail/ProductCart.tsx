@@ -63,7 +63,7 @@ const ProductCart = ({
           <Button
             color='primary'
             endIcon={<HiShoppingCart className='text-lg' />}
-            className='w-full mb-2.5'
+            className='w-full mb-2.5 text-xs lg:text-sm'
             onClick={handleClickAddToCart}
           >
             Add to Cart
@@ -72,7 +72,7 @@ const ProductCart = ({
             color='primary'
             variant='outline'
             endIcon={<HiShoppingBag className='text-lg' />}
-            className='w-full mb-2.5'
+            className='w-full mb-2.5 text-xs lg:text-sm'
           >
             Buy Now
           </Button>
@@ -81,24 +81,11 @@ const ProductCart = ({
     }
   };
   return (
-    <Card className='shadow'>
+    <Card className='shadow sticky top-24'>
       <div className='p-4'>
         {productVariations.length !== 0 && (
           <div>
             <div className='flex items-center gap-2'>
-              {/* <img
-                src={`${
-                  selectedVariantImage === ''
-                    ? defaultImage
-                    : selectedVariantImage
-                }`}
-                className='w-20'
-                onError={({ currentTarget }) => {
-                  currentTarget.onerror = null;
-                  currentTarget.src =
-                    'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-                }}
-              /> */}
               <Image src={`${selectedVariantImage === '' ? defaultImage : selectedVariantImage}`} className='w-20' />
               {productVariation &&
               productVariations.length === selectedVariations.length ? (

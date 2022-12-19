@@ -29,7 +29,7 @@ const ReviewStatsAndFilter = ({
   }
 
   return (
-    <div>
+    <div className='md:p-4'>
       <h5 className='font-medium uppercase text-xl mb-4 text-center'>
         Buyer&apos;s Reviews
       </h5>

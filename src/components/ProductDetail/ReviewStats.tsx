@@ -71,27 +71,36 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
     return null;
   }
 
-  const fiveStarValue = productReviewDetails.star_5 / productReviewDetails.rating_count * 100;
-  const fourStarValue = productReviewDetails.star_4 / productReviewDetails.rating_count * 100;
-  const threeStarValue = productReviewDetails.star_3 / productReviewDetails.rating_count * 100;
-  const twoStarValue = productReviewDetails.star_2 / productReviewDetails.rating_count * 100;
-  const oneStarValue = productReviewDetails.star_1 / productReviewDetails.rating_count * 100;
-
-  console.log({ oneStarValue });
+  const fiveStarValue =
+    (productReviewDetails.star_5 / productReviewDetails.rating_count) * 100;
+  const fourStarValue =
+    (productReviewDetails.star_4 / productReviewDetails.rating_count) * 100;
+  const threeStarValue =
+    (productReviewDetails.star_3 / productReviewDetails.rating_count) * 100;
+  const twoStarValue =
+    (productReviewDetails.star_2 / productReviewDetails.rating_count) * 100;
+  const oneStarValue =
+    (productReviewDetails.star_1 / productReviewDetails.rating_count) * 100;
 
   return (
     <div className='mb-4'>
       <div className='flex items-center justify-center mb-4'>
         <HiStar className='text-4xl text-warning' />
         <div className='flex items-end'>
-          <h2 className='text-6xl'>{productReviewDetails.rating_star.toFixed(1)}</h2>
+          <h2 className='text-6xl'>
+            {productReviewDetails.rating_star.toFixed(1)}
+          </h2>
           <p>/5.0</p>
         </div>
       </div>
       <p className='font-bold text-sm text-center mb-2'>
-        {productReviewDetails.satisfied_percentage.toFixed(1)} % of buyers were satisfied
+        {productReviewDetails.satisfied_percentage.toFixed(1)} % of buyers were
+        satisfied
       </p>
-      <p className='text-sm text-center mb-4'>{productReviewDetails.rating_count} ratings | {productReviewDetails.review_count} reviews</p>
+      <p className='text-sm text-center mb-4'>
+        {productReviewDetails.rating_count} ratings |{' '}
+        {productReviewDetails.review_count} reviews
+      </p>
       <div className='flex flex-col gap-y-1'>
         <div className='flex items-center'>
           <div className='flex items-center mr-2'>
@@ -103,7 +112,7 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
             value={fiveStarValue}
             max={100}
           ></progress>
-          <div className='ml-2 w-16 text-left'>
+          <div className='ml-2 w-5 text-center'>
             <span>{toCompact(productReviewDetails.star_5)}</span>
           </div>
         </div>
@@ -117,7 +126,7 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
             value={fourStarValue}
             max={100}
           ></progress>
-          <div className='ml-2 w-16 text-left'>
+          <div className='ml-2 w-5 text-center'>
             <span>{toCompact(productReviewDetails.star_4)}</span>
           </div>
         </div>
@@ -131,7 +140,7 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
             value={threeStarValue}
             max={100}
           ></progress>
-          <div className='ml-2 w-16 text-left'>
+          <div className='ml-2 w-5 text-center'>
             <span>{toCompact(productReviewDetails.star_3)}</span>
           </div>
         </div>
@@ -145,7 +154,7 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
             value={twoStarValue}
             max={100}
           ></progress>
-          <div className='ml-2 w-16 text-left'>
+          <div className='ml-2 w-5 text-center'>
             <span>{toCompact(productReviewDetails.star_2)}</span>
           </div>
         </div>
@@ -159,7 +168,7 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
             value={oneStarValue}
             max={100}
           ></progress>
-          <div className='ml-2 w-16 text-left'>
+          <div className='ml-2 w-5 text-center'>
             <span>{toCompact(productReviewDetails.star_1)}</span>
           </div>
         </div>

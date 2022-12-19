@@ -40,13 +40,9 @@ const Reviews = ({
     );
   }
 
-  if (!reviewData || !reviewMetadata) {
+  if (!reviewData || !reviewMetadata || reviewData.length === 0) {
     return <NoData title={'No Reviews Yet...'} />;
   }
-
-  console.log({ reviewMetadata });
-  console.log(reviewData[0]);
-  console.log(reviewData[0].created_at);
 
   return (
     <div>
@@ -120,10 +116,10 @@ const Reviews = ({
                 Variant: {titleCase(review.product_variations)}
               </span>
             )}
-            <p className='prose-sm mb-4'>{review.review}</p>
-            {review.product_review_media && (
+            <p className='prose-sm mb-4 whitespace-pre-line'>{review.review}</p>
+            {review.media.length > 0 && (
               <div className='flex gap-2'>
-                {review.product_review_media.map((media, i) => (
+                {review.media.map((media, i) => (
                   <Zoom key={i}>
                     <img src={media} className='w-12 rounded' />
                   </Zoom>
