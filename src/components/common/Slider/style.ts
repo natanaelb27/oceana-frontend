@@ -5,13 +5,12 @@ import tw from 'tailwind-styled-components';
 export const StyledCarousel = tw(Carousel)<any>`
   carousel-center
   w-full
-  p-4
-  px-6
-  gap-10
+  pt-2.5
+  gap-4
   rounded-box
   
-  md:gap-24
-  md:px-12
+  md:gap-10
+  md:px-8
 `;
 
 export const SliderNavBtn = tw.button<any>`

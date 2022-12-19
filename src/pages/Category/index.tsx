@@ -62,6 +62,75 @@ const Category = () => {
     }
   };
 
+  if (!resGetAllCategory?.data) {
+    return (
+      <div className='px-2 container mx-auto flex flex-col items-center'>
+        <div className='overflow-x-auto flex gap-3 py-5 px-5 fixed bg-base-100 z-10 bg-opacity-80 backdrop-blur shadow-md w-full md:justify-center'>
+          {letterButton.map((letter, n) => (
+            <Button key={n} disabled>
+              {letter}
+            </Button>
+          ))}
+        </div>
+        <div className='py-5 flex flex-col gap-5 mt-24 w-full md:items-center'>
+          {Array.from({ length: 10 }, (_, index) => index + 1).map((row) => {
+            return (
+              <Card
+                key={row}
+                className='shadow-md w-full md:w-[50vw] animate-pulse'
+              >
+                <Card.Body>
+                  <div className='flex flex-col items-center justify-center'>
+                    <div className='h-6 w-2/5 bg-base-200 rounded-full my-8'></div>
+                    <Divider />
+                    <div className='grid grid-cols-12 w-full gap-10'>
+                      <div className='col-span-12 md:col-span-6'>
+                        <div className='w-3/5 h-4 bg-base-200 rounded-full mb-2.5'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                      </div>
+                      <div className='col-span-12 md:col-span-6'>
+                        <div className='w-3/5 h-4 bg-base-200 rounded-full mb-2.5'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                      </div>
+                      <div className='col-span-12 md:col-span-6'>
+                        <div className='w-3/5 h-4 bg-base-200 rounded-full mb-2.5'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                      </div>
+                      <div className='col-span-12 md:col-span-6'>
+                        <div className='w-3/5 h-4 bg-base-200 rounded-full mb-2.5'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                      </div>
+                      <div className='col-span-12 md:col-span-6'>
+                        <div className='w-3/5 h-4 bg-base-200 rounded-full mb-2.5'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                      </div>
+                      <div className='col-span-12 md:col-span-6'>
+                        <div className='w-3/5 h-4 bg-base-200 rounded-full mb-2.5'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                        <div className='w-full h-4 bg-base-200 rounded-full mb-2'></div>
+                      </div>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='px-2 container mx-auto flex flex-col items-center'>
       <div className='overflow-x-auto flex gap-3 py-5 px-5 fixed bg-base-100 z-10 bg-opacity-80 backdrop-blur shadow-md w-full md:justify-center'>

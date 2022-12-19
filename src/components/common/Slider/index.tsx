@@ -7,64 +7,26 @@ import { SliderNavBtn, StyledCarousel } from './style';
 type SliderProps = {
   children: ReactNode;
   id: string;
-  gap?: number;
-  gapMobile?: number;
 };
 
-const Slider = ({ children, id, gap, gapMobile }: SliderProps) => {
-  const handleClickPrev = () => {
-    const slider = document.getElementById(`slider-${id}`);
-    if (slider) slider.scrollLeft -= SCROLL_SLIDER;
-  };
-  const handleClickNext = () => {
-    const slider = document.getElementById(`slider-${id}`);
-    if (slider) slider.scrollLeft += SCROLL_SLIDER;
-  };
-
+const Slider = ({ children, id }: SliderProps) => {
   if (!children || (children as Array<ReactNode>).length === 0)
     return (
-      <div className='relative'>
-        <StyledCarousel id={`slider-${id}`}>
-          {Array(10)
-            .fill(0)
-            .map((_, n) => (
-              <Carousel.Item key={n}>
-                <div className='flex flex-col items-center gap-2 animate-pulse md:gap-4'>
-                  <div className='w-8 aspect-w-1 aspect-h-1 bg-gray-300 rounded-3xl md:w-24 md:aspect-square' />
-                  <div className='w-8 h-2 bg-gray-300 rounded-3xl md:w-20 md:h-4' />
-                </div>
-              </Carousel.Item>
-            ))}
-        </StyledCarousel>
-        <div className='hidden md:inline'>
-          <SliderNavBtn className='-left-6' onClick={handleClickPrev}>
-            <MdNavigateBefore className='text-xs md:text-3xl' />
-          </SliderNavBtn>
-          <SliderNavBtn className='-right-6' onClick={handleClickNext}>
-            <MdNavigateNext className='text-xs md:text-3xl' />
-          </SliderNavBtn>
-        </div>
+      <div className='carousel rounded-box gap-4 animate-pulse'>
+        {Array.from({ length: 30 }, (_, index) => index + 1).map((i) => {
+          return (
+            <div className='carousel-item' key={i}>
+              <div className='w-28 flex flex-col items-center text-center gap-2 border-none p-4'>
+                <div className='h-20 w-full bg-base-200 rounded-box'></div>
+                <div className='h-4 w-full bg-base-200 rounded-full'></div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
 
-  return (
-    <div className='relative'>
-      <StyledCarousel
-        id={`slider-${id}`}
-        className={`gap-${gapMobile} md:gap-${gap}`}
-      >
-        {children}
-      </StyledCarousel>
-      <div className='hidden md:inline'>
-        <SliderNavBtn className='-left-6' onClick={handleClickPrev}>
-          <MdNavigateBefore className='text-xs md:text-3xl' />
-        </SliderNavBtn>
-        <SliderNavBtn className='-right-6' onClick={handleClickNext}>
-          <MdNavigateNext className='text-xs md:text-3xl' />
-        </SliderNavBtn>
-      </div>
-    </div>
-  );
+  return <div className='carousel rounded-box gap-4'>{children}</div>;
 };
 
 export default Slider;

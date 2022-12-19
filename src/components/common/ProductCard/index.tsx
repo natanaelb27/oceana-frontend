@@ -14,7 +14,7 @@ type ProductCardProps = {
 const ProductCard = ({ product }: ProductCardProps) => {
   if (!product) {
     return (
-      <Card role='status' className='w-full md:h-[26rem] shadow animate-pulse'>
+      <Card role='status' className='w-full h-[26rem] shadow animate-pulse'>
         <div className='flex justify-center items-center h-56 bg-base-200 rounded'>
           <svg
             className='w-12 h-12 text-base-content'
@@ -41,8 +41,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
       to={`/products/${toUrl(product.name)}-i.${product.merchant_id}-${
         product.id
       }`}
+      className='w-full'
     >
-      <Card className='md:h-[24rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'>
+      <Card className='w-full h-[24rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'>
         <figure>
           <Image
             src={product.media_url}
@@ -106,7 +107,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 <HiStar className='text-warning' />
               </Tooltip>
               <p className='truncate text-ellipsis'>
-                {product.rating_star} |{' '}
+                {product.rating_star.toFixed(2)} |{' '}
                 {toCompact(product.total_purchase_count)} sold
               </p>
             </div>
