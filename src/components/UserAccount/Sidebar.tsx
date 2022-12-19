@@ -2,7 +2,7 @@ import { Avatar, Card, Divider, Menu } from 'react-daisyui';
 import { BsCreditCard2Back } from 'react-icons/bs';
 import { CgProfile } from 'react-icons/cg';
 import { GoHistory, GoHome } from 'react-icons/go';
-import { HiOutlineReceiptRefund } from 'react-icons/hi';
+import { HiOutlineClipboard, HiOutlineClipboardList, HiOutlineReceiptRefund } from 'react-icons/hi';
 import { IoWalletOutline } from 'react-icons/io5';
 import { NavLink } from 'react-router-dom';
 
@@ -92,12 +92,12 @@ const Sidebar = ({ profile }: SidebarProps) => {
               Purchase
             </NavLink>
           </Menu.Item>
-          {/* <Menu.Item>
+          <Menu.Item>
             <NavLink to='/user/review'>
-              <GoHistory />
+              <HiOutlineClipboardList />
               Review
             </NavLink>
-          </Menu.Item> */}
+          </Menu.Item>
           <Menu.Item>
             <NavLink to='/user/refund'>
               <HiOutlineReceiptRefund />
