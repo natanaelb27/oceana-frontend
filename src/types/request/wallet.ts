@@ -12,3 +12,8 @@ export type WalletTopUpRequest = {
   message: string;
   signature: string;
 };
+
+export type ChangeWalletPinRequest = {
+  pin: string;
+  pin_confirmation: string;
+};

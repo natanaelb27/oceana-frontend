@@ -8,6 +8,8 @@ export const TAG_TYPES = [
   'Product',
   'Profile',
   'Cart',
+  'City',
+  'FavoriteProduct',
   'Merchant',
   'MerchantVoucher',
   'MerchantPromotion',

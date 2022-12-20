@@ -23,6 +23,7 @@ import {
   NotFound,
   Product,
   Register,
+  ResetPassword,
   SealabsPayPaymentRedirect,
   SealabsPayRegisterRedirect,
   SealabsPayTopup,
@@ -370,6 +371,19 @@ const Routes = () => {
           redirectTo='/'
         >
           <Register />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/reset-password/:resetPasswordID',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Guest]}
+          redirectTo='/'
+        >
+          <ResetPassword />
         </ProtectedRoute>
       ),
     },

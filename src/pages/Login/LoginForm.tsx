@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Button, Form, Input, Link } from 'react-daisyui';
+import { Button, Form, Input, Modal } from 'react-daisyui';
+import { Link } from 'react-router-dom';
+import { CgClose } from 'react-icons/cg';
 import GoogleLogin, {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
@@ -14,13 +17,18 @@ import {
   InputGroup,
   StyledDivider,
 } from '../../components/common/Form';
-import { useLoginMutation } from '../../store/services/authService';
+import {
+  useLoginMutation,
+  useVerifyResetPasswordMutation,
+} from '../../store/services/authService';
 import { toLoginRequest } from '../../utils/mapperDTO';
 import { Role } from '../../types/component';
 import { setCredentials } from '../../store/slices/authSlice';
 import { baseApi, useAppDispatch } from '../../store/store';
 import { TAG_TYPES } from '../../constants/tags';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
+import { VerifyResetPasswordResponse } from '../../types/response';
 
 type LoginFormProps = {
   clientId: string | undefined;
@@ -47,7 +55,12 @@ const LoginForm = ({
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useAppDispatch();
 
-  const formik = useFormik({
+  const [openResetPasswordModal, setOpenResetPasswordModal] =
+    useState<boolean>(false);
+  const [verifyResetPassword, { isLoading: verifyResetPasswordIsLoading }] =
+    useVerifyResetPasswordMutation();
+
+  const loginFormik = useFormik({
     initialValues: { loginCredentials: '', password: '' },
     validationSchema: Yup.object({
       loginCredentials: Yup.string().required(
@@ -74,39 +87,83 @@ const LoginForm = ({
     },
   });
 
+  const resetPasswordFormik = useFormik({
+    initialValues: { email: '' },
+    validationSchema: Yup.object({
+      email: Yup.string()
+        .email('Please enter a valid address')
+        .required('Please enter your email'),
+    }),
+    onSubmit: (values) => {
+      setOpenResetPasswordModal(true);
+      verifyResetPassword({ email: values.email })
+        .unwrap()
+        .then((res) => {
+          if (res.data?.status) {
+            notifySuccessToast('Verification link has been sent to your email');
+            handleModalClose();
+          } else {
+            notifyErrorToast('Something went wrong, please try again');
+          }
+        })
+        .catch((err) => {
+          if ('data' in err) {
+            const response = err.data as VerifyResetPasswordResponse;
+
+            notifyErrorToast(response.message);
+          }
+        });
+    },
+  });
+
+  const handleForgetPasswordClick = () => {
+    setOpenResetPasswordModal(true);
+  };
+
+  const handleModalClose = () => {
+    setOpenResetPasswordModal(false);
+  };
+
   return (
     <>
       <FormTitleContainer>
         <FormTitle to='/'>Oceana</FormTitle>
       </FormTitleContainer>
-      <Form onSubmit={formik.handleSubmit}>
+      <Form onSubmit={loginFormik.handleSubmit}>
         <InputGroup>
           <Input
             color='primary'
             name='loginCredentials'
-            onChange={formik.handleChange}
+            onChange={loginFormik.handleChange}
             placeholder='Email/Phone/Username'
             type='text'
-            value={formik.values.loginCredentials}
+            value={loginFormik.values.loginCredentials}
           />
 
-          {formik.touched.loginCredentials && formik.errors.loginCredentials ? (
-            <FormErrorText>{formik.errors.loginCredentials}</FormErrorText>
+          {loginFormik.touched.loginCredentials &&
+          loginFormik.errors.loginCredentials ? (
+            <FormErrorText>{loginFormik.errors.loginCredentials}</FormErrorText>
           ) : null}
         </InputGroup>
         <InputGroup>
           <Input
             color='primary'
             name='password'
-            onChange={formik.handleChange}
+            onChange={loginFormik.handleChange}
             placeholder='Password'
             type='password'
-            value={formik.values.password}
+            value={loginFormik.values.password}
           />
 
-          {formik.touched.password && formik.errors.password ? (
-            <FormErrorText>{formik.errors.password}</FormErrorText>
+          {loginFormik.touched.password && loginFormik.errors.password ? (
+            <FormErrorText>{loginFormik.errors.password}</FormErrorText>
           ) : null}
+          <a
+            onClick={handleForgetPasswordClick}
+            className='text-sm link link-accent no-underline font-medium mt-2.5'
+          >
+            Forget your password?
+          </a>
         </InputGroup>
         <Button
           className='mt-2'
@@ -119,7 +176,10 @@ const LoginForm = ({
       </Form>
       <FormCTA>
         Need an account?{' '}
-        <Link color='secondary' href='/register'>
+        <Link
+          to='/register'
+          className='link link-accent no-underline font-medium'
+        >
           Sign Up
         </Link>
       </FormCTA>
@@ -130,11 +190,60 @@ const LoginForm = ({
         buttonText='Sign in with Google'
         onSuccess={handleSuccessGoogleLogin}
         onFailure={() =>
-          handleFailedLogin('Sign in with Google failed', formik.setFieldValue)
+          handleFailedLogin(
+            'Sign in with Google failed',
+            loginFormik.setFieldValue
+          )
         }
         cookiePolicy='single_host_origin'
       />
       <FormFooter />
+      <Modal
+        open={openResetPasswordModal}
+        className='md:max-w-2xl'
+        onClickBackdrop={handleModalClose}
+      >
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            resetPasswordFormik.handleSubmit();
+          }}
+        >
+          <Button
+            size='sm'
+            shape='circle'
+            color='ghost'
+            className='absolute right-2 top-2'
+            onClick={handleModalClose}
+          >
+            <CgClose className='text-lg' />
+          </Button>
+          <Modal.Header className='text-center'>Reset Password</Modal.Header>
+          <Modal.Body>
+            <Input
+              name='email'
+              placeholder='Email'
+              type='email'
+              value={resetPasswordFormik.values.email}
+              onChange={resetPasswordFormik.handleChange}
+              className='w-full'
+            />
+            {resetPasswordFormik.touched.email &&
+            resetPasswordFormik.errors.email ? (
+              <FormErrorText>{resetPasswordFormik.errors.email}</FormErrorText>
+            ) : null}
+          </Modal.Body>
+          <Modal.Actions>
+            <Button
+              className='w-full'
+              type='submit'
+              loading={verifyResetPasswordIsLoading}
+            >
+              Confirm
+            </Button>
+          </Modal.Actions>
+        </Form>
+      </Modal>
     </>
   );
 };

@@ -70,3 +70,13 @@ export type PurchasedQuantitiesQuery = {
   product_item_id: number;
   quantity: number;
 };
+
+export type ReviewQuery = {
+  sort: string;
+  sort_by: string;
+  limit: number;
+  page: number;
+  media: boolean;
+  comment: boolean;
+  rating: number[];
+};
