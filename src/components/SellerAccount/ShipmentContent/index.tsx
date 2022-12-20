@@ -18,10 +18,10 @@ import {
 import { Shipment } from '../../../types/component/shipment';
 import { UpdateShipmentResponse } from '../../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
-import Img from '../../common/Img';
 import Skeleton from '../../common/Loading/Skeleton';
 import SectionHeading from '../../common/SectionHeading/index';
 import { formikProcessDayAnndPreorderDay } from '../../../utils/yupValidation';
+import { Image } from '../../common';
 
 const ShipmentContent = () => {
   const [data, setData] = useState<Shipment | null | undefined>(null);
@@ -224,7 +224,7 @@ const ShipmentContent = () => {
                   checked={courier.is_selected}
                   onChange={(e) => handleCourierOnChange(e, indexCourier)}
                 />
-                <Img src={courier.logo_url} className='h-12' />
+                <Image src={courier.logo_url} className='h-12' />
                 <div>
                   <p className='text-xl font-medium'>{courier.name}</p>
                   <p className='text-sm font-medium text-gray-500'>
