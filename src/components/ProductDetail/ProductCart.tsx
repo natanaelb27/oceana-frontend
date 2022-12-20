@@ -12,6 +12,7 @@ import { ProductVariation } from '../../types/component';
 
 import { toRupiah } from '../../utils/convert';
 import { titleCase } from '../../utils/titleCase';
+import { Image } from '../common';
 
 type ProductCartProps = {
   stock: number;
@@ -29,6 +30,9 @@ type ProductCartProps = {
   userMaxPurchaseQuantity?: number;
   maxPurchaseQuantity?: number;
   handleClickAddToCart: () => void;
+  handleClickBuyNow: () => void;
+  defaultImage: string;
+  selectedVariantImage: string;
 };
 
 const ProductCart = ({
@@ -47,6 +51,9 @@ const ProductCart = ({
   userMaxPurchaseQuantity,
   maxPurchaseQuantity,
   handleClickAddToCart,
+  handleClickBuyNow,
+  defaultImage,
+  selectedVariantImage,
 }: ProductCartProps) => {
   const renderPurchaseButtons = () => {
     if (
@@ -58,7 +65,7 @@ const ProductCart = ({
           <Button
             color='primary'
             endIcon={<HiShoppingCart className='text-lg' />}
-            className='w-full mb-2.5'
+            className='w-full mb-2.5 text-xs lg:text-sm'
             onClick={handleClickAddToCart}
           >
             Add to Cart
@@ -67,7 +74,8 @@ const ProductCart = ({
             color='primary'
             variant='outline'
             endIcon={<HiShoppingBag className='text-lg' />}
-            className='w-full mb-2.5'
+            className='w-full mb-2.5 text-xs lg:text-sm'
+            onClick={handleClickBuyNow}
           >
             Buy Now
           </Button>
@@ -76,12 +84,12 @@ const ProductCart = ({
     }
   };
   return (
-    <Card className='shadow'>
+    <Card className='shadow sticky top-24'>
       <div className='p-4'>
         {productVariations.length !== 0 && (
           <div>
             <div className='flex items-center gap-2'>
-              <Avatar src='https://picsum.photos/200' size='sm' />
+              <Image src={`${selectedVariantImage === '' ? defaultImage : selectedVariantImage}`} className='w-20' />
               {productVariation &&
               productVariations.length === selectedVariations.length ? (
                 <p className='line-clamp-1'>{titleCase(productVariation)}</p>
@@ -93,7 +101,7 @@ const ProductCart = ({
           </div>
         )}
         <div className='mb-2 font-bold text-lg'>Quantity</div>
-        <div className='flex justify-between items-center'>
+        <div className='flex justify-between items-center flex-wrap gap-2'>
           <InputGroup size='sm' className='max-w-fit'>
             <Button
               size='sm'
