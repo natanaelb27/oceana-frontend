@@ -26,11 +26,11 @@ const HomeCard = ({
         <Card.Body>
           <Link
             to={navigateSeeAll || '/'}
-            className='link no-underline hover:text-primary hover:no-underline text-xl md:text-2xl font-medium'
+            className='link no-underline hover:text-primary hover:no-underline text-xl md:text-2xl font-medium text-center md:text-left'
           >
             {title}
           </Link>
-          <span className='font-light text-sm md:text-md mb-2.5'>
+          <span className='font-light text-sm md:text-md mb-2.5 text-center md:text-left'>
             {subtitle}
           </span>
           {children}

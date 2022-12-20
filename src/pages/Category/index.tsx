@@ -4,10 +4,7 @@ import { Button, Card, Divider } from 'react-daisyui';
 import { Link } from 'react-router-dom';
 import { Image } from '../../components/common';
 import { useLocalStorage } from '../../hooks';
-import {
-  useGetAllCategoryQuery,
-  useLazyGetAllCategoryQuery,
-} from '../../store/services/categoryService';
+import { useLazyGetAllCategoryQuery } from '../../store/services/categoryService';
 import { Category as CategoryComponent } from '../../types/component';
 import { CategoryQuery } from '../../types/query';
 import { toCategoryQuery } from '../../utils/mapperDTO';

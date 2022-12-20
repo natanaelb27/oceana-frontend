@@ -1,6 +1,5 @@
 import { ImgHTMLAttributes, useState } from 'react';
 import ClassNames from '../../../utils/classnames';
-import Skeleton from '../Loading/Skeleton';
 import LazyLoad from 'react-lazy-load';
 
 const Image = ({
@@ -13,7 +12,7 @@ const Image = ({
 
   if (error) {
     return (
-      <LazyLoad threshold={0.99} className='h-fit'>
+      <LazyLoad threshold={0.99}>
         <img
           src={require('./../../../assets/images/no-image.webp')}
           alt={'image failed to load'}
@@ -26,14 +25,14 @@ const Image = ({
   return (
     <>
       {isLoading && (
-        <Skeleton
+        <div
           className={ClassNames([
-            'skeleton',
+            'bg-base-200 rounded-box animate-pulse',
             className !== undefined ? className : '',
           ])}
         />
       )}
-      <LazyLoad threshold={0.99} className='h-fit'>
+      <LazyLoad threshold={0.5}>
         <img
           {...props}
           alt={alt}
