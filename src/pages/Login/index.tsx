@@ -16,7 +16,7 @@ import {
 } from '../../components/common/Container';
 import { notifyErrorToast } from '../../utils/toast';
 import { Tiles } from '../../components/common';
-import { STATUS_SEE_OTHER } from '../../constants';
+import { STATUS_SEE_OTHER } from '../../constants/statusCodes';
 import { setRegisterGoogleState } from '../../store/slices/registerGoogleSlice';
 import RegisterGoogle from '../Register/RegisterGoogle';
 import LoginForm from './LoginForm';
@@ -56,7 +56,6 @@ const Login = () => {
     )
       .unwrap()
       .then((response) => {
-        console.log(response);
         const { data: loginResponseData } = response;
         const { role } = loginResponseData as Role;
         dispatch(setCredentials({ role }));

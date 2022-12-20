@@ -5,6 +5,8 @@ import AddressContent from './AddressContent';
 import PurchaseContent from './PurchaseContent';
 import ProfileContent from './ProfileContent';
 import RefundContent from './RefundContent';
+import SealabsPayContent from './SealabsPayContent';
+import WalletContent from './WalletContent';
 
 type ContentProps = {
   profile: Profile | null | undefined;
@@ -22,7 +24,11 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === UserAccountContent.Wallet) {
-      return null;
+      return <WalletContent />;
+    }
+
+    if (content === UserAccountContent.SealabsPay) {
+      return <SealabsPayContent />;
     }
 
     if (content === UserAccountContent.Purchase) {

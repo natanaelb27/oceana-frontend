@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '../../store/store';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import { Merchant } from '../../types/component';
+import { Image } from '../common';
 
 type SidebarProps = {
   profile: Merchant;
@@ -62,7 +63,11 @@ const Sidebar = ({ profile }: SidebarProps) => {
       <div className='p-4'>
         <div className='flex items-center gap-4'>
           {profile.photo ? (
-            <Avatar src={profile.photo} size='sm' shape='circle' />
+            <div className='avatar'>
+              <div className='w-14 rounded-full'>
+                <Image src={profile.photo} />
+              </div>
+            </div>
           ) : (
             <Avatar size='sm' shape='circle' letters={profile.name.charAt(0)} />
           )}

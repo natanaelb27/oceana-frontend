@@ -5,6 +5,7 @@ import { Product } from '../../../types/component';
 
 import { toCompact, toRupiah } from '../../../utils/convert';
 import { toUrl } from '../../../utils/toUrl';
+import Image from '../Image';
 
 type ProductCardProps = {
   product?: Product;
@@ -18,7 +19,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <svg
             className='w-12 h-12 text-base-content'
             xmlns='http://www.w3.org/2000/svg'
-            aria-hidden='true'
             fill='currentColor'
             viewBox='0 0 640 512'
           >
@@ -42,44 +42,75 @@ const ProductCard = ({ product }: ProductCardProps) => {
         product.id
       }`}
     >
-      <Card className='md:max-h-[26rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'>
+      <Card className='md:h-[24rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'>
         <figure>
-          <img
+          <Image
             src={product.media_url}
             className='object-cover max-h-64 w-full'
           />
         </figure>
         <div className='pt-2.5 pb-4 px-4'>
           <p className='line-clamp-2 mb-2'>{product.name}</p>
-          <p className='font-bold mb-2.5 truncate text-ellipsis'>
-            {toRupiah(product.price_minimum_after_discount)}
-          </p>
-          <div className='flex-items-center mb-2.5 text-sm'>
-            <Tooltip message='Murah Lebay' color='success'>
-              <Badge color='success' size='sm' className='truncate'>
-                {product.discount_type === 'percentage'
-                  ? `${product.discount}%`
-                  : toRupiah(product.discount)}
-              </Badge>
-            </Tooltip>
-            <span className='truncate text-ellipsis ml-2 line-through'>
-              {toRupiah(product.price_minimum)}
-            </span>
-          </div>
+          {product.price_minimum_after_discount !==
+          product.price_maximum_after_discount ? (
+            <p className='font-bold mb-2.5 truncate text-ellipsis'>
+              {toRupiah(product.price_minimum_after_discount)}
+              {' - '}
+              {toRupiah(product.price_maximum_after_discount)}
+            </p>
+          ) : (
+            <p className='font-bold mb-2.5 truncate text-ellipsis'>
+              {toRupiah(product.price_minimum_after_discount)}
+            </p>
+          )}
+          {product.product_merchant_promotion_id !== 0 ? (
+            <div className='flex items-center mb-2.5 text-sm'>
+              <Tooltip
+                message={product.merchant_promotion_name}
+                color='success'
+              >
+                <Badge color='success' size='sm' className='truncate'>
+                  {product.discount_type === 'percentage'
+                    ? `${product.discount}%`
+                    : toRupiah(product.discount)}
+                </Badge>
+              </Tooltip>
+              <p className='truncate text-ellipsis ml-2 line-through'>
+                {product.price_minimum !== product.price_maximum ? (
+                  <span className='truncate text-ellipsis line-through'>
+                    {toRupiah(product.price_minimum)}
+                    {' - '}
+                    {toRupiah(product.price_maximum)}
+                  </span>
+                ) : (
+                  toRupiah(product.price_minimum)
+                )}
+              </p>
+            </div>
+          ) : null}
           <div className='flex items-center mb-1 text-sm'>
             <Tooltip message='Location' className='mr-2' color='info'>
               <HiLocationMarker className='text-info' />
             </Tooltip>
             <p className='truncate text-ellipsis'>{product.merchant.city}</p>
           </div>
-          <div className='flex items-center mb-1 text-sm'>
-            <Tooltip message='Rating' className='mr-2' color='warning'>
-              <HiStar className='text-warning' />
-            </Tooltip>
-            <p className='truncate text-ellipsis'>
-              5.0 | {toCompact(1000)} sold
-            </p>
-          </div>
+          {product.rating_star === 0 ? (
+            <div className='flex items-center mb-1 text-sm'>
+              <p className='truncate text-ellipsis'>
+                {toCompact(product.total_purchase_count)} sold
+              </p>
+            </div>
+          ) : (
+            <div className='flex items-center mb-1 text-sm'>
+              <Tooltip message='Rating' className='mr-2' color='warning'>
+                <HiStar className='text-warning' />
+              </Tooltip>
+              <p className='truncate text-ellipsis'>
+                {product.rating_star.toFixed(1)} |{' '}
+                {toCompact(product.total_purchase_count)} sold
+              </p>
+            </div>
+          )}
         </div>
       </Card>
     </Link>

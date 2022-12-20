@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import {
   Badge,
   Button,
@@ -24,12 +24,20 @@ import {
 } from 'react-icons/hi';
 import * as Yup from 'yup';
 import {
+  useCreateAddressMutation,
   useDeleteAddressMutation,
   useGetAddressesQuery,
+  useLazyGetAddressQuery,
   useSetAddressDefaultMutation,
   useSetShopAddressMutation,
+  useUpdateAddressMutation,
 } from '../../../store/services/addressService';
 import {
+  CityResponse,
+  CreateAddressResponse,
+  DistrictResponse,
+  ProvinceResponse,
+  SubDistrictResponse,
   UpdateAddressResponse,
   UpdateMerchantResponse,
 } from '../../../types/response';
@@ -39,6 +47,10 @@ import { useAppSelector } from '../../../store/store';
 import { ConfirmationModal } from '../../common';
 import { validateUserRole } from '../../../utils/auth';
 import { Role } from '../../../types/role';
+import { useLazyGetSubDistrictsQuery } from '../../../store/services/subDistrictService';
+import { toCreateAddress, toSubDistrictQuery } from '../../../utils/mapperDTO';
+import { SubDistrictQuery } from '../../../types/query';
+import NoData from '../../common/NoData';
 
 type OpenAddressModal = {
   add: boolean;
@@ -54,6 +66,11 @@ const AddressContent = () => {
 
   const { data: getAddressesData, isLoading: getAddressesIsLoading } =
     useGetAddressesQuery();
+  const [getAddress] = useLazyGetAddressQuery();
+  const [createAddress, { isLoading: createAddressIsLoading }] =
+    useCreateAddressMutation();
+  const [updateAddress, { isLoading: updateAddressIsLoading }] =
+    useUpdateAddressMutation();
   const [
     deleteAddress,
     { isLoading: deleteAddressIsLoading, error: deleteAddressError },
@@ -66,6 +83,7 @@ const AddressContent = () => {
     setShopAddress,
     { isLoading: setShopAddressIsLoading, error: setShopAddressError },
   ] = useSetShopAddressMutation();
+  const [getSubDistrict] = useLazyGetSubDistrictsQuery();
   const [addressID, setAddressID] = useState<string | null>(null);
   const [openModal, setOpenModal] = useState<OpenAddressModal>({
     add: false,
@@ -75,8 +93,17 @@ const AddressContent = () => {
     shopAddress: false,
   });
   const [search, setSearch] = useState<string>('');
+  const [subDistrictQuery, setSubDistrictQuery] = useState<SubDistrictQuery>({
+    province: '',
+    city: '',
+    district: '',
+  });
+  const [provinces, setProvinces] = useState<ProvinceResponse[]>([]);
+  const [cities, setCities] = useState<CityResponse[]>([]);
+  const [districts, setDistricts] = useState<DistrictResponse[]>([]);
+  const [subDistricts, setSubDistricts] = useState<SubDistrictResponse[]>([]);
 
-  const addAddressFormik = useFormik({
+  const addressFormik = useFormik({
     initialValues: {
       name: '',
       detail: '',
@@ -94,31 +121,61 @@ const AddressContent = () => {
       subDistrictID: Yup.string().required('Please enter address sub-district'),
     }),
     onSubmit: (values) => {
-      console.log({ values });
+      if (openModal.add) {
+        createAddress(
+          toCreateAddress(values.name, values.detail, values.subDistrictID)
+        )
+          .unwrap()
+          .then(() => {
+            notifySuccessToast('Address has been created!');
+          })
+          .catch((err) => {
+            if ('data' in err) {
+              const response = err.data as CreateAddressResponse;
+
+              notifyErrorToast(response.message);
+            }
+          })
+          .finally(() => handleModalClose());
+      } else if (openModal.edit) {
+        if (!addressID) {
+          return;
+        }
+
+        updateAddress({
+          id: addressID,
+          request: toCreateAddress(
+            values.name,
+            values.detail,
+            values.subDistrictID
+          ),
+        })
+          .unwrap()
+          .then(() => {
+            notifySuccessToast('Address has been created!');
+          })
+          .catch((err) => {
+            if ('data' in err) {
+              const response = err.data as CreateAddressResponse;
+
+              notifyErrorToast(response.message);
+            }
+          })
+          .finally(() => handleModalClose());
+      }
     },
   });
 
-  const editAddressFormik = useFormik({
-    initialValues: {
-      name: '',
-      detail: '',
-      provinceID: '',
-      cityID: '',
-      districtID: '',
-      subDistrictID: '',
-    },
-    validationSchema: Yup.object({
-      name: Yup.string().required('Please enter adress name'),
-      detail: Yup.string().required('Please enter address detail'),
-      provinceID: Yup.string().required('Please enter address province'),
-      cityID: Yup.string().required('Please enter address city'),
-      districtID: Yup.string().required('Please enter address district'),
-      subDistrictID: Yup.string().required('Please enter address sub-district'),
-    }),
-    onSubmit: (values) => {
-      console.log({ values });
-    },
-  });
+  useEffect(() => {
+    getSubDistrict(toSubDistrictQuery(subDistrictQuery))
+      .unwrap()
+      .then((res) => {
+        setProvinces(res.data?.provinces ? res.data.provinces : []);
+        setCities(res.data?.cities ? res.data.cities : []);
+        setDistricts(res.data?.districts ? res.data.districts : []);
+        setSubDistricts(res.data?.sub_districts ? res.data.sub_districts : []);
+      });
+  }, [subDistrictQuery]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -146,14 +203,34 @@ const AddressContent = () => {
   };
 
   const handleEditAddressClick = (id: string) => {
-    setOpenModal({
-      add: false,
-      edit: true,
-      delete: false,
-      default: false,
-      shopAddress: false,
-    });
-    setAddressID(id);
+    getAddress(id)
+      .unwrap()
+      .then((res) => {
+        if (!res.data) {
+          return;
+        }
+        setSubDistrictQuery({
+          province: String(res.data.province_id),
+          city: String(res.data.city_id),
+          district: String(res.data.district_id),
+        });
+        addressFormik.setValues({
+          name: res.data.name,
+          detail: res.data.detail,
+          provinceID: String(res.data.province_id),
+          cityID: String(res.data.city_id),
+          districtID: String(res.data.district_id),
+          subDistrictID: String(res.data.sub_district_id),
+        });
+        setOpenModal({
+          add: false,
+          edit: true,
+          delete: false,
+          default: false,
+          shopAddress: false,
+        });
+        setAddressID(id);
+      });
   };
 
   const handleDeleteAddressClick = (id: string) => {
@@ -198,6 +275,27 @@ const AddressContent = () => {
       shopAddress: false,
     });
     setAddressID(null);
+    setSubDistrictQuery({
+      province: '',
+      city: '',
+      district: '',
+    });
+    addressFormik.setValues({
+      name: '',
+      detail: '',
+      provinceID: '',
+      cityID: '',
+      districtID: '',
+      subDistrictID: '',
+    });
+    addressFormik.setTouched({
+      name: false,
+      detail: false,
+      provinceID: false,
+      cityID: false,
+      districtID: false,
+      subDistrictID: false,
+    });
   };
 
   const handleDeleteAddress = () => {
@@ -208,22 +306,16 @@ const AddressContent = () => {
       default: false,
       shopAddress: false,
     });
-
     if (!addressID) {
       return;
     }
-
     deleteAddress(addressID)
       .unwrap()
       .then(() => {
         notifySuccessToast('Address has been deleted!');
       })
-      .catch((err) => {
-        console.error(err);
-      })
       .finally(() => {
         setAddressID(null);
-
         if (deleteAddressError && 'data' in deleteAddressError) {
           const response = deleteAddressError.data as UpdateAddressResponse;
 
@@ -249,9 +341,6 @@ const AddressContent = () => {
       .unwrap()
       .then(() => {
         notifySuccessToast('Default address has been changed!');
-      })
-      .catch((err) => {
-        console.error(err);
       })
       .finally(() => {
         setAddressID(null);
@@ -282,9 +371,6 @@ const AddressContent = () => {
       .then(() => {
         notifySuccessToast('Shop address has been changed!');
       })
-      .catch((err) => {
-        console.error(err);
-      })
       .finally(() => {
         setAddressID(null);
 
@@ -294,6 +380,41 @@ const AddressContent = () => {
           notifyErrorToast(response.message);
         }
       });
+  };
+
+  const handleProvinceChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSubDistrictQuery({
+      province: e.target.value,
+      city: '',
+      district: '',
+    });
+
+    addressFormik.setFieldValue('province', e.target.value);
+    addressFormik.setFieldValue('city', '');
+    addressFormik.setFieldValue('district', '');
+    addressFormik.handleChange(e);
+  };
+
+  const handleCityChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSubDistrictQuery({
+      ...subDistrictQuery,
+      city: e.target.value,
+      district: '',
+    });
+
+    addressFormik.setFieldValue('city', e.target.value);
+    addressFormik.setFieldValue('district', '');
+    addressFormik.handleChange(e);
+  };
+
+  const handleDistrictChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSubDistrictQuery({
+      ...subDistrictQuery,
+      district: e.target.value,
+    });
+
+    addressFormik.setFieldValue('district', e.target.value);
+    addressFormik.handleChange(e);
   };
 
   return (
@@ -336,7 +457,7 @@ const AddressContent = () => {
             </div>
           </Card>
         )}
-        {getAddressesData?.data &&
+        {getAddressesData?.data && getAddressesData.data.length > 0 ? (
           getAddressesData.data
             .filter(({ name }) =>
               name.toLowerCase().includes(search.toLowerCase())
@@ -485,10 +606,18 @@ const AddressContent = () => {
                     </div>
                   </Card>
                 )
-            )}
+            )
+        ) : (
+          <div className='col-span-12'>
+            <NoData
+              title='No address?'
+              message='Oh no, the couriers would not know where to send your package'
+            />
+          </div>
+        )}
       </div>
       <Modal
-        open={openModal.add}
+        open={openModal.add || openModal.edit}
         responsive
         className='max-w-sm'
         onClickBackdrop={handleModalClose}
@@ -511,7 +640,7 @@ const AddressContent = () => {
             className='grid grid-cols-12 gap-4'
             onSubmit={(e) => {
               e.preventDefault();
-              addAddressFormik.handleSubmit();
+              addressFormik.handleSubmit();
             }}
           >
             <div className='col-span-12'>
@@ -520,15 +649,14 @@ const AddressContent = () => {
                 name='name'
                 className='w-full'
                 required
-                value={addAddressFormik.values.name}
-                onChange={addAddressFormik.handleChange}
+                value={addressFormik.values.name}
+                onChange={addressFormik.handleChange}
               />
-              {addAddressFormik.touched.name &&
-                addAddressFormik.errors.name && (
-                  <label className='label-text-alt text-error'>
-                    {addAddressFormik.errors.name}
-                  </label>
-                )}
+              {addressFormik.touched.name && addressFormik.errors.name && (
+                <label className='label-text-alt text-error'>
+                  {addressFormik.errors.name}
+                </label>
+              )}
             </div>
             <div className='col-span-12 md:col-span-6'>
               <Form.Label title='Province' />
@@ -536,18 +664,22 @@ const AddressContent = () => {
                 name='provinceID'
                 className='select select-bordered font-normal w-full'
                 required
-                value={addAddressFormik.values.provinceID}
-                onChange={addAddressFormik.handleChange}
+                value={addressFormik.values.provinceID}
+                onChange={handleProvinceChange}
               >
                 <option value='' disabled>
                   Province
                 </option>
-                <option value='TBA'>TBA</option>
+                {provinces.map(({ id, name }) => (
+                  <option value={id} key={id}>
+                    {name}
+                  </option>
+                ))}
               </select>
-              {addAddressFormik.touched.provinceID &&
-                addAddressFormik.errors.provinceID && (
+              {addressFormik.touched.provinceID &&
+                addressFormik.errors.provinceID && (
                   <label className='label-text-alt text-error'>
-                    {addAddressFormik.errors.provinceID}
+                    {addressFormik.errors.provinceID}
                   </label>
                 )}
             </div>
@@ -557,20 +689,24 @@ const AddressContent = () => {
                 name='cityID'
                 className='select select-bordered font-normal w-full'
                 required
-                value={addAddressFormik.values.cityID}
-                onChange={addAddressFormik.handleChange}
+                value={addressFormik.values.cityID}
+                onChange={handleCityChange}
+                disabled={!addressFormik.values.provinceID}
               >
                 <option value='' disabled>
                   City
                 </option>
-                <option value='TBA'>TBA</option>
+                {cities.map(({ id, name }) => (
+                  <option value={id} key={id}>
+                    {name}
+                  </option>
+                ))}
               </select>
-              {addAddressFormik.touched.cityID &&
-                addAddressFormik.errors.cityID && (
-                  <label className='label-text-alt text-error'>
-                    {addAddressFormik.errors.cityID}
-                  </label>
-                )}
+              {addressFormik.touched.cityID && addressFormik.errors.cityID && (
+                <label className='label-text-alt text-error'>
+                  {addressFormik.errors.cityID}
+                </label>
+              )}
             </div>
             <div className='col-span-12 md:col-span-6'>
               <Form.Label title='District' />
@@ -578,18 +714,23 @@ const AddressContent = () => {
                 name='districtID'
                 className='select select-bordered font-normal w-full'
                 required
-                value={addAddressFormik.values.districtID}
-                onChange={addAddressFormik.handleChange}
+                value={addressFormik.values.districtID}
+                onChange={handleDistrictChange}
+                disabled={!addressFormik.values.cityID}
               >
                 <option value='' disabled>
                   District
                 </option>
-                <option value='TBA'>TBA</option>
+                {districts.map(({ id, name }) => (
+                  <option value={id} key={id}>
+                    {name}
+                  </option>
+                ))}
               </select>
-              {addAddressFormik.touched.subDistrictID &&
-                addAddressFormik.errors.subDistrictID && (
+              {addressFormik.touched.subDistrictID &&
+                addressFormik.errors.subDistrictID && (
                   <label className='label-text-alt text-error'>
-                    {addAddressFormik.errors.subDistrictID}
+                    {addressFormik.errors.subDistrictID}
                   </label>
                 )}
             </div>
@@ -599,18 +740,23 @@ const AddressContent = () => {
                 name='subDistrictID'
                 className='select select-bordered font-normal w-full'
                 required
-                value={addAddressFormik.values.subDistrictID}
-                onChange={addAddressFormik.handleChange}
+                value={addressFormik.values.subDistrictID}
+                onChange={addressFormik.handleChange}
+                disabled={!addressFormik.values.districtID}
               >
                 <option value='' disabled>
                   Sub-District
                 </option>
-                <option value='TBA'>TBA</option>
+                {subDistricts.map(({ id, name, zip_code }) => (
+                  <option value={id} key={id}>
+                    {name} - {zip_code}
+                  </option>
+                ))}
               </select>
-              {addAddressFormik.touched.subDistrictID &&
-                addAddressFormik.errors.subDistrictID && (
+              {addressFormik.touched.subDistrictID &&
+                addressFormik.errors.subDistrictID && (
                   <label className='label-text-alt text-error'>
-                    {addAddressFormik.errors.subDistrictID}
+                    {addressFormik.errors.subDistrictID}
                   </label>
                 )}
             </div>
@@ -620,21 +766,25 @@ const AddressContent = () => {
                 name='detail'
                 className='w-full'
                 required
-                value={addAddressFormik.values.detail}
-                onChange={addAddressFormik.handleChange}
+                value={addressFormik.values.detail}
+                onChange={addressFormik.handleChange}
               />
-              {addAddressFormik.touched.detail &&
-                addAddressFormik.errors.detail && (
-                  <label className='label-text-alt text-error'>
-                    {addAddressFormik.errors.detail}
-                  </label>
-                )}
+              {addressFormik.touched.detail && addressFormik.errors.detail && (
+                <label className='label-text-alt text-error'>
+                  {addressFormik.errors.detail}
+                </label>
+              )}
             </div>
           </Form>
         </Modal.Body>
         <Modal.Actions>
           <Button onClick={handleModalClose}>Cancel</Button>
-          <Button color='primary' type='submit' form='addAddressForm'>
+          <Button
+            color='primary'
+            type='submit'
+            form='addAddressForm'
+            loading={createAddressIsLoading || updateAddressIsLoading}
+          >
             Save
           </Button>
         </Modal.Actions>
@@ -643,6 +793,7 @@ const AddressContent = () => {
         open={openModal.delete}
         title='Are you sure?'
         message='This action cannot be undone.'
+        loading={deleteAddressIsLoading}
         onClose={handleModalClose}
         onAccepted={handleDeleteAddress}
       />

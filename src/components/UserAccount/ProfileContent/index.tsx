@@ -3,19 +3,28 @@ import { useFormik } from 'formik';
 import moment from 'moment';
 import { Button, Card, Divider, Form, Input, Modal } from 'react-daisyui';
 import * as Yup from 'yup';
-import { CgClose } from 'react-icons/cg';
+import { HiOutlinePhotograph, HiOutlineMail } from 'react-icons/hi';
+import { HiOutlineFaceSmile } from 'react-icons/hi2';
+import { CgClose, CgPassword, CgProfile } from 'react-icons/cg';
 
 import {
+  useRequestVerificationCodeMutation,
+  useUpdateProfileEmailMutation,
   useUpdateProfileImageMutation,
   useUpdateProfileMutation,
-} from '../../store/services/profileService';
-import { Profile } from '../../types/component';
+  useUpdateProfileUsernameMutation,
+} from '../../../store/services/profileService';
+import { Profile } from '../../../types/component';
 import {
   toUpdateProfileImageRequest,
   toUpdateProfileRequest,
-} from '../../utils/mapperDTO';
-import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
-import { UpdateProfileResponse } from '../../types/response';
+} from '../../../utils/mapperDTO';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import {
+  RequestPasswordVerificationCodeResponse,
+  UpdateProfileResponse,
+} from '../../../types/response';
+import ChangePasswordModal from './ChangePasswordModal';
 
 type ProfileContentProps = {
   profile: Profile | null | undefined;
@@ -23,24 +32,32 @@ type ProfileContentProps = {
 
 type OpenProfileModal = {
   editProfile: boolean;
+  editUsername: boolean;
   editEmail: boolean;
+  editPassword: boolean;
 };
 
 const ProfileContent = ({ profile }: ProfileContentProps) => {
   const [openModal, setOpenModal] = useState<OpenProfileModal>({
     editProfile: false,
+    editUsername: false,
     editEmail: false,
+    editPassword: false,
   });
   const photoFileInputRef = useRef<HTMLInputElement>(null);
 
+  const [updateProfile, { isLoading: updateProfileIsLoading }] =
+    useUpdateProfileMutation();
+  const [updateProfileEmail, { isLoading: updateProfileEmailIsLoading }] =
+    useUpdateProfileEmailMutation();
+  const [updateProfileUsername, { isLoading: updateProfileUsernameIsLoading }] =
+    useUpdateProfileUsernameMutation();
+  const [updateProfileImage, { isLoading: updateProfileImageIsLoading }] =
+    useUpdateProfileImageMutation();
   const [
-    updateProfile,
-    { isLoading: updateProfileIsLoading, error: updateProfileError },
-  ] = useUpdateProfileMutation();
-  const [
-    updateProfileImage,
-    { isLoading: updateProfileImageIsLoading, error: updateProfileImageError },
-  ] = useUpdateProfileImageMutation();
+    requestVerificationCode,
+    { isLoading: requestVerificationCodeIsLoading },
+  ] = useRequestVerificationCodeMutation();
 
   const editProfileFormik = useFormik({
     initialValues: {
@@ -60,14 +77,47 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
         .unwrap()
         .then(() => {
           notifySuccessToast('Profile updated!');
-          setOpenModal({ editProfile: false, editEmail: false });
+          setOpenModal({
+            editProfile: false,
+            editUsername: false,
+            editEmail: false,
+            editPassword: false,
+          });
         })
         .catch((err) => {
-          console.error(err);
+          if ('data' in err) {
+            const response = err.data as UpdateProfileResponse;
+
+            notifyErrorToast(response.message);
+          }
+        });
+    },
+  });
+
+  const editUsernameFormik = useFormik({
+    initialValues: {
+      username: '',
+    },
+    validationSchema: Yup.object({
+      username: Yup.string().required('Please enter your full name'),
+    }),
+    onSubmit: (values) => {
+      const { username } = values;
+
+      updateProfileUsername({ username })
+        .unwrap()
+        .then(() => {
+          notifySuccessToast('Profile updated!');
+          setOpenModal({
+            editProfile: false,
+            editUsername: false,
+            editEmail: false,
+            editPassword: false,
+          });
         })
-        .finally(() => {
-          if (updateProfileError && 'data' in updateProfileError) {
-            const response = updateProfileError.data as UpdateProfileResponse;
+        .catch((err) => {
+          if ('data' in err) {
+            const response = err.data as UpdateProfileResponse;
 
             notifyErrorToast(response.message);
           }
@@ -80,12 +130,31 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       email: '',
     },
     validationSchema: Yup.object({
-      email: Yup.string().required('Please enter your email'),
+      email: Yup.string()
+        .email('Invalid email address')
+        .required('Please enter your email'),
     }),
     onSubmit: (values) => {
       const { email } = values;
 
-      console.log({ email });
+      updateProfileEmail({ email })
+        .unwrap()
+        .then(() => {
+          notifySuccessToast('Profile updated!');
+          setOpenModal({
+            editProfile: false,
+            editUsername: false,
+            editEmail: false,
+            editPassword: false,
+          });
+        })
+        .catch((err) => {
+          if ('data' in err) {
+            const response = err.data as UpdateProfileResponse;
+
+            notifyErrorToast(response.message);
+          }
+        });
     },
   });
 
@@ -123,15 +192,16 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       .unwrap()
       .then(() => {
         notifySuccessToast('Profile updated!');
-        setOpenModal({ editProfile: false, editEmail: false });
+        setOpenModal({
+          editProfile: false,
+          editUsername: false,
+          editEmail: false,
+          editPassword: false,
+        });
       })
       .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        if (updateProfileImageError && 'data' in updateProfileImageError) {
-          const response =
-            updateProfileImageError.data as UpdateProfileResponse;
+        if ('data' in err) {
+          const response = err.data as UpdateProfileResponse;
 
           notifyErrorToast(response.message);
         }
@@ -141,21 +211,57 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
   const handleEditProfileClick = () => {
     setOpenModal({
       editProfile: true,
+      editUsername: false,
       editEmail: false,
+      editPassword: false,
+    });
+  };
+
+  const handleEditUsernameClick = () => {
+    setOpenModal({
+      editProfile: false,
+      editUsername: true,
+      editEmail: false,
+      editPassword: false,
     });
   };
 
   const handleEditEmailClick = () => {
     setOpenModal({
       editProfile: false,
+      editUsername: false,
       editEmail: true,
+      editPassword: false,
     });
+  };
+
+  const handlePasswordClick = () => {
+    requestVerificationCode()
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Verification code has been sent to your email');
+        setOpenModal({
+          editProfile: false,
+          editUsername: false,
+          editEmail: false,
+          editPassword: true,
+        });
+      })
+      .catch((err) => {
+        if ('data' in err) {
+          const response = err.data as RequestPasswordVerificationCodeResponse;
+
+          notifyErrorToast(response.message);
+        }
+      });
   };
 
   const handleModalClose = () => {
     setOpenModal({
       editProfile: false,
+      editUsername: false,
       editEmail: false,
+      editPassword: false,
     });
   };
 
@@ -209,16 +315,30 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
         <div className='col-span-12 md:col-span-4'>
           <Card className='shadow max-w-xs'>
             <Card.Image
-              src={photo ? photo : 'https://picsum.photos/300/300'}
+              src={
+                photo
+                  ? photo
+                  : 'https://i.pinimg.com/736x/2a/4d/11/2a4d11d5d32c83812d2e07742578835c.jpg'
+              }
               className='object-cover w-full'
             />
             <div className='p-4'>
               <Button
-                className='w-full normal-case font-medium'
+                className='w-full normal-case font-medium mb-2.5'
+                color='primary'
                 loading={updateProfileImageIsLoading}
                 onClick={handleUploadImageClick}
+                startIcon={<HiOutlinePhotograph className='text-xl' />}
               >
                 Choose Image
+              </Button>
+              <Button
+                className='w-full normal-case font-medium'
+                onClick={handlePasswordClick}
+                loading={requestVerificationCodeIsLoading}
+                startIcon={<CgPassword className='text-xl' />}
+              >
+                Change Password
               </Button>
               <input
                 type='file'
@@ -264,6 +384,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
                 color='secondary'
                 size='xs'
                 className='ml-2.5 normal-case font-normal'
+                onClick={handleEditUsernameClick}
               >
                 Edit
               </Button>
@@ -312,9 +433,15 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
         >
           <CgClose className='text-lg' />
         </Button>
-        <Modal.Header className='text-center font-bold'>
+        <Modal.Header className='text-center font-bold mb-4'>
           Edit Profile
         </Modal.Header>
+        <div className='mb-8 flex justify-center flex-col gap-2'>
+          <CgProfile className='mx-auto text-9xl text-secondary hover:animate-pulse' />
+          <span className='text-center mx-auto'>
+            Your profile data will not be shown to other users.
+          </span>
+        </div>
         <Modal.Body>
           <Form
             id='editProfileForm'
@@ -400,6 +527,58 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
         </Modal.Actions>
       </Modal>
       <Modal
+        open={openModal.editUsername}
+        onClickBackdrop={handleModalClose}
+        responsive
+        className='max-w-sm'
+      >
+        <Button
+          size='sm'
+          shape='circle'
+          color='ghost'
+          className='absolute right-2 top-2'
+          onClick={handleModalClose}
+        >
+          <CgClose className='text-lg' />
+        </Button>
+        <Modal.Header className='text-center font-bold mb-4'>
+          Change Username
+        </Modal.Header>
+        <Modal.Body>
+          <Form
+            id='editUsernameForm'
+            onSubmit={(e) => {
+              e.preventDefault();
+              editUsernameFormik.handleSubmit();
+            }}
+          >
+            <CgProfile className='mx-auto text-9xl text-secondary hover:animate-pulse' />
+            <span className='text-center mb-8'>
+              Your username will represent you in Oceana
+            </span>
+            <Form.Label title='Username' />
+            <Input
+              name='username'
+              className='w-full'
+              required
+              value={editUsernameFormik.values.username}
+              onChange={editUsernameFormik.handleChange}
+            />
+          </Form>
+        </Modal.Body>
+        <Modal.Actions>
+          <Button onClick={handleModalClose}>Cancel</Button>
+          <Button
+            color='primary'
+            type='submit'
+            loading={updateProfileUsernameIsLoading}
+            form='editUsernameForm'
+          >
+            Save
+          </Button>
+        </Modal.Actions>
+      </Modal>
+      <Modal
         open={openModal.editEmail}
         onClickBackdrop={handleModalClose}
         responsive
@@ -414,7 +593,7 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
         >
           <CgClose className='text-lg' />
         </Button>
-        <Modal.Header className='text-center font-bold'>
+        <Modal.Header className='text-center font-bold mb-4'>
           Change Email
         </Modal.Header>
         <Modal.Body>
@@ -425,6 +604,10 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
               editEmailFormik.handleSubmit();
             }}
           >
+            <HiOutlineMail className='mx-auto text-9xl text-secondary hover:animate-pulse' />
+            <span className='text-center mb-8'>
+              Make sure your email is active for safe and seamless transaction.
+            </span>
             <Form.Label title='Email' />
             <Input
               name='email'
@@ -441,13 +624,17 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
           <Button
             color='primary'
             type='submit'
-            loading={updateProfileIsLoading}
+            loading={updateProfileEmailIsLoading}
             form='editEmailForm'
           >
             Save
           </Button>
         </Modal.Actions>
       </Modal>
+      <ChangePasswordModal
+        open={openModal.editPassword}
+        onClose={handleModalClose}
+      />
     </div>
   );
 };
