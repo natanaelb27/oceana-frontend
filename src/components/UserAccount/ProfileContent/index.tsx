@@ -319,6 +319,10 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
                   ? photo
                   : 'https://i.pinimg.com/736x/2a/4d/11/2a4d11d5d32c83812d2e07742578835c.jpg'
               }
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src = require('../../../assets/images/no-image.webp');
+              }}
               className='object-cover w-full'
             />
             <div className='p-4'>

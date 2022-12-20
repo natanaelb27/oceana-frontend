@@ -18,6 +18,13 @@ export const VOUCHER_STATUS = {
   ENDED: 'Ended',
 };
 
+export const PROMOTION_STATUS = {
+  ALL: 'All',
+  ONGOING: 'Ongoing',
+  UPCOMING: 'Upcoming',
+  ENDED: 'Ended',
+};
+
 export const DISCOUNT_TYPE = {
   NOMINAL: 'Nominal',
   PERCENTAGE: 'Percentage',

@@ -1,5 +1,6 @@
 export { default as Login } from './Login';
 export { default as Register } from './Register';
+export { default as ResetPassword } from './ResetPassword';
 
 export { default as Category } from './Category';
 export { default as Home } from './Home';
@@ -35,15 +36,15 @@ export { default as ShopEditVoucher } from './seller/ShopEditVoucher';
 export { default as ShopOrder } from './seller/ShopOrder';
 export { default as ShopProductList } from './seller/ShopProductList';
 export { default as ShopProfile } from './seller/ShopProfile';
+export { default as ShopPromotionDetail } from './seller/ShopPromotionDetail';
 export { default as ShopPromotionList } from './seller/ShopPromotionList';
 export { default as ShopVoucherDetail } from './seller/ShopVoucherDetail';
 export { default as ShopVoucherList } from './seller/ShopVoucherList';
 export { default as ShopShipmentSetting } from './seller/ShopShipmentSetting';
 
-export { default as AdminAddPromotion } from './admin/AdminAddPromotion';
-export { default as AdminEditPromotion } from './admin/AdminEditPromotion';
+export { default as AdminAddVoucher } from './admin/AdminAddVoucher';
+export { default as AdminDetailVoucher } from './admin/AdminDetailVoucher';
+export { default as AdminEditVoucher } from './admin/AdminEditVoucher';
 export { default as AdminHome } from './admin/AdminHome';
-export { default as AdminPromotionList } from './admin/AdminPromotionList';
-export { default as AdminRefund } from './admin/AdminRefund';
 
 export { default as NotFound } from './NotFound';
