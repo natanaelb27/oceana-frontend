@@ -8,10 +8,13 @@ import { IoWalletOutline } from 'react-icons/io5';
 import { WALLET_TRANSACTION_HISTORY_TYPE } from '../../../constants';
 import { useLazyGetWalletDetailsQuery } from '../../../store/services/walletService';
 
+import Cookies from 'js-cookie';
 import { toRupiah } from '../../../utils/convert';
 import { Pager } from '../../common';
 import NoData from '../../common/NoData';
 import ActivateWalletModal from './ActivateWalletModal';
+import ChangeWalletPinModal from './ChangeWalletPinModal';
+import StepUpPasswordModal from './StepUpPasswordModal';
 
 const WalletContent = () => {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
@@ -20,6 +23,26 @@ const WalletContent = () => {
   ]);
   const [startDate, endDate] = dateRange;
   const [type, setType] = useState<string | null>(null);
+
+  // step up password
+  const [openStepUpPasswordModal, setOpenStepUpPasswordModal] =
+    useState<boolean>(false);
+
+  // change wallet pin
+  const [openChangeWalletPinModal, setOpenChangeWalletPinModal] =
+    useState<boolean>(false);
+
+  const handlehangePINClick = () => {
+    const upgradeTokenPasswordVerifier: string | undefined = Cookies.get(
+      'upgrade_token_password_verifier'
+    );
+
+    if (upgradeTokenPasswordVerifier !== undefined) {
+      setOpenChangeWalletPinModal(true);
+      return;
+    }
+    setOpenStepUpPasswordModal(true);
+  };
 
   const [getWalletDetails, { data: getWalletDetailsData }] =
     useLazyGetWalletDetailsQuery();
@@ -130,6 +153,7 @@ const WalletContent = () => {
               <Button
                 className='font-medium normal-case'
                 startIcon={<HiLockOpen className='text-xl' />}
+                onClick={handlehangePINClick}
               >
                 Change PIN
               </Button>
@@ -285,6 +309,17 @@ const WalletContent = () => {
         </div>
       </div>
       <ActivateWalletModal data={getWalletDetailsData.data} />
+      {/* Modal - Step Up Password */}
+      <StepUpPasswordModal
+        open={openStepUpPasswordModal}
+        setOpen={setOpenStepUpPasswordModal}
+        nextSetOpen={setOpenChangeWalletPinModal}
+      />
+      {/* Modal - Change Wallet PIN */}
+      <ChangeWalletPinModal
+        open={openChangeWalletPinModal}
+        setOpen={setOpenChangeWalletPinModal}
+      />
     </div>
   );
 };

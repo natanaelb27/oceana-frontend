@@ -29,3 +29,7 @@ export type RegisterWithGoogleRequest = {
   role: string;
   image_url: string;
 };
+
+export type StepUpPasswordRequest = {
+  password: string;
+};
