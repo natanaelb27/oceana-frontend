@@ -12,3 +12,42 @@ input[type='number']::-webkit-inner-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+
+.skeleton {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  background-color: #d6d6d6;
+}
+
+.skeleton::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    to right,
+    #d6d6d6,
+    #dbdbdb,
+    #e0e0e0,
+    #e6e6e6,
+    #ebebeb,
+    #ebebeb,
+    #ebebeb,
+    #ebebeb,
+    #e6e6e6,
+    #e0e0e0,
+    #dbdbdb,
+    #d6d6d6
+  );
+  animation: shimmer 1s infinite;
+  content: '';
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
