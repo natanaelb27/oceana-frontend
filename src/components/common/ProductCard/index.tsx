@@ -43,9 +43,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
       }`}
       className='w-full'
     >
-      <Card className='w-full shadow transition max-h-[27rem] md:max-h-full md:min-h-[27rem] h-full transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none border-b-4 border-b-secondary'>
-        <figure className='h-fit aspect-w-1 aspect-h-1'>
-          <Image src={product.media_url} className='object-cover w-full' />
+      <Card className='w-full shadow transition max-h-[27rem] md:max-h-full md:min-h-[27rem] h-full transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:border-b-4 hover:border-b-secondary'>
+        <figure className='w-full h-fit'>
+          <Image
+            src={product.media_url}
+            className='object-cover w-full min-h-64 max-h-64'
+          />
         </figure>
         <div className='pt-2.5 pb-4 px-4'>
           <p className='line-clamp-2 mb-2'>{product.name}</p>

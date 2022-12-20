@@ -2,6 +2,7 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { Button, Card, Divider } from 'react-daisyui';
 import { Link } from 'react-router-dom';
+import { Image } from '../../components/common';
 import { useLocalStorage } from '../../hooks';
 import {
   useGetAllCategoryQuery,
@@ -201,10 +202,10 @@ const Category = () => {
               </div>
               <Card className='p-5 w-full md:w-[50vw] shadow-md rounded-none flex gap-5'>
                 <div className='flex gap-5 items-center justify-center p-5 rounded-xl'>
-                  <img
+                  <Image
                     src={category.image}
                     className='w-10 h-10 md:w-20 md:h-20'
-                  ></img>
+                  ></Image>
                   <Link
                     to={`/category/${toUrl(category.name)}-i.${category.id}`}
                   >
