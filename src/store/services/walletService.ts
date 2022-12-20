@@ -35,6 +35,7 @@ export const walletApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: request,
       }),
+      invalidatesTags: ['Profile'],
     }),
   }),
 });
