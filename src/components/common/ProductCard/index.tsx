@@ -104,7 +104,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 <HiStar className='text-warning' />
               </Tooltip>
               <p className='truncate text-ellipsis'>
-                {product.rating_star.toFixed(2)} |{' '}
+                {product.rating_star.toFixed(1)} |{' '}
                 {toCompact(product.total_purchase_count)} sold
               </p>
             </div>
