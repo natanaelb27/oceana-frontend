@@ -32,6 +32,7 @@
     "react-dom": "^18.2.0",
     "react-google-login": "^5.2.2",
     "react-icons": "^4.6.0",
+    "react-lazy-load": "^4.0.1",
     "react-medium-image-zoom": "^5.1.2",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.4.3",
