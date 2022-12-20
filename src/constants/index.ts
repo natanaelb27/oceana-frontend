@@ -41,3 +41,13 @@ export const WALLET_TRANSACTION_HISTORY_TYPE = {
   DEBIT: 'Debit',
   CREDIT: 'Credit',
 };
+
+export const PRODCUT_IS_HAZARDOUS_STATUS = {
+  TRUE: 'TRUE',
+  FALSE: 'FALSE',
+};
+
+export const PRODCUT_CONDITION_TYPE = {
+  NEW: 'new',
+  USED: 'used',
+};

@@ -1,3 +1,3 @@
-import { Shipment } from '../component/shipment';
+import { PUMProduct } from '../component';
 
-export type UpsertProductRequest = Shipment;
+export type UpsertProductRequest = PUMProduct;

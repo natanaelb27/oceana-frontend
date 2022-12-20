@@ -141,5 +141,5 @@ export interface PUMProduct {
   videos: string[];
   product_items: PUMProductItem[];
   variants: PUMVariant[];
-  couriers: PUMCourier;
+  couriers: PUMCourier[];
 }

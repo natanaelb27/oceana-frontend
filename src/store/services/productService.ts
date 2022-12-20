@@ -68,7 +68,7 @@ export const productApi = baseApi.injectEndpoints({
       { merchantID: number; request: UpsertProductRequest }
     >({
       query: ({ merchantID, request }) => ({
-        url: `/my-shop/${merchantID}/products/`,
+        url: `/my-shop/${merchantID}/products`,
         method: 'POST',
         body: request,
       }),
@@ -99,4 +99,7 @@ export const {
   useFavoriteProductMutation,
   useGetFavoriteProductQuery,
   useLazyGetFavoriteProductQuery,
+  useGetProductUpsertModelQuery,
+  useCreateProductUpsertModelMutation,
+  useUpdateProductUpsertModelMutation,
 } = productApi;

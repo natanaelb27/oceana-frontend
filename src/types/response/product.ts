@@ -63,3 +63,5 @@ export type GetProductUpsertModelResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type CreateProductResponse = GetProductUpsertModelResponse;

@@ -23,12 +23,12 @@ export const formikPreorderDay = (
   ctx: Yup.TestContext<AnyObject>,
   value: number | undefined
 ) => {
-  if (!value) {
+  if (!value && value !== 0) {
     return ctx.createError({
       message: 'Pre-Order Day cannot be empty',
     });
   }
-  if (value < 7 || value > 30) {
+  if ((value < 7 || value > 30) && value !== 0) {
     return ctx.createError({
       message: 'Pre-Order Day must be between 7 to 30 days',
     });
