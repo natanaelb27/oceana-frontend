@@ -10,6 +10,13 @@ import {
   ProductsSortByString,
   ProductsSortString,
 } from '../../types/sort';
+import { useGetCategoriesByMerchantIDQuery } from '../../store/services/categoryService';
+import CategoryCollapse from '../common/CategoryCollapse';
+
+type CategoryFilter = {
+  id: number;
+  name: string;
+};
 
 type ShopProductsCardProps = {
   merchantID: string | null | undefined;
@@ -23,6 +30,11 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
   const [mostPurchasedTab, setMostPurchasedTab] = useState(true);
   const [allProductsTab, setAllProductsTab] = useState(false);
   const [reviewTab, setReviewTab] = useState(false);
+
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>({
+    id: 0,
+    name: '',
+  });
 
   const ref = useRef<null | HTMLDivElement>(null);
 
@@ -46,6 +58,10 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
     id: String(merchantID),
     query: toMerchantProductQuery(merchantProductQuery),
   });
+
+  const { data: getCategoriesByMerchantID } = useGetCategoriesByMerchantIDQuery(
+    String(merchantID)
+  );
 
   const sortByParam = searchParams.get('sort-by') || '';
   const sortParam = searchParams.get('sort') || '';
@@ -95,6 +111,7 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
     let limit = 0;
     let sortBy = '';
     let sort = '';
+    let categoryID = 0;
 
     if (identifier === 'mostPurchased') {
       setMostPurchasedTab(true);
@@ -104,6 +121,7 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
       limit = 6;
       sortBy = ProductsSortByString.BestSeller;
       sort = ProductsSortByString.Default;
+      categoryID = 0;
     } else if (identifier === 'allProducts') {
       setMostPurchasedTab(false);
       setAllProductsTab(true);
@@ -112,6 +130,7 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
       limit = 20;
       sortBy = ProductsSortByString.BestSeller;
       sort = ProductsSortByString.Default;
+      categoryID = 0;
     } else if (identifier === 'review') {
       setMostPurchasedTab(false);
       setAllProductsTab(false);
@@ -124,6 +143,7 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
       limit,
       sortBy,
       sort,
+      categoryID,
     });
   };
 
@@ -144,6 +164,18 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
     setMerchantProductQuery({
       ...merchantProductQuery,
       page: n,
+    });
+  };
+
+  const handleCategoryClick = (id: number, name: string) => {
+    setMerchantProductQuery({
+      ...merchantProductQuery,
+      categoryID: id,
+    });
+
+    setCategoryFilter({
+      id: id,
+      name: name,
     });
   };
 
@@ -215,7 +247,7 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
           </>
         )}
         {allProductsTab && (
-          <>
+          <div>
             <div className='flex flex-row justify-end'>
               <div className='flex flex-row flex-start items-center mb-5'>
                 <h1 className='text-lg font-bold mr-3'>Sort By:</h1>
@@ -230,15 +262,29 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
                 </select>
               </div>
             </div>
-            <div className='flex flex-row flex-wrap justify-start'>
-              {getAllMerchantProducts?.data?.map((product, i) => {
-                return (
-                  <div className='mr-3 mb-3 w-64' key={i}>
-                    <ProductCard product={product} key={product.id} />
-                  </div>
-                );
-              })}
+            <div className='flex flex-row justify-start'>
+              <div className='w-56 mr-14'>
+                <CategoryCollapse
+                  category={
+                    getCategoriesByMerchantID?.data
+                      ? getCategoriesByMerchantID.data
+                      : undefined
+                  }
+                  marginLeft={5}
+                  handleCategoryClick={handleCategoryClick}
+                />
+              </div>
+              <div className='flex flex-row flex-wrap justify-start flex-grow-0'>
+                {getAllMerchantProducts?.data?.map((product, i) => {
+                  return (
+                    <div className='mr-3 mb-3 w-64' key={i}>
+                      <ProductCard product={product} key={product.id} />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+
             <div className='mt-6 flex justify-center'>
               <Pager
                 page={merchantProductQuery.page}
@@ -250,7 +296,7 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
                 onPageChange={handlePageChange}
               />
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
