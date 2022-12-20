@@ -405,6 +405,7 @@ const BuyerCart = () => {
           merchant_id: selectMerchantItem.cartGroupedByMerchant.merchant_id,
           merchant_province:
             selectMerchantItem.cartGroupedByMerchant.merchant_province,
+          city_id: selectMerchantItem.cartGroupedByMerchant.city_id,
           name: selectMerchantItem.cartGroupedByMerchant.name,
           products: [],
         };

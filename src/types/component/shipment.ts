@@ -3,6 +3,7 @@ export interface CourierService {
   code: string;
   description: string;
   is_selected: boolean;
+  shipping_fee?: number;
   courier: Courier[];
 }
 

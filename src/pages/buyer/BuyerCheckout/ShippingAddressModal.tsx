@@ -34,7 +34,7 @@ const ShippingAddressModal = ({
   currentShippingAddress,
   open,
   onClose,
-  setShippingAddress: onChangeShippingAddress,
+  setShippingAddress,
 }: ShippingAddressModalProps) => {
   const [getSubDistrict] = useLazyGetSubDistrictsQuery();
   const [createAddress, { isLoading: createAddressIsLoading }] =
@@ -89,7 +89,7 @@ const ShippingAddressModal = ({
 
   const handleChangeShippingAddress = () => {
     if (!selectedAddress) return;
-    onChangeShippingAddress(selectedAddress);
+    setShippingAddress(selectedAddress);
     setOpenConfirmationModal(false);
     onClose();
   };
@@ -345,10 +345,9 @@ const ShippingAddressModal = ({
         </Modal.Header>
         <Modal.Body>
           {addresses.map((address, index) => (
-            <>
+            <div key={index}>
               {index > 0 && <Divider />}
               <div
-                key={address.id}
                 className={`p-4 rounded-3xl cursor-pointer ${
                   currentShippingAddress.id === address.id
                     ? 'bg-primary/10 border border-primary active:bg-primary/20'
@@ -369,7 +368,7 @@ const ShippingAddressModal = ({
                   <p>{`${address.sub_district}, ${address.district}, ${address.city}, ${address.province} ${address.zip_code}`}</p>
                 </div>
               </div>
-            </>
+            </div>
           ))}
         </Modal.Body>
         <ConfirmationModal

@@ -14,6 +14,7 @@ export interface CartProduct {
 export interface CartGroupedByMerchant {
   merchant_id: number;
   merchant_province: string;
+  city_id: number;
   name: string;
   products: CartProduct[];
 }

@@ -14,3 +14,11 @@ export const calculateTotal = (cart: CartGroupedByMerchant[]): number =>
       partialTotal + calculateSubtotal(currentMerchant.products),
     0
   );
+
+export const calculateTotalWeight = (products: CartProduct[]): number =>
+  products.reduce(
+    (partialTotalWeight, currentProduct) =>
+      partialTotalWeight +
+      currentProduct.product_weight * currentProduct.quantity,
+    0
+  );

@@ -32,8 +32,13 @@ import {
 } from '../../../types/component/checkout';
 import { Courier } from '../../../types/component/shipment';
 import { PaymentMethod } from '../../../types/paymentMethod';
+import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
-import { calculateSubtotal, calculateTotal } from '../../../utils/cart';
+import {
+  calculateSubtotal,
+  calculateTotal,
+  calculateTotalWeight,
+} from '../../../utils/checkout';
 import {
   pascalCaseToTitleCase,
   toPhoneNumber,
@@ -88,6 +93,8 @@ const BuyerCheckout = () => {
   const [totalPayment, setTotalPayment] = useState<number>(0);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [deliveryService, setDeliveryService] = useState<Courier | null>(null);
+  const [getShippingCostRequest, setGetShippingCostRequest] =
+    useState<GetRajaOngkirShippingCostRequest | null>(null);
 
   const handleAddAddressClick = () => {
     setOpenModal({
@@ -117,7 +124,11 @@ const BuyerCheckout = () => {
     });
   };
 
-  const handleDeliveryServiceClick = () => {
+  const handleDeliveryServiceClick = (origin: number, totalWeight: number) => {
+    if (!shippingAddress?.city_id) {
+      notifyInfoToast('Please pick a shipping address');
+      return;
+    }
     setOpenModal({
       shippingAddress: {
         add: false,
@@ -128,6 +139,12 @@ const BuyerCheckout = () => {
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
+    });
+    setGetShippingCostRequest({
+      origin,
+      destination: shippingAddress.city_id,
+      weight: totalWeight,
+      courier: '',
     });
   };
 
@@ -203,11 +220,15 @@ const BuyerCheckout = () => {
 
   const handleOrderClick = () => {
     if (!shippingAddress?.id) {
-      notifyInfoToast('Shipping address required');
+      notifyInfoToast('Please pick a shipping address');
       return;
     }
     // validate delivery service
-    // validate payment method
+    if (!deliveryService?.id) {
+      notifyInfoToast('Please pick a delivery service');
+      return;
+    }
+    // validate payment method (sealabs pay, pick a card)
 
     handlePaymentWalletPinClick();
   };
@@ -399,87 +420,111 @@ const BuyerCheckout = () => {
       </Card>
 
       {/* Checked out products card */}
-      {cart.map(({ merchant_id, merchant_province, name, products }, index) => (
-        <Card key={merchant_id} className='p-4 mb-4 shadow-lg'>
-          <Card.Title className='flex justify-between'>
-            <div className='flex items-center gap-2'>
-              <BiReceipt />
-              <h2>Order {index + 1}</h2>
-            </div>
-            <Tooltip message='Delivery service' position='left'>
-              <Button
-                className='shadow-md'
-                color='primary'
-                shape='circle'
-                size='md'
-                onClick={handleDeliveryServiceClick}
-              >
-                <HiOutlineTruck className='text-2xl' />
-              </Button>
-            </Tooltip>
-          </Card.Title>
-          <Card.Body className='p-0 pl-2'>
-            <div id={`merchant-${name}`}>
+      {cart.map(
+        (
+          { merchant_id, merchant_province, city_id, name, products },
+          index
+        ) => (
+          <Card key={merchant_id} className='p-4 mb-4 shadow-lg'>
+            <Card.Title className='flex justify-between'>
               <div className='flex items-center gap-2'>
-                <AiOutlineShop className='text-secondary' />
-                <h3 className='font-bold'>{name}</h3>
+                <BiReceipt />
+                <h2>Order {index + 1}</h2>
               </div>
-              <p>{merchant_province}</p>
-            </div>
-            <div id='products'>
-              {products.map((product) => {
-                return (
-                  <div
-                    key={product.carts_id}
-                    className='flex items-center py-3'
-                  >
-                    <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2 h-'>
-                      <img
-                        src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
-                        className='rounded-lg h-full w-full'
-                        onError={({ currentTarget }) => {
-                          currentTarget.onerror = null;
-                          currentTarget.src =
-                            'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-                        }}
-                      />
-                    </div>
-                    <div className='h-24 w-full flex flex-col'>
-                      <div className='justify-start mt-2 md:mt-0'>
-                        {titleCase(product.product_name)}
+              <Tooltip message='Delivery service' position='left'>
+                <Button
+                  className='shadow-md'
+                  color='primary'
+                  shape='circle'
+                  size='md'
+                  onClick={() =>
+                    handleDeliveryServiceClick(
+                      city_id,
+                      calculateTotalWeight(products)
+                    )
+                  }
+                >
+                  <HiOutlineTruck className='text-2xl' />
+                </Button>
+              </Tooltip>
+            </Card.Title>
+            <Card.Body className='p-0 pl-2'>
+              <div id={`merchant-${name}`}>
+                <div className='flex items-center gap-2'>
+                  <AiOutlineShop className='text-secondary' />
+                  <h3 className='font-bold'>{name}</h3>
+                </div>
+                <p>{merchant_province}</p>
+              </div>
+              <div id='products'>
+                {products.map((product) => {
+                  return (
+                    <div
+                      key={product.carts_id}
+                      className='flex items-center py-3'
+                    >
+                      <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2 h-'>
+                        <img
+                          src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
+                          className='rounded-lg h-full w-full'
+                          onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src =
+                              'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+                          }}
+                        />
                       </div>
-                      <div className='text-sm mt-0.5'>
-                        {titleCase(product.product_variation)}
-                      </div>
-                      <div className='font-bold'>
-                        {toRupiah(product.price_after_discount)}
-                      </div>
-                      <div className='flex items-center justify-between'>
-                        <div>{`x${product.quantity}`}</div>
-                        <div className='text-lg font-bold'>
-                          {toRupiah(
-                            product.price_after_discount * product.quantity
-                          )}
+                      <div className='h-24 w-full flex flex-col'>
+                        <div className='justify-start mt-2 md:mt-0'>
+                          {titleCase(product.product_name)}
+                        </div>
+                        <div className='text-sm mt-0.5'>
+                          {titleCase(product.product_variation)}
+                        </div>
+                        <div className='font-bold'>
+                          {toRupiah(product.price_after_discount)}
+                        </div>
+                        <div className='flex items-center justify-between'>
+                          <div>{`x${product.quantity}`}</div>
+                          <div className='text-lg font-bold'>
+                            {toRupiah(
+                              product.price_after_discount * product.quantity
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+            </Card.Body>
+            <Divider />
+            {!deliveryService ? (
+              <div>
+                <div>Please pick a delivery service</div>
+              </div>
+            ) : (
+              <div className='flex justify-between'>
+                <div>{deliveryService.courier_services[0].description}</div>
+                <div>
+                  {deliveryService.courier_services[0].shipping_fee &&
+                    toRupiah(deliveryService.courier_services[0].shipping_fee)}
+                </div>
+              </div>
+            )}
+            <Divider />
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center gap-1'>
+                <ImPriceTag />
+                <p>Subtotal</p>
+              </div>
+              <p className='text-xl font-bold'>
+                {toRupiah(calculateSubtotal(products))}
+              </p>
             </div>
-          </Card.Body>
-          <Divider />
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-1'>
-              <ImPriceTag />
-              <p>Subtotal</p>
-            </div>
-            <p className='text-xl font-bold'>
-              {toRupiah(calculateSubtotal(products))}
-            </p>
-          </div>
-        </Card>
-      ))}
+          </Card>
+        )
+      )}
 
       {/* Voucher card */}
       <Card className='p-4 mb-4 shadow-lg'>
@@ -579,6 +624,7 @@ const BuyerCheckout = () => {
       {/* Delivery Service Modal */}
       <DeliveryServiceModal
         currentDeliveryService={deliveryService}
+        getShippingCostRequest={getShippingCostRequest}
         open={openModal.deliveryService}
         onClose={handleModalClose}
         setDeliveryService={setDeliveryService}
