@@ -30,6 +30,7 @@ import {
   CheckoutCartProduct,
   CheckoutCartProductItem,
 } from '../../../types/component/checkout';
+import { Courier } from '../../../types/component/shipment';
 import { PaymentMethod } from '../../../types/paymentMethod';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import { calculateSubtotal, calculateTotal } from '../../../utils/cart';
@@ -45,6 +46,7 @@ import {
   notifyInfoToast,
   notifySuccessToast,
 } from '../../../utils/toast';
+import DeliveryServiceModal from './DeliveryServiceModal';
 import PaymentMethodModal from './PaymentMethodModal';
 import PaymentWalletPinModal from './PaymentWalletPinModal';
 import ShippingAddressModal from './ShippingAddressModal';
@@ -85,6 +87,7 @@ const BuyerCheckout = () => {
   );
   const [totalPayment, setTotalPayment] = useState<number>(0);
   const [walletBalance, setWalletBalance] = useState<number>(0);
+  const [deliveryService, setDeliveryService] = useState<Courier | null>(null);
 
   const handleAddAddressClick = () => {
     setOpenModal({
@@ -409,6 +412,7 @@ const BuyerCheckout = () => {
                 color='primary'
                 shape='circle'
                 size='md'
+                onClick={handleDeliveryServiceClick}
               >
                 <HiOutlineTruck className='text-2xl' />
               </Button>
@@ -573,6 +577,12 @@ const BuyerCheckout = () => {
         setShippingAddress={setShippingAddress}
       />
       {/* Delivery Service Modal */}
+      <DeliveryServiceModal
+        currentDeliveryService={deliveryService}
+        open={openModal.deliveryService}
+        onClose={handleModalClose}
+        setDeliveryService={setDeliveryService}
+      />
       {/* Shop Promotion/Voucher Modal */}
       {/* Marketplace Voucher Modal */}
       {/* Payment Method Modal */}

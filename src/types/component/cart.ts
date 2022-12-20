@@ -5,6 +5,7 @@ export interface CartProduct {
   product_merchant_promotion_id: number;
   product_name: string;
   product_variation: string;
+  product_weight: number;
   quantity: number;
   stock_quantity: number;
   price: number;

@@ -4,7 +4,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { TAG_TYPES } from '../constants/tags';
 import baseQueryInterceptor from './baseQuery';
 
-import storage from 'redux-persist/lib/storage';
+import storageSession from 'redux-persist/lib/storage/session';
 import { combineReducers } from 'redux';
 import { persistReducer } from 'redux-persist';
 
@@ -34,7 +34,7 @@ const reducers = combineReducers({
 
 const persistConfig = {
   key: 'root',
-  storage,
+  storage: storageSession,
   blacklist: [
     'authApi',
     'baseApi',

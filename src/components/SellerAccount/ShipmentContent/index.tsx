@@ -18,9 +18,7 @@ import {
 import { Shipment } from '../../../types/component/shipment';
 import { UpdateShipmentResponse } from '../../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
-import Img from '../../common/Img';
-import Skeleton from '../../common/Loading/Skeleton';
-import SectionHeading from '../../common/SectionHeading/index';
+import { Img, SectionHeading, Skeleton } from '../../common';
 import { formikProcessDayAnndPreorderDay } from '../../../utils/yupValidation';
 
 const ShipmentContent = () => {
