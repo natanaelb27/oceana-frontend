@@ -5,6 +5,7 @@ import { Product } from '../../../types/component';
 
 import { toCompact, toRupiah } from '../../../utils/convert';
 import { toUrl } from '../../../utils/toUrl';
+import Image from '../Image';
 
 type ProductCardProps = {
   product?: Product;
@@ -43,14 +44,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
     >
       <Card className='md:h-[24rem] shadow transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none'>
         <figure>
-          <img
+          <Image
             src={product.media_url}
             className='object-cover max-h-64 w-full'
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null;
-              currentTarget.src =
-                'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-            }}
           />
         </figure>
         <div className='pt-2.5 pb-4 px-4'>
@@ -110,7 +106,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 <HiStar className='text-warning' />
               </Tooltip>
               <p className='truncate text-ellipsis'>
-                {product.rating_star} |{' '}
+                {product.rating_star.toFixed(1)} |{' '}
                 {toCompact(product.total_purchase_count)} sold
               </p>
             </div>

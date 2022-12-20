@@ -15,3 +15,11 @@ export type UpdateMerchantResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type CreateMerchantResponse = {
+  data: Merchant | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};

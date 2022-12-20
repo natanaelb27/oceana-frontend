@@ -7,4 +7,8 @@ export const TAG_TYPES = [
   'OrderDetails',
   'Product',
   'Profile',
+  'Cart',
+  'City',
+  'FavoriteProduct',
+  'Merchant',
 ];

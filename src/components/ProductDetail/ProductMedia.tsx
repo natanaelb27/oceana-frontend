@@ -12,12 +12,14 @@ import { IoCopyOutline } from 'react-icons/io5';
 import { Button } from 'react-daisyui';
 import { toCompact } from '../../utils/convert';
 import { notifyInfoToast } from '../../utils/toast';
+import { Image } from '../common';
 
 type ProductMediaProps = {
   images: string[];
   selectedVariantImage: string;
   handleClickFavoriteProduct: () => void;
   favoriteProductValue: boolean;
+  productLikeCount: number;
 };
 
 const ProductMedia = ({
@@ -25,6 +27,7 @@ const ProductMedia = ({
   selectedVariantImage,
   handleClickFavoriteProduct,
   favoriteProductValue,
+  productLikeCount
 }: ProductMediaProps) => {
   const handleCopyClick = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -33,19 +36,14 @@ const ProductMedia = ({
   };
 
   return (
-    <div>
+    <div className='sticky top-24'>
       <div className='mb-2'>
         <Zoom>
-          <img
+          <Image
             src={`${
               selectedVariantImage === '' ? images[0] : selectedVariantImage
             }`}
             className='w-full rounded-lg'
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null;
-              currentTarget.src =
-                'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-            }}
           />
         </Zoom>
       </div>
@@ -53,20 +51,12 @@ const ProductMedia = ({
         <div className='grid grid-cols-5 gap-2 mb-4'>
           {images.slice(1).map((image, index) => (
             <Zoom key={index}>
-              <img
-                src={image}
-                className='w-full rounded-lg'
-                onError={({ currentTarget }) => {
-                  currentTarget.onerror = null;
-                  currentTarget.src =
-                    'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-                }}
-              />
+              <Image src={image} className='w-full rounded-lg' />
             </Zoom>
           ))}
         </div>
       )}
-      <div className='flex justify-center items-center mb-2.5'>
+      <div className='flex justify-center items-center mb-2.5 flex-wrap'>
         <span className='mr-2'>Share:</span>
         <FacebookShareButton url={window.location.href} className='mr-1'>
           <FacebookIcon className='rounded-full h-6 w-6' />
@@ -98,7 +88,7 @@ const ProductMedia = ({
             <HiOutlineHeart className='text-2xl' />
           )}
         </Button>
-        <span className='ml-1'>Favorite ({toCompact(10000)})</span>
+        <span className='ml-1'>Favorite ({toCompact(productLikeCount)})</span>
       </div>
     </div>
   );

@@ -37,3 +37,7 @@ export type VerifyResetPasswordRequest = {
 export type ResetPasswordRequest = {
   password: string;
 };
+
+export type StepUpPasswordRequest = {
+  password: string;
+};
