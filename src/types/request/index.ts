@@ -6,3 +6,4 @@ export * from './merchantVoucher';
 export * from './profile';
 export * from './sealabsPay';
 export * from './wallet';
+export * from './review';

@@ -19,6 +19,7 @@ type ProductMediaProps = {
   selectedVariantImage: string;
   handleClickFavoriteProduct: () => void;
   favoriteProductValue: boolean;
+  productLikeCount: number;
 };
 
 const ProductMedia = ({
@@ -26,6 +27,7 @@ const ProductMedia = ({
   selectedVariantImage,
   handleClickFavoriteProduct,
   favoriteProductValue,
+  productLikeCount
 }: ProductMediaProps) => {
   const handleCopyClick = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -34,7 +36,7 @@ const ProductMedia = ({
   };
 
   return (
-    <div>
+    <div className='sticky top-24'>
       <div className='mb-2'>
         <Zoom>
           <Image
@@ -54,7 +56,7 @@ const ProductMedia = ({
           ))}
         </div>
       )}
-      <div className='flex justify-center items-center mb-2.5'>
+      <div className='flex justify-center items-center mb-2.5 flex-wrap'>
         <span className='mr-2'>Share:</span>
         <FacebookShareButton url={window.location.href} className='mr-1'>
           <FacebookIcon className='rounded-full h-6 w-6' />
@@ -86,7 +88,7 @@ const ProductMedia = ({
             <HiOutlineHeart className='text-2xl' />
           )}
         </Button>
-        <span className='ml-1'>Favorite ({toCompact(10000)})</span>
+        <span className='ml-1'>Favorite ({toCompact(productLikeCount)})</span>
       </div>
     </div>
   );

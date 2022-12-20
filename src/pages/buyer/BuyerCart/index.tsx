@@ -14,7 +14,7 @@ import { CartGroupedByMerchant, CartProduct } from '../../../types/component';
 import { GetUserCartResponse } from '../../../types/response';
 import { toRupiah } from '../../../utils/convert';
 import { titleCase } from '../../../utils/titleCase';
-import { notifyErrorToast } from '../../../utils/toast';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { Image } from '../../../components/common';
 
 type SelectItem = {
@@ -46,8 +46,7 @@ type ModalInformation = {
 };
 
 const BuyerCart = () => {
-  const { data: getUserCartData, error: getUserCartError } =
-    useGetUserCartQuery();
+  const { data, error, isLoading } = useGetUserCartQuery();
   const [updateUserCart] = useUpdateUserCartMutation();
   const [selectedItems, setSelectedItems] = useState<SelectCartItems>({
     selectAll: false,
@@ -62,18 +61,18 @@ const BuyerCart = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  if (getUserCartError && 'data' in getUserCartError) {
-    const response = getUserCartError.data as GetUserCartResponse;
+  if (error && 'data' in error) {
+    const response = error.data as GetUserCartResponse;
 
     notifyErrorToast(response.message);
   }
 
   useEffect(() => {
     const selectedMerchantItems: SelectMerchantItems[] = [];
-    if (!getUserCartData?.data) {
+    if (!data?.data) {
       return;
     }
-    getUserCartData.data.forEach((value) => {
+    data.data.forEach((value) => {
       const selectedItems: SelectItem[] = [];
       value.products.forEach((product) => {
         selectedItems.push({
@@ -96,9 +95,9 @@ const BuyerCart = () => {
     setSelectedItems({
       selectAll: false,
       selectMerchantItems: selectedMerchantItems,
-      cartGroupedByMerchants: getUserCartData.data,
+      cartGroupedByMerchants: data.data,
     });
-  }, [getUserCartData]);
+  }, [data]);
 
   const handleClickAll = () => {
     const newSelectedItems = { ...selectedItems };
@@ -360,8 +359,11 @@ const BuyerCart = () => {
       quantity: 0,
     })
       .unwrap()
+      .then(() => {
+        notifySuccessToast('Product was successfully deleted from your cart');
+      })
       .catch(() => {
-        notifyErrorToast('Error deleting item from cart');
+        notifyErrorToast('Error deleting product from cart');
       })
       .finally(() => {
         setModal({
@@ -381,7 +383,7 @@ const BuyerCart = () => {
   };
 
   const handleClickCheckout = () => {
-    if (!getUserCartData?.data) return;
+    if (!data?.data) return;
 
     let cartGroupedByMerchants: CartGroupedByMerchant[] = [];
 
@@ -426,7 +428,43 @@ const BuyerCart = () => {
     navigate('/checkout');
   };
 
-  if (!getUserCartData?.data || getUserCartData?.data?.length === 0) {
+  if (isLoading) {
+    return (
+      <div className='container mx-auto animate-pulse py-10'>
+        <div className='grid grid-col-12 gap-4 mb-10'>
+          <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+        </div>
+        <Divider />
+        <div className='grid grid-col-12 gap-4 mb-10'>
+          <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+        </div>
+        <Divider />
+        <div className='grid grid-col-12 gap-4 mb-10'>
+          <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data?.data || data?.data?.length === 0) {
     return (
       <div className='py-10'>
         <NoData
@@ -440,9 +478,6 @@ const BuyerCart = () => {
   return (
     <div className='px-2 container mx-auto flex flex-col'>
       <h5 className='font-bold text-2xl text-primary my-4'>Cart</h5>
-      {/* <Alert className='bg-red-100 border-2 border-red-300 my-2'>
-        :( There was 1 item that could not be processed
-      </Alert> */}
       <div className='flex'>
         <input
           type='checkbox'
@@ -453,7 +488,7 @@ const BuyerCart = () => {
         <div className='pl-2'>Select All</div>
       </div>
       <Divider className='border-none' />
-      {getUserCartData.data.map((merchant, merchantIndex) => (
+      {data.data.map((merchant, merchantIndex) => (
         <div id={merchant.merchant_id.toString()} key={merchant.merchant_id}>
           <div className='flex items-center'>
             <input
@@ -541,10 +576,6 @@ const BuyerCart = () => {
                     }
                     size='sm'
                   >
-                    {/* <BiTrash
-                      size='1.5em'
-                      className='text-error cursor-pointer'
-                    /> */}
                     DELETE
                   </Button>
                   <Button

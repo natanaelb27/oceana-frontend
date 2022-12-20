@@ -1,5 +1,8 @@
-import { UpdateUserCartRequest } from '../../types/request';
 import { PayCartWithWalletRequest } from '../../types/request/checkout';
+import {
+  IncrementUserCartRequest,
+  UpdateUserCartRequest,
+} from '../../types/request';
 import {
   GetUserCartResponse,
   UpdateUserCartResponse,
@@ -36,6 +39,18 @@ export const cartApi = baseApi.injectEndpoints({
         method: 'POST',
         body: request,
       }),
+      invalidatesTags: ['Cart'],
+    }),
+    incrementUserCart: builder.mutation<
+      UpdateUserCartResponse,
+      IncrementUserCartRequest
+    >({
+      query: (request) => ({
+        url: '/carts',
+        method: 'POST',
+        body: request,
+      }),
+      invalidatesTags: ['Cart'],
     }),
   }),
 });
@@ -44,4 +59,5 @@ export const {
   useGetUserCartQuery,
   useUpdateUserCartMutation,
   usePayCartWithWalletMutation,
+  useIncrementUserCartMutation,
 } = cartApi;
