@@ -57,7 +57,11 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === SellerAccountContent.Promotion) {
-      // return <AddressContent />;
+      // return <PromotionContent profile={profile} />;
+    }
+
+    if (content === SellerAccountContent.PromotionDetail) {
+      // return <PromotionDetailContent profile={profile} />;
     }
 
     if (content === SellerAccountContent.Order) {

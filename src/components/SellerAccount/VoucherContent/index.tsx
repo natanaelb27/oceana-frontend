@@ -50,9 +50,7 @@ type OpenMerchantVoucherModal = {
 const VoucherContent = ({ profile }: ContentProps) => {
   const navigate = useNavigate();
   const [filterStatus, setFilterStatus] = useState<string>(VOUCHER_STATUS.ALL);
-
   const [search, setSearch] = useState<string>('');
-
   const [voucherQuery, setVoucherQuery] = useState<MerchantVoucherQuery>({
     limit: LIMIT_SELLER_VOUCHER_LIST,
     page: 1,
