@@ -29,6 +29,14 @@ export const walletApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+    changePinWallet: builder.mutation<void, ActivateWalletRequest>({
+      query: (request) => ({
+        url: '/profile/wallet/pin',
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
   }),
 });
 
@@ -37,4 +45,5 @@ export const {
   useLazyGetWalletDetailsQuery,
   useActivateWalletMutation,
   useWalletTopUpMutation,
+  useChangePinWalletMutation,
 } = walletApi;

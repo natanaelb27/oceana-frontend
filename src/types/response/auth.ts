@@ -15,3 +15,11 @@ export type RegisterResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type StepUpResponse = {
+  data: Profile | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};

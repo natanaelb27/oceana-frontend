@@ -11,4 +11,5 @@ export interface ShopInformation {
   shop_district: string;
   shop_city: string;
   shop_province: string;
+  joined_date: string;
 }
