@@ -34,7 +34,7 @@ const ShopDetailCard = ({ merchant }: ShopDetailCardProps) => {
               </div>
             </div>
           )}
-          <div className='text-2xl font-bold'>{merchant?.name}</div>
+          <div className='text-2xl font-bold text-center'>{merchant?.name}</div>
         </ShopDetailCardContentLeft>
         <ShopDetailCardContentRight>
           <RightContentAttribute>
@@ -42,7 +42,7 @@ const ShopDetailCard = ({ merchant }: ShopDetailCardProps) => {
               <AiFillStar className='text-2xl text-yellow-500' />
               <div className='text-2xl font-bold'>{merchant?.rating_star}</div>
             </RatingField>
-            <div>Ratings & Reviews</div>
+            <div className='text-center'>Ratings & Reviews</div>
           </RightContentAttribute>
           <RightContentAttribute>
             <div className='text-2xl font-bold'>{merchant?.product_count}</div>

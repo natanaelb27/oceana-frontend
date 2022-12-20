@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGetAllMerchantProductsQuery } from '../../store/services/merchantService';
 import { Pager } from '../../components/common';
 import { useSearchParams } from 'react-router-dom';
@@ -23,6 +23,8 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
   const [mostPurchasedTab, setMostPurchasedTab] = useState(true);
   const [allProductsTab, setAllProductsTab] = useState(false);
   const [reviewTab, setReviewTab] = useState(false);
+
+  const ref = useRef<null | HTMLDivElement>(null);
 
   const [merchantProductQuery, setMerchantProductQuery] =
     useState<MerchantProductQuery>({
@@ -137,6 +139,8 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
   };
 
   const handlePageChange = (n: number) => {
+    ref.current?.scrollIntoView({ behavior: 'smooth' });
+
     setMerchantProductQuery({
       ...merchantProductQuery,
       page: n,
@@ -144,7 +148,7 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
   };
 
   return (
-    <div className='flex w-3/5 flex-col'>
+    <div ref={ref} className='flex w-3/5 flex-col'>
       <div className='mb-3'>
         <div className='flex flex-row justify-start'>
           <button
