@@ -1,4 +1,4 @@
-import { Merchant, Metadata } from '../component';
+import { Merchant, MerchantDetail, Metadata } from '../component';
 
 export type GetMerchantResponse = {
   data: Merchant;
@@ -18,6 +18,14 @@ export type UpdateMerchantResponse = {
 
 export type CreateMerchantResponse = {
   data: Merchant | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type MerchantGetInformationByIDResponse = {
+  data: MerchantDetail | null;
   code: number;
   error: string | null;
   message: string;
