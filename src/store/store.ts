@@ -4,6 +4,10 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { TAG_TYPES } from '../constants/tags';
 import baseQueryInterceptor from './baseQuery';
 
+import storage from 'redux-persist/lib/storage';
+import { combineReducers } from 'redux';
+import { persistReducer } from 'redux-persist';
+
 import { authApi } from './services/authService';
 import authReducer from './slices/authSlice';
 import cartReducer from './slices/cartSlice';
@@ -18,16 +22,34 @@ export const baseApi = createApi({
   tagTypes: TAG_TYPES,
 });
 
+const reducers = combineReducers({
+  [authApi.reducerPath]: authApi.reducer,
+  [baseApi.reducerPath]: baseApi.reducer,
+  auth: authReducer,
+  cart: cartReducer,
+  registerGoogle: registerGoogleReducer,
+  sealabsPay: sealabsPayReducer,
+  sellerSidebar: sellerSidebarReducer,
+});
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  blacklist: [
+    'authApi',
+    'baseApi',
+    'auth',
+    'registerGoogle',
+    'sealabsPay',
+    'sellerSidebar',
+  ],
+  whitelist: ['cart'],
+};
+
+const persistedReducer = persistReducer(persistConfig, reducers);
+
 export const store = configureStore({
-  reducer: {
-    [authApi.reducerPath]: authApi.reducer,
-    [baseApi.reducerPath]: baseApi.reducer,
-    auth: authReducer,
-    cart: cartReducer,
-    registerGoogle: registerGoogleReducer,
-    sealabsPay: sealabsPayReducer,
-    sellerSidebar: sellerSidebarReducer,
-  },
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([authApi.middleware, baseApi.middleware]),
 });
