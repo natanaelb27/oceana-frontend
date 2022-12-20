@@ -16,13 +16,8 @@ export const StyledCarousel = tw(Carousel)<any>`
 export const SliderNavBtn = tw.button<any>`
   absolute
   btn
-  btn-xs
+  btn-ghost
   btn-circle
-  bg-base-300
-  text-base-content
-  hover:bg-base-200
-  drop-shadow-lg
-  border-none
-  md:top-[40%]
-  md:btn-md
+  top-[50%]
+  bottom-[50%]
 `;

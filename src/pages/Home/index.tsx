@@ -1,3 +1,5 @@
+import moment from 'moment';
+import { useEffect, useState } from 'react';
 import { Button, Divider } from 'react-daisyui';
 import { useNavigate } from 'react-router-dom';
 import { ProductCard, Slider } from '../../components/common';
@@ -6,12 +8,29 @@ import {
   LIMIT_HOME_ALL_PRODUCTS,
   LIMIT_HOME_RECOMMENDED_PRODUCTS,
 } from '../../constants';
-import { useGetAllCategoryQuery } from '../../store/services/categoryService';
-import { useGetAllProductsQuery } from '../../store/services/productService';
+import { useLocalStorage } from '../../hooks';
+import { useLazyGetAllCategoryQuery } from '../../store/services/categoryService';
+import { useLazyGetAllProductsQuery } from '../../store/services/productService';
+import { Category, Product } from '../../types/component';
 import { CategoryQuery, ProductQuery } from '../../types/query';
 import { ProductsSortByString } from '../../types/sort';
 import { toCategoryQuery, toProductQuery } from '../../utils/mapperDTO';
 import { toUrl } from '../../utils/toUrl';
+
+type CategoryStorageProps = {
+  value: Category[];
+  timestamp: Date | null;
+};
+
+type RecommendedStorageProps = {
+  value: Product[];
+  timestamp: Date | null;
+};
+
+type ProductStorageProps = {
+  value: Product[];
+  timestamp: Date | null;
+};
 
 const Home = () => {
   const navigate = useNavigate();
@@ -48,15 +67,85 @@ const Home = () => {
     levelDepth: 1,
   };
 
-  const { data: resGetAllCategory } = useGetAllCategoryQuery(
-    toCategoryQuery(categoryQuery)
-  );
-  const { data: resGetRecommendedProducts } = useGetAllProductsQuery(
-    toProductQuery(recommendedProductQuery)
-  );
-  const { data: resGetAllProducts } = useGetAllProductsQuery(
-    toProductQuery(allProductQuery)
-  );
+  const [homeCategoryStorage, setHomeCategoryStorage] =
+    useLocalStorage<CategoryStorageProps>('home_category', {
+      value: [],
+      timestamp: null,
+    });
+  const [recommendedStorage, setRecommendedStorage] =
+    useLocalStorage<RecommendedStorageProps>('home_recommended', {
+      value: [],
+      timestamp: null,
+    });
+  const [productsStorage, setProductStorage] =
+    useLocalStorage<ProductStorageProps>('home_products', {
+      value: [],
+      timestamp: null,
+    });
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [recommended, setRecommended] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  const [getAllCategory] = useLazyGetAllCategoryQuery();
+  const [getRecommendedProductsQuery] = useLazyGetAllProductsQuery();
+  const [getAllProducts] = useLazyGetAllProductsQuery();
+
+  useEffect(() => {
+    if (
+      !('value' in homeCategoryStorage && 'timestamp' in homeCategoryStorage) ||
+      homeCategoryStorage.value.length === 0 ||
+      moment(homeCategoryStorage.timestamp).isBefore(moment())
+    ) {
+      getAllCategory(toCategoryQuery(categoryQuery))
+        .unwrap()
+        .then((res) => {
+          setCategories(res.data ? res.data : []);
+          setHomeCategoryStorage({
+            value: res.data ? res.data : [],
+            timestamp: moment().add(1, 'day').toDate(),
+          });
+        });
+    } else {
+      setCategories(homeCategoryStorage.value);
+    }
+
+    if (
+      !('value' in recommendedStorage && 'timestamp' in recommendedStorage) ||
+      recommendedStorage.value.length === 0 ||
+      moment(recommendedStorage.timestamp).isBefore(moment())
+    ) {
+      getRecommendedProductsQuery(toProductQuery(recommendedProductQuery))
+        .unwrap()
+        .then((res) => {
+          setRecommended(res.data ? res.data : []);
+          setRecommendedStorage({
+            value: res.data ? res.data : [],
+            timestamp: moment().add(1, 'h').toDate(),
+          });
+        });
+    } else {
+      setRecommended(recommendedStorage.value);
+    }
+
+    if (
+      !('value' in productsStorage && 'timestamp' in productsStorage) ||
+      productsStorage.value.length === 0 ||
+      moment(productsStorage.timestamp).isBefore(moment())
+    ) {
+      getAllProducts(toProductQuery(allProductQuery))
+        .unwrap()
+        .then((res) => {
+          setProducts(res.data ? res.data : []);
+          setProductStorage({
+            value: res.data ? res.data : [],
+            timestamp: moment().add(1, 'h').toDate(),
+          });
+        });
+    } else {
+      setProducts(productsStorage.value);
+    }
+  }, []);
 
   const handleSeeMoreClick = () => {
     navigate('/search');
@@ -75,16 +164,15 @@ const Home = () => {
             subtitle='There are various products with special prices waiting for you!'
             navigateSeeAll='/category'
           >
-            <Slider>
-              {resGetAllCategory?.data &&
-                resGetAllCategory.data.map((category, n) => (
-                  <div className='carousel-item' key={n}>
-                    <CategoryCard
-                      category={category}
-                      to={`/category/${toUrl(category.name)}-i.${category.id}`}
-                    />
-                  </div>
-                ))}
+            <Slider id='category'>
+              {categories.map((category, n) => (
+                <div className='carousel-item' key={n}>
+                  <CategoryCard
+                    category={category}
+                    to={`/category/${toUrl(category.name)}-i.${category.id}`}
+                  />
+                </div>
+              ))}
             </Slider>
           </HomeCard>
         </div>
@@ -95,9 +183,9 @@ const Home = () => {
             subtitle='These are the most seen products!'
             navigateSeeAll='/search?sort-by=recommended'
           >
-            <Slider>
-              {resGetRecommendedProducts?.data
-                ? resGetRecommendedProducts.data.map((product, n) => (
+            <Slider id='recommended'>
+              {recommended.length > 0
+                ? recommended.map((product, n) => (
                     <div key={n} className='carousel-item max-w-xs w-full'>
                       <ProductCard product={product} />
                     </div>
@@ -117,8 +205,8 @@ const Home = () => {
           id='products'
           className='grid grid-cols-12 w-full gap-4 justify-center mb-8'
         >
-          {resGetAllProducts?.data
-            ? resGetAllProducts.data.map((row) => (
+          {products.length > 0
+            ? products.map((row) => (
                 <div key={row.id} className='col-span-6 md:col-span-2 '>
                   <ProductCard product={row} />
                 </div>
