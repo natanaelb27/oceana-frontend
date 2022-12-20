@@ -64,3 +64,12 @@ export type MerchantProductQuery = {
   merchantCities: string[];
   courierServices: string[];
 } & Query;
+export type ReviewQuery = {
+  sort: string;
+  sort_by: string;
+  limit: number;
+  page: number;
+  media: boolean;
+  comment: boolean;
+  rating: number[];
+};
