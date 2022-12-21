@@ -10,11 +10,10 @@ import {
   IoBagCheckOutline,
   IoWalletOutline,
 } from 'react-icons/io5';
-import { MdOutlineAddLocationAlt } from 'react-icons/md';
+import { MdNavigateNext, MdOutlineAddLocationAlt } from 'react-icons/md';
 import { TbDiscount2 } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
-import { SealabsPayImg } from '../../../components/common';
-import NoData from '../../../components/common/NoData';
+import { SealabsPayImg, NoData } from '../../../components/common';
 import { STATUS_INTERNAL_SERVER_ERROR } from '../../../constants/statusCodes';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
 import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
@@ -22,16 +21,19 @@ import {
   useGetWalletDetailsQuery,
   useLazyGetWalletDetailsQuery,
 } from '../../../store/services/walletService';
-import { selectCart } from '../../../store/slices/checkoutSlice';
+import { selectCheckout } from '../../../store/slices/checkoutSlice';
 import { useAppSelector } from '../../../store/store';
-import { Address } from '../../../types/component';
+import {
+  Address,
+  Courier,
+  DeliveryService,
+  PaymentMethod,
+} from '../../../types/component';
 import {
   CheckoutCartOrderItem,
   CheckoutCartProduct,
   CheckoutCartProductItem,
 } from '../../../types/component/checkout';
-import { Courier } from '../../../types/component/shipment';
-import { PaymentMethod } from '../../../types/paymentMethod';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import {
@@ -41,6 +43,7 @@ import {
 } from '../../../utils/checkout';
 import {
   pascalCaseToTitleCase,
+  toETD,
   toPhoneNumber,
   toRupiah,
 } from '../../../utils/convert';
@@ -74,7 +77,7 @@ const BuyerCheckout = () => {
     useGetWalletDetailsQuery();
   const [payCartWithWallet, { isLoading: payCartWithWalletLoading }] =
     usePayCartWithWalletMutation();
-  const cart = useAppSelector(selectCart);
+  const checkout = useAppSelector(selectCheckout);
   const [openModal, setOpenModal] = useState<OpenCheckoutModal>({
     shippingAddress: {
       add: false,
@@ -92,7 +95,9 @@ const BuyerCheckout = () => {
   );
   const [totalPayment, setTotalPayment] = useState<number>(0);
   const [walletBalance, setWalletBalance] = useState<number>(0);
-  const [deliveryService, setDeliveryService] = useState<Courier | null>(null);
+  const [deliveryService, setDeliveryService] =
+    useState<DeliveryService | null>(null);
+  const [currentMerchantID, setCurrentMerchantID] = useState<number>(0);
   const [getShippingCostRequest, setGetShippingCostRequest] =
     useState<GetRajaOngkirShippingCostRequest | null>(null);
 
@@ -124,7 +129,11 @@ const BuyerCheckout = () => {
     });
   };
 
-  const handleDeliveryServiceClick = (origin: number, totalWeight: number) => {
+  const handleDeliveryServiceClick = (
+    merchantID: number,
+    origin: number,
+    totalWeight: number
+  ) => {
     if (!shippingAddress?.city_id) {
       notifyInfoToast('Please pick a shipping address');
       return;
@@ -140,6 +149,7 @@ const BuyerCheckout = () => {
       paymentMethod: false,
       paymentWalletPin: false,
     });
+    setCurrentMerchantID(merchantID);
     setGetShippingCostRequest({
       origin,
       destination: shippingAddress.city_id,
@@ -224,10 +234,16 @@ const BuyerCheckout = () => {
       return;
     }
     // validate delivery service
-    if (!deliveryService?.id) {
+    if (!deliveryService) {
       notifyInfoToast('Please pick a delivery service');
       return;
     }
+    Object.keys(deliveryService).forEach((merchantIDString) => {
+      if (!deliveryService[Number(merchantIDString)]) {
+        notifyInfoToast('Please pick a delivery service');
+        return;
+      }
+    });
     // validate payment method (sealabs pay, pick a card)
 
     handlePaymentWalletPinClick();
@@ -235,7 +251,7 @@ const BuyerCheckout = () => {
 
   const handleSuccessPaymentWalletPin = (pin: string) => {
     const cartIDs: number[] = [];
-    const checkoutCartOrderItems = cart.map(
+    const checkoutCartOrderItems = checkout.map(
       (cartGroupedByMerchant): CheckoutCartOrderItem => {
         const checkoutCartProducts: CheckoutCartProduct[] = [];
         cartGroupedByMerchant.products.forEach((product) => {
@@ -319,8 +335,8 @@ const BuyerCheckout = () => {
       return;
     }
     setWalletBalance(getWalletDetailsData.data.balance);
-    setTotalPayment(calculateTotal(cart));
-  }, [getWalletDetailsData, cart]);
+    setTotalPayment(calculateTotal(checkout));
+  }, [getWalletDetailsData, checkout]);
 
   useEffect(() => {
     if (!getAddressesData?.data) {
@@ -420,7 +436,7 @@ const BuyerCheckout = () => {
       </Card>
 
       {/* Checked out products card */}
-      {cart.map(
+      {checkout.map(
         (
           { merchant_id, merchant_province, city_id, name, products },
           index
@@ -433,12 +449,13 @@ const BuyerCheckout = () => {
               </div>
               <Tooltip message='Delivery service' position='left'>
                 <Button
-                  className='shadow-md'
+                  className='shadow-md md:hidden'
                   color='primary'
                   shape='circle'
                   size='md'
                   onClick={() =>
                     handleDeliveryServiceClick(
+                      merchant_id,
                       city_id,
                       calculateTotalWeight(products)
                     )
@@ -498,20 +515,49 @@ const BuyerCheckout = () => {
                 })}
               </div>
             </Card.Body>
-            <Divider />
-            {!deliveryService ? (
-              <div>
-                <div>Please pick a delivery service</div>
-              </div>
-            ) : (
-              <div className='flex justify-between'>
-                <div>{deliveryService.courier_services[0].description}</div>
-                <div>
-                  {deliveryService.courier_services[0].shipping_fee &&
-                    toRupiah(deliveryService.courier_services[0].shipping_fee)}
+            <Card
+              className='mt-2 bg-primary/10 hover:bg-primary/20 active:bg-primary/10 cursor-pointer'
+              onClick={() =>
+                handleDeliveryServiceClick(
+                  merchant_id,
+                  city_id,
+                  calculateTotalWeight(products)
+                )
+              }
+            >
+              {!deliveryService || !deliveryService[merchant_id] ? (
+                <div className='p-4 flex justify-between items-center'>
+                  <div>Pick a delivery service</div>
+                  <MdNavigateNext className='text-2xl' />
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className='p-4 flex flex-col'>
+                  <div className='flex justify-between items-center'>
+                    <div>
+                      {
+                        deliveryService[merchant_id]?.courier_services[0]
+                          .description
+                      }
+                    </div>
+                    <div className='font-bold'>
+                      {deliveryService[merchant_id]?.courier_services[0]
+                        .shipping_fee &&
+                        toRupiah(
+                          deliveryService[merchant_id]?.courier_services[0]
+                            .shipping_fee as number
+                        )}
+                    </div>
+                  </div>
+                  <div className='text-sm font-light'>
+                    {deliveryService[merchant_id]?.courier_services[0].etd &&
+                      `Estimated delivery: ${toETD(
+                        deliveryService[merchant_id]?.courier_services[0]
+                          .etd as string
+                      )}`}
+                  </div>
+                </div>
+              )}
+            </Card>
             <Divider />
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-1'>
@@ -623,7 +669,8 @@ const BuyerCheckout = () => {
       />
       {/* Delivery Service Modal */}
       <DeliveryServiceModal
-        currentDeliveryService={deliveryService}
+        deliveryService={deliveryService}
+        currentMerchantID={currentMerchantID}
         getShippingCostRequest={getShippingCostRequest}
         open={openModal.deliveryService}
         onClose={handleModalClose}

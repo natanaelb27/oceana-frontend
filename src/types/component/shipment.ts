@@ -4,6 +4,7 @@ export interface CourierService {
   description: string;
   is_selected: boolean;
   shipping_fee?: number;
+  etd?: string;
   courier: Courier[];
 }
 
@@ -21,4 +22,8 @@ export interface Shipment {
   preorder_day: number;
   is_print_label: boolean;
   couriers: Courier[];
+}
+
+export interface DeliveryService {
+  [merchant_id: number]: Courier | null;
 }

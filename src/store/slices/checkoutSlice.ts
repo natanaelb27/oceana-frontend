@@ -26,7 +26,7 @@ const slice = createSlice({
   },
 });
 
-export const selectCart = (state: RootState) =>
+export const selectCheckout = (state: RootState) =>
   state.checkout.cartGroupedByMerchants;
 
 export const { setCheckout, unsetCheckout } = slice.actions;

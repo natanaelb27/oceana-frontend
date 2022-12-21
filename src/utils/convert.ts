@@ -27,3 +27,8 @@ export const toPhoneNumber = (n: string) => (n ? `+(62)${n.slice(1)}` : '');
 
 export const pascalCaseToTitleCase = (n: string) =>
   n.replace(/([A-Z])/g, ' $1');
+
+export const toETD = (n: string) =>
+  !n.toLocaleLowerCase().includes('hari')
+    ? `${n} days`
+    : n.toLocaleLowerCase().replace('hari', 'days');

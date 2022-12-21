@@ -18,3 +18,5 @@ export * from './wallet';
 export * from './voucher';
 export * from './review';
 export * from './rajaOngkir';
+export * from './shipment';
+export * from './paymentMethod';

@@ -1,7 +1,7 @@
 import { Modal } from 'react-daisyui';
 import { IoWalletOutline } from 'react-icons/io5';
 import { SealabsPayImg } from '../../../components/common';
-import { PaymentMethod } from '../../../types/paymentMethod';
+import { PaymentMethod } from '../../../types/component';
 import { pascalCaseToTitleCase } from '../../../utils/convert';
 
 type PaymentMethodModalProps = {
