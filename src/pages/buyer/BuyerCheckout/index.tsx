@@ -570,14 +570,15 @@ const BuyerCheckout = () => {
                 <p>Subtotal</p>
               </div>
               <p className='text-xl font-bold'>
-                {deliveryService &&
-                  toRupiah(
-                    calculateSubtotal(
-                      products,
-                      deliveryService[merchant_id]?.courier_services[0]
-                        .shipping_fee
+                {deliveryService
+                  ? toRupiah(
+                      calculateSubtotal(
+                        products,
+                        deliveryService[merchant_id]?.courier_services[0]
+                          .shipping_fee
+                      )
                     )
-                  )}
+                  : toRupiah(calculateSubtotal(products))}
               </p>
             </div>
           </Card>
