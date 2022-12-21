@@ -284,7 +284,7 @@ const ProductAddContent = () => {
     return res;
   };
 
-  function arrayCompare<Type>(_arr1: Type[], _arr2: Type[]) {
+  function arrayCompareWithoutSort<Type>(_arr1: Type[], _arr2: Type[]) {
     if (
       !Array.isArray(_arr1) ||
       !Array.isArray(_arr2) ||
@@ -293,8 +293,8 @@ const ProductAddContent = () => {
       return false;
     }
 
-    const arr1 = _arr1.concat().sort();
-    const arr2 = _arr2.concat().sort();
+    const arr1 = _arr1.concat();
+    const arr2 = _arr2.concat();
 
     for (let i = 0; i < arr1.length; i++) {
       if (arr1[i] !== arr2[i]) {
@@ -328,8 +328,14 @@ const ProductAddContent = () => {
     newProductItems = newVariantIndexes.map((variantIndex) => {
       let matchedProductItemIndex = -1;
       data.forEach((productItem, indexProductItem) => {
-        if (arrayCompare<number>(productItem.variant_index, variantIndex))
+        if (
+          arrayCompareWithoutSort<number>(
+            productItem.variant_index,
+            variantIndex
+          )
+        ) {
           matchedProductItemIndex = indexProductItem;
+        }
       });
 
       if (matchedProductItemIndex !== -1) {
