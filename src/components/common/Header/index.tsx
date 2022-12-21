@@ -219,7 +219,6 @@ const Header = () => {
             <div>
               <NavLink to='/cart' className='relative'>
                 <Button
-                  shape='circle'
                   color='ghost'
                   size='sm'
                   onMouseOver={handleHoverCart}
