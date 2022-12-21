@@ -9,7 +9,7 @@ import {
   DeliveryService,
 } from '../../../types/component';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
-import { toRupiah } from '../../../utils/convert';
+import { toETD, toRupiah } from '../../../utils/convert';
 import { notifyErrorToast } from '../../../utils/toast';
 
 type DeliveryServiceModalProps = {
@@ -69,6 +69,8 @@ const DeliveryServiceModal = ({
           ...selectedCourier,
           courier_services: [],
         });
+        console.log(getShippingCostRequest);
+        console.log(courierServicesData);
       })
       .catch(() => {
         notifyErrorToast('Something went wrong, please try again');
@@ -217,7 +219,14 @@ const DeliveryServiceModal = ({
                       <div>{courierService.description}</div>
                       <div>{toRupiah(courierService.cost[0].value)}</div>
                     </div>
-                    <div className='text-sm font-light'>{`Estimated delivery: ${courierService.cost[0].etd} days`}</div>
+                    <div className='flex justify-between'>
+                      <div className='text-sm font-light'>{`Estimated delivery: ${toETD(
+                        courierService.cost[0].etd
+                      )}`}</div>
+                      <div className='text-sm font-light'>
+                        {courierService.service}
+                      </div>
+                    </div>
                   </div>
                 ))}
             </div>

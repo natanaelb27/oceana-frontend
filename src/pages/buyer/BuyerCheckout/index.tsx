@@ -291,11 +291,16 @@ const BuyerCheckout = () => {
           }
         });
 
+        const shippingFee = deliveryService
+          ? (deliveryService[cartGroupedByMerchant.merchant_id]
+              ?.courier_services[0].shipping_fee as number)
+          : 0;
+
         const checkoutCartOrderItem: CheckoutCartOrderItem = {
           merchant_id: cartGroupedByMerchant.merchant_id,
           merchant_voucher_id: null,
           courier_service_id: 1,
-          shipping_fee: 0,
+          shipping_fee: shippingFee,
           products: checkoutCartProducts,
         };
         return checkoutCartOrderItem;
@@ -335,8 +340,8 @@ const BuyerCheckout = () => {
       return;
     }
     setWalletBalance(getWalletDetailsData.data.balance);
-    setTotalPayment(calculateTotal(checkout));
-  }, [getWalletDetailsData, checkout]);
+    setTotalPayment(calculateTotal(checkout, deliveryService));
+  }, [getWalletDetailsData, checkout, deliveryService]);
 
   useEffect(() => {
     if (!getAddressesData?.data) {
@@ -565,7 +570,14 @@ const BuyerCheckout = () => {
                 <p>Subtotal</p>
               </div>
               <p className='text-xl font-bold'>
-                {toRupiah(calculateSubtotal(products))}
+                {deliveryService &&
+                  toRupiah(
+                    calculateSubtotal(
+                      products,
+                      deliveryService[merchant_id]?.courier_services[0]
+                        .shipping_fee
+                    )
+                  )}
               </p>
             </div>
           </Card>

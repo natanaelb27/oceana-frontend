@@ -1,4 +1,8 @@
-import { CartGroupedByMerchant, CartProduct } from '../types/component';
+import {
+  CartGroupedByMerchant,
+  CartProduct,
+  DeliveryService,
+} from '../types/component';
 
 export const calculateSubtotal = (
   products: CartProduct[],
@@ -16,11 +20,19 @@ export const calculateSubtotal = (
 
 export const calculateTotal = (
   cart: CartGroupedByMerchant[],
+  deliveryService: DeliveryService | null,
   marketplaceVoucher = 0
 ): number =>
   cart.reduce(
     (partialTotal, currentMerchant) =>
-      partialTotal + calculateSubtotal(currentMerchant.products),
+      partialTotal +
+      calculateSubtotal(
+        currentMerchant.products,
+        !deliveryService
+          ? 0
+          : deliveryService[currentMerchant.merchant_id]?.courier_services[0]
+              .shipping_fee
+      ),
     0
   ) - marketplaceVoucher;
 
