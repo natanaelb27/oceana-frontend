@@ -6,7 +6,6 @@ export interface Merchant {
   photo: string;
 }
 
-
 export interface MerchantDetail {
   id: number;
   name: string;

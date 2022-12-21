@@ -1,6 +1,5 @@
 import React from 'react';
 import { Checkbox, Collapse, Divider, Form } from 'react-daisyui';
-import { AiOutlineComment } from 'react-icons/ai';
 
 type ReviewFilterProps = {
   handleChangeFilterReviewWithMedia?: () => void;

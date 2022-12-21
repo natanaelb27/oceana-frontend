@@ -26,6 +26,20 @@ export type MerchantVoucherQuery = {
   merchantID: number;
 };
 
+export type MarketplaceVoucherQuery = {
+  limit: number;
+  page: number;
+  sortBy: string;
+  sort: string;
+  searchVoucherName: string;
+  filterVoucherStatus: string;
+};
+
+export type MerchantPromotionQuery = {
+  searchPromotionName: string;
+  filterPromotionStatus: string;
+};
+
 export type TransactionHistoryQuery = {
   search: string;
   filterOrderStatus: string;

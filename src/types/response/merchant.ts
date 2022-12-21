@@ -1,4 +1,4 @@
-import { Merchant, Metadata } from '../component';
+import { Merchant, MerchantDetail, Metadata } from '../component';
 
 export type GetMerchantResponse = {
   data: Merchant;
