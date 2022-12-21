@@ -56,7 +56,7 @@ export const InputContainer = ({ children, className = '' }: ChildrenProps) => {
   return (
     <div
       className={
-        'col-auto md:col-span-3 flex flex-col justify-center' +
+        'col-auto md:col-span-3 flex flex-col justify-center overflow-auto' +
         ClassNames([className])
       }
     >

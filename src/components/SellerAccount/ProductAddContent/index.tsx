@@ -1,5 +1,5 @@
-import { FastField, getIn, useFormik } from 'formik';
-import { useState } from 'react';
+import { getIn, useFormik } from 'formik';
+import React, { useState } from 'react';
 import {
   Button,
   Card,
@@ -19,7 +19,11 @@ import {
 } from '../../../constants';
 import { useLazyGetAncestorsCategoryQuery } from '../../../store/services/categoryService';
 import { useCreateProductUpsertModelMutation } from '../../../store/services/productService';
-import { PUMVariant } from '../../../types/component/product';
+import {
+  PUMProduct,
+  PUMProductItem,
+  PUMVariant,
+} from '../../../types/component/product';
 import {
   CreateProductResponse,
   GetAncestorsCategoryResponse,
@@ -59,7 +63,50 @@ const ProductAddContent = () => {
       preorder_day: 0,
       images: [],
       videos: [],
-      product_items: [],
+      product_items: [
+        {
+          id: 0,
+          sku: '1M1P1CRSM',
+          variant_index: [0, 0],
+          price: 20000,
+          stock_quantity: 1,
+        },
+        {
+          id: 0,
+          sku: '2M1P1CRSM',
+          variant_index: [0, 1],
+          price: 22000,
+          stock_quantity: 2,
+        },
+        {
+          id: 0,
+          sku: '2M1P1CRSM',
+          variant_index: [0, 2],
+          price: 22000,
+          stock_quantity: 3,
+        },
+        {
+          id: 0,
+          sku: '3M1P1CRSM',
+          variant_index: [1, 0],
+          price: 21000,
+          stock_quantity: 4,
+        },
+        {
+          id: 0,
+          sku: '4M1P1CRSM',
+          variant_index: [1, 1],
+          price: 23000,
+          stock_quantity: 5,
+        },
+        {
+          id: 0,
+          sku: '4M1P1CRSM',
+          variant_index: [1, 2],
+          price: 23000,
+          stock_quantity: 6,
+        },
+      ],
       variants: [
         {
           name: 'Color',
@@ -68,7 +115,7 @@ const ProductAddContent = () => {
         },
         {
           name: 'Size',
-          options: ['S', 'M'],
+          options: ['S', 'M', 'L'],
           images: [],
         },
       ],
@@ -78,7 +125,7 @@ const ProductAddContent = () => {
       // id: Yup.number().required('Please enter id'),
       name: Yup.string().required('Please enter name').min(3),
       description: Yup.string().required('Please enter description'),
-      // category_id: Yup.number().required('Please enter category_id'),
+      category_id: Yup.number().required('Please enter category_id'),
       // merchant_id: Yup.number().required('Please enter merchant_id'),
       weight: Yup.number().required('Please enter weight').min(1),
       // is_hazardous: Yup.boolean().required('Please enter is hazardous'),
@@ -102,15 +149,23 @@ const ProductAddContent = () => {
       ),
       // images: Yup.array().of(Yup.string().required('Please enter images')),
       // videos: Yup.array().of(Yup.string().required('Please enter videos')),
-      // product_items: Yup.array().of(
-      //   Yup.object().shape({
-      //     id: Yup.number().required('Please enter id'),
-      //     sku: Yup.string().required('Please enter sku'),
-      //     variant_index: Yup.array().required('Please enter variant index'),
-      //     price: Yup.number().required('Please enter price'),
-      //     stock_quantity: Yup.number().required('Please enter stock quantity'),
-      //   })
-      // ),
+      product_items: Yup.array().of(
+        Yup.object().shape({
+          id: Yup.number().required('Please enter id'),
+          sku: Yup.string().required('Please enter sku'),
+          variant_index: Yup.array().required('Please enter variant index'),
+          price: Yup.number()
+            .required('Please enter price')
+            .min(1)
+            .max(1000000000)
+            .label('price'),
+          stock_quantity: Yup.number()
+            .required('Please enter stock quantity')
+            .min(1)
+            .max(10000)
+            .label('stock'),
+        })
+      ),
       variants: Yup.array().of(
         Yup.object().shape({
           name: Yup.string().required('Please enter variants name'),
@@ -160,6 +215,10 @@ const ProductAddContent = () => {
     return data ? (JSON.parse(JSON.stringify(data)) as typeof data) : null;
   };
 
+  const deepCopy = (data: any[]) => {
+    return data ? (JSON.parse(JSON.stringify(data)) as typeof data) : null;
+  };
+
   const handleAddVariantOnClick = () => {
     if (productFormik.values.variants.length === 2) {
       return;
@@ -196,6 +255,65 @@ const ProductAddContent = () => {
     productFormik.setFieldValue('variants', newData);
   };
 
+  const newPUMProductItem = (): PUMProductItem => {
+    return {
+      id: 0,
+      price: 0,
+      sku: '',
+      stock_quantity: 0,
+      variant_index: [],
+    };
+  };
+
+  const combineAll = (array: any) => {
+    const res: number[][] = [];
+    const max = array.length - 1;
+    const helper = (arr: number[], i: number) => {
+      for (let j = 0, l = array[i].length; j < l; j++) {
+        const copy = arr.slice(0);
+        copy.push(array[i][j]);
+        if (i == max) res.push(copy);
+        else helper(copy, i + 1);
+      }
+    };
+    helper([], 0);
+    return res;
+  };
+
+  const deleteVariantIndexByIndex = (index: number, variants: PUMVariant[]) => {
+    const data = deepCopy(
+      productFormik.values.product_items
+    ) as PUMProductItem[];
+
+    if (index < 0 || data === null) {
+      return;
+    }
+
+    if (variants.length === 0) {
+      productFormik.setFieldValue('product_items', []);
+      return;
+    }
+
+    // delete all product items
+    let newProductItems: PUMProductItem[] = [];
+    // insert new product items according to new variants
+    const optionsArray = variants.map((variant) => {
+      return variant.options.map((_, indexOption) => indexOption);
+    });
+
+    // create variant indexes
+    const newVariantIndexes = combineAll(optionsArray);
+
+    // create new product items
+    newProductItems = newVariantIndexes.map((variantIndex) => {
+      const newProductItem = newPUMProductItem();
+      newProductItem.variant_index = variantIndex;
+      return newProductItem;
+    });
+
+    productFormik.setFieldValue('product_items', newProductItems);
+  };
+
   const handleDeleteVariantOnClick = (index: number) => {
     const newData = deepCopyVariants(productFormik.values.variants);
 
@@ -203,7 +321,11 @@ const ProductAddContent = () => {
       return;
     }
 
+    // delete variant
     newData.splice(index, 1);
+
+    // delete product items
+    deleteVariantIndexByIndex(index, newData);
 
     productFormik.setFieldValue('variants', newData);
   };
@@ -238,7 +360,7 @@ const ProductAddContent = () => {
     productFormik.setFieldValue(e.target.name, value);
   };
 
-  const handleCategoryOnClick = (id: number, name: string) => {
+  const handleCategoryOnClick = (id: number) => {
     let categoryNames = '';
     getAncestorsCategory(id.toString())
       .unwrap()
@@ -257,6 +379,7 @@ const ProductAddContent = () => {
       });
   };
 
+  console.log(productFormik.values);
   const renderVariants = () => {
     // if(productFormik.values.variants.length>0){
     // }
@@ -421,11 +544,245 @@ const ProductAddContent = () => {
     );
   };
 
+  const renderVariations = () => {
+    // if(productFormik.values.variants.length>0){
+    // }
+    return (
+      <div className='flex flex-col gap-3 overflow-auto'>
+        <table className='table'>
+          <thead>
+            <tr>
+              <th align='center'>Picture</th>
+              {productFormik.values.variants.map(
+                (valueVariant, indexVariant) => (
+                  <th key={'variations-thead-' + indexVariant}>
+                    {valueVariant.name}
+                  </th>
+                )
+              )}
+              <th align='center'>
+                Price<span className='text-red-500'> *</span>
+              </th>
+              <th align='center'>
+                Stock<span className='text-red-500'> *</span>
+              </th>
+              <th align='center'>SKU</th>
+            </tr>
+          </thead>
+          <tbody>
+            {productFormik.values.product_items.map(
+              (valueProductItem, indexProductItem) => {
+                return (
+                  <tr key={'variations-tr-' + indexProductItem}>
+                    {/* picture and options */}
+                    {valueProductItem.variant_index.map(
+                      (valueVariantIndex, indexVariantIndex) => {
+                        // if not exist
+                        if (
+                          productFormik.values.variants?.[indexVariantIndex]
+                            ?.options?.[valueVariantIndex] === undefined
+                        ) {
+                          return;
+                        }
+
+                        // if previous index exist then check if current variant index value is the same as previous value then true (do rowspan)
+                        const rowSpanCondition =
+                          indexProductItem - 1 >= 0
+                            ? valueVariantIndex ===
+                              productFormik.values.product_items[
+                                indexProductItem - 1
+                              ].variant_index[indexVariantIndex]
+                            : false;
+                        const rowSpanValue =
+                          !rowSpanCondition &&
+                          indexVariantIndex + 1 <
+                            productFormik.values.variants.length
+                            ? productFormik.values.variants[
+                                indexVariantIndex + 1
+                              ].options.length
+                            : 1;
+
+                        if (indexVariantIndex === 0 && rowSpanCondition) {
+                          return;
+                        }
+
+                        return (
+                          <React.Fragment
+                            key={
+                              'variations-tr-' +
+                              indexProductItem +
+                              '-variant-index-' +
+                              indexVariantIndex +
+                              '-' +
+                              valueVariantIndex
+                            }
+                          >
+                            {indexVariantIndex == 0 && (
+                              // picture
+                              <td
+                                className='border border-base-300'
+                                rowSpan={rowSpanValue}
+                              >
+                                -
+                              </td>
+                            )}
+                            {/* Options */}
+                            <td
+                              className='border border-base-300'
+                              rowSpan={rowSpanValue}
+                            >
+                              {
+                                productFormik.values.variants[indexVariantIndex]
+                                  .options[valueVariantIndex]
+                              }
+                            </td>
+                          </React.Fragment>
+                        );
+                      }
+                    )}
+                    {/* input: price */}
+                    <td className='border border-base-300 align-top'>
+                      <div className='min-w-[10rem]'>
+                        <div className='flex items-center gap-2'>
+                          <InputGroup>
+                            <span>Rp. </span>
+                            <Input
+                              type='number'
+                              name={`product_items[${indexProductItem}].price`}
+                              className='w-full'
+                              value={
+                                productFormik.values.product_items[
+                                  indexProductItem
+                                ].price
+                              }
+                              onChange={productFormik.handleChange}
+                              onFocus={() => {
+                                productFormik.setFieldTouched(
+                                  `product_items[${indexProductItem}].price`,
+                                  true
+                                );
+                              }}
+                              onKeyDown={handleNumberInvalidKey}
+                            />
+                          </InputGroup>
+                        </div>
+                        {productFormik.touched.product_items?.[indexProductItem]
+                          ?.price &&
+                          getIn(
+                            productFormik.errors.product_items?.[
+                              indexProductItem
+                            ],
+                            'price'
+                          ) && (
+                            <label className='label-text-alt text-error'>
+                              {getIn(
+                                productFormik.errors.product_items?.[
+                                  indexProductItem
+                                ],
+                                'price'
+                              )}
+                            </label>
+                          )}
+                      </div>
+                    </td>
+                    {/* input: stock_quantity */}
+                    <td className='border border-base-300 align-top'>
+                      <div className='min-w-[10rem]'>
+                        <div className='flex items-center gap-2'>
+                          <Input
+                            type='number'
+                            name={`product_items[${indexProductItem}].stock_quantity`}
+                            className='w-full'
+                            value={
+                              productFormik.values.product_items[
+                                indexProductItem
+                              ].stock_quantity
+                            }
+                            onChange={productFormik.handleChange}
+                            onFocus={() => {
+                              productFormik.setFieldTouched(
+                                `product_items[${indexProductItem}].stock_quantity`,
+                                true
+                              );
+                            }}
+                            onKeyDown={handleNumberInvalidKey}
+                          />
+                        </div>
+                        {productFormik.touched.product_items?.[indexProductItem]
+                          ?.stock_quantity &&
+                          getIn(
+                            productFormik.errors.product_items?.[
+                              indexProductItem
+                            ],
+                            'stock_quantity'
+                          ) && (
+                            <label className='label-text-alt text-error'>
+                              {getIn(
+                                productFormik.errors.product_items?.[
+                                  indexProductItem
+                                ],
+                                'stock_quantity'
+                              )}
+                            </label>
+                          )}
+                      </div>
+                    </td>
+                    {/* input: sku */}
+                    <td className='border border-base-300 align-top'>
+                      <div className='min-w-[10rem]'>
+                        <div className='flex items-center gap-2'>
+                          <Input
+                            type='text'
+                            name={`product_items[${indexProductItem}].sku`}
+                            className='w-full'
+                            value={
+                              productFormik.values.product_items[
+                                indexProductItem
+                              ].sku
+                            }
+                            onChange={productFormik.handleChange}
+                            onFocus={() => {
+                              productFormik.setFieldTouched(
+                                `product_items[${indexProductItem}].sku`,
+                                true
+                              );
+                            }}
+                          />
+                        </div>
+                        {productFormik.touched.product_items?.[indexProductItem]
+                          ?.sku &&
+                          getIn(
+                            productFormik.errors.product_items?.[
+                              indexProductItem
+                            ],
+                            'sku'
+                          ) && (
+                            <label className='label-text-alt text-error'>
+                              {getIn(
+                                productFormik.errors.product_items?.[
+                                  indexProductItem
+                                ],
+                                'sku'
+                              )}
+                            </label>
+                          )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              }
+            )}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
   return (
     <>
       <Form
         id='addProductForm'
-        className='flex flex-col gap-4 p-0 md:p-4 rounded-lg bg-base-200'
+        className='flex flex-col gap-4 p-1 md:p-4 rounded-lg bg-base-200'
         onSubmit={(e) => {
           e.preventDefault();
           productFormik.handleSubmit();
@@ -452,7 +809,9 @@ const ProductAddContent = () => {
                       className='w-full'
                       value={productFormik.values.name}
                       onChange={productFormik.handleChange}
-                      onFocus={() => (productFormik.touched.name = true)}
+                      onFocus={() => {
+                        productFormik.touched.name = true;
+                      }}
                     />
                   </div>
                 </FormLayout.InputContainer>
@@ -465,7 +824,7 @@ const ProductAddContent = () => {
                 )}
               </FormLayout.InputError>
             </FormLayout.LabelInputErrorContainer>
-            {/* todo:input: category */}
+            {/* input: category */}
             <FormLayout.LabelInputErrorContainer>
               <FormLayout.LabelInputContainer>
                 <FormLayout.LabelContainer>
@@ -640,6 +999,15 @@ const ProductAddContent = () => {
               </FormLayout.LabelContainer>
               <FormLayout.InputContainer>
                 {renderVariants()}
+              </FormLayout.InputContainer>
+            </FormLayout.LabelInputContainer>
+            {/* input: product variations */}
+            <FormLayout.LabelInputContainer>
+              <FormLayout.LabelContainer justify='justify-start'>
+                <Label>Variations</Label>
+              </FormLayout.LabelContainer>
+              <FormLayout.InputContainer>
+                {renderVariations()}
               </FormLayout.InputContainer>
             </FormLayout.LabelInputContainer>
           </div>
