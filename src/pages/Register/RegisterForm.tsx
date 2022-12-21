@@ -1,9 +1,10 @@
 import { useFormik } from 'formik';
-import { Button, Form, Input, Link } from 'react-daisyui';
+import { Button, Form, Input } from 'react-daisyui';
 import GoogleLogin, {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
+import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
 import {
   FormCTA,
@@ -225,7 +226,7 @@ const RegisterForm = ({
       </Form>
       <FormCTA>
         Already have an account?{' '}
-        <Link color='secondary' href='/login'>
+        <Link to='/login' className='link link-accent no-underline font-medium'>
           Login
         </Link>
       </FormCTA>

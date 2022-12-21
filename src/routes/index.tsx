@@ -3,11 +3,10 @@ import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
 import { Layout } from '../components';
 import {
-  AdminAddPromotion,
-  AdminEditPromotion,
+  AdminAddVoucher,
+  AdminDetailVoucher,
+  AdminEditVoucher,
   AdminHome,
-  AdminPromotionList,
-  AdminRefund,
   BuyerAddress,
   BuyerCart,
   BuyerCheckout,
@@ -24,6 +23,7 @@ import {
   NotFound,
   Product,
   Register,
+  ResetPassword,
   SealabsPayPaymentRedirect,
   SealabsPayRegisterRedirect,
   SealabsPayTopup,
@@ -41,6 +41,7 @@ import {
   ShopOrder,
   ShopProductList,
   ShopProfile,
+  ShopPromotionDetail,
   ShopPromotionList,
   ShopShipmentSetting,
   ShopVoucherDetail,
@@ -267,11 +268,19 @@ const Routes = () => {
                   element: <ShopPromotionList />,
                 },
                 {
+                  path: '/seller/marketing/promotions/detail',
+                  element: <Navigate to='/seller/marketing/promotions/list' />,
+                },
+                {
+                  path: '/seller/marketing/promotions/detail/:promotionID',
+                  element: <ShopPromotionDetail />,
+                },
+                {
                   path: '/seller/marketing/promotions/add',
                   element: <ShopAddPromotion />,
                 },
                 {
-                  path: '/seller/marketing/promotions/edit',
+                  path: '/seller/marketing/promotions/edit/:promotionID',
                   element: <ShopEditPromotion />,
                 },
                 {
@@ -306,24 +315,36 @@ const Routes = () => {
           element: <AdminHome />,
         },
         {
-          path: '/admin/promotions',
-          element: <Navigate to='/admin/promotions/list' />,
+          path: '/admin/vouchers',
+          element: <Navigate to='/admin/vouchers/list' />,
         },
         {
-          path: '/admin/promotions/list',
-          element: <AdminPromotionList />,
+          path: '/admin/vouchers/list',
+          element: <Navigate to='/admin' />,
         },
         {
-          path: '/admin/promotions/add',
-          element: <AdminAddPromotion />,
+          path: '/admin/vouchers/add',
+          element: <AdminAddVoucher />,
         },
         {
-          path: '/admin/promotions/edit',
-          element: <AdminEditPromotion />,
+          path: '/admin/vouchers/detail',
+          element: <Navigate to='/admin/vouchers/list' />,
+        },
+        {
+          path: '/admin/vouchers/detail/:voucherID',
+          element: <AdminDetailVoucher />,
+        },
+        {
+          path: '/admin/vouchers/duplicate/:voucherID',
+          element: <AdminAddVoucher />,
+        },
+        {
+          path: '/admin/vouchers/edit/:voucherID',
+          element: <AdminEditVoucher />,
         },
         {
           path: '/admin/refunds',
-          element: <AdminRefund />,
+          element: <Navigate to='/admin' />,
         },
       ],
     },
@@ -350,6 +371,19 @@ const Routes = () => {
           redirectTo='/'
         >
           <Register />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/reset-password/:resetPasswordID',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Guest]}
+          redirectTo='/'
+        >
+          <ResetPassword />
         </ProtectedRoute>
       ),
     },

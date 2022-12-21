@@ -30,6 +30,14 @@ export type RegisterWithGoogleRequest = {
   image_url: string;
 };
 
+export type VerifyResetPasswordRequest = {
+  email: string;
+};
+
+export type ResetPasswordRequest = {
+  password: string;
+};
+
 export type StepUpPasswordRequest = {
   password: string;
 };

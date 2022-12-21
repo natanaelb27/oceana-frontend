@@ -22,7 +22,6 @@
     "no-duplicate-imports": "error",
     "quotes": ["error", "single"],
     "react/react-in-jsx-scope": "off",
-    "@typescript-eslint/no-unused-vars": "off",
     "semi": ["error", "always"]
   }
 }
