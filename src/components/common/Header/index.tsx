@@ -340,7 +340,7 @@ const Header = () => {
       <div
         className={`${
           hoverCart ? 'absolute' : 'hidden'
-        } mt-2 w-screen h-screen bg-black bg-opacity-40 transition-all duration-100`}
+        } w-full h-screen mt-2 bg-black bg-opacity-40 transition-all duration-100`}
       ></div>
     </header>
   );
