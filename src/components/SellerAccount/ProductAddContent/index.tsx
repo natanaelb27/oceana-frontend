@@ -238,6 +238,8 @@ const ProductAddContent = () => {
 
     newData.push(newVariant);
 
+    updateProductItemsAccordingToVariants(newData);
+
     productFormik.setFieldValue('variants', newData);
   };
 
@@ -252,6 +254,8 @@ const ProductAddContent = () => {
 
     newData[indexVariant].options.push(newOption);
 
+    updateProductItemsAccordingToVariants(newData);
+
     productFormik.setFieldValue('variants', newData);
   };
 
@@ -264,8 +268,8 @@ const ProductAddContent = () => {
       variant_index: [],
     };
   };
-
-  const combineAll = (array: any) => {
+  console.log(productFormik.values.product_items);
+  const combineAll = (array: number[][]) => {
     const res: number[][] = [];
     const max = array.length - 1;
     const helper = (arr: number[], i: number) => {
@@ -280,21 +284,37 @@ const ProductAddContent = () => {
     return res;
   };
 
-  const deleteVariantIndexByIndex = (index: number, variants: PUMVariant[]) => {
+  function arrayCompare<Type>(_arr1: Type[], _arr2: Type[]) {
+    if (
+      !Array.isArray(_arr1) ||
+      !Array.isArray(_arr2) ||
+      _arr1.length !== _arr2.length
+    ) {
+      return false;
+    }
+
+    const arr1 = _arr1.concat().sort();
+    const arr2 = _arr2.concat().sort();
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  const updateProductItemsAccordingToVariants = (variants: PUMVariant[]) => {
     const data = deepCopy(
       productFormik.values.product_items
     ) as PUMProductItem[];
-
-    if (index < 0 || data === null) {
-      return;
-    }
 
     if (variants.length === 0) {
       productFormik.setFieldValue('product_items', []);
       return;
     }
 
-    // delete all product items
     let newProductItems: PUMProductItem[] = [];
     // insert new product items according to new variants
     const optionsArray = variants.map((variant) => {
@@ -306,6 +326,16 @@ const ProductAddContent = () => {
 
     // create new product items
     newProductItems = newVariantIndexes.map((variantIndex) => {
+      let matchedProductItemIndex = -1;
+      data.forEach((productItem, indexProductItem) => {
+        if (arrayCompare<number>(productItem.variant_index, variantIndex))
+          matchedProductItemIndex = indexProductItem;
+      });
+
+      if (matchedProductItemIndex !== -1) {
+        return data[matchedProductItemIndex];
+      }
+
       const newProductItem = newPUMProductItem();
       newProductItem.variant_index = variantIndex;
       return newProductItem;
@@ -315,36 +345,38 @@ const ProductAddContent = () => {
   };
 
   const handleDeleteVariantOnClick = (index: number) => {
-    const newData = deepCopyVariants(productFormik.values.variants);
+    const newVariants = deepCopyVariants(productFormik.values.variants);
 
-    if (index < 0 || newData === null) {
+    if (index < 0 || newVariants === null) {
       return;
     }
 
     // delete variant
-    newData.splice(index, 1);
+    newVariants.splice(index, 1);
 
     // delete product items
-    deleteVariantIndexByIndex(index, newData);
+    updateProductItemsAccordingToVariants(newVariants);
 
-    productFormik.setFieldValue('variants', newData);
+    productFormik.setFieldValue('variants', newVariants);
   };
 
   const handleDeleteVariantOptionOnClick = (
     indexVariant: number,
     indexOption: number
   ) => {
-    const newData = deepCopyVariants(productFormik.values.variants);
+    const newVariants = deepCopyVariants(productFormik.values.variants);
 
-    if (indexVariant < 0 || indexOption < 0 || newData === null) {
+    if (indexVariant < 0 || indexOption < 0 || newVariants === null) {
       return;
     }
 
     // validate if options length is 1 then dont allow delete (show error)
 
-    newData[indexVariant].options.splice(indexOption, 1);
+    newVariants[indexVariant].options.splice(indexOption, 1);
 
-    productFormik.setFieldValue('variants', newData);
+    updateProductItemsAccordingToVariants(newVariants);
+
+    productFormik.setFieldValue('variants', newVariants);
   };
 
   const handleIsHazardousOnChange = (
@@ -379,7 +411,6 @@ const ProductAddContent = () => {
       });
   };
 
-  console.log(productFormik.values);
   const renderVariants = () => {
     // if(productFormik.values.variants.length>0){
     // }
