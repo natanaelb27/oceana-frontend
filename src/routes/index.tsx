@@ -1,52 +1,97 @@
 import Cookies from 'js-cookie';
+import React from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
 import { Layout } from '../components';
+import { Loading } from '../components/common';
 import {
-  AdminAddVoucher,
-  AdminDetailVoucher,
-  AdminEditVoucher,
-  AdminHome,
-  BuyerAddress,
-  BuyerCart,
-  BuyerCheckout,
-  BuyerPassword,
-  BuyerProfile,
-  BuyerPurchaseHistory,
-  BuyerRefund,
-  BuyerSealabsPay,
-  BuyerWallet,
-  Category,
-  CategorySearch,
-  Home,
   Login,
   NotFound,
-  Product,
   Register,
   ResetPassword,
   SealabsPayPaymentRedirect,
   SealabsPayRegisterRedirect,
   SealabsPayTopup,
   SealabsPayTopupRedirect,
-  Search,
-  SellerRegistration,
-  Shop,
-  ShopAddProduct,
-  ShopAddPromotion,
-  ShopAddress,
-  ShopAddVoucher,
-  ShopEditProduct,
-  ShopEditPromotion,
-  ShopEditVoucher,
-  ShopOrder,
-  ShopProductList,
-  ShopProfile,
-  ShopPromotionDetail,
-  ShopPromotionList,
-  ShopShipmentSetting,
-  ShopVoucherDetail,
-  ShopVoucherList,
 } from '../pages';
+
+const Home = React.lazy(() => import('../pages/Home'));
+const Product = React.lazy(() => import('../pages/Product'));
+const Search = React.lazy(() => import('../pages/Search'));
+const Shop = React.lazy(() => import('../pages/Shop'));
+const Category = React.lazy(() => import('../pages/Category'));
+const CategorySearch = React.lazy(
+  () => import('../pages/Category/CategorySearch')
+);
+
+const BuyerAddress = React.lazy(() => import('../pages/buyer/BuyerAddress'));
+const BuyerCart = React.lazy(() => import('../pages/buyer/BuyerCart'));
+const BuyerCheckout = React.lazy(() => import('../pages/buyer/BuyerCheckout'));
+const BuyerPassword = React.lazy(() => import('../pages/buyer/BuyerPassword'));
+const BuyerProfile = React.lazy(() => import('../pages/buyer/BuyerProfile'));
+const BuyerPurchaseHistory = React.lazy(
+  () => import('../pages/buyer/BuyerPurchaseHistory')
+);
+const BuyerRefund = React.lazy(() => import('../pages/buyer/BuyerRefund'));
+const BuyerSealabsPay = React.lazy(
+  () => import('../pages/buyer/BuyerSealabsPay')
+);
+const BuyerWallet = React.lazy(() => import('../pages/buyer/BuyerWallet'));
+const SellerRegistration = React.lazy(
+  () => import('../pages/buyer/SellerRegistration')
+);
+
+const ShopAddProduct = React.lazy(
+  () => import('../pages/seller/ShopAddProduct')
+);
+const ShopAddPromotion = React.lazy(
+  () => import('../pages/seller/ShopAddPromotion')
+);
+const ShopAddress = React.lazy(() => import('../pages/seller/ShopAddress'));
+const ShopAddVoucher = React.lazy(
+  () => import('../pages/seller/ShopAddVoucher')
+);
+const ShopEditProduct = React.lazy(
+  () => import('../pages/seller/ShopEditProduct')
+);
+const ShopEditPromotion = React.lazy(
+  () => import('../pages/seller/ShopEditPromotion')
+);
+const ShopEditVoucher = React.lazy(
+  () => import('../pages/seller/ShopEditVoucher')
+);
+const ShopOrder = React.lazy(() => import('../pages/seller/ShopOrder'));
+const ShopProductList = React.lazy(
+  () => import('../pages/seller/ShopProductList')
+);
+const ShopProfile = React.lazy(() => import('../pages/seller/ShopProfile'));
+const ShopPromotionDetail = React.lazy(
+  () => import('../pages/seller/ShopPromotionDetail')
+);
+const ShopPromotionList = React.lazy(
+  () => import('../pages/seller/ShopPromotionList')
+);
+const ShopShipmentSetting = React.lazy(
+  () => import('../pages/seller/ShopShipmentSetting')
+);
+const ShopVoucherDetail = React.lazy(
+  () => import('../pages/seller/ShopVoucherDetail')
+);
+const ShopVoucherList = React.lazy(
+  () => import('../pages/seller/ShopVoucherList')
+);
+
+const AdminAddVoucher = React.lazy(
+  () => import('../pages/admin/AdminAddVoucher')
+);
+const AdminDetailVoucher = React.lazy(
+  () => import('../pages/admin/AdminDetailVoucher')
+);
+const AdminEditVoucher = React.lazy(
+  () => import('../pages/admin/AdminEditVoucher')
+);
+const AdminHome = React.lazy(() => import('../pages/admin/AdminHome'));
+
 import { selectRole } from '../store/slices/authSlice';
 import { useAppSelector } from '../store/store';
 import { Role } from '../types/role';
@@ -66,7 +111,9 @@ const Routes = () => {
           allowedRoles={[Role.Guest, Role.Buyer, Role.Seller]}
           redirectTo='/admin'
         >
-          <Layout />
+          <React.Suspense fallback={<Loading isLoading />}>
+            <Layout />
+          </React.Suspense>
         </ProtectedRoute>
       ),
       children: [

@@ -1,6 +1,6 @@
-import { ChangeEvent, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Form, Input, Modal, Tooltip } from 'react-daisyui';
-import { CgLock, CgClose, CgEye, CgEyeAlt } from 'react-icons/cg';
+import { CgClose, CgEye, CgEyeAlt } from 'react-icons/cg';
 import { useStepUpPasswordMutation } from '../../../store/services/authPrivateService';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';

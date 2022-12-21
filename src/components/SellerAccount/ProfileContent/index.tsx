@@ -16,8 +16,9 @@ type ProfileContentProps = {
 const ProfileContent = ({ profile }: ProfileContentProps) => {
   const photoFileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: merchantData, isLoading: merchantIsLoading } =
-    useGetMerchantByIDQuery(profile?.id ? String(profile.id) : '');
+  const { data: merchantData } = useGetMerchantByIDQuery(
+    profile?.id ? String(profile.id) : ''
+  );
   const [updateMyShopPhoto, { isLoading: updateMyShopPhotoIsLoading }] =
     useUpdateMyShopPhotoMutation();
 
