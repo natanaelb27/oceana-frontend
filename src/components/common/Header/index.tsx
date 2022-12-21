@@ -21,6 +21,7 @@ import { baseApi, useAppDispatch, useAppSelector } from '../../../store/store';
 import { useLogoutMutation } from '../../../store/services/profileService';
 import { TAG_TYPES } from '../../../constants/tags';
 import { BsShop } from 'react-icons/bs';
+import { CSSTransition } from 'react-transition-group';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -52,17 +53,18 @@ const Header = () => {
   const renderHoverCart = () => {
     if (hoverCart) {
       return (
-        <div className='absolute top-10 bg-base-100 rounded-xl border-none shadow-lg hover:transition-all ease-in-out'>
+        <div
+          className='absolute bg-base-100 rounded-xl border-none shadow-lg'
+          onMouseOver={handleHoverCart}
+          onMouseOut={handleUnhoverCart}
+        >
           <Card className=' text-black w-80'>
-            <Card.Body className='p-5'>
+            <Card.Body className='p-5 normal-case font-normal'>
               <div className='flex justify-between'>
-                <div>
-                  Cart(14)
-                </div>
-                <div>
-                  View Cart
-                </div>
+                <div>Cart(14)</div>
+                <div>View Cart</div>
               </div>
+
               <Divider className='m-0' />
             </Card.Body>
           </Card>
@@ -103,180 +105,179 @@ const Header = () => {
   };
 
   return (
-      <header
-        className={`sticky top-0 z-30 w-full component-preview items-center justify-center gap-2 font-sans transition-all duration-100 ${
-          scrollPosition > 0
-            ? 'py-2 bg-base-100 text-base-content shadow-sm bg-opacity-80 backdrop-blur'
-            : 'py-2 bg-primary text-primary-content'
-        }`}
-      >
-        <div className='container mx-auto'>
-          <Navbar className='hidden md:flex'>
-            <div className='flex-none mr-4'>
-              <NavLink to='/'>
-                <Button className='text-xl normal-case' color='ghost'>
-                  Oceana
-                </Button>
-              </NavLink>
-            </div>
-            <div className='flex-1'>
-              <Form onSubmit={handleSearchSubmit} className='w-full'>
-                <InputGroup>
-                  <Input
-                    type='text'
-                    placeholder='Search...'
-                    color='ghost'
-                    className='text-base-content w-full border-none'
-                    value={search}
-                    onChange={hanldeSearchChange}
-                  />
-                  <Button shape='square' color='ghost'>
-                    <FaSearch />
-                  </Button>
-                </InputGroup>
-              </Form>
-            </div>
-            <div className='flex-none ml-4 gap-2'>
-              {theme === 'light' ? (
-                <Button
-                  shape='circle'
+    <header
+      className={`sticky top-0 z-30 w-full component-preview items-center justify-center gap-2 font-sans transition-all duration-100 ${
+        scrollPosition > 0
+          ? 'py-2 bg-base-100 text-base-content shadow-sm bg-opacity-80 backdrop-blur'
+          : 'py-2 bg-primary text-primary-content'
+      }`}
+    >
+      <div className='container mx-auto'>
+        <Navbar className='hidden md:flex'>
+          <div className='flex-none mr-4'>
+            <NavLink to='/'>
+              <Button className='text-xl normal-case' color='ghost'>
+                Oceana
+              </Button>
+            </NavLink>
+          </div>
+          <div className='flex-1'>
+            <Form onSubmit={handleSearchSubmit} className='w-full'>
+              <InputGroup>
+                <Input
+                  type='text'
+                  placeholder='Search...'
                   color='ghost'
-                  size='sm'
-                  onClick={() => handleThemeClick('dark')}
-                >
-                  <HiSun className='text-lg' />
+                  className='text-base-content w-full border-none'
+                  value={search}
+                  onChange={hanldeSearchChange}
+                />
+                <Button shape='square' color='ghost'>
+                  <FaSearch />
                 </Button>
-              ) : (
-                <Button
-                  shape='circle'
+              </InputGroup>
+            </Form>
+          </div>
+          <div className='flex-none ml-4 gap-2'>
+            {theme === 'light' ? (
+              <Button
+                shape='circle'
+                color='ghost'
+                size='sm'
+                onClick={() => handleThemeClick('dark')}
+              >
+                <HiSun className='text-lg' />
+              </Button>
+            ) : (
+              <Button
+                shape='circle'
+                color='ghost'
+                size='sm'
+                onClick={() => handleThemeClick('light')}
+              >
+                <HiMoon className='text-lg' />
+              </Button>
+            )}
+            <NavLink to='/cart' className='relative'>
+              <Button
+                shape='circle'
+                color='ghost'
+                size='sm'
+                onMouseOver={handleHoverCart}
+                onMouseOut={handleUnhoverCart}
+              >
+                <FaShoppingCart className='text-lg' />
+              </Button>
+              {renderHoverCart()}
+            </NavLink>
+            {!role ? (
+              <>
+                <NavLink to='/login'>
+                  <Button color='ghost'>Login</Button>
+                </NavLink>
+                <NavLink to='/register'>
+                  <Button color='ghost'>Register</Button>
+                </NavLink>
+              </>
+            ) : (
+              <Dropdown horizontal='center' vertical='end'>
+                <Dropdown.Toggle color='ghost' size='sm'>
+                  <GoPerson className='text-lg' />
+                </Dropdown.Toggle>
+                <Dropdown.Menu className='w-52 text-base-content'>
+                  <Dropdown.Item onClick={handleProfileClick}>
+                    <CgProfile className='text-xl' />
+                    <span>Profile</span>
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleShopClick}>
+                    <BsShop className='text-xl' />
+                    <span>My Shop</span>
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleLogoutClick}>
+                    <CgLogOut className='text-xl' />
+                    <span>Logout</span>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
+          </div>
+        </Navbar>
+        <Navbar className='flex md:hidden'>
+          <div className='flex-1'>
+            <Form onSubmit={handleSearchSubmit} className='w-full'>
+              <InputGroup>
+                <Input
+                  type='text'
+                  placeholder='Search...'
                   color='ghost'
-                  size='sm'
-                  onClick={() => handleThemeClick('light')}
-                >
-                  <HiMoon className='text-lg' />
+                  className='text-base-content w-full border-none placeholder:text-base-content'
+                  value={search}
+                  onChange={hanldeSearchChange}
+                />
+                <Button shape='square' color='ghost'>
+                  <FaSearch />
                 </Button>
-              )}
-              <NavLink to='/cart'>
-                <Button
-                  shape='circle'
-                  color='ghost'
-                  size='sm'
-                  className='relative'
-                  onMouseOver={handleHoverCart}
-                  onMouseOut={handleUnhoverCart}
-                >
-                  {renderHoverCart()}
-                  <FaShoppingCart className='text-lg' />
-                </Button>
-              </NavLink>
-              {!role ? (
-                <>
-                  <NavLink to='/login'>
-                    <Button color='ghost'>Login</Button>
-                  </NavLink>
-                  <NavLink to='/register'>
-                    <Button color='ghost'>Register</Button>
-                  </NavLink>
-                </>
-              ) : (
-                <Dropdown horizontal='center' vertical='end'>
-                  <Dropdown.Toggle color='ghost' size='sm'>
+              </InputGroup>
+            </Form>
+          </div>
+          <div className='flex-none ml-4'>
+            {theme === 'light' ? (
+              <Button
+                shape='circle'
+                color='ghost'
+                size='sm'
+                onClick={() => handleThemeClick('dark')}
+              >
+                <HiSun className='text-lg' />
+              </Button>
+            ) : (
+              <Button
+                shape='circle'
+                color='ghost'
+                size='sm'
+                onClick={() => handleThemeClick('light')}
+              >
+                <HiMoon className='text-lg' />
+              </Button>
+            )}
+            <NavLink to='/cart'>
+              <Button shape='circle' color='ghost' size='sm'>
+                <FaShoppingCart className='text-lg' />
+              </Button>
+            </NavLink>
+            {!role ? (
+              <>
+                <NavLink to='/login'>
+                  <Button shape='circle' color='ghost' size='sm'>
                     <GoPerson className='text-lg' />
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu className='w-52 text-base-content'>
-                    <Dropdown.Item onClick={handleProfileClick}>
-                      <CgProfile className='text-xl' />
-                      <span>Profile</span>
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={handleShopClick}>
-                      <BsShop className='text-xl' />
-                      <span>My Shop</span>
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={handleLogoutClick}>
-                      <CgLogOut className='text-xl' />
-                      <span>Logout</span>
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              )}
-            </div>
-          </Navbar>
-          <Navbar className='flex md:hidden'>
-            <div className='flex-1'>
-              <Form onSubmit={handleSearchSubmit} className='w-full'>
-                <InputGroup>
-                  <Input
-                    type='text'
-                    placeholder='Search...'
-                    color='ghost'
-                    className='text-base-content w-full border-none placeholder:text-base-content'
-                    value={search}
-                    onChange={hanldeSearchChange}
-                  />
-                  <Button shape='square' color='ghost'>
-                    <FaSearch />
                   </Button>
-                </InputGroup>
-              </Form>
-            </div>
-            <div className='flex-none ml-4'>
-              {theme === 'light' ? (
-                <Button
-                  shape='circle'
-                  color='ghost'
-                  size='sm'
-                  onClick={() => handleThemeClick('dark')}
-                >
-                  <HiSun className='text-lg' />
-                </Button>
-              ) : (
-                <Button
-                  shape='circle'
-                  color='ghost'
-                  size='sm'
-                  onClick={() => handleThemeClick('light')}
-                >
-                  <HiMoon className='text-lg' />
-                </Button>
-              )}
-              <NavLink to='/cart'>
-                <Button shape='circle' color='ghost' size='sm'>
-                  <FaShoppingCart className='text-lg' />
-                </Button>
-              </NavLink>
-              {!role ? (
-                <>
-                  <NavLink to='/login'>
-                    <Button shape='circle' color='ghost' size='sm'>
-                      <GoPerson className='text-lg' />
-                    </Button>
-                  </NavLink>
-                </>
-              ) : (
-                <Dropdown horizontal='center' vertical='end'>
-                  <Dropdown.Toggle color='ghost' size='sm'>
-                    <GoPerson className='text-lg' />
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu className='w-52 text-base-content'>
-                    <Dropdown.Item onClick={handleProfileClick}>
-                      <CgProfile className='text-xl' />
-                      <span>Profile</span>
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={handleShopClick}>
-                      <BsShop className='text-xl' />
-                      <span>My Shop</span>
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={handleLogoutClick}>
-                      <CgLogOut className='text-xl' />
-                      <span>Logout</span>
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              )}
-            </div>
-          </Navbar>
-        </div>
-      </header>
+                </NavLink>
+              </>
+            ) : (
+              <Dropdown horizontal='center' vertical='end'>
+                <Dropdown.Toggle color='ghost' size='sm'>
+                  <GoPerson className='text-lg' />
+                </Dropdown.Toggle>
+                <Dropdown.Menu className='w-52 text-base-content'>
+                  <Dropdown.Item onClick={handleProfileClick}>
+                    <CgProfile className='text-xl' />
+                    <span>Profile</span>
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleShopClick}>
+                    <BsShop className='text-xl' />
+                    <span>My Shop</span>
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleLogoutClick}>
+                    <CgLogOut className='text-xl' />
+                    <span>Logout</span>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
+          </div>
+        </Navbar>
+      </div>
+    </header>
   );
 };
 
