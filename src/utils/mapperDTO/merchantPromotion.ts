@@ -4,8 +4,11 @@ import { MerchantPromotionQuery } from '../../types/query';
 export const toMerchantPromotionQuery = (query: MerchantPromotionQuery) => {
   let result = '';
 
-  result += '&search-voucher-name=' + query.searchPromotionName;
-  result += '&filter-voucher-status=' + query.filterPromotionStatus;
+  result += 'limit=' + query.limit;
+  result += '&page=' + query.page;
+  result += '&search-promotion-name=' + query.searchPromotionName;
+  result +=
+    '&filter-promotion-status=' + query.filterPromotionStatus.toLowerCase();
 
   return result;
 };

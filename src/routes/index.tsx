@@ -284,6 +284,10 @@ const Routes = () => {
                   element: <ShopEditPromotion />,
                 },
                 {
+                  path: '/seller/marketing/promotions/duplicate/:promotionID',
+                  element: <ShopAddPromotion />,
+                },
+                {
                   path: '/seller/orders/',
                   element: <ShopOrder />,
                 },

@@ -27,3 +27,8 @@ export enum SellerAccountVoucherFormContent {
   Add = 0,
   Edit,
 }
+
+export enum SellerAccountPromotionFormContent {
+  Add = 0,
+  Edit,
+}

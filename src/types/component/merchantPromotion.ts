@@ -1,15 +1,18 @@
 export interface ProductMerchantPromotion {
-  id: number;
-  merchant_promotion_model_id: number;
   product_id: number;
+  product_name: string;
+  product_image: string;
+  price_max: number;
+  price_max_after_discount: number;
+  price_min: number;
+  price_min_after_discount: number;
+  total_stock: number;
   discount_type: string;
   discount: number;
   maximum_discount_amount: number;
   maximum_quota: number;
   maximum_user_limit: number;
   current_quota: number;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface MerchantPromotion {
@@ -18,6 +21,7 @@ export interface MerchantPromotion {
   name: string;
   start_datetime: string;
   end_datetime: string;
+  promotion_status: string;
   created_at: string;
   updated_at: string;
   product_merchant_promotion: ProductMerchantPromotion[];
