@@ -32,6 +32,7 @@ export type TransactionHistoryQuery = {
   filterOngoingOrderStatus: string;
   filterStartTransactionDate: string;
   filterEndTransactionDate: string;
+  filterIsReviewed: string;
   limit: number;
   page: number;
 };

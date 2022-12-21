@@ -5,12 +5,12 @@ import {
   HiOutlineDotsVertical,
   HiOutlineDotsHorizontal,
 } from 'react-icons/hi';
-import { useGetAllUserPendingPaymentQuery } from '../../store/services/orderService';
-import { toRupiah, toStringDate } from '../../utils/convert';
-import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import { useGetAllUserPendingPaymentQuery } from '../../../store/services/orderService';
+import { toRupiah, toStringDate } from '../../../utils/convert';
+import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import moment from 'moment';
-import NoData from '../common/NoData';
-import DateCountdown from '../common/DateCountdown';
+import NoData from '../../common/NoData';
+import DateCountdown from '../../common/DateCountdown';
 import { useNavigate } from 'react-router-dom';
 
 const PendingPaymentContent = () => {

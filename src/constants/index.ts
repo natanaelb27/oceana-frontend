@@ -42,3 +42,14 @@ export const WALLET_TRANSACTION_HISTORY_TYPE = {
   DEBIT: 'Debit',
   CREDIT: 'Credit',
 };
+
+export const REVIEW_STATUS = {
+  ALL: 'all',
+  REVIEWED: 'true',
+  NOT_REVIEWED: 'false',
+};
+
+export const MEDIA_TYPE = {
+  IMAGE: 'image',
+  VIDEO: 'video',
+};

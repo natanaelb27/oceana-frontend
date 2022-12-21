@@ -5,6 +5,7 @@ export enum UserAccountContent {
   SealabsPay,
   Purchase,
   Review,
+  ReviewDetail,
   Refund,
   PendingPayment,
 }

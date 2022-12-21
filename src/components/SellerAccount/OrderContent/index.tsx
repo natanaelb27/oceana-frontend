@@ -47,6 +47,7 @@ import {
   DISCOUNT_TYPE,
   LIMIT_SELLER_VOUCHER_LIST,
   LIMIT_TRANSACTION_HISTORY,
+  REVIEW_STATUS,
   VOUCHER_STATUS,
 } from '../../../constants';
 import {
@@ -124,6 +125,7 @@ const OrderContent = () => {
       filterOngoingOrderStatus: '',
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
+      filterIsReviewed: REVIEW_STATUS.ALL,
     });
 
   const {
@@ -360,10 +362,7 @@ const OrderContent = () => {
 
   const [
     sellerCancelOrder,
-    {
-      isLoading: sellerCancelOrderLoading,
-      error: sellerCancelOrderError,
-    },
+    { isLoading: sellerCancelOrderLoading, error: sellerCancelOrderError },
   ] = useSellerCancelOrderMutation();
 
   const handleModalClose = () => {
@@ -451,7 +450,6 @@ const OrderContent = () => {
     if (!orderID) {
       return;
     }
-
 
     sellerCancelOrder(orderID)
       .unwrap()
@@ -599,6 +597,7 @@ const OrderContent = () => {
       filterOngoingOrderStatus: '',
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
+      filterIsReviewed: REVIEW_STATUS.ALL,
     });
   };
 

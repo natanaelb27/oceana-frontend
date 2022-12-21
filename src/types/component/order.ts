@@ -6,6 +6,12 @@ export interface OrderDetail {
   quantity: number;
   price: number;
   total_price: number;
+  product_review_id: number | null;
+  rating: number | null;
+  review: string | null;
+  review_images: string[] | null;
+  review_videos: string[] | null;
+  review_created_datetime: string | null;
 }
 export interface OrderList {
   transaction_id: string;
@@ -13,6 +19,7 @@ export interface OrderList {
   invoice_number: string;
   merchant_id: number;
   shop_name: string;
+  shop_photo: string;
   user_id: string;
   user_full_name: string;
   courier_service_id: number;
@@ -40,6 +47,7 @@ export interface OrderListDetail {
   invoice_number: string;
   merchant_id: number;
   shop_name: string;
+  shop_photo: string;
   user_id: string;
   user_full_name: string;
   order_details: OrderDetail[];

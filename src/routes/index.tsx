@@ -17,6 +17,7 @@ import {
   BuyerPurchaseHistory,
   BuyerRefund,
   BuyerReview,
+  BuyerReviewDetail,
   BuyerSealabsPay,
   BuyerWallet,
   Category,
@@ -154,7 +155,7 @@ const Routes = () => {
             },
             {
               path: '/user/pending-payment',
-              element: <BuyerPendingPayment />
+              element: <BuyerPendingPayment />,
             },
             {
               path: '/user/refund',
@@ -163,6 +164,10 @@ const Routes = () => {
             {
               path: '/user/review',
               element: <BuyerReview />,
+            },
+            {
+              path: '/user/review/detail/:orderID',
+              element: <BuyerReviewDetail />,
             },
             {
               path: '/cart',

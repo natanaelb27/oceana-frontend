@@ -36,7 +36,11 @@ import {
   HiOutlineDotsHorizontal,
   HiOutlineDotsVertical,
 } from 'react-icons/hi';
-import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../../constants';
+import {
+  LIMIT_TRANSACTION_HISTORY,
+  DELIVERY_STATUS,
+  REVIEW_STATUS,
+} from '../../../constants';
 import { TransactionHistoryQuery } from '../../../types/query';
 import {
   useGetAllTransactionHistoryQuery,
@@ -71,6 +75,7 @@ const PurchaseContent = () => {
       filterOngoingOrderStatus: '',
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
+      filterIsReviewed: REVIEW_STATUS.ALL,
     });
 
   const {
@@ -379,6 +384,7 @@ const PurchaseContent = () => {
       filterOngoingOrderStatus: '',
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
+      filterIsReviewed: REVIEW_STATUS.ALL,
     });
   };
 
