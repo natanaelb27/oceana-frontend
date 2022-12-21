@@ -14,5 +14,4 @@ export { default as Tiles } from './Tiles';
 export { default as NoData } from './NoData';
 export { default as SealabsPayImg } from './SealabsPayImg';
 export { default as SealabsPayCardImg } from './SealabsPayCardImg';
-export { default as Img } from './Img';
 export { default as SectionHeading } from './SectionHeading';

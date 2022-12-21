@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Modal } from 'react-daisyui';
-import { Img, Skeleton } from '../../../components/common';
+import { Image, Skeleton } from '../../../components/common';
 import { useGetRajaOngkirShippingCostMutation } from '../../../store/services/rajaOngkir';
 import { useGetShipmentQuery } from '../../../store/services/shipmentService';
 import { RajaOngkirShippingService } from '../../../types/component';
@@ -123,7 +123,7 @@ const DeliveryServiceModal = ({
                 }`}
                 onClick={(e) => handleCourierClick(e, courier)}
               >
-                <Img src={courier.logo_url} />
+                <Image src={courier.logo_url} />
                 <div className='text-sm'>{courier.name}</div>
               </div>
             ))}

@@ -21,7 +21,8 @@ import { baseApi, useAppDispatch, useAppSelector } from '../../../store/store';
 import { useLogoutMutation } from '../../../store/services/profileService';
 import { TAG_TYPES } from '../../../constants/tags';
 import { BsShop } from 'react-icons/bs';
-import { CSSTransition } from 'react-transition-group';
+import { useGetUserCartQuery } from '../../../store/services/cartService';
+import { toRupiah } from '../../../utils/convert';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -30,13 +31,15 @@ const Header = () => {
   const navigate = useNavigate();
   const [logout] = useLogoutMutation();
   const [hoverCart, setHoverCart] = useState(false);
-
+  const { data: userCartData } = useGetUserCartQuery();
   const [theme, setTheme] = useLocalStorage<string>(
     'theme',
     window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   );
 
   const [search, setSearch] = useState<string>('');
+
+  console.log({ userCartData });
 
   const hanldeSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -51,21 +54,76 @@ const Header = () => {
   };
 
   const renderHoverCart = () => {
+    if (!userCartData?.data) {
+      return null;
+    }
+
+    if (userCartData.data.length === 0) {
+      return null;
+    }
+
+    let totalItems = 0;
+
     if (hoverCart) {
       return (
         <div
-          className='absolute bg-base-100 rounded-xl border-none shadow-lg'
+          className='absolute bg-base-100 rounded-xl border-none shadow-lg top-14 right-16 z-50 transition-all duration-300'
           onMouseOver={handleHoverCart}
           onMouseOut={handleUnhoverCart}
         >
-          <Card className=' text-black w-80'>
+          <Card className=' text-base-content w-96'>
             <Card.Body className='p-5 normal-case font-normal'>
               <div className='flex justify-between'>
-                <div>Cart(14)</div>
-                <div>View Cart</div>
+                <div className='font-bold'>Cart</div>
+                <NavLink
+                  to='/cart'
+                  className=' hover:text-primary'
+                  onClick={() => handleUnhoverCart()}
+                >
+                  <div className='font-bold'>View Cart</div>
+                </NavLink>
               </div>
-
-              <Divider className='m-0' />
+              <div>
+                {userCartData.data.map((merchant) => {
+                  return merchant.products.map((product, i) => {
+                    totalItems += 1;
+                    if (totalItems <= 4) {
+                      return (
+                        <React.Fragment key={i}>
+                          <Divider className='m-0' />
+                          <NavLink
+                            to='/cart'
+                            className=' hover:text-primary'
+                            onClick={() => handleUnhoverCart()}
+                          >
+                            <div className='flex items-center justify-between text-sm mb-2'>
+                              <div className='flex mr-5'>
+                                <img
+                                  src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
+                                  className=' rounded-xl w-16 h-16'
+                                />
+                                <div className='ml-2 w-44'>
+                                  <div className='font-bold truncate'>
+                                    {product.product_name}
+                                  </div>
+                                  <div className='text-xs font-light'>
+                                    {product.quantity} items (
+                                    {product.product_weight}
+                                    gr) {product.product_variation}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className='font-bold'>
+                                {toRupiah(product.price)}
+                              </div>
+                            </div>
+                          </NavLink>
+                        </React.Fragment>
+                      );
+                    }
+                  });
+                })}
+              </div>
             </Card.Body>
           </Card>
         </div>
@@ -158,18 +216,20 @@ const Header = () => {
                 <HiMoon className='text-lg' />
               </Button>
             )}
-            <NavLink to='/cart' className='relative'>
-              <Button
-                shape='circle'
-                color='ghost'
-                size='sm'
-                onMouseOver={handleHoverCart}
-                onMouseOut={handleUnhoverCart}
-              >
-                <FaShoppingCart className='text-lg' />
-              </Button>
+            <div>
+              <NavLink to='/cart' className='relative'>
+                <Button
+                  shape='circle'
+                  color='ghost'
+                  size='sm'
+                  onMouseOver={handleHoverCart}
+                  onMouseOut={handleUnhoverCart}
+                >
+                  <FaShoppingCart className='text-lg' />
+                </Button>
+              </NavLink>
               {renderHoverCart()}
-            </NavLink>
+            </div>
             {!role ? (
               <>
                 <NavLink to='/login'>
@@ -277,6 +337,11 @@ const Header = () => {
           </div>
         </Navbar>
       </div>
+      <div
+        className={`${
+          hoverCart ? 'absolute' : 'hidden'
+        } mt-2 w-screen h-screen bg-black bg-opacity-40 transition-all duration-100`}
+      ></div>
     </header>
   );
 };
