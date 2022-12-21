@@ -17,7 +17,7 @@ const CategoryCard = ({ category, to }: CategoryCardProps) => {
           alt={category.name || ''}
           className='h-12 w-12 md:h-16 md:w-16'
         />
-        <h3 className='break-words leading-none md:text-xl'>{category.name}</h3>
+        <h3 className='line-clamp-1'>{category.name}</h3>
       </StyledCategoryCard>
     </Link>
   );
