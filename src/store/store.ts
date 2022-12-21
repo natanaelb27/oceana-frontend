@@ -10,7 +10,7 @@ import { persistReducer } from 'redux-persist';
 
 import { authApi } from './services/authService';
 import authReducer from './slices/authSlice';
-import cartReducer from './slices/cartSlice';
+import checkoutReducer from './slices/checkoutSlice';
 import registerGoogleReducer from './slices/registerGoogleSlice';
 import sealabsPayReducer from './slices/sealabsPaySlice';
 import sellerSidebarReducer from './slices/sellerSidebarSlice';
@@ -26,7 +26,7 @@ const reducers = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
   [baseApi.reducerPath]: baseApi.reducer,
   auth: authReducer,
-  cart: cartReducer,
+  checkout: checkoutReducer,
   registerGoogle: registerGoogleReducer,
   sealabsPay: sealabsPayReducer,
   sellerSidebar: sellerSidebarReducer,
@@ -43,7 +43,7 @@ const persistConfig = {
     'sealabsPay',
     'sellerSidebar',
   ],
-  whitelist: ['cart'],
+  whitelist: ['checkout'],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);

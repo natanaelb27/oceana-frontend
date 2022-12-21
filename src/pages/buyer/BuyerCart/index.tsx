@@ -8,7 +8,7 @@ import {
   useGetUserCartQuery,
   useUpdateUserCartMutation,
 } from '../../../store/services/cartService';
-import { setCart } from '../../../store/slices/cartSlice';
+import { setCheckout } from '../../../store/slices/checkoutSlice';
 import { useAppDispatch } from '../../../store/store';
 import { CartGroupedByMerchant, CartProduct } from '../../../types/component';
 import { GetUserCartResponse } from '../../../types/response';
@@ -389,7 +389,7 @@ const BuyerCart = () => {
 
     if (selectedItems.selectAll) {
       cartGroupedByMerchants = selectedItems.cartGroupedByMerchants;
-      dispatch(setCart({ cartGroupedByMerchants }));
+      dispatch(setCheckout({ cartGroupedByMerchants }));
       navigate('/checkout');
       return;
     }
@@ -425,7 +425,7 @@ const BuyerCart = () => {
       return;
     }
 
-    dispatch(setCart({ cartGroupedByMerchants }));
+    dispatch(setCheckout({ cartGroupedByMerchants }));
     navigate('/checkout');
   };
 

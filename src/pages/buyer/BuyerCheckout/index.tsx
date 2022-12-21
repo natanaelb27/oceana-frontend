@@ -22,7 +22,7 @@ import {
   useGetWalletDetailsQuery,
   useLazyGetWalletDetailsQuery,
 } from '../../../store/services/walletService';
-import { selectCart } from '../../../store/slices/cartSlice';
+import { selectCart } from '../../../store/slices/checkoutSlice';
 import { useAppSelector } from '../../../store/store';
 import { Address } from '../../../types/component';
 import {
