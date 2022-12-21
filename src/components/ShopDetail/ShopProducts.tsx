@@ -29,7 +29,6 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
 
   const [mostPurchasedTab, setMostPurchasedTab] = useState(true);
   const [allProductsTab, setAllProductsTab] = useState(false);
-  const [reviewTab, setReviewTab] = useState(false);
 
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>({
     id: 0,
@@ -116,7 +115,6 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
     if (identifier === 'mostPurchased') {
       setMostPurchasedTab(true);
       setAllProductsTab(false);
-      setReviewTab(false);
 
       limit = 6;
       sortBy = ProductsSortByString.BestSeller;
@@ -125,16 +123,11 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
     } else if (identifier === 'allProducts') {
       setMostPurchasedTab(false);
       setAllProductsTab(true);
-      setReviewTab(false);
 
       limit = 20;
       sortBy = ProductsSortByString.BestSeller;
       sort = ProductsSortByString.Default;
       categoryID = 0;
-    } else if (identifier === 'review') {
-      setMostPurchasedTab(false);
-      setAllProductsTab(false);
-      setReviewTab(true);
     }
 
     setSort(sort);
@@ -207,44 +200,32 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
           >
             All Products
           </button>
-          <button
-            className={
-              !reviewTab
-                ? 'p-5 mr-3'
-                : 'p-5 mr-3 font-bold border-2 border-b-primary text-primary'
-            }
-            onClick={(event) => {
-              handleChangeTab(event, 'review');
-            }}
-          >
-            Reviews
-          </button>
         </div>
         <hr className='border border-solid border-gray-300' />
       </div>
       <div className='mb-5'>
         {mostPurchasedTab && (
-          <>
+          <div>
             <div className='flex flex-row flex-wrap justify-start'>
               {getAllMerchantProducts?.data?.map((product, i) => {
                 return (
-                  <div className='mr-3 mb-3 w-64' key={i}>
+                  <div className='mr-3 mb-3 w-64 flex' key={i}>
                     <ProductCard product={product} key={product.id} />
                   </div>
                 );
               })}
-              {getAllMerchantProducts?.data?.length === 6 && (
-                <div className='flex items-center'>
-                  <button
-                    className='ml-3 bg-secondary px-10 py-5 text-white rounded-lg'
-                    onClick={handleSeeMoreMostPurchased}
-                  >
-                    More Products {'>'}
-                  </button>
-                </div>
-              )}
             </div>
-          </>
+            {getAllMerchantProducts?.data?.length === 6 && (
+              <div className='mt-5 flex justify-center'>
+                <button
+                  className='ml-3 bg-secondary px-10 py-5 text-white rounded-lg'
+                  onClick={handleSeeMoreMostPurchased}
+                >
+                  More Products {'>'}
+                </button>
+              </div>
+            )}
+          </div>
         )}
         {allProductsTab && (
           <div>
@@ -263,18 +244,18 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
               </div>
             </div>
             <div className='flex flex-row justify-start'>
-              <div className='w-56 mr-14'>
+              <div className='mr-14'>
                 <CategoryCollapse
                   category={
                     getCategoriesByMerchantID?.data
                       ? getCategoriesByMerchantID.data
                       : undefined
                   }
-                  marginLeft={5}
+                  marginLeft={0}
                   handleCategoryClick={handleCategoryClick}
                 />
               </div>
-              <div className='flex flex-row flex-wrap justify-start flex-grow-0'>
+              <div className='grid grid-cols-3 justify-center'>
                 {getAllMerchantProducts?.data?.map((product, i) => {
                   return (
                     <div className='mr-3 mb-3 w-64' key={i}>
