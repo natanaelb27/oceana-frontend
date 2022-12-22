@@ -16,7 +16,7 @@ export default function Img({ src, alt, className }: ImageProps) {
     console.log('test');
     return (
       <img
-        src={require('./../../../assets/images/no-data.png')}
+        src={require('./../../../assets/images/no-data.gif')}
         alt={'image failed to load'}
         className={ClassNames([className !== undefined ? className : ''])}
       />

@@ -545,7 +545,7 @@ const BuyerCheckout = () => {
                           className='w-full'
                           color='primary'
                           id={String(product.product_item_id)}
-                          placeholder='Additional Notes'
+                          placeholder='Additional Notes (optional)'
                           size='sm'
                           type='text'
                           value={
