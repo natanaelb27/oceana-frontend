@@ -369,7 +369,7 @@ const Header = () => {
             <div className='flex-none mr-4'>
               <NavLink to='/'>
                 <Button className='text-xl normal-case' color='ghost'>
-                  <span className='font-main italic'>Oceana</span>
+                  <span className='font-main font-bold italic'>Oceana</span>
                 </Button>
               </NavLink>
             </div>
