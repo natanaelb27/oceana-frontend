@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Avatar,
-  Button,
-  Card,
-  Divider,
-  Input,
-  InputGroup,
-} from 'react-daisyui';
+import { Button, Card, Divider, Input, InputGroup } from 'react-daisyui';
 import { HiShoppingBag, HiShoppingCart } from 'react-icons/hi';
 import { ProductVariation } from '../../types/component';
 
@@ -89,7 +82,14 @@ const ProductCart = ({
         {productVariations.length !== 0 && (
           <div>
             <div className='flex items-center gap-2'>
-              <Image src={`${selectedVariantImage === '' ? defaultImage : selectedVariantImage}`} className='w-20' />
+              <Image
+                src={`${
+                  selectedVariantImage === ''
+                    ? defaultImage
+                    : selectedVariantImage
+                }`}
+                className='w-20'
+              />
               {productVariation &&
               productVariations.length === selectedVariations.length ? (
                 <p className='line-clamp-1'>{titleCase(productVariation)}</p>

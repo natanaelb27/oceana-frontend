@@ -153,6 +153,59 @@ const Search = () => {
     });
   };
 
+  if (!resGetAllProducts?.data) {
+    return (
+      <div className='mx-auto container'>
+        <div className='p-4 grid grid-cols-1 md:grid-cols-5 gap-4 md:py-10 md:gap-10'>
+          <div className='col-span-1'>
+            <FilterSidebar
+              productQuery={productQuery}
+              setProductQuery={setProductQuery}
+              setCategoryFilter={setCategoryFilter}
+            />
+          </div>
+          <div
+            id='product-list-search-page'
+            className='col-span-4 flex flex-col'
+          >
+            <div className='product-list-header'>
+              <div className='ml-2 flex items-center gap-2 text-lg'>
+                <AiOutlineInfoCircle />
+                <p>
+                  Search results for &quot;
+                  <strong>{searchParams.get('q')}</strong>&quot;
+                </p>
+              </div>
+              <div className='mt-6'>
+                <SortBar sort={sort} onSortChange={handleSortChange} />
+              </div>
+            </div>
+            {
+              <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
+                {Array.from({ length: 25 }, (_, index) => index + 1).map(
+                  (n) => (
+                    <ProductCard key={n} />
+                  )
+                )}
+              </div>
+            }
+            <div className='mt-6 flex justify-center'>
+              <Pager
+                page={productQuery.page}
+                totalPage={
+                  resGetAllProducts?.metadata?.total_pages
+                    ? resGetAllProducts.metadata.total_pages
+                    : 0
+                }
+                onPageChange={handlePageChange}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='mx-auto container'>
       <div className='p-4 grid grid-cols-1 md:grid-cols-5 gap-4 md:py-10 md:gap-10'>
@@ -293,30 +346,31 @@ const Search = () => {
               </div>
             ) : null}
           </div>
-          {resGetAllProducts?.data && resGetAllProducts?.data?.length > 0 ? (
-            <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
-              {resGetAllProducts?.data?.map((product, n) => (
-                <ProductCard key={n} product={product} />
-              ))}
-            </div>
-          ) : productQuery.merchantCities.length > 0 ||
-            productQuery.priceMinimum ||
-            productQuery.priceMaximum ||
-            productQuery.rating ||
-            productQuery.categoryID ? (
-            <div className='mt-4'>
-              <NoData
-                title='Oops, there are no products that match the filter...'
-                message='Try to reset or change your filter'
-                buttonMessage='Reset Filter'
-                buttonHandleClick={handleClickResetFilter}
-              ></NoData>
-            </div>
-          ) : (
-            <div className='mt-4'>
-              <NoData title='Oops, it seems that there are no products that match the keyword...'></NoData>
-            </div>
-          )}
+          {resGetAllProducts?.data &&
+            (resGetAllProducts.data.length > 0 ? (
+              <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
+                {resGetAllProducts?.data?.map((product, n) => (
+                  <ProductCard key={n} product={product} />
+                ))}
+              </div>
+            ) : productQuery.merchantCities.length > 0 ||
+              productQuery.priceMinimum ||
+              productQuery.priceMaximum ||
+              productQuery.rating ||
+              productQuery.categoryID ? (
+              <div className='mt-4'>
+                <NoData
+                  title='Oops, there are no products that match the filter...'
+                  message='Try to reset or change your filter'
+                  buttonMessage='Reset Filter'
+                  buttonHandleClick={handleClickResetFilter}
+                ></NoData>
+              </div>
+            ) : (
+              <div className='mt-4'>
+                <NoData title='Oops, it seems that there are no products that match the keyword...'></NoData>
+              </div>
+            ))}
           <div className='mt-6 flex justify-center'>
             <Pager
               page={productQuery.page}

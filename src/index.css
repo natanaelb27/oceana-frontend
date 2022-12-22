@@ -18,6 +18,7 @@ input[type='number'] {
   position: relative;
   overflow: hidden;
   background-color: #d6d6d6;
+  border-radius: 0.5rem;
 }
 
 .skeleton::after {
@@ -60,4 +61,13 @@ input[type='number'] {
 .hide-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+.LazyLoad {
+  opacity: 0;
+  transition: all 1s ease-in-out;
+}
+
+.is-visible {
+  opacity: 1;
 }

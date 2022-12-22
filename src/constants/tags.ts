@@ -11,4 +11,6 @@ export const TAG_TYPES = [
   'City',
   'FavoriteProduct',
   'Merchant',
+  'MerchantVoucher',
+  'MerchantPromotion',
 ];

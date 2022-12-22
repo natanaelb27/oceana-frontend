@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useEffect, useRef } from 'react';
+import React, { ChangeEvent, useState, useEffect } from 'react';
 import { Button, Form, Modal, Tooltip } from 'react-daisyui';
 import { CgLock, CgLockUnlock } from 'react-icons/cg';
 import { useChangePinWalletMutation } from '../../../store/services/walletService';
