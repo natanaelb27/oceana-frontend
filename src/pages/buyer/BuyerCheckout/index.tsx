@@ -663,10 +663,11 @@ const BuyerCheckout = () => {
           </Tooltip>
         </Card.Title>
         {marketplaceVoucher && (
-          <Card.Body className='p-0'>
+          <Card.Body className='p-0 mt-2'>
             <VoucherTicket
               currentVoucher={marketplaceVoucher}
               selectedVoucher={marketplaceVoucher}
+              onClickVoucher={handleMarketplaceVoucherClick}
             />
           </Card.Body>
         )}

@@ -45,7 +45,7 @@ const MarketplaceVoucherModal = ({
             key={voucher.id}
             currentVoucher={voucher}
             selectedVoucher={currentMarketplaceVoucher}
-            onChangeVoucher={handleChangeVoucher}
+            onClickVoucher={handleChangeVoucher}
           />
         ))}
       </Modal.Body>
