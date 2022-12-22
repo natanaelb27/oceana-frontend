@@ -5,12 +5,11 @@ import {
   SellerAccountVoucherFormContent,
 } from '../../types/content';
 import AddressContent from './AddressContent';
+import ProfileContent from './ProfileContent';
 import ShipmentContent from './ShipmentContent';
 import VoucherContent from './VoucherContent';
 import VoucherDetailContent from './VoucherDetailContent';
 import VoucherFormContent from './VoucherFormContent';
-
-// import ProfileContent from './ProfileContent';
 import ProductAddContent from './ProductAddContent/index';
 
 type ContentProps = {
@@ -21,7 +20,7 @@ type ContentProps = {
 const Content = ({ profile, content }: ContentProps) => {
   const renderContent = () => {
     if (content === SellerAccountContent.Profile) {
-      // return <ProfileContent profile={profile} />;
+      return <ProfileContent profile={profile} />;
     }
 
     if (content === SellerAccountContent.Address) {
@@ -63,7 +62,11 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === SellerAccountContent.Promotion) {
-      // return <AddressContent />;
+      // return <PromotionContent profile={profile} />;
+    }
+
+    if (content === SellerAccountContent.PromotionDetail) {
+      // return <PromotionDetailContent profile={profile} />;
     }
 
     if (content === SellerAccountContent.Order) {

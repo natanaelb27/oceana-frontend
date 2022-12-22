@@ -1,26 +1,42 @@
 import { ReactNode } from 'react';
-import { Link } from 'react-daisyui';
-import { HomeCardContainer, HomeCardTitle } from './style';
+import { Card } from 'react-daisyui';
+import { Link } from 'react-router-dom';
 
 type HomeCardProps = {
+  id: string;
   children: ReactNode;
   title: string;
+  subtitle: string;
   navigateSeeAll?: string;
 };
 
-const HomeCard = ({ children, title, navigateSeeAll }: HomeCardProps) => {
+const HomeCard = ({
+  id,
+  children,
+  title,
+  subtitle,
+  navigateSeeAll,
+}: HomeCardProps) => {
   return (
-    <HomeCardContainer>
-      <div className='flex items-start gap-2'>
-        <Link
-          href={navigateSeeAll}
-          className='hover:text-secondary hover:no-underline'
-        >
-          <HomeCardTitle>{title}</HomeCardTitle>
-        </Link>
-      </div>
-      {children}
-    </HomeCardContainer>
+    <div
+      id={id}
+      className='shadow rounded-2xl bg-gradient-to-r from-primary to-secondary pb-1'
+    >
+      <Card className='h-full w-full bg-base-100'>
+        <Card.Body>
+          <Link
+            to={navigateSeeAll || '/'}
+            className='link no-underline hover:text-primary hover:no-underline text-xl md:text-2xl font-medium text-center md:text-left'
+          >
+            {title}
+          </Link>
+          <span className='font-light text-sm md:text-md mb-2.5 text-center md:text-left'>
+            {subtitle}
+          </span>
+          {children}
+        </Card.Body>
+      </Card>
+    </div>
   );
 };
 

@@ -4,7 +4,6 @@ import moment from 'moment';
 import { Button, Card, Divider, Form, Input, Modal } from 'react-daisyui';
 import * as Yup from 'yup';
 import { HiOutlinePhotograph, HiOutlineMail } from 'react-icons/hi';
-import { HiOutlineFaceSmile } from 'react-icons/hi2';
 import { CgClose, CgPassword, CgProfile } from 'react-icons/cg';
 
 import {
@@ -320,6 +319,10 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
                   ? photo
                   : 'https://i.pinimg.com/736x/2a/4d/11/2a4d11d5d32c83812d2e07742578835c.jpg'
               }
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src = require('../../../assets/images/no-image.webp');
+              }}
               className='object-cover w-full'
             />
             <div className='p-4'>
@@ -552,10 +555,9 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
               editUsernameFormik.handleSubmit();
             }}
           >
-            <HiOutlineFaceSmile className='mx-auto text-9xl text-secondary hover:animate-pulse' />
+            <CgProfile className='mx-auto text-9xl text-secondary hover:animate-pulse' />
             <span className='text-center mb-8'>
-              Make sure your username is unique and represent you as it will be
-              shown to other users.
+              Your username will represent you in Oceana
             </span>
             <Form.Label title='Username' />
             <Input

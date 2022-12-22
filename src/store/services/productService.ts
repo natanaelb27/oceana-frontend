@@ -1,11 +1,11 @@
 import { UpsertProductRequest } from '../../types/request/product';
 import {
-  FavoriteProductResponse,
   GetAllProductsResponse,
-  GetFavoriteProductResponse,
   GetProductDetailsResponse,
   GetProductUpsertModelResponse,
   GetPurchasedQuantitiesResponse,
+  FavoriteProductResponse,
+  GetFavoriteProductResponse,
   ViewPostResponse,
 } from '../../types/response';
 import { baseApi } from '../store';

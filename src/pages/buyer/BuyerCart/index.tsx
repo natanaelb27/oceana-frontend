@@ -11,6 +11,7 @@ import { AiOutlinePlusCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { titleCase } from '../../../utils/titleCase';
 import NoData from '../../../components/common/NoData';
 import { toRupiah } from '../../../utils/convert';
+import { Image } from '../../../components/common';
 
 type SelectItem = {
   productID: number;
@@ -38,7 +39,7 @@ type ModalInformation = {
 };
 
 const BuyerCart = () => {
-  const { data, error } = useGetUserCartQuery();
+  const { data, error, isLoading } = useGetUserCartQuery();
   const [updateUserCart] = useUpdateUserCartMutation();
   const [selectedItems, setSelectedItems] = useState<SelectCartItems>({
     selectAll: false,
@@ -209,7 +210,7 @@ const BuyerCart = () => {
             })
               .unwrap()
               .then(() => {
-                notifySuccessToast('1 Item has been added to cart');
+                notifySuccessToast('1 item has been added to your cart');
               })
               .catch(() => {
                 product.quantity = product.stock_quantity;
@@ -249,7 +250,7 @@ const BuyerCart = () => {
               })
                 .unwrap()
                 .then(() => {
-                  notifySuccessToast('1 Item has been removed from cart');
+                  notifySuccessToast('1 item has been removed from your cart');
                 })
                 .catch((err) => {
                   notifyErrorToast(err.data.message);
@@ -355,10 +356,10 @@ const BuyerCart = () => {
     })
       .unwrap()
       .then(() => {
-        notifySuccessToast('Item was succesfully deleted from cart');
+        notifySuccessToast('Product was successfully deleted from your cart');
       })
       .catch(() => {
-        notifyErrorToast('Error deleting item from cart');
+        notifyErrorToast('Error deleting product from cart');
       })
       .finally(() => {
         setModal({
@@ -377,6 +378,42 @@ const BuyerCart = () => {
     });
   };
 
+  if (isLoading) {
+    return (
+      <div className='container mx-auto animate-pulse py-10'>
+        <div className='grid grid-col-12 gap-4 mb-10'>
+          <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+        </div>
+        <Divider />
+        <div className='grid grid-col-12 gap-4 mb-10'>
+          <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+        </div>
+        <Divider />
+        <div className='grid grid-col-12 gap-4 mb-10'>
+          <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
+          <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+        </div>
+      </div>
+    );
+  }
+
   if (!data?.data || data?.data?.length === 0) {
     return (
       <div className='py-10'>
@@ -391,9 +428,6 @@ const BuyerCart = () => {
   return (
     <div className='px-2 container mx-auto flex flex-col'>
       <h5 className='font-bold text-2xl text-primary my-4'>Cart</h5>
-      {/* <Alert className='bg-red-100 border-2 border-red-300 my-2'>
-        :( There was 1 item that could not be processed
-      </Alert> */}
       <div className='flex'>
         <input
           type='checkbox'
@@ -439,14 +473,9 @@ const BuyerCart = () => {
                     onChange={handleClickProduct}
                   />
                   <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2 h-'>
-                    <img
+                    <Image
                       src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
                       className='rounded-lg h-full w-full'
-                      onError={({ currentTarget }) => {
-                        currentTarget.onerror = null;
-                        currentTarget.src =
-                          'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-                      }}
                     />
                   </div>
                   <div className='h-24 flex flex-col'>
@@ -497,10 +526,6 @@ const BuyerCart = () => {
                     }
                     size='sm'
                   >
-                    {/* <BiTrash
-                      size='1.5em'
-                      className='text-error cursor-pointer'
-                    /> */}
                     DELETE
                   </Button>
                   <Button

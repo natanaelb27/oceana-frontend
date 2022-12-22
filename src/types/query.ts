@@ -26,6 +26,20 @@ export type MerchantVoucherQuery = {
   merchantID: number;
 };
 
+export type MarketplaceVoucherQuery = {
+  limit: number;
+  page: number;
+  sortBy: string;
+  sort: string;
+  searchVoucherName: string;
+  filterVoucherStatus: string;
+};
+
+export type MerchantPromotionQuery = {
+  searchPromotionName: string;
+  filterPromotionStatus: string;
+};
+
 export type TransactionHistoryQuery = {
   search: string;
   filterOrderStatus: string;
@@ -55,4 +69,14 @@ export type PurchasedQuantitiesQuery = {
   product_id: number;
   product_item_id: number;
   quantity: number;
+};
+
+export type ReviewQuery = {
+  sort: string;
+  sort_by: string;
+  limit: number;
+  page: number;
+  media: boolean;
+  comment: boolean;
+  rating: number[];
 };

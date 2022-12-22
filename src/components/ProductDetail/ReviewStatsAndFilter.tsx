@@ -1,11 +1,23 @@
+import React from 'react';
+import { ProductReviewDetails } from '../../types/component';
 import ReviewFilter from './ReviewFilter';
 import ReviewStats from './ReviewStats';
 
 type ReviewStatsAndFilterProps = {
+  handleChangeFilterReviewWithMedia?: () => void;
+  handleChangeFilterReviewRating?: (e: React.SyntheticEvent) => void;
+  handleChangeFilterReviewComments?: () => void;
   isLoading?: boolean;
+  productReviewDetails?: ProductReviewDetails;
 };
 
-const ReviewStatsAndFilter = ({ isLoading }: ReviewStatsAndFilterProps) => {
+const ReviewStatsAndFilter = ({
+  isLoading,
+  handleChangeFilterReviewWithMedia,
+  handleChangeFilterReviewRating,
+  handleChangeFilterReviewComments,
+  productReviewDetails
+}: ReviewStatsAndFilterProps) => {
   if (isLoading) {
     return (
       <div>
@@ -17,12 +29,16 @@ const ReviewStatsAndFilter = ({ isLoading }: ReviewStatsAndFilterProps) => {
   }
 
   return (
-    <div>
+    <div className='md:p-4'>
       <h5 className='font-medium uppercase text-xl mb-4 text-center'>
         Buyer&apos;s Reviews
       </h5>
-      <ReviewStats />
-      <ReviewFilter />
+      <ReviewStats productReviewDetails={productReviewDetails} />
+      <ReviewFilter
+        handleChangeFilterReviewWithMedia={handleChangeFilterReviewWithMedia}
+        handleChangeFilterReviewRating={handleChangeFilterReviewRating}
+        handleChangeFilterReviewComments={handleChangeFilterReviewComments}
+      />
     </div>
   );
 };

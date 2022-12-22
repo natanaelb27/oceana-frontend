@@ -1,17 +1,40 @@
-import { useState } from 'react';
-import { Carousel, Divider } from 'react-daisyui';
+import moment from 'moment';
+import { useEffect, useState } from 'react';
+import { Button, Divider } from 'react-daisyui';
+import { useNavigate } from 'react-router-dom';
 import { ProductCard, Slider } from '../../components/common';
 import { CategoryCard, HomeCard, PromoBanner } from '../../components/Home';
-import { LIMIT_HOME_RECOMMENDED_PRODUCTS } from '../../constants';
-import { useGetAllCategoryQuery } from '../../store/services/categoryService';
-import { useGetAllProductsQuery } from '../../store/services/productService';
+import {
+  LIMIT_HOME_ALL_PRODUCTS,
+  LIMIT_HOME_RECOMMENDED_PRODUCTS,
+} from '../../constants';
+import { useLocalStorage } from '../../hooks';
+import { useLazyGetAllCategoryQuery } from '../../store/services/categoryService';
+import { useLazyGetAllProductsQuery } from '../../store/services/productService';
+import { Category, Product } from '../../types/component';
 import { CategoryQuery, ProductQuery } from '../../types/query';
 import { ProductsSortByString } from '../../types/sort';
 import { toCategoryQuery, toProductQuery } from '../../utils/mapperDTO';
 import { toUrl } from '../../utils/toUrl';
 
+type CategoryStorageProps = {
+  value: Category[];
+  timestamp: Date | null;
+};
+
+type RecommendedStorageProps = {
+  value: Product[];
+  timestamp: Date | null;
+};
+
+type ProductStorageProps = {
+  value: Product[];
+  timestamp: Date | null;
+};
+
 const Home = () => {
-  const [productQuery] = useState<ProductQuery>({
+  const navigate = useNavigate();
+  const recommendedProductQuery: ProductQuery = {
     search: '',
     sort: '',
     sortBy: ProductsSortByString.Recommended,
@@ -24,68 +47,189 @@ const Home = () => {
     rating: 0,
     merchantCities: [],
     courierServices: [],
-  });
-
-  const [categoryQuery] = useState<CategoryQuery>({
+  };
+  const allProductQuery: ProductQuery = {
+    search: '',
+    sort: '',
+    sortBy: ProductsSortByString.Default,
+    limit: LIMIT_HOME_ALL_PRODUCTS,
+    page: 1,
+    merchantID: 0,
     categoryID: 0,
-    levelDepth: 0,
-  });
+    priceMinimum: 0,
+    priceMaximum: 0,
+    rating: 0,
+    merchantCities: [],
+    courierServices: [],
+  };
+  const categoryQuery: CategoryQuery = {
+    categoryID: 0,
+    levelDepth: 1,
+  };
 
-  const { data: resGetAllCategory } = useGetAllCategoryQuery(
-    toCategoryQuery(categoryQuery)
-  );
-  const { data: resGetRecommendedProducts } = useGetAllProductsQuery(
-    toProductQuery(productQuery)
-  );
+  const [homeCategoryStorage, setHomeCategoryStorage] =
+    useLocalStorage<CategoryStorageProps>('home_category', {
+      value: [],
+      timestamp: null,
+    });
+  const [recommendedStorage, setRecommendedStorage] =
+    useLocalStorage<RecommendedStorageProps>('home_recommended', {
+      value: [],
+      timestamp: null,
+    });
+  const [productsStorage, setProductStorage] =
+    useLocalStorage<ProductStorageProps>('home_products', {
+      value: [],
+      timestamp: null,
+    });
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [recommended, setRecommended] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  const [getAllCategory] = useLazyGetAllCategoryQuery();
+  const [getRecommendedProductsQuery] = useLazyGetAllProductsQuery();
+  const [getAllProducts] = useLazyGetAllProductsQuery();
+
+  useEffect(() => {
+    if (
+      !('value' in homeCategoryStorage && 'timestamp' in homeCategoryStorage) ||
+      homeCategoryStorage.value.length === 0 ||
+      moment(homeCategoryStorage.timestamp).isBefore(moment())
+    ) {
+      getAllCategory(toCategoryQuery(categoryQuery))
+        .unwrap()
+        .then((res) => {
+          setCategories(res.data ? res.data : []);
+          setHomeCategoryStorage({
+            value: res.data ? res.data : [],
+            timestamp: moment().add(1, 'day').toDate(),
+          });
+        });
+    } else {
+      setCategories(homeCategoryStorage.value);
+    }
+
+    if (
+      !('value' in recommendedStorage && 'timestamp' in recommendedStorage) ||
+      recommendedStorage.value.length === 0 ||
+      moment(recommendedStorage.timestamp).isBefore(moment())
+    ) {
+      getRecommendedProductsQuery(toProductQuery(recommendedProductQuery))
+        .unwrap()
+        .then((res) => {
+          setRecommended(res.data ? res.data : []);
+          setRecommendedStorage({
+            value: res.data ? res.data : [],
+            timestamp: moment().add(1, 'h').toDate(),
+          });
+        });
+    } else {
+      setRecommended(recommendedStorage.value);
+    }
+
+    if (
+      !('value' in productsStorage && 'timestamp' in productsStorage) ||
+      productsStorage.value.length === 0 ||
+      moment(productsStorage.timestamp).isBefore(moment())
+    ) {
+      getAllProducts(toProductQuery(allProductQuery))
+        .unwrap()
+        .then((res) => {
+          setProducts(res.data ? res.data : []);
+          setProductStorage({
+            value: res.data ? res.data : [],
+            timestamp: moment().add(1, 'h').toDate(),
+          });
+        });
+    } else {
+      setProducts(productsStorage.value);
+    }
+  }, []);
+
+  const handleSeeMoreClick = () => {
+    navigate('/search');
+  };
 
   return (
-    <div className='px-2 container mx-auto flex flex-col items-center'>
-      <div className='my-5'>
-        <PromoBanner />
-      </div>
-      <div className='my-5'>
-        <HomeCard title='Category' navigateSeeAll='/category'>
-          <Slider id='category'>
-            {resGetAllCategory?.data &&
-              resGetAllCategory.data.map((category, n) => (
-                <Carousel.Item key={n}>
+    <div className='container mx-auto'>
+      <div className='px-4 py-10'>
+        <div className='mb-8'>
+          <PromoBanner />
+        </div>
+        <div className='mb-8'>
+          <HomeCard
+            id='category'
+            title='Category'
+            subtitle='There are various products with special prices waiting for you!'
+            navigateSeeAll='/category'
+          >
+            <Slider id='category'>
+              {categories.map((category, n) => (
+                <div className='carousel-item' key={n}>
                   <CategoryCard
                     category={category}
                     to={`/category/${toUrl(category.name)}-i.${category.id}`}
                   />
-                </Carousel.Item>
+                </div>
               ))}
-          </Slider>
-        </HomeCard>
-      </div>
-      <Divider className='w-[360px] self-center md:w-[640px] lg:w-[800px] xl:w-[1080px]' />
-      <div className='my-5'>
-        <HomeCard
-          title='Recommended Products'
-          navigateSeeAll='/search?sort-by=recommended'
+            </Slider>
+          </HomeCard>
+        </div>
+        <div>
+          <HomeCard
+            id='recommended'
+            title='Recommended Products'
+            subtitle='These are the most seen products!'
+            navigateSeeAll='/search?sort-by=recommended'
+          >
+            <Slider id='recommended'>
+              {recommended.length > 0
+                ? recommended.map((product, n) => (
+                    <div key={n} className='carousel-item max-w-xs w-full'>
+                      <ProductCard product={product} />
+                    </div>
+                  ))
+                : Array(30)
+                    .fill(0)
+                    .map((_, n) => (
+                      <div key={n} className='carousel-item max-w-xs w-full'>
+                        <ProductCard product={undefined} />
+                      </div>
+                    ))}
+            </Slider>
+          </HomeCard>
+        </div>
+        <Divider className='py-8' />
+        <div
+          id='products'
+          className='grid grid-cols-12 w-full gap-4 justify-center mb-8'
         >
-          <Slider id='recommended' gap={20} gapMobile={10}>
-            {resGetRecommendedProducts?.data
-              ? resGetRecommendedProducts.data.map((product, n) => (
-                  <Carousel.Item
-                    key={n}
-                    className='max-w-[180px] md:max-w-[240px] w-full'
-                  >
-                    <ProductCard product={product} />
-                  </Carousel.Item>
-                ))
-              : Array(LIMIT_HOME_RECOMMENDED_PRODUCTS)
-                  .fill(0)
-                  .map((_, n) => (
-                    <Carousel.Item
-                      key={n}
-                      className='max-w-[180px] md:max-w-[240px] w-full'
-                    >
-                      <ProductCard product={undefined} />
-                    </Carousel.Item>
-                  ))}
-          </Slider>
-        </HomeCard>
+          {products.length > 0
+            ? products.map((row) => (
+                <div key={row.id} className='col-span-6 md:col-span-2 '>
+                  <ProductCard product={row} />
+                </div>
+              ))
+            : Array.from(
+                { length: LIMIT_HOME_ALL_PRODUCTS },
+                (_, i) => i + 1
+              ).map((id) => (
+                <div key={id} className='col-span-12 md:col-span-2'>
+                  <ProductCard />
+                </div>
+              ))}
+        </div>
+        <div className='flex'>
+          <Button
+            variant='outline'
+            color='secondary'
+            className='normal-case font-medium w-full max-w-xs mx-auto'
+            onClick={handleSeeMoreClick}
+          >
+            See More
+          </Button>
+        </div>
       </div>
     </div>
   );
