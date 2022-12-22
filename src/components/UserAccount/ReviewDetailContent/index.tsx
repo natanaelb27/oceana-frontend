@@ -53,24 +53,21 @@ const ReviewDetailContent = () => {
   const [filterReviewStatus, setFilterReviewStatus] = useState<string>(
     REVIEW_STATUS.NOT_REVIEWED
   );
-
+  const navigate = useNavigate();
   const params = useParams();
 
-  const { data: getOrderDetailsData, isLoading: getOrderDetailsIsLoading } =
-    useGetOrderDetailsQuery(params.orderID || '');
+  const {
+    data: getOrderDetailsData,
+    isLoading: getOrderDetailsIsLoading,
+    error: getOrderDetailsError,
+  } = useGetOrderDetailsQuery(params.orderID || '');
 
-  const navigate = useNavigate();
-
-  const handleStartShoppingClick = () => {
-    navigate('/');
-  };
+  if (!getOrderDetailsIsLoading && getOrderDetailsError) {
+    navigate('/user/review');
+  }
 
   const handleNavigateShop = (merchantID: number) => {
     navigate(`/shops/${merchantID}`);
-  };
-
-  const handleNavigateReviewDetails = (orderID: string) => {
-    navigate(`/user/review/detail/${orderID}`);
   };
 
   return (
@@ -104,10 +101,17 @@ const ReviewDetailContent = () => {
         )}
         {getOrderDetailsData?.data && (
           <div className='flex flex-col col-span-12 border-2'>
-            <div className='flex justify-between bg-base-200 p-2'>
+            <div className='flex flex-col md:flex-row justify-between bg-base-200 p-2'>
               <span className='text-sm'>
                 Shop:{' '}
-                <span className='text-primary cursor-pointer'>
+                <span
+                  className='text-primary cursor-pointer'
+                  onClick={() => {
+                    handleNavigateShop(
+                      getOrderDetailsData?.data?.merchant_id || 0
+                    );
+                  }}
+                >
                   {getOrderDetailsData?.data?.shop_name}
                 </span>
               </span>

@@ -13,10 +13,10 @@ type ContentProps = {
   file: string;
   type: string;
   idx: number;
-  handleClick: (idx: number) => void;
+  handleClickDelete: (idx: number) => void;
 };
 
-function ViewFileCard({ file, idx, type, handleClick }: ContentProps) {
+function ViewFileCard({ file, idx, type, handleClickDelete }: ContentProps) {
   const [isHovering, setIsHovering] = useState(false);
 
   const handleMouseOver = () => {
@@ -28,7 +28,7 @@ function ViewFileCard({ file, idx, type, handleClick }: ContentProps) {
   };
 
   const onDeleteFile = () => {
-    handleClick(idx);
+    handleClickDelete(idx);
   };
 
   if (type === MEDIA_TYPE.IMAGE) {

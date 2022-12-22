@@ -812,9 +812,9 @@ const PurchaseContent = () => {
             );
           })
         ) : stringCompare(activeStatusButton, DELIVERY_STATUS.ALL) &&
-          dateRange.at(0) === null &&
-          dateRange.at(1) === null &&
-          search === '' ? (
+          transactionHistoryQuery.filterStartTransactionDate === '' &&
+          transactionHistoryQuery.filterEndTransactionDate === '' &&
+          transactionHistoryQuery.search === '' ? (
           <div className='col-span-12'>
             <NoData
               title='Oops, it seems that you have never made a purchase'

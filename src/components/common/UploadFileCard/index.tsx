@@ -5,22 +5,27 @@ import { notifyErrorToast } from '../../../utils/toast';
 import ViewFileCard from './ViewFileCard';
 
 type ContentProps = {
-  upload_limit: number;
-  file_type: string;
+  files: File[];
+  setFiles: (f: File[]) => void;
+  uploadLimit: number;
+  fileType: string;
 };
 
-const UploadFileCard = ({ upload_limit, file_type }: ContentProps) => {
-  const [files, setFiles] = useState<File[]>([]);
+const UploadFileCard = ({
+  files,
+  setFiles,
+  uploadLimit,
+  fileType,
+}: ContentProps) => {
   const [filesView, setFilesView] = useState<string[]>([]);
 
   const onSelectFile = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files || [];
     const selectedFilesViewArray = Array.from(selectedFiles);
-
-    if (selectedFiles.length + filesView.length > upload_limit) {
+    if (selectedFiles.length + filesView.length > uploadLimit) {
       notifyErrorToast(
-        `Oops, maximum selection limit is ${upload_limit} ${
-          upload_limit > 1 ? file_type + 's' : file_type
+        `Oops, maximum selection limit is ${uploadLimit} ${
+          uploadLimit > 1 ? fileType + 's' : fileType
         }`
       );
       return;
@@ -38,7 +43,7 @@ const UploadFileCard = ({ upload_limit, file_type }: ContentProps) => {
     setFiles([...files, ...selectedFilesArray]);
   };
 
-  const onClickDeleteNewPhoto = (idx: number) => {
+  const onClickDeleteFile = (idx: number) => {
     setFiles(files.filter((_, index) => idx !== index));
     setFilesView(filesView.filter((_, index) => idx !== index));
   };
@@ -48,11 +53,12 @@ const UploadFileCard = ({ upload_limit, file_type }: ContentProps) => {
       <ViewFileCard
         key={file}
         file={file}
-        type={file_type}
+        type={fileType}
         idx={index}
-        handleClick={onClickDeleteNewPhoto}
+        handleClickDelete={onClickDeleteFile}
       />
     ));
+
   return (
     <div className='flex flex-wrap gap-2'>
       {files.length > 0 ? (
@@ -60,15 +66,15 @@ const UploadFileCard = ({ upload_limit, file_type }: ContentProps) => {
           {filesView && renderNewReviewFile()}
         </div>
       ) : null}
-      {files.length < upload_limit ? (
+      {files.length < uploadLimit ? (
         <label className='mx-0 my-auto border-2 border-dotted flex flex-col justify-center items-center rounded-lg cursor-pointer text-sm font-bold text-center w-20 h-20'>
-          {file_type === MEDIA_TYPE.IMAGE ? (
+          {fileType === MEDIA_TYPE.IMAGE ? (
             <HiOutlineCamera className='w-8 h-8'></HiOutlineCamera>
           ) : null}
-          {file_type === MEDIA_TYPE.VIDEO ? (
+          {fileType === MEDIA_TYPE.VIDEO ? (
             <HiOutlineVideoCamera className='w-8 h-8'></HiOutlineVideoCamera>
           ) : null}
-          {upload_limit - files.length}/{upload_limit}
+          {uploadLimit - files.length}/{uploadLimit}
           <input
             className='hidden'
             type='file'
@@ -80,9 +86,9 @@ const UploadFileCard = ({ upload_limit, file_type }: ContentProps) => {
             }}
             multiple
             accept={
-              file_type === MEDIA_TYPE.IMAGE
+              fileType === MEDIA_TYPE.IMAGE
                 ? 'image/*'
-                : file_type === MEDIA_TYPE.VIDEO
+                : fileType === MEDIA_TYPE.VIDEO
                 ? 'video/*'
                 : ''
             }

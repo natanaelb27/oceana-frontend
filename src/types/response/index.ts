@@ -7,6 +7,7 @@ export * from './merchant';
 export * from './merchantVoucher';
 export * from './order';
 export * from './product';
+export * from './productReview';
 export * from './profile';
 export * from './role';
 export * from './sealabsPay';

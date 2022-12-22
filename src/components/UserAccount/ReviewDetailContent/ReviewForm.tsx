@@ -1,14 +1,20 @@
 import { ChangeEvent, MouseEventHandler, useState } from 'react';
-import { Input, Rating, Textarea } from 'react-daisyui';
+import { Button, Input, Rating, Textarea } from 'react-daisyui';
 import {
   HiInformationCircle,
   HiOutlineCamera,
   HiOutlineInformationCircle,
+  HiOutlinePencil,
   HiOutlineVideoCamera,
+  HiPencil,
 } from 'react-icons/hi';
 import { MEDIA_TYPE } from '../../../constants';
+import { useCreateProductReviewMutation } from '../../../store/services/reviewService';
 import { OrderDetail } from '../../../types/component';
-import { notifyErrorToast } from '../../../utils/toast';
+import { CreateProductReviewRequest } from '../../../types/request';
+import { CreateProductReviewResponse } from '../../../types/response';
+import { toCreateProductReviewRequest } from '../../../utils/mapperDTO/productReview';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import UploadFileCard from '../../common/UploadFileCard';
 
 type ContentProps = {
@@ -20,7 +26,37 @@ const ReviewForm = ({
   order_detail_length,
   order_detail_data,
 }: ContentProps) => {
-  const [ratingInput, setRatingInput] = useState<number>(0);
+  const [images, setImages] = useState<File[]>([]);
+  const [videos, setVideos] = useState<File[]>([]);
+
+  const [ratingInput, setRatingInput] = useState<number>(5);
+
+  const [reviewInput, setReviewInput] = useState<string>('');
+
+  const handleReviewTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setReviewInput(e.target.value);
+  };
+
+  const [createProductReview, { isLoading: createProductReviewIsLoading }] =
+    useCreateProductReviewMutation();
+
+  const handleSubmitReviewClick = () => {
+    createProductReview([
+      toCreateProductReviewRequest(ratingInput, reviewInput, images, videos),
+      order_detail_data?.order_detail_id,
+    ])
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Review has been created!');
+      })
+      .catch((err) => {
+        if ('data' in err) {
+          const response = err.data as CreateProductReviewResponse;
+
+          notifyErrorToast(response.message);
+        }
+      });
+  };
 
   return (
     <div className='flex gap-3'>
@@ -61,6 +97,7 @@ const ReviewForm = ({
               </span>
               <Textarea
                 className='text-xs resize-none h-24'
+                onChange={handleReviewTextChange}
                 placeholder='Write your description about this product...'
               ></Textarea>
             </div>
@@ -69,8 +106,10 @@ const ReviewForm = ({
                 Share photos of the products you receive
               </span>
               <UploadFileCard
-                upload_limit={5}
-                file_type={MEDIA_TYPE.IMAGE}
+                files={images}
+                setFiles={setImages}
+                uploadLimit={5}
+                fileType={MEDIA_TYPE.IMAGE}
               ></UploadFileCard>
             </div>
             <div className='flex flex-col gap-1'>
@@ -78,8 +117,10 @@ const ReviewForm = ({
                 Share videos of the products you receive
               </span>
               <UploadFileCard
-                upload_limit={1}
-                file_type={MEDIA_TYPE.VIDEO}
+                files={videos}
+                setFiles={setVideos}
+                uploadLimit={1}
+                fileType={MEDIA_TYPE.VIDEO}
               ></UploadFileCard>
             </div>
           </div>
@@ -115,6 +156,16 @@ const ReviewForm = ({
               </ul>
             </div>
           </div>
+        </div>
+        <div className='flex justify-end'>
+          <Button
+            className='btn-primary normal-case'
+            startIcon={<HiPencil />}
+            onClick={handleSubmitReviewClick}
+            loading={createProductReviewIsLoading}
+          >
+            Send Review
+          </Button>
         </div>
       </div>
     </div>

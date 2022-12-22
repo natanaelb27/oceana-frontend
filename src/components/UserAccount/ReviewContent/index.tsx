@@ -286,10 +286,6 @@ const ReviewContent = () => {
     });
   };
 
-  const handleStartShoppingClick = () => {
-    navigate('/');
-  };
-
   const handleNavigateShop = (merchantID: number) => {
     navigate(`/shops/${merchantID}`);
   };
@@ -394,15 +390,20 @@ const ReviewContent = () => {
                       {transactionHistory?.invoice_number}
                     </span>
                   </div>
-                  <div className='grid grid-cols-6 gap-5'>
-                    <div className='flex gap-5 items-center col-span-2 border-r'>
+                  <div className='grid md:grid-cols-6 gap-5'>
+                    <div className='flex gap-5 items-center col-span-2 md:border-r'>
                       <img
                         src={transactionHistory?.shop_photo || ''}
                         alt={transactionHistory?.shop_name || ''}
                         className='h-12 w-12 md:h-20 md:w-20 rounded-md'
                       />
                       <div className='flex flex-col gap-1'>
-                        <span className='font-light text-primary cursor-pointer'>
+                        <span
+                          className='font-light text-primary cursor-pointer'
+                          onClick={() => {
+                            handleNavigateShop(transactionHistory?.merchant_id);
+                          }}
+                        >
                           {transactionHistory.shop_name}
                         </span>
                         <Badge
@@ -432,8 +433,46 @@ const ReviewContent = () => {
                                   alt={orderDetail?.product_name || ''}
                                   className='h-12 w-12 md:h-20 md:w-20 rounded-md'
                                 />
-                                <div className='flex flex-col gap-1'>
-                                  <span className='font-bold cursor-pointer text-sm line-clamp-2 md:line-clamp-1'>
+                                {/* desktop version */}
+                                <div className='hidden md:flex flex-col gap-1 w-full'>
+                                  <span className='font-bold text-sm line-clamp-2 md:line-clamp-1'>
+                                    {orderDetail.product_name}
+                                  </span>
+                                  <span className='text-xs font-light'>
+                                    {orderDetail.product_variations}
+                                  </span>
+                                  {orderDetail?.product_review_id ? (
+                                    <Rating
+                                      value={orderDetail?.rating || 0}
+                                      size='sm'
+                                    >
+                                      {[1, 2, 3, 4, 5].map((rating, i) => {
+                                        return (
+                                          <Rating.Item
+                                            key={i}
+                                            name='rating-1'
+                                            value={rating}
+                                            className='mask mask-star-2 bg-orange-400'
+                                          />
+                                        );
+                                      })}
+                                    </Rating>
+                                  ) : (
+                                    <span className='text-xs font-light'>
+                                      Not reviewed yet
+                                    </span>
+                                  )}
+                                </div>
+                                {/* mobile version */}
+                                <div
+                                  className='flex md:hidden flex-col gap-1 cursor-pointer w-full'
+                                  onClick={() => {
+                                    handleNavigateReviewDetails(
+                                      transactionHistory?.order_id
+                                    );
+                                  }}
+                                >
+                                  <span className='font-bold text-sm line-clamp-2 md:line-clamp-1'>
                                     {orderDetail.product_name}
                                   </span>
                                   <span className='text-xs font-light'>
@@ -462,10 +501,10 @@ const ReviewContent = () => {
                                   )}
                                 </div>
                               </div>
-                              <div className='normal-case col-span-3 flex justify-center'>
+                              <div className='normal-case col-span-3 hidden md:flex justify-center '>
                                 {orderDetail?.product_review_id ? (
                                   <Button
-                                    className='normal-case text-xs text-base-100'
+                                    className='normal-case text-xs text-base-100 w-32'
                                     color='primary'
                                     size='sm'
                                     onClick={() => {
@@ -478,7 +517,7 @@ const ReviewContent = () => {
                                   </Button>
                                 ) : (
                                   <Button
-                                    className='normal-case text-xs text-base-100'
+                                    className='normal-case text-xs text-base-100 w-32'
                                     color='primary'
                                     size='sm'
                                     onClick={() => {
@@ -514,16 +553,11 @@ const ReviewContent = () => {
               </Card>
             );
           })
-        ) : dateRange.at(0) === null &&
-          dateRange.at(1) === null &&
-          search === '' ? (
+        ) : transactionHistoryQuery.filterStartTransactionDate === '' &&
+          transactionHistoryQuery.filterEndTransactionDate === '' &&
+          transactionHistoryQuery.search === '' ? (
           <div className='col-span-12'>
-            <NoData
-              title='Oops, it seems that you have never made a purchase'
-              message='Start shopping and fulfill your needs at Oceana'
-              buttonMessage='Start Shopping'
-              buttonHandleClick={handleStartShoppingClick}
-            />
+            <NoData title='Oops, it seems that you don&#39;t have any orders waiting to be reviewed ' />
           </div>
         ) : (
           <div className='col-span-12'>
