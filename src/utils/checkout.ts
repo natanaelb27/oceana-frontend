@@ -2,6 +2,7 @@ import {
   CartGroupedByMerchant,
   CartProduct,
   DeliveryService,
+  MarketplaceVoucher,
 } from '../types/component';
 
 export const calculateSubtotal = (
@@ -21,9 +22,9 @@ export const calculateSubtotal = (
 export const calculateTotal = (
   cart: CartGroupedByMerchant[],
   deliveryService: DeliveryService | null,
-  marketplaceVoucher = 0
-): number =>
-  cart.reduce(
+  marketplaceVoucher: MarketplaceVoucher | null
+): number => {
+  let total = cart.reduce(
     (partialTotal, currentMerchant) =>
       partialTotal +
       calculateSubtotal(
@@ -34,7 +35,20 @@ export const calculateTotal = (
               .shipping_fee
       ),
     0
-  ) - marketplaceVoucher;
+  );
+
+  if (!marketplaceVoucher) {
+    return total;
+  }
+
+  if (marketplaceVoucher?.discount_type.toLocaleLowerCase() === 'percentage') {
+    total = (1 - marketplaceVoucher.discount / 100) * total;
+  } else {
+    total -= marketplaceVoucher?.discount;
+  }
+
+  return total;
+};
 
 export const calculateTotalWeight = (products: CartProduct[]): number =>
   products.reduce(

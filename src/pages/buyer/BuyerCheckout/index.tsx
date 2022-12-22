@@ -109,7 +109,6 @@ const BuyerCheckout = () => {
   const [marketplaceVoucher, setMarketplaceVoucher] =
     useState<MarketplaceVoucher | null>(null);
 
-  console.log(getActiveMarketplaceVoucherData);
   const handleAddAddressClick = () => {
     setOpenModal({
       shippingAddress: {
@@ -328,7 +327,9 @@ const BuyerCheckout = () => {
         return checkoutCartOrderItem;
       }
     );
-    const marketplaceVoucherID = null;
+    const marketplaceVoucherID = marketplaceVoucher
+      ? marketplaceVoucher.id
+      : null;
 
     // debugging
     const dbgReq = toPayCartWithWalletRequest(
@@ -375,8 +376,10 @@ const BuyerCheckout = () => {
   }, [getWalletDetailsData]);
 
   useEffect(() => {
-    setTotalPayment(calculateTotal(checkout, deliveryService));
-  }, [checkout, deliveryService]);
+    setTotalPayment(
+      calculateTotal(checkout, deliveryService, marketplaceVoucher)
+    );
+  }, [checkout, deliveryService, marketplaceVoucher]);
 
   useEffect(() => {
     if (!getAddressesData?.data) {
