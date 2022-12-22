@@ -4,6 +4,7 @@ export interface CourierService {
   description: string;
   is_selected: boolean;
   shipping_fee?: number;
+  etd?: string;
   courier: Courier[];
 }
 

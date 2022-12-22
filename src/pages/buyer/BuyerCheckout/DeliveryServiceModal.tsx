@@ -3,22 +3,29 @@ import { Modal } from 'react-daisyui';
 import { Image, Skeleton } from '../../../components/common';
 import { useGetRajaOngkirShippingCostMutation } from '../../../store/services/rajaOngkir';
 import { useGetShipmentQuery } from '../../../store/services/shipmentService';
-import { RajaOngkirShippingService } from '../../../types/component';
-import { Courier } from '../../../types/component/shipment';
+import {
+  RajaOngkirShippingService,
+  Courier,
+  DeliveryService,
+} from '../../../types/component';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
-import { toRupiah } from '../../../utils/convert';
+import { toETD, toRupiah } from '../../../utils/convert';
 import { notifyErrorToast } from '../../../utils/toast';
 
 type DeliveryServiceModalProps = {
-  currentDeliveryService: Courier | null;
+  deliveryService: DeliveryService | null;
+  currentMerchantID: number;
   getShippingCostRequest: GetRajaOngkirShippingCostRequest | null;
   open: boolean;
   onClose: () => void;
-  setDeliveryService: (deliveryService: Courier) => void;
+  setDeliveryService: React.Dispatch<
+    React.SetStateAction<DeliveryService | null>
+  >;
 };
 
 const DeliveryServiceModal = ({
-  currentDeliveryService,
+  deliveryService,
+  currentMerchantID,
   getShippingCostRequest,
   open,
   onClose,
@@ -68,6 +75,33 @@ const DeliveryServiceModal = ({
         handleCourierServiceModalClose();
       });
   };
+
+  const handleCourierServiceClick = (
+    courierService: RajaOngkirShippingService
+  ) => {
+    if (!courier) {
+      return;
+    }
+    setDeliveryService((prev) => ({
+      ...prev,
+      [currentMerchantID]: {
+        ...courier,
+        courier_services: [
+          {
+            code: courierService.service,
+            description: courierService.description,
+            id: 0,
+            is_selected: true,
+            shipping_fee: courierService.cost[0].value,
+            etd: courierService.cost[0].etd,
+            courier: [courier],
+          },
+        ],
+      },
+    }));
+    handleCourierServiceModalClose();
+  };
+
   const handleCourierServiceModalClose = () => {
     setCourier(null);
     setCourierServices(null);
@@ -116,8 +150,8 @@ const DeliveryServiceModal = ({
                 key={courier.id}
                 id={courier.code}
                 className={`p-4 flex flex-col items-center rounded-3xl cursor-pointer ${
-                  currentDeliveryService &&
-                  currentDeliveryService.id === courier.id
+                  deliveryService &&
+                  deliveryService[currentMerchantID]?.id === courier.id
                     ? 'bg-primary/10 border border-primary active:bg-primary/20'
                     : 'hover:bg-primary/20 active:bg-primary/10'
                 }`}
@@ -170,36 +204,26 @@ const DeliveryServiceModal = ({
                   <div
                     key={courierService.service}
                     className={`p-4 flex flex-col rounded-3xl cursor-pointer ${
-                      currentDeliveryService?.courier_services[0].code ===
-                      courierService.service
+                      deliveryService &&
+                      deliveryService[currentMerchantID]?.courier_services[0]
+                        .code === courierService.service
                         ? 'bg-primary/10 border border-primary active:bg-primary/20'
                         : 'hover:bg-primary/20 active:bg-primary/10'
                     }`}
-                    onClick={() => {
-                      if (!courier) {
-                        return;
-                      }
-                      setDeliveryService({
-                        ...courier,
-                        courier_services: [
-                          {
-                            code: courierService.service,
-                            description: courierService.description,
-                            id: 0,
-                            is_selected: true,
-                            shipping_fee: courierService.cost[0].value,
-                            courier: [courier],
-                          },
-                        ],
-                      });
-                      handleCourierServiceModalClose();
-                    }}
+                    onClick={() => handleCourierServiceClick(courierService)}
                   >
                     <div className='flex justify-between'>
                       <div>{courierService.description}</div>
                       <div>{toRupiah(courierService.cost[0].value)}</div>
                     </div>
-                    <div className='text-sm font-light'>{`Estimated delivery: ${courierService.cost[0].etd} days`}</div>
+                    <div className='flex justify-between'>
+                      <div className='text-sm font-light'>{`Estimated delivery: ${toETD(
+                        courierService.cost[0].etd
+                      )}`}</div>
+                      <div className='text-sm font-light'>
+                        {courierService.service}
+                      </div>
+                    </div>
                   </div>
                 ))}
             </div>

@@ -1,3 +1,5 @@
+import { Courier } from './shipment';
+
 export interface CheckoutCartProductItem {
   product_item_id: number;
   quantity: number;
@@ -16,4 +18,12 @@ export interface CheckoutCartOrderItem {
   courier_service_id: number;
   shipping_fee: number;
   products: CheckoutCartProduct[];
+}
+
+export interface DeliveryService {
+  [merchant_id: number]: Courier | null;
+}
+
+export interface AdditionalNotes {
+  [product_item_id: number]: string;
 }

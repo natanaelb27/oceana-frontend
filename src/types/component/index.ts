@@ -20,3 +20,6 @@ export * from './user';
 export * from './wallet';
 export * from './review';
 export * from './rajaOngkir';
+export * from './shipment';
+export * from './paymentMethod';
+export * from './checkout';

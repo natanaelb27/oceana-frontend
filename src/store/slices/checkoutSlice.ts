@@ -2,17 +2,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CartGroupedByMerchant } from '../../types/component';
 import { RootState } from '../store';
 
-type CartState = {
+type CheckoutState = {
   cartGroupedByMerchants: CartGroupedByMerchant[];
 };
 
 const slice = createSlice({
-  name: 'cart',
+  name: 'checkout',
   initialState: {
     cartGroupedByMerchants: [],
-  } as CartState,
+  } as CheckoutState,
   reducers: {
-    setCart: (
+    setCheckout: (
       state,
       {
         payload: { cartGroupedByMerchants },
@@ -20,15 +20,15 @@ const slice = createSlice({
     ) => {
       state.cartGroupedByMerchants = cartGroupedByMerchants;
     },
-    unsetCart: (state) => {
+    unsetCheckout: (state) => {
       state.cartGroupedByMerchants = [];
     },
   },
 });
 
-export const selectCart = (state: RootState) =>
-  state.cart.cartGroupedByMerchants;
+export const selectCheckout = (state: RootState) =>
+  state.checkout.cartGroupedByMerchants;
 
-export const { setCart, unsetCart } = slice.actions;
+export const { setCheckout, unsetCheckout } = slice.actions;
 
 export default slice.reducer;

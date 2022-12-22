@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Divider, Tooltip } from 'react-daisyui';
+import { Button, Card, Divider, Input, Tooltip } from 'react-daisyui';
 import { AiOutlineHome, AiOutlineShop } from 'react-icons/ai';
 import { BiReceipt } from 'react-icons/bi';
 import { FaAddressBook, FaListUl } from 'react-icons/fa';
@@ -10,28 +10,27 @@ import {
   IoBagCheckOutline,
   IoWalletOutline,
 } from 'react-icons/io5';
-import { MdOutlineAddLocationAlt } from 'react-icons/md';
+import { MdNavigateNext, MdOutlineAddLocationAlt } from 'react-icons/md';
 import { TbDiscount2 } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
-import { SealabsPayImg } from '../../../components/common';
-import NoData from '../../../components/common/NoData';
+import { NoData, SealabsPayImg } from '../../../components/common';
 import { STATUS_INTERNAL_SERVER_ERROR } from '../../../constants/statusCodes';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
 import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
-import {
-  useGetWalletDetailsQuery,
-  useLazyGetWalletDetailsQuery,
-} from '../../../store/services/walletService';
-import { selectCart } from '../../../store/slices/cartSlice';
+import { useGetWalletDetailsQuery } from '../../../store/services/walletService';
+import { selectCheckout } from '../../../store/slices/checkoutSlice';
 import { useAppSelector } from '../../../store/store';
-import { Address } from '../../../types/component';
+import {
+  Address,
+  DeliveryService,
+  PaymentMethod,
+} from '../../../types/component';
 import {
   CheckoutCartOrderItem,
   CheckoutCartProduct,
   CheckoutCartProductItem,
+  AdditionalNotes,
 } from '../../../types/component/checkout';
-import { Courier } from '../../../types/component/shipment';
-import { PaymentMethod } from '../../../types/paymentMethod';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import {
@@ -41,6 +40,7 @@ import {
 } from '../../../utils/checkout';
 import {
   pascalCaseToTitleCase,
+  toETD,
   toPhoneNumber,
   toRupiah,
 } from '../../../utils/convert';
@@ -74,7 +74,7 @@ const BuyerCheckout = () => {
     useGetWalletDetailsQuery();
   const [payCartWithWallet, { isLoading: payCartWithWalletLoading }] =
     usePayCartWithWalletMutation();
-  const cart = useAppSelector(selectCart);
+  const checkout = useAppSelector(selectCheckout);
   const [openModal, setOpenModal] = useState<OpenCheckoutModal>({
     shippingAddress: {
       add: false,
@@ -92,9 +92,13 @@ const BuyerCheckout = () => {
   );
   const [totalPayment, setTotalPayment] = useState<number>(0);
   const [walletBalance, setWalletBalance] = useState<number>(0);
-  const [deliveryService, setDeliveryService] = useState<Courier | null>(null);
+  const [deliveryService, setDeliveryService] =
+    useState<DeliveryService | null>(null);
+  const [currentMerchantID, setCurrentMerchantID] = useState<number>(0);
   const [getShippingCostRequest, setGetShippingCostRequest] =
     useState<GetRajaOngkirShippingCostRequest | null>(null);
+  const [additionalNotes, setAdditionalNotes] =
+    useState<AdditionalNotes | null>(null);
 
   const handleAddAddressClick = () => {
     setOpenModal({
@@ -124,7 +128,22 @@ const BuyerCheckout = () => {
     });
   };
 
-  const handleDeliveryServiceClick = (origin: number, totalWeight: number) => {
+  const handleChangeAdditionalNotes = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const productItemID = Number(e.target.id);
+    const value = e.target.value;
+    setAdditionalNotes((prev) => ({
+      ...prev,
+      [productItemID]: value,
+    }));
+  };
+
+  const handleDeliveryServiceClick = (
+    merchantID: number,
+    origin: number,
+    totalWeight: number
+  ) => {
     if (!shippingAddress?.city_id) {
       notifyInfoToast('Please pick a shipping address');
       return;
@@ -140,6 +159,7 @@ const BuyerCheckout = () => {
       paymentMethod: false,
       paymentWalletPin: false,
     });
+    setCurrentMerchantID(merchantID);
     setGetShippingCostRequest({
       origin,
       destination: shippingAddress.city_id,
@@ -224,7 +244,12 @@ const BuyerCheckout = () => {
       return;
     }
     // validate delivery service
-    if (!deliveryService?.id) {
+    if (!deliveryService) {
+      notifyInfoToast('Please pick a delivery service');
+      return;
+    }
+    const nDeliveryService = Object.keys(deliveryService).length;
+    if (nDeliveryService !== checkout.length) {
       notifyInfoToast('Please pick a delivery service');
       return;
     }
@@ -235,7 +260,7 @@ const BuyerCheckout = () => {
 
   const handleSuccessPaymentWalletPin = (pin: string) => {
     const cartIDs: number[] = [];
-    const checkoutCartOrderItems = cart.map(
+    const checkoutCartOrderItems = checkout.map(
       (cartGroupedByMerchant): CheckoutCartOrderItem => {
         const checkoutCartProducts: CheckoutCartProduct[] = [];
         cartGroupedByMerchant.products.forEach((product) => {
@@ -244,12 +269,17 @@ const BuyerCheckout = () => {
             (checkoutCartProduct) =>
               checkoutCartProduct.product_id === product.product_id
           );
+          const message = additionalNotes
+            ? additionalNotes[product.product_item_id]
+            : '';
+
           if (productIndex < 0) {
             const checkoutCartProductItems: CheckoutCartProductItem[] = [];
+
             checkoutCartProductItems.push({
               product_item_id: product.product_item_id,
               quantity: product.quantity,
-              message: '',
+              message,
             });
             // add to array of cart IDs for BE request
             cartIDs.push(product.carts_id);
@@ -264,10 +294,8 @@ const BuyerCheckout = () => {
             const checkoutCartProductItem: CheckoutCartProductItem = {
               product_item_id: product.product_item_id,
               quantity: product.quantity,
-              message: '',
+              message,
             };
-
-            // TODO: message for each product item
 
             checkoutCartProducts
               .at(productIndex)
@@ -275,11 +303,16 @@ const BuyerCheckout = () => {
           }
         });
 
+        const shippingFee = deliveryService
+          ? (deliveryService[cartGroupedByMerchant.merchant_id]
+              ?.courier_services[0].shipping_fee as number)
+          : 0;
+
         const checkoutCartOrderItem: CheckoutCartOrderItem = {
           merchant_id: cartGroupedByMerchant.merchant_id,
           merchant_voucher_id: null,
           courier_service_id: 1,
-          shipping_fee: 0,
+          shipping_fee: shippingFee,
           products: checkoutCartProducts,
         };
         return checkoutCartOrderItem;
@@ -314,13 +347,26 @@ const BuyerCheckout = () => {
   };
 
   useEffect(() => {
+    const initialNotes: AdditionalNotes = {};
+    checkout.forEach((cartItem) =>
+      cartItem.products.forEach((productItem) => {
+        initialNotes[productItem.product_item_id] = '';
+      })
+    );
+    setAdditionalNotes(initialNotes);
+  }, []);
+
+  useEffect(() => {
     if (!getWalletDetailsData?.data) {
       refetchGetWalletDetails();
       return;
     }
     setWalletBalance(getWalletDetailsData.data.balance);
-    setTotalPayment(calculateTotal(cart));
-  }, [getWalletDetailsData, cart]);
+  }, [getWalletDetailsData]);
+
+  useEffect(() => {
+    setTotalPayment(calculateTotal(checkout, deliveryService));
+  }, [checkout, deliveryService]);
 
   useEffect(() => {
     if (!getAddressesData?.data) {
@@ -420,7 +466,7 @@ const BuyerCheckout = () => {
       </Card>
 
       {/* Checked out products card */}
-      {cart.map(
+      {checkout.map(
         (
           { merchant_id, merchant_province, city_id, name, products },
           index
@@ -433,12 +479,13 @@ const BuyerCheckout = () => {
               </div>
               <Tooltip message='Delivery service' position='left'>
                 <Button
-                  className='shadow-md'
+                  className='shadow-md md:hidden'
                   color='primary'
                   shape='circle'
                   size='md'
                   onClick={() =>
                     handleDeliveryServiceClick(
+                      merchant_id,
                       city_id,
                       calculateTotalWeight(products)
                     )
@@ -461,9 +508,9 @@ const BuyerCheckout = () => {
                   return (
                     <div
                       key={product.carts_id}
-                      className='flex items-center py-3'
+                      className='grid grid-cols-3 py-3'
                     >
-                      <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2 h-'>
+                      <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2'>
                         <img
                           src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
                           className='rounded-lg h-full w-full'
@@ -474,7 +521,7 @@ const BuyerCheckout = () => {
                           }}
                         />
                       </div>
-                      <div className='h-24 w-full flex flex-col'>
+                      <div className='w-full flex flex-col col-span-2'>
                         <div className='justify-start mt-2 md:mt-0'>
                           {titleCase(product.product_name)}
                         </div>
@@ -493,25 +540,70 @@ const BuyerCheckout = () => {
                           </div>
                         </div>
                       </div>
+                      <div className='col-span-3'>
+                        <Input
+                          className='w-full'
+                          color='primary'
+                          id={String(product.product_item_id)}
+                          placeholder='Additional Notes (optional)'
+                          size='sm'
+                          type='text'
+                          value={
+                            additionalNotes
+                              ? additionalNotes[product.product_item_id]
+                              : ''
+                          }
+                          onChange={handleChangeAdditionalNotes}
+                        />
+                      </div>
                     </div>
                   );
                 })}
               </div>
             </Card.Body>
-            <Divider />
-            {!deliveryService ? (
-              <div>
-                <div>Please pick a delivery service</div>
-              </div>
-            ) : (
-              <div className='flex justify-between'>
-                <div>{deliveryService.courier_services[0].description}</div>
-                <div>
-                  {deliveryService.courier_services[0].shipping_fee &&
-                    toRupiah(deliveryService.courier_services[0].shipping_fee)}
+            <Card
+              className='mt-2 bg-primary/10 hover:bg-primary/20 active:bg-primary/10 cursor-pointer'
+              onClick={() =>
+                handleDeliveryServiceClick(
+                  merchant_id,
+                  city_id,
+                  calculateTotalWeight(products)
+                )
+              }
+            >
+              {!deliveryService || !deliveryService[merchant_id] ? (
+                <div className='p-4 flex justify-between items-center'>
+                  <div>Pick a delivery service</div>
+                  <MdNavigateNext className='text-2xl' />
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className='p-4 flex flex-col'>
+                  <div className='flex justify-between items-center'>
+                    <div>
+                      {
+                        deliveryService[merchant_id]?.courier_services[0]
+                          .description
+                      }
+                    </div>
+                    <div className='font-bold'>
+                      {deliveryService[merchant_id]?.courier_services[0]
+                        .shipping_fee &&
+                        toRupiah(
+                          deliveryService[merchant_id]?.courier_services[0]
+                            .shipping_fee as number
+                        )}
+                    </div>
+                  </div>
+                  <div className='text-sm font-light'>
+                    {deliveryService[merchant_id]?.courier_services[0].etd &&
+                      `Estimated delivery: ${toETD(
+                        deliveryService[merchant_id]?.courier_services[0]
+                          .etd as string
+                      )}`}
+                  </div>
+                </div>
+              )}
+            </Card>
             <Divider />
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-1'>
@@ -519,7 +611,15 @@ const BuyerCheckout = () => {
                 <p>Subtotal</p>
               </div>
               <p className='text-xl font-bold'>
-                {toRupiah(calculateSubtotal(products))}
+                {deliveryService
+                  ? toRupiah(
+                      calculateSubtotal(
+                        products,
+                        deliveryService[merchant_id]?.courier_services[0]
+                          .shipping_fee
+                      )
+                    )
+                  : toRupiah(calculateSubtotal(products))}
               </p>
             </div>
           </Card>
@@ -623,7 +723,8 @@ const BuyerCheckout = () => {
       />
       {/* Delivery Service Modal */}
       <DeliveryServiceModal
-        currentDeliveryService={deliveryService}
+        deliveryService={deliveryService}
+        currentMerchantID={currentMerchantID}
         getShippingCostRequest={getShippingCostRequest}
         open={openModal.deliveryService}
         onClose={handleModalClose}
