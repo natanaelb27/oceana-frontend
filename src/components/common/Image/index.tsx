@@ -32,7 +32,7 @@ const Image = ({
           ])}
         />
       )}
-      <LazyLoad threshold={0.5}>
+      <LazyLoad threshold={0.99}>
         <img
           {...props}
           alt={alt}

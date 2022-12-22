@@ -1,4 +1,5 @@
 import {
+  AvailableProduct,
   FavoriteProduct,
   Metadata,
   Product,
@@ -49,6 +50,14 @@ export type FavoriteProductResponse = {
 
 export type GetFavoriteProductResponse = {
   data: FavoriteProduct | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetAvailableProductResponse = {
+  data: AvailableProduct[] | null;
   code: number;
   error: string | null;
   message: string;

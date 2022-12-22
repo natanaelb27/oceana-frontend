@@ -1,5 +1,6 @@
 import {
   GetAllProductsResponse,
+  GetAvailableProductResponse,
   GetProductDetailsResponse,
   GetPurchasedQuantitiesResponse,
   ViewPostResponse,
@@ -38,6 +39,13 @@ export const productApi = baseApi.injectEndpoints({
         method: 'POST',
       }),
     }),
+    getAvailableProducts: builder.query<GetAvailableProductResponse, string>({
+      query: (query) => ({
+        url: `/products/available-products?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Product'],
+    }),
   }),
 });
 
@@ -49,4 +57,6 @@ export const {
   useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
   useViewPostMutation,
+  useGetAvailableProductsQuery,
+  useLazyGetAvailableProductsQuery,
 } = productApi;

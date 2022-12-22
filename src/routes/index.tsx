@@ -3,7 +3,6 @@ import React from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
 import { Layout } from '../components';
-import { Loading } from '../components/common';
 import {
   Login,
   NotFound,
@@ -111,9 +110,7 @@ const Routes = () => {
           allowedRoles={[Role.Guest, Role.Buyer, Role.Seller]}
           redirectTo='/admin'
         >
-          <React.Suspense fallback={<Loading isLoading />}>
-            <Layout />
-          </React.Suspense>
+          <Layout />
         </ProtectedRoute>
       ),
       children: [

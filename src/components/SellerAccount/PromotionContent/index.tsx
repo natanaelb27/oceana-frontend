@@ -161,7 +161,25 @@ const PromotionContent = ({ profile }: PromotionContentProps) => {
   };
 
   if (!getAllMerchantPromotionData?.data) {
-    return null;
+    return (
+      <div className='p-4 md:p-10'>
+        <div className='flex flex-row gap-y-3 justify-between items-center'>
+          <div className='h-8 bg-base-200 w-full md:w-1/5 rounded-full'></div>
+        </div>
+        <Divider />
+        <div className='flex flex-col'>
+          <div className='h-10 bg-base-200 w-2/5 rounded-full mb-8'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+        </div>
+      </div>
+    );
   }
 
   return (

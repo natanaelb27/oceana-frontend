@@ -1,3 +1,4 @@
+import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { Loading } from '../components/common';
 import { Role } from '../types/role';
@@ -40,7 +41,13 @@ const ProtectedRoute = ({
     return null;
   }
 
-  return <ScrollToTop>{children}</ScrollToTop>;
+  return (
+    <ScrollToTop>
+      <React.Suspense fallback={<Loading isLoading />}>
+        {children}
+      </React.Suspense>
+    </ScrollToTop>
+  );
 };
 
 export default ProtectedRoute;

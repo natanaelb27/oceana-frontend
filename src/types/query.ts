@@ -82,3 +82,10 @@ export type ReviewQuery = {
   comment: boolean;
   rating: number[];
 };
+
+export type AvailableProductQuery = {
+  search: string;
+  filterCategory: number;
+  filterStartDatetime: Date | null;
+  filterEndDatetime: Date | null;
+};

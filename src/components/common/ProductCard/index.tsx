@@ -15,7 +15,7 @@ type ProductCardProps = {
 const ProductCard = ({ product }: ProductCardProps) => {
   if (!product) {
     return (
-      <LazyLoad threshold={0.5} className='w-full'>
+      <LazyLoad threshold={0.99} className='w-full'>
         <Card role='status' className='w-full h-[26rem] shadow animate-pulse'>
           <div className='flex justify-center items-center h-56 bg-base-200 rounded'>
             <svg
@@ -40,7 +40,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   }
 
   return (
-    <LazyLoad threshold={0.5} className='w-full'>
+    <LazyLoad threshold={0.99} className='w-full'>
       <Link
         to={`/products/${toUrl(product.name)}-i.${product.merchant_id}-${
           product.id
