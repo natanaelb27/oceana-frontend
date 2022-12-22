@@ -557,7 +557,7 @@ const ReviewContent = () => {
           transactionHistoryQuery.filterEndTransactionDate === '' &&
           transactionHistoryQuery.search === '' ? (
           <div className='col-span-12'>
-            <NoData title="Oops, it seems that you don't have any orders waiting to be reviewed " />
+            <NoData title={`${transactionHistoryQuery.filterIsReviewed === 'true' ? 'Oops, it seems that you dont have any reviewed orders' : 'Oops, it seems that you dont have any orders waiting to be reviewed'}`} />
           </div>
         ) : (
           <div className='col-span-12'>

@@ -63,6 +63,7 @@ import {
   useUpdateProcessDeliveryMutation,
   useUpdateProcessOrderMutation,
   useGetMerchantOrderDetailsQuery,
+  useLazyGetMerchantOrderDetailsQuery,
 } from '../../../store/services/myShopService';
 import {
   toMerchantVoucherQuery,
@@ -142,10 +143,15 @@ const OrderContent = () => {
 
   const [orderID, setOrderID] = useState<string | null>(null);
 
-  const {
+  // const {
+  //   data: getMerchantOrderDetailsData,
+  //   isLoading: getOrderDetailsLoading,
+  // } = useGetMerchantOrderDetailsQuery(orderID || '');
+
+  const [getMerchantOrderDetails, {
     data: getMerchantOrderDetailsData,
     isLoading: getOrderDetailsLoading,
-  } = useGetMerchantOrderDetailsQuery(orderID || '');
+  }] = useLazyGetMerchantOrderDetailsQuery();
 
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
 
@@ -531,8 +537,9 @@ const OrderContent = () => {
     }
   };
 
-  const handleOrderDetailClick = (orderID: string) => {
-    setOrderID(orderID);
+  const handleOrderDetailClick = (id: string) => {
+    setOrderID(id);
+    getMerchantOrderDetails(id);
 
     setOpenModal({
       processOrder: false,

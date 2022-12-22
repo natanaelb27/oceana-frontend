@@ -45,6 +45,7 @@ import { TransactionHistoryQuery } from '../../../types/query';
 import {
   useGetAllTransactionHistoryQuery,
   useGetOrderDetailsQuery,
+  useLazyGetOrderDetailsQuery,
 } from '../../../store/services/orderService';
 import { toTransactionHistoryQuery } from '../../../utils/mapperDTO';
 import {
@@ -97,14 +98,17 @@ const PurchaseContent = () => {
     updateCompleteOrder,
     {
       isLoading: updateCompleteOrderIsLoading,
-      error: updateCompleteOrderError,
     },
   ] = useUpdateCompleteOrderMutation();
 
   const [orderID, setOrderID] = useState<string | null>(null);
 
-  const { data: getOrderDetailsData, isLoading: getOrderDetailsLoading } =
-    useGetOrderDetailsQuery(orderID || '');
+  // const { data: getOrderDetailsData, isLoading: getOrderDetailsLoading } =
+  //   useGetOrderDetailsQuery(orderID || '');
+
+
+  const [getOrderDetails, { data: getOrderDetailsData, isLoading: getOrderDetailsLoading }] =
+    useLazyGetOrderDetailsQuery();
 
   const getBadgeColor = (orderStatus: string) => {
     if (stringCompare(orderStatus, DELIVERY_STATUS.COMPLETED)) {
@@ -131,8 +135,8 @@ const PurchaseContent = () => {
   const [openStatusModal, setOpenStatusModal] = useState<boolean>(false);
   const [openOrderTracking, setOpenOrderTracking] = useState<boolean>(false);
 
-  const handleCompleteOrderClick = (orderID: string) => {
-    setOrderID(orderID);
+  const handleCompleteOrderClick = (id: string) => {
+    setOrderID(id);
 
     setOpenModal({
       detailOrder: false,
@@ -167,8 +171,10 @@ const PurchaseContent = () => {
       });
   };
 
-  const handleViewDetailsClick = (orderID: string) => {
-    setOrderID(orderID);
+  const handleViewDetailsClick = (id: string) => {
+    setOrderID(id);
+    getOrderDetails(id);
+    
     setOpenModal({
       detailOrder: true,
       completeOrder: false,
