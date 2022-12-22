@@ -86,7 +86,7 @@ const Header = () => {
             <div className='flex-1 mr-4'>
               <NavLink to='/'>
                 <Button className='text-xl normal-case' color='ghost'>
-                  Oceana
+                  <span className='font-main italic'>Oceana</span>
                 </Button>
               </NavLink>
             </div>
@@ -138,7 +138,7 @@ const Header = () => {
           <div className='flex-none mr-4'>
             <NavLink to='/'>
               <Button className='text-xl normal-case' color='ghost'>
-                Oceana
+                <span className='font-main italic'>Oceana</span>
               </Button>
             </NavLink>
           </div>
