@@ -57,6 +57,7 @@ export const cartApi = baseApi.injectEndpoints({
 
 export const {
   useGetUserCartQuery,
+  useLazyGetUserCartQuery,
   useUpdateUserCartMutation,
   usePayCartWithWalletMutation,
   useIncrementUserCartMutation,
