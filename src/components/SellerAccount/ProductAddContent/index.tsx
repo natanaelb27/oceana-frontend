@@ -268,7 +268,7 @@ const ProductAddContent = () => {
       variant_index: [],
     };
   };
-  console.log(productFormik.values.product_items);
+
   const combineAll = (array: number[][]) => {
     const res: number[][] = [];
     const max = array.length - 1;
@@ -305,6 +305,46 @@ const ProductAddContent = () => {
     return true;
   }
 
+  const deleteProductItemsByIndexVariantIndexOption = (
+    variants: PUMVariant[],
+    deletedOptionIndexVariant: number,
+    deletedOptionIndexOption: number
+  ) => {
+    const data = deepCopy(
+      productFormik.values.product_items
+    ) as PUMProductItem[];
+
+    // insert new product items according to new variants
+    const optionsArray = variants.map((variant) => {
+      return variant.options.map((_, indexOption) => indexOption);
+    });
+
+    const newVariantIndexes = combineAll(optionsArray);
+
+    let indexNewProductItem = 0;
+    // filter new product items
+    const newProductItems = data.filter((productItem) => {
+      console.log(
+        productItem.variant_index[deletedOptionIndexVariant],
+        deletedOptionIndexOption
+      );
+      if (
+        productItem.variant_index[deletedOptionIndexVariant] ===
+        deletedOptionIndexOption
+      ) {
+        return false;
+      }
+
+      productItem.variant_index = newVariantIndexes[indexNewProductItem];
+
+      indexNewProductItem++;
+
+      return true;
+    });
+
+    productFormik.setFieldValue('product_items', newProductItems);
+  };
+
   const updateProductItemsAccordingToVariants = (variants: PUMVariant[]) => {
     const data = deepCopy(
       productFormik.values.product_items
@@ -315,7 +355,6 @@ const ProductAddContent = () => {
       return;
     }
 
-    let newProductItems: PUMProductItem[] = [];
     // insert new product items according to new variants
     const optionsArray = variants.map((variant) => {
       return variant.options.map((_, indexOption) => indexOption);
@@ -324,6 +363,7 @@ const ProductAddContent = () => {
     // create variant indexes
     const newVariantIndexes = combineAll(optionsArray);
 
+    let newProductItems: PUMProductItem[] = [];
     // create new product items
     newProductItems = newVariantIndexes.map((variantIndex) => {
       let matchedProductItemIndex = -1;
@@ -334,11 +374,13 @@ const ProductAddContent = () => {
             variantIndex
           )
         ) {
+          console.log(indexProductItem);
           matchedProductItemIndex = indexProductItem;
         }
       });
 
       if (matchedProductItemIndex !== -1) {
+        console.log(data[matchedProductItemIndex]);
         return data[matchedProductItemIndex];
       }
 
@@ -380,7 +422,11 @@ const ProductAddContent = () => {
 
     newVariants[indexVariant].options.splice(indexOption, 1);
 
-    updateProductItemsAccordingToVariants(newVariants);
+    deleteProductItemsByIndexVariantIndexOption(
+      newVariants,
+      indexVariant,
+      indexOption
+    );
 
     productFormik.setFieldValue('variants', newVariants);
   };
