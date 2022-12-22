@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Divider, Tooltip } from 'react-daisyui';
+import { Button, Card, Divider, Input, Tooltip } from 'react-daisyui';
 import { AiOutlineHome, AiOutlineShop } from 'react-icons/ai';
 import { BiReceipt } from 'react-icons/bi';
 import { FaAddressBook, FaListUl } from 'react-icons/fa';
@@ -13,19 +13,15 @@ import {
 import { MdNavigateNext, MdOutlineAddLocationAlt } from 'react-icons/md';
 import { TbDiscount2 } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
-import { SealabsPayImg, NoData } from '../../../components/common';
+import { NoData, SealabsPayImg } from '../../../components/common';
 import { STATUS_INTERNAL_SERVER_ERROR } from '../../../constants/statusCodes';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
 import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
-import {
-  useGetWalletDetailsQuery,
-  useLazyGetWalletDetailsQuery,
-} from '../../../store/services/walletService';
+import { useGetWalletDetailsQuery } from '../../../store/services/walletService';
 import { selectCheckout } from '../../../store/slices/checkoutSlice';
 import { useAppSelector } from '../../../store/store';
 import {
   Address,
-  Courier,
   DeliveryService,
   PaymentMethod,
 } from '../../../types/component';
@@ -33,6 +29,7 @@ import {
   CheckoutCartOrderItem,
   CheckoutCartProduct,
   CheckoutCartProductItem,
+  AdditionalNotes,
 } from '../../../types/component/checkout';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
@@ -100,6 +97,8 @@ const BuyerCheckout = () => {
   const [currentMerchantID, setCurrentMerchantID] = useState<number>(0);
   const [getShippingCostRequest, setGetShippingCostRequest] =
     useState<GetRajaOngkirShippingCostRequest | null>(null);
+  const [additionalNotes, setAdditionalNotes] =
+    useState<AdditionalNotes | null>(null);
 
   const handleAddAddressClick = () => {
     setOpenModal({
@@ -127,6 +126,17 @@ const BuyerCheckout = () => {
       paymentMethod: false,
       paymentWalletPin: false,
     });
+  };
+
+  const handleChangeAdditionalNotes = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const productItemID = Number(e.target.id);
+    const value = e.target.value;
+    setAdditionalNotes((prev) => ({
+      ...prev,
+      [productItemID]: value,
+    }));
   };
 
   const handleDeliveryServiceClick = (
@@ -238,12 +248,11 @@ const BuyerCheckout = () => {
       notifyInfoToast('Please pick a delivery service');
       return;
     }
-    Object.keys(deliveryService).forEach((merchantIDString) => {
-      if (!deliveryService[Number(merchantIDString)]) {
-        notifyInfoToast('Please pick a delivery service');
-        return;
-      }
-    });
+    const nDeliveryService = Object.keys(deliveryService).length;
+    if (nDeliveryService !== checkout.length) {
+      notifyInfoToast('Please pick a delivery service');
+      return;
+    }
     // validate payment method (sealabs pay, pick a card)
 
     handlePaymentWalletPinClick();
@@ -260,12 +269,17 @@ const BuyerCheckout = () => {
             (checkoutCartProduct) =>
               checkoutCartProduct.product_id === product.product_id
           );
+          const message = additionalNotes
+            ? additionalNotes[product.product_item_id]
+            : '';
+
           if (productIndex < 0) {
             const checkoutCartProductItems: CheckoutCartProductItem[] = [];
+
             checkoutCartProductItems.push({
               product_item_id: product.product_item_id,
               quantity: product.quantity,
-              message: '',
+              message,
             });
             // add to array of cart IDs for BE request
             cartIDs.push(product.carts_id);
@@ -280,10 +294,8 @@ const BuyerCheckout = () => {
             const checkoutCartProductItem: CheckoutCartProductItem = {
               product_item_id: product.product_item_id,
               quantity: product.quantity,
-              message: '',
+              message,
             };
-
-            // TODO: message for each product item
 
             checkoutCartProducts
               .at(productIndex)
@@ -335,13 +347,26 @@ const BuyerCheckout = () => {
   };
 
   useEffect(() => {
+    const initialNotes: AdditionalNotes = {};
+    checkout.forEach((cartItem) =>
+      cartItem.products.forEach((productItem) => {
+        initialNotes[productItem.product_item_id] = '';
+      })
+    );
+    setAdditionalNotes(initialNotes);
+  }, []);
+
+  useEffect(() => {
     if (!getWalletDetailsData?.data) {
       refetchGetWalletDetails();
       return;
     }
     setWalletBalance(getWalletDetailsData.data.balance);
+  }, [getWalletDetailsData]);
+
+  useEffect(() => {
     setTotalPayment(calculateTotal(checkout, deliveryService));
-  }, [getWalletDetailsData, checkout, deliveryService]);
+  }, [checkout, deliveryService]);
 
   useEffect(() => {
     if (!getAddressesData?.data) {
@@ -483,9 +508,9 @@ const BuyerCheckout = () => {
                   return (
                     <div
                       key={product.carts_id}
-                      className='flex items-center py-3'
+                      className='grid grid-cols-3 py-3'
                     >
-                      <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2 h-'>
+                      <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2'>
                         <img
                           src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
                           className='rounded-lg h-full w-full'
@@ -496,7 +521,7 @@ const BuyerCheckout = () => {
                           }}
                         />
                       </div>
-                      <div className='h-24 w-full flex flex-col'>
+                      <div className='w-full flex flex-col col-span-2'>
                         <div className='justify-start mt-2 md:mt-0'>
                           {titleCase(product.product_name)}
                         </div>
@@ -514,6 +539,22 @@ const BuyerCheckout = () => {
                             )}
                           </div>
                         </div>
+                      </div>
+                      <div className='col-span-3'>
+                        <Input
+                          className='w-full'
+                          color='primary'
+                          id={String(product.product_item_id)}
+                          placeholder='Additional Notes'
+                          size='sm'
+                          type='text'
+                          value={
+                            additionalNotes
+                              ? additionalNotes[product.product_item_id]
+                              : ''
+                          }
+                          onChange={handleChangeAdditionalNotes}
+                        />
                       </div>
                     </div>
                   );

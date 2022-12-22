@@ -23,7 +23,3 @@ export interface Shipment {
   is_print_label: boolean;
   couriers: Courier[];
 }
-
-export interface DeliveryService {
-  [merchant_id: number]: Courier | null;
-}

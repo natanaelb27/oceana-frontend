@@ -69,8 +69,6 @@ const DeliveryServiceModal = ({
           ...selectedCourier,
           courier_services: [],
         });
-        console.log(getShippingCostRequest);
-        console.log(courierServicesData);
       })
       .catch(() => {
         notifyErrorToast('Something went wrong, please try again');
@@ -101,7 +99,6 @@ const DeliveryServiceModal = ({
         ],
       },
     }));
-    console.log(deliveryService);
     handleCourierServiceModalClose();
   };
 
