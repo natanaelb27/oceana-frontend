@@ -5,7 +5,6 @@ export * from './marketplaceVoucher';
 export * from './merchant';
 export * from './merchantPromotion';
 export * from './merchantVoucher';
-export * from './productReview';
 export * from './profile';
 export * from './sealabsPay';
 export * from './wallet';

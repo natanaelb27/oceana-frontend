@@ -11,7 +11,6 @@ import {
 import { MEDIA_TYPE } from '../../../constants';
 import { useCreateProductReviewMutation } from '../../../store/services/reviewService';
 import { OrderDetail } from '../../../types/component';
-import { CreateProductReviewRequest } from '../../../types/request';
 import { CreateProductReviewResponse } from '../../../types/response';
 import { toCreateProductReviewRequest } from '../../../utils/mapperDTO/productReview';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';

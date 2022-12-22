@@ -397,7 +397,6 @@ const OrderContent = () => {
       cancelOrder: false,
       processDelivery: false,
       claimFunds: false,
-
       detailOrder: false,
     });
 

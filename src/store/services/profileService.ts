@@ -107,7 +107,7 @@ export const profileApi = baseApi.injectEndpoints({
     }),
     updateCompleteOrder: builder.mutation<UpdateOrderStatusResponse, string>({
       query: (id) => ({
-        url: `/profile/orders/${id}/process-order`,
+        url: `/profile/orders/${id}/complete-order`,
         method: 'PATCH',
       }),
       invalidatesTags: ['Order', 'OrderDetails'],
@@ -126,4 +126,5 @@ export const {
   useRequestVerificationCodeMutation,
   useCheckVerificationCodeMutation,
   useLogoutMutation,
+  useUpdateCompleteOrderMutation,
 } = profileApi;

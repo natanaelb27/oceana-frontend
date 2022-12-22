@@ -24,7 +24,7 @@ import {
   Tooltip,
 } from 'react-daisyui';
 import { useOutsideAlerter } from '../../../hooks';
-import { Image, Pager } from '../../common';
+import { ConfirmationModal, Image, Pager } from '../../common';
 import {
   HiOutlineCalendar,
   HiOutlineClock,
@@ -62,6 +62,14 @@ import { stringCompare } from '../../../utils/validation';
 import { computeDatetime, getDateDiffNow } from '../../../utils/date';
 import DateCountdown from '../../common/DateCountdown';
 import { useNavigate } from 'react-router-dom';
+import { useUpdateCompleteOrderMutation } from '../../../store/services/profileService';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import { UpdateOrderStatusResponse } from '../../../types/response';
+
+type OpenModal = {
+  completeOrder: boolean;
+  detailOrder: boolean;
+};
 
 const PurchaseContent = () => {
   const navigate = useNavigate();
@@ -85,10 +93,18 @@ const PurchaseContent = () => {
     toTransactionHistoryQuery(transactionHistoryQuery)
   );
 
-  const [orderID, setOrderID] = useState<string>('');
+  const [
+    updateCompleteOrder,
+    {
+      isLoading: updateCompleteOrderIsLoading,
+      error: updateCompleteOrderError,
+    },
+  ] = useUpdateCompleteOrderMutation();
+
+  const [orderID, setOrderID] = useState<string | null>(null);
 
   const { data: getOrderDetailsData, isLoading: getOrderDetailsLoading } =
-    useGetOrderDetailsQuery(orderID);
+    useGetOrderDetailsQuery(orderID || '');
 
   const getBadgeColor = (orderStatus: string) => {
     if (stringCompare(orderStatus, DELIVERY_STATUS.COMPLETED)) {
@@ -107,18 +123,65 @@ const PurchaseContent = () => {
     return 'warning';
   };
 
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<OpenModal>({
+    detailOrder: false,
+    completeOrder: false,
+  });
+
   const [openStatusModal, setOpenStatusModal] = useState<boolean>(false);
   const [openOrderTracking, setOpenOrderTracking] = useState<boolean>(false);
 
+  const handleCompleteOrderClick = (orderID: string) => {
+    setOrderID(orderID);
+
+    setOpenModal({
+      detailOrder: false,
+      completeOrder: true,
+    });
+  };
+
+  const handleCompleteOrder = () => {
+    setOpenModal({
+      detailOrder: false,
+      completeOrder: false,
+    });
+
+    if (!orderID) {
+      return;
+    }
+
+    updateCompleteOrder(orderID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Order has been updated to completed!');
+      })
+      .catch((err) => {
+        if (err && 'data' in err) {
+          const response = err.data as UpdateOrderStatusResponse;
+
+          notifyErrorToast(response.message);
+        }
+      })
+      .finally(() => {
+        setOrderID(null);
+      });
+  };
+
   const handleViewDetailsClick = (orderID: string) => {
     setOrderID(orderID);
-    setOpenModal(true);
+    setOpenModal({
+      detailOrder: true,
+      completeOrder: false,
+    });
   };
 
   const handleModalClose = () => {
-    setOpenModal(false);
+    setOpenModal({
+      detailOrder: false,
+      completeOrder: false,
+    });
     setOpenOrderTracking(false);
+    setOrderID(null);
   };
 
   const handleFilterStatusClick = () => {
@@ -753,6 +816,11 @@ const PurchaseContent = () => {
                         <Button
                           className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
                           color='primary'
+                          onClick={() => {
+                            handleCompleteOrderClick(
+                              transactionHistory?.order_id
+                            );
+                          }}
                         >
                           Complete
                         </Button>
@@ -845,6 +913,13 @@ const PurchaseContent = () => {
           onPageChange={handlePageChange}
         />
       </div>
+      <ConfirmationModal
+        open={openModal.completeOrder}
+        title='Are you sure?'
+        message='This action cannot be undone.'
+        onClose={handleModalClose}
+        onAccepted={handleCompleteOrder}
+      ></ConfirmationModal>
       <Modal
         open={openStatusModal}
         responsive
@@ -978,7 +1053,7 @@ const PurchaseContent = () => {
         </Modal.Body>
       </Modal>
       <Modal
-        open={openModal}
+        open={openModal.detailOrder}
         responsive
         className='md:w-9/12 md:max-w-2xl px-0'
         onClickBackdrop={handleModalClose}

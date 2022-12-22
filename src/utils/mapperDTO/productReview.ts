@@ -1,5 +1,3 @@
-import { CreateProductReviewRequest } from '../../types/request';
-
 export const toCreateProductReviewRequest = (
   rating: number,
   review: string,
