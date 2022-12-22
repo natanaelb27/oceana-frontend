@@ -19,9 +19,12 @@ import { baseApi, useAppDispatch, useAppSelector } from '../../../store/store';
 import { useLogoutMutation } from '../../../store/services/profileService';
 import { TAG_TYPES } from '../../../constants/tags';
 import { BsShop } from 'react-icons/bs';
+import { validateUserRole } from '../../../utils/auth';
+import { Role } from '../../../types/role';
 
 const Header = () => {
-  const role = useAppSelector(selectRole);
+  const roleCode = useAppSelector(selectRole);
+  const role = validateUserRole(roleCode);
   const scrollPosition = useScrollPosition();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -68,6 +71,59 @@ const Header = () => {
   const handleShopClick = () => {
     navigate('/seller');
   };
+
+  if (role === Role.Admin) {
+    return (
+      <header
+        className={`sticky top-0 z-30 w-full component-preview items-center justify-center gap-2 font-sans transition-all duration-100 ${
+          scrollPosition > 0
+            ? 'py-2 bg-base-100 text-base-content shadow-sm bg-opacity-80 backdrop-blur'
+            : 'py-2 bg-primary text-primary-content'
+        }`}
+      >
+        <div className='container mx-auto'>
+          <Navbar className='flex'>
+            <div className='flex-1 mr-4'>
+              <NavLink to='/'>
+                <Button className='text-xl normal-case' color='ghost'>
+                  Oceana
+                </Button>
+              </NavLink>
+            </div>
+            <div className='flex-none ml-4 gap-2'>
+              {theme === 'light' ? (
+                <Button
+                  shape='circle'
+                  color='ghost'
+                  size='sm'
+                  onClick={() => handleThemeClick('dark')}
+                >
+                  <HiSun className='text-lg' />
+                </Button>
+              ) : (
+                <Button
+                  shape='circle'
+                  color='ghost'
+                  size='sm'
+                  onClick={() => handleThemeClick('light')}
+                >
+                  <HiMoon className='text-lg' />
+                </Button>
+              )}
+              <span className='ml-2.5'>|</span>
+              <Button
+                color='ghost'
+                startIcon={<CgLogOut className='text-xl' />}
+                onClick={handleLogoutClick}
+              >
+                Logout
+              </Button>
+            </div>
+          </Navbar>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header
@@ -128,7 +184,7 @@ const Header = () => {
                 <FaShoppingCart className='text-lg' />
               </Button>
             </NavLink>
-            {!role ? (
+            {!roleCode ? (
               <>
                 <NavLink to='/login'>
                   <Button color='ghost'>Login</Button>
@@ -203,7 +259,7 @@ const Header = () => {
                 <FaShoppingCart className='text-lg' />
               </Button>
             </NavLink>
-            {!role ? (
+            {!roleCode ? (
               <>
                 <NavLink to='/login'>
                   <Button shape='circle' color='ghost' size='sm'>

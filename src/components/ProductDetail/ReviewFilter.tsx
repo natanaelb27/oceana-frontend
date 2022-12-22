@@ -1,11 +1,25 @@
+import React from 'react';
 import { Checkbox, Collapse, Divider, Form } from 'react-daisyui';
 
 type ReviewFilterProps = {
+  handleChangeFilterReviewWithMedia?: () => void;
+  handleChangeFilterReviewRating?: (e: React.SyntheticEvent) => void;
+  handleChangeFilterReviewComments?: () => void;
   isLoading?: boolean;
 };
 
-const ReviewFilter = ({ isLoading }: ReviewFilterProps) => {
-  if (isLoading) {
+const ReviewFilter = ({
+  isLoading,
+  handleChangeFilterReviewWithMedia,
+  handleChangeFilterReviewRating,
+  handleChangeFilterReviewComments,
+}: ReviewFilterProps) => {
+  if (
+    isLoading ||
+    !handleChangeFilterReviewComments ||
+    !handleChangeFilterReviewRating ||
+    !handleChangeFilterReviewWithMedia
+  ) {
     return (
       <div className='border border-base-300 bg-base-100 rounded-box p-4 animate-pulse'>
         <div className='h-6 bg-base-200 w-3/5 mx-auto rounded-full'></div>
@@ -28,7 +42,7 @@ const ReviewFilter = ({ isLoading }: ReviewFilterProps) => {
         <Collapse.Content>
           <Form>
             <Form.Label title='With Photo & Video'>
-              <Checkbox />
+              <Checkbox onClick={handleChangeFilterReviewWithMedia} />
             </Form.Label>
           </Form>
         </Collapse.Content>
@@ -38,39 +52,33 @@ const ReviewFilter = ({ isLoading }: ReviewFilterProps) => {
         <Collapse.Content>
           <Form>
             <Form.Label title='⭐ 5'>
-              <Checkbox />
+              <Checkbox value={5} onClick={handleChangeFilterReviewRating} />
             </Form.Label>
             <Form.Label title='⭐ 4'>
-              <Checkbox />
+              <Checkbox value={4} onClick={handleChangeFilterReviewRating} />
             </Form.Label>
             <Form.Label title='⭐ 3'>
-              <Checkbox />
+              <Checkbox value={3} onClick={handleChangeFilterReviewRating} />
             </Form.Label>
             <Form.Label title='⭐ 2'>
-              <Checkbox />
+              <Checkbox value={2} onClick={handleChangeFilterReviewRating} />
             </Form.Label>
-            <Form.Label title='⭐ 2'>
-              <Checkbox />
+            <Form.Label title='⭐ 1'>
+              <Checkbox value={1} onClick={handleChangeFilterReviewRating} />
             </Form.Label>
           </Form>
         </Collapse.Content>
       </Collapse>
       <Collapse checkbox icon='arrow'>
-        <Collapse.Title className='font-medium'>Review Topic</Collapse.Title>
+        <Collapse.Title className='font-medium truncate'>
+          Comments
+        </Collapse.Title>
         <Collapse.Content>
           <Form>
-            <Form.Label title='Quality'>
-              <Checkbox />
-            </Form.Label>
-            <Form.Label title='Service'>
-              <Checkbox />
-            </Form.Label>
-            <Form.Label title='Accuracy'>
-              <Checkbox />
-            </Form.Label>
-            <Form.Label title='Delivery'>
-              <Checkbox />
-            </Form.Label>
+            <div className='flex justify-between'>
+              <div className='truncate text-sm ml-1.5'>With Comments</div>
+              <Checkbox onClick={handleChangeFilterReviewComments} />
+            </div>
           </Form>
         </Collapse.Content>
       </Collapse>

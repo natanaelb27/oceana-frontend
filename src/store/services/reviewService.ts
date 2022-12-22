@@ -1,5 +1,8 @@
-import { CreateProductReviewRequest } from '../../types/request';
-import { CreateProductReviewResponse } from '../../types/response';
+import {
+  CreateProductReviewResponse,
+  GetAllReviewsResponse,
+} from '../../types/response';
+import { GetAllReviewsRequest } from '../../types/request';
 import { baseApi } from '../store';
 
 export const reviewApi = baseApi.injectEndpoints({
@@ -15,7 +18,18 @@ export const reviewApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Product', 'Order', 'OrderDetails'],
     }),
+    getAllReviews: builder.query<GetAllReviewsResponse, GetAllReviewsRequest>({
+      query: ({ id, query }) => ({
+        url: `/reviews/products/${id}?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Review'],
+    }),
   }),
 });
 
-export const { useCreateProductReviewMutation } = reviewApi;
+export const {
+  useGetAllReviewsQuery,
+  useLazyGetAllReviewsQuery,
+  useCreateProductReviewMutation,
+} = reviewApi;
