@@ -26,7 +26,7 @@ type ShippingAddressModalProps = {
     change: boolean;
   };
   onClose: () => void;
-  setShippingAddress: (address: Address) => void;
+  setShippingAddress: React.Dispatch<React.SetStateAction<Address | null>>;
 };
 
 const ShippingAddressModal = ({
@@ -155,6 +155,11 @@ const ShippingAddressModal = ({
       // }
     },
   });
+
+  const handleChangeAddress = (address: Address) => {
+    setSelectedAddress(address);
+    setOpenConfirmationModal(true);
+  };
 
   useEffect(() => {
     getSubDistrict(toSubDistrictQuery(subDistrictQuery))
@@ -356,10 +361,7 @@ const ShippingAddressModal = ({
                 onClick={
                   currentShippingAddress.id === address.id
                     ? onClose
-                    : () => {
-                        setSelectedAddress(address);
-                        setOpenConfirmationModal(true);
-                      }
+                    : () => handleChangeAddress(address)
                 }
               >
                 <h3 className='font-bold'>{address.name}</h3>

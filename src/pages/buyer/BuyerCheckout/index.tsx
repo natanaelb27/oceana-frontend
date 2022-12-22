@@ -13,23 +13,26 @@ import {
 import { MdNavigateNext, MdOutlineAddLocationAlt } from 'react-icons/md';
 import { TbDiscount2 } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
+import { VoucherTicket } from '../../../components/BuyerCheckout';
 import { NoData, SealabsPayImg } from '../../../components/common';
 import { STATUS_INTERNAL_SERVER_ERROR } from '../../../constants/statusCodes';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
 import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
+import { useGetActiveMarketplaceVoucherQuery } from '../../../store/services/marketplaceService';
 import { useGetWalletDetailsQuery } from '../../../store/services/walletService';
 import { selectCheckout } from '../../../store/slices/checkoutSlice';
 import { useAppSelector } from '../../../store/store';
 import {
   Address,
   DeliveryService,
+  MarketplaceVoucher,
   PaymentMethod,
 } from '../../../types/component';
 import {
+  AdditionalNotes,
   CheckoutCartOrderItem,
   CheckoutCartProduct,
   CheckoutCartProductItem,
-  AdditionalNotes,
 } from '../../../types/component/checkout';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
@@ -40,6 +43,7 @@ import {
 } from '../../../utils/checkout';
 import {
   pascalCaseToTitleCase,
+  toDiscountString,
   toETD,
   toPhoneNumber,
   toRupiah,
@@ -52,6 +56,7 @@ import {
   notifySuccessToast,
 } from '../../../utils/toast';
 import DeliveryServiceModal from './DeliveryServiceModal';
+import MarketplaceVoucherModal from './MarketplaceVoucherModal';
 import PaymentMethodModal from './PaymentMethodModal';
 import PaymentWalletPinModal from './PaymentWalletPinModal';
 import ShippingAddressModal from './ShippingAddressModal';
@@ -72,6 +77,8 @@ const BuyerCheckout = () => {
   const { data: getAddressesData } = useGetAddressesQuery();
   const { data: getWalletDetailsData, refetch: refetchGetWalletDetails } =
     useGetWalletDetailsQuery();
+  const { data: getActiveMarketplaceVoucherData } =
+    useGetActiveMarketplaceVoucherQuery();
   const [payCartWithWallet, { isLoading: payCartWithWalletLoading }] =
     usePayCartWithWalletMutation();
   const checkout = useAppSelector(selectCheckout);
@@ -99,7 +106,10 @@ const BuyerCheckout = () => {
     useState<GetRajaOngkirShippingCostRequest | null>(null);
   const [additionalNotes, setAdditionalNotes] =
     useState<AdditionalNotes | null>(null);
+  const [marketplaceVoucher, setMarketplaceVoucher] =
+    useState<MarketplaceVoucher | null>(null);
 
+  console.log(getActiveMarketplaceVoucherData);
   const handleAddAddressClick = () => {
     setOpenModal({
       shippingAddress: {
@@ -402,7 +412,11 @@ const BuyerCheckout = () => {
     });
   }, [getAddressesData]);
 
-  if (!getAddressesData?.data || !shippingAddress) {
+  if (
+    !getAddressesData?.data ||
+    !shippingAddress ||
+    !getActiveMarketplaceVoucherData?.data
+  ) {
     return (
       <div className='px-2 container mx-auto flex flex-col animate-pulse'>
         <div className='h-6 bg-base-200 rounded-full w-36 max-w-3/5'></div>
@@ -642,11 +656,20 @@ const BuyerCheckout = () => {
               color='primary'
               shape='circle'
               size='md'
+              onClick={handleMarketplaceVoucherClick}
             >
               <IoAddSharp className='text-3xl' />
             </Button>
           </Tooltip>
         </Card.Title>
+        {marketplaceVoucher && (
+          <Card.Body className='p-0'>
+            <VoucherTicket
+              currentVoucher={marketplaceVoucher}
+              selectedVoucher={marketplaceVoucher}
+            />
+          </Card.Body>
+        )}
       </Card>
 
       {/* Payment method card */}
@@ -732,6 +755,13 @@ const BuyerCheckout = () => {
       />
       {/* Shop Promotion/Voucher Modal */}
       {/* Marketplace Voucher Modal */}
+      <MarketplaceVoucherModal
+        activeMarketplaceVouchers={getActiveMarketplaceVoucherData.data}
+        currentMarketplaceVoucher={marketplaceVoucher}
+        open={openModal.marketplaceVoucher}
+        onClose={handleModalClose}
+        setMarketplaceVoucher={setMarketplaceVoucher}
+      />
       {/* Payment Method Modal */}
       <PaymentMethodModal
         currentPaymentMethod={paymentMethod}

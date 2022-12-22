@@ -8,7 +8,7 @@ type PaymentMethodModalProps = {
   currentPaymentMethod: PaymentMethod;
   open: boolean;
   onClose: () => void;
-  setPaymentMethod: (paymentMethod: PaymentMethod) => void;
+  setPaymentMethod: React.Dispatch<React.SetStateAction<PaymentMethod>>;
 };
 
 const PaymentMethodModal = ({

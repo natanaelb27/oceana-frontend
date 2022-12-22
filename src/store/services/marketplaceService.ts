@@ -10,6 +10,15 @@ import { baseApi } from '../store';
 
 export const marketplaceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    getActiveMarketplaceVoucher: builder.query<
+      GetMarketplaceVoucherResponse,
+      void
+    >({
+      query: () => ({
+        url: '/marketplace/vouchers/active',
+        method: 'GET',
+      }),
+    }),
     getAllMarketplaceVoucher: builder.query<
       GetMarketplaceVoucherResponse,
       string
@@ -69,6 +78,7 @@ export const marketplaceApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetActiveMarketplaceVoucherQuery,
   useGetAllMarketplaceVoucherQuery,
   useLazyGetAllMarketplaceVoucherQuery,
   useGetMarketplaceVoucherDetailsQuery,
