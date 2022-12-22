@@ -62,6 +62,7 @@ import {
   useSellerCancelOrderMutation,
   useUpdateProcessDeliveryMutation,
   useUpdateProcessOrderMutation,
+  useGetMerchantOrderDetailsQuery,
 } from '../../../store/services/myShopService';
 import {
   toMerchantVoucherQuery,
@@ -87,7 +88,6 @@ import useOutsideAlerter from '../../../hooks/OutsideAlerter';
 import moment from 'moment';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
 import { IoWalletOutline } from 'react-icons/io5';
-import { useGetOrderDetailsQuery } from '../../../store/services/orderService';
 import DateCountdown from '../../common/DateCountdown';
 import { computeDatetime, getDateDiffNow } from '../../../utils/date';
 
@@ -96,7 +96,6 @@ type OpenModal = {
   cancelOrder: boolean;
   processDelivery: boolean;
   claimFunds: boolean;
-  processRefundOrder: boolean;
   detailOrder: boolean;
 };
 
@@ -110,7 +109,6 @@ const OrderContent = () => {
     cancelOrder: false,
     processDelivery: false,
     claimFunds: false,
-    processRefundOrder: false,
     detailOrder: false,
   });
 
@@ -144,8 +142,10 @@ const OrderContent = () => {
 
   const [orderID, setOrderID] = useState<string | null>(null);
 
-  const { data: getOrderDetailsData, isLoading: getOrderDetailsLoading } =
-    useGetOrderDetailsQuery(orderID || '');
+  const {
+    data: getMerchantOrderDetailsData,
+    isLoading: getOrderDetailsLoading,
+  } = useGetMerchantOrderDetailsQuery(orderID || '');
 
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
 
@@ -371,7 +371,6 @@ const OrderContent = () => {
       cancelOrder: false,
       processDelivery: false,
       claimFunds: false,
-      processRefundOrder: false,
       detailOrder: false,
     });
 
@@ -388,7 +387,6 @@ const OrderContent = () => {
       cancelOrder: false,
       processDelivery: false,
       claimFunds: false,
-      processRefundOrder: false,
       detailOrder: false,
     });
   };
@@ -399,7 +397,7 @@ const OrderContent = () => {
       cancelOrder: false,
       processDelivery: false,
       claimFunds: false,
-      processRefundOrder: false,
+
       detailOrder: false,
     });
 
@@ -432,7 +430,6 @@ const OrderContent = () => {
       cancelOrder: true,
       processDelivery: false,
       claimFunds: false,
-      processRefundOrder: false,
       detailOrder: false,
     });
   };
@@ -443,7 +440,6 @@ const OrderContent = () => {
       cancelOrder: false,
       processDelivery: false,
       claimFunds: false,
-      processRefundOrder: false,
       detailOrder: false,
     });
 
@@ -476,7 +472,6 @@ const OrderContent = () => {
       cancelOrder: false,
       processDelivery: true,
       claimFunds: false,
-      processRefundOrder: false,
       detailOrder: false,
     });
   };
@@ -487,7 +482,6 @@ const OrderContent = () => {
       cancelOrder: false,
       processDelivery: false,
       claimFunds: false,
-      processRefundOrder: false,
       detailOrder: false,
     });
 
@@ -520,7 +514,6 @@ const OrderContent = () => {
       cancelOrder: false,
       processDelivery: false,
       claimFunds: true,
-      processRefundOrder: false,
       detailOrder: false,
     });
   };
@@ -531,7 +524,6 @@ const OrderContent = () => {
       cancelOrder: false,
       processDelivery: false,
       claimFunds: false,
-      processRefundOrder: false,
       detailOrder: false,
     });
 
@@ -548,37 +540,12 @@ const OrderContent = () => {
       cancelOrder: false,
       processDelivery: false,
       claimFunds: false,
-      processRefundOrder: false,
       detailOrder: true,
     });
   };
 
-  const handleProcessRefundClick = (orderID: string) => {
-    setOrderID(orderID);
-
-    setOpenModal({
-      processOrder: false,
-      cancelOrder: false,
-      processDelivery: false,
-      claimFunds: false,
-      processRefundOrder: true,
-      detailOrder: false,
-    });
-  };
-
-  const handleProcessRefund = () => {
-    setOpenModal({
-      processOrder: false,
-      cancelOrder: false,
-      processDelivery: false,
-      claimFunds: false,
-      processRefundOrder: false,
-      detailOrder: false,
-    });
-
-    if (!orderID) {
-      return;
-    }
+  const handleProcessRefundClick = () => {
+    navigate('/seller/refunds');
   };
 
   const handleViewOrderTrackingClick = () => {
@@ -837,7 +804,7 @@ const OrderContent = () => {
                             <Button
                               color='warning'
                               size='sm'
-                              onClick={() => handleProcessRefundClick(order_id)}
+                              onClick={handleProcessRefundClick}
                               disabled={
                                 !stringCompare(
                                   order_status,
@@ -930,13 +897,6 @@ const OrderContent = () => {
         onAccepted={handleProcessDelivery}
       />
       <ConfirmationModal
-        open={openModal.processRefundOrder}
-        title='Are you sure?'
-        message='This action cannot be undone.'
-        onClose={handleModalClose}
-        onAccepted={handleProcessRefund}
-      />
-      <ConfirmationModal
         open={openModal.claimFunds}
         title='Are you sure?'
         message='This action cannot be undone.'
@@ -971,17 +931,17 @@ const OrderContent = () => {
               </div>
             </Card>
           )}
-          {getOrderDetailsData?.data && (
+          {getMerchantOrderDetailsData?.data && (
             <div className='flex flex-col gap-2'>
               <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
                 <div className='flex justify-between items-center'>
                   <div className='flex gap-2 items-center'>
                     <span className='font-bold'>
                       {capitalizeFirstLetter(
-                        getOrderDetailsData?.data.order_status
+                        getMerchantOrderDetailsData?.data.order_status
                       )}
                     </span>
-                    {getOrderDetailsData?.data.refund_id ? (
+                    {getMerchantOrderDetailsData?.data.refund_id ? (
                       <Badge
                         color='error'
                         size='xs'
@@ -992,7 +952,7 @@ const OrderContent = () => {
                     ) : null}
 
                     {stringCompare(
-                      getOrderDetailsData?.data.order_status,
+                      getMerchantOrderDetailsData?.data.order_status,
                       DELIVERY_STATUS.PENDING_SELLER
                     ) ? (
                       <Tooltip
@@ -1001,7 +961,7 @@ const OrderContent = () => {
                       >
                         <DateCountdown
                           date={moment(
-                            getOrderDetailsData?.data
+                            getMerchantOrderDetailsData?.data
                               .seller_confirmation_expiration_datetime
                           ).toDate()}
                         ></DateCountdown>
@@ -1009,7 +969,7 @@ const OrderContent = () => {
                     ) : null}
 
                     {stringCompare(
-                      getOrderDetailsData?.data.order_status,
+                      getMerchantOrderDetailsData?.data.order_status,
                       DELIVERY_STATUS.ON_PROCESS
                     ) ? (
                       <Tooltip
@@ -1018,7 +978,7 @@ const OrderContent = () => {
                       >
                         <DateCountdown
                           date={moment(
-                            getOrderDetailsData?.data
+                            getMerchantOrderDetailsData?.data
                               .on_process_expiration_datetime
                           ).toDate()}
                         ></DateCountdown>
@@ -1026,7 +986,7 @@ const OrderContent = () => {
                     ) : null}
 
                     {stringCompare(
-                      getOrderDetailsData?.data.order_status,
+                      getMerchantOrderDetailsData?.data.order_status,
                       DELIVERY_STATUS.DELIVERED
                     ) ? (
                       <Tooltip
@@ -1035,7 +995,7 @@ const OrderContent = () => {
                       >
                         <DateCountdown
                           date={moment(
-                            getOrderDetailsData?.data
+                            getMerchantOrderDetailsData?.data
                               .delivered_expiration_datetime
                           ).toDate()}
                         ></DateCountdown>
@@ -1059,7 +1019,7 @@ const OrderContent = () => {
                 {openOrderTracking ? (
                   <div className='border-solid border-2 rounded p-3'>
                     <Steps vertical={true}>
-                      {getOrderDetailsData?.data.order_tracking_history.map(
+                      {getMerchantOrderDetailsData?.data.order_tracking_history.map(
                         (history, n) => (
                           <Steps.Step
                             value=''
@@ -1088,14 +1048,14 @@ const OrderContent = () => {
                 <div className='flex justify-between items-center'>
                   <span className='text-sm'>No. Invoice</span>
                   <span className='text-sm text-primary cursor-pointer'>
-                    {getOrderDetailsData?.data.invoice_number}
+                    {getMerchantOrderDetailsData?.data.invoice_number}
                   </span>
                 </div>
                 <div className='flex justify-between items-center'>
                   <span className='text-sm'>Purchase Date</span>
                   <span className='text-sm'>
                     {toLongStringDatetime(
-                      getOrderDetailsData?.data.transaction_datetime
+                      getMerchantOrderDetailsData?.data.transaction_datetime
                     )}
                   </span>
                 </div>
@@ -1105,13 +1065,13 @@ const OrderContent = () => {
                   <span className='font-bold'>Product Details</span>
                   <div className='flex items-center gap-1 cursor-pointer hover:text-primary'>
                     <span className='font-bold text-sm'>
-                      {getOrderDetailsData?.data.shop_name}
+                      {getMerchantOrderDetailsData?.data.shop_name}
                     </span>
                     <HiOutlineChevronRight className='text-sm' />
                   </div>
                 </div>
                 <div className='flex flex-col gap-4'>
-                  {getOrderDetailsData?.data.order_details.map(
+                  {getMerchantOrderDetailsData?.data.order_details.map(
                     (orderDetail, n) => {
                       return (
                         <Card
@@ -1185,15 +1145,6 @@ const OrderContent = () => {
                 <span className='font-bold'>Shipping Info</span>
                 <div className='flex flex-col gap-2'>
                   <div className='grid grid-cols-10'>
-                    <span className='text-sm col-span-1'>Courier</span>
-                    <span className='text-sm col-span-1 text-right mr-2'>
-                      :
-                    </span>
-                    <span className='text-sm col-span-8'>
-                      {getOrderDetailsData?.data.courier_description}
-                    </span>
-                  </div>
-                  <div className='grid grid-cols-10'>
                     <span className='text-sm col-span-1'>
                       Buyer&apos;s Name
                     </span>
@@ -1201,7 +1152,16 @@ const OrderContent = () => {
                       :
                     </span>
                     <span className='text-sm col-span-8'>
-                      {getOrderDetailsData?.data.user_full_name}
+                      {getMerchantOrderDetailsData?.data.user_full_name}
+                    </span>
+                  </div>
+                  <div className='grid grid-cols-10'>
+                    <span className='text-sm col-span-1'>Courier</span>
+                    <span className='text-sm col-span-1 text-right mr-2'>
+                      :
+                    </span>
+                    <span className='text-sm col-span-8'>
+                      {getMerchantOrderDetailsData?.data.courier_description}
                     </span>
                   </div>
                   <div className='grid grid-cols-10'>
@@ -1210,14 +1170,14 @@ const OrderContent = () => {
                       :
                     </span>
                     <span className='text-sm col-span-8'>
-                      {getOrderDetailsData?.data.address.detail} <br />
-                      {getOrderDetailsData?.data.address.city}
+                      {getMerchantOrderDetailsData?.data.address.detail} <br />
+                      {getMerchantOrderDetailsData?.data.address.city}
                       {', '}
-                      {getOrderDetailsData?.data.address.district}
+                      {getMerchantOrderDetailsData?.data.address.district}
                       {', '}
-                      {getOrderDetailsData?.data.address.province}
+                      {getMerchantOrderDetailsData?.data.address.province}
                       {', '}
-                      {getOrderDetailsData?.data.address.zip_code}
+                      {getMerchantOrderDetailsData?.data.address.zip_code}
                     </span>
                   </div>
                 </div>
@@ -1229,7 +1189,7 @@ const OrderContent = () => {
                     <span className='text-sm font-light'>Payment Method</span>
                     <span className='text-sm'>
                       {capitalizeFirstLetter(
-                        getOrderDetailsData?.data.payment_method
+                        getMerchantOrderDetailsData?.data.payment_method
                       )}
                     </span>
                   </div>
@@ -1240,15 +1200,15 @@ const OrderContent = () => {
                       <span className='text-sm'>
                         {toRupiah(
                           Math.round(
-                            getOrderDetailsData?.data
+                            getMerchantOrderDetailsData?.data
                               .total_price_before_discount
                           )
                         )}
                       </span>
                     </div>
-                    {getOrderDetailsData?.data
+                    {getMerchantOrderDetailsData?.data
                       .total_merchant_promotion_discount +
-                      getOrderDetailsData?.data
+                      getMerchantOrderDetailsData?.data
                         .total_merchant_voucher_discount >
                     0 ? (
                       <div className='flex justify-between items-center'>
@@ -1259,9 +1219,9 @@ const OrderContent = () => {
                           -
                           {toRupiah(
                             Math.round(
-                              getOrderDetailsData?.data
+                              getMerchantOrderDetailsData?.data
                                 .total_merchant_promotion_discount +
-                                getOrderDetailsData?.data
+                                getMerchantOrderDetailsData?.data
                                   .total_merchant_voucher_discount
                             )
                           )}
@@ -1275,11 +1235,11 @@ const OrderContent = () => {
                     <span className='text-sm'>
                       {toRupiah(
                         Math.round(
-                          getOrderDetailsData?.data
+                          getMerchantOrderDetailsData?.data
                             .total_price_before_discount -
-                            getOrderDetailsData?.data
+                            getMerchantOrderDetailsData?.data
                               .total_merchant_promotion_discount -
-                            getOrderDetailsData?.data
+                            getMerchantOrderDetailsData?.data
                               .total_merchant_voucher_discount
                         )
                       )}

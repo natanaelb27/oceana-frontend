@@ -9,6 +9,7 @@ import {
   CheckPasswordVerificationCodeResponse,
   GetProfileResponse,
   RequestPasswordVerificationCodeResponse,
+  UpdateOrderStatusResponse,
   UpdateProfilePasswordResponse,
   UpdateProfileResponse,
 } from '../../types/response';
@@ -103,6 +104,13 @@ export const profileApi = baseApi.injectEndpoints({
         method: 'POST',
       }),
       invalidatesTags: ['Profile'],
+    }),
+    updateCompleteOrder: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/profile/orders/${id}/process-order`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'OrderDetails'],
     }),
   }),
 });

@@ -34,7 +34,7 @@ const DateCountdown = ({ date = null }: DateCountdownProps) => {
 
   if (date) {
     return moment().isBefore(date) ? (
-      <Badge color='warning' className='flex gap-1 bg-opacity-50'>
+      <Badge color='warning' className='flex gap-1 bg-opacity-50 text-xs'>
         <HiOutlineClock />
         {computeDatetime(getDateDiffNow(date?.toString() || '')).days > 0 ? (
           <div className='font-bold'>
