@@ -1,5 +1,5 @@
 import { getIn, useFormik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Card,
@@ -19,11 +19,9 @@ import {
 } from '../../../constants';
 import { useLazyGetAncestorsCategoryQuery } from '../../../store/services/categoryService';
 import { useCreateProductUpsertModelMutation } from '../../../store/services/productService';
-import {
-  PUMProduct,
-  PUMProductItem,
-  PUMVariant,
-} from '../../../types/component/product';
+import { useGetSelectedShipmentQuery } from '../../../store/services/shipmentService';
+import { PUMProductItem, PUMVariant } from '../../../types/component/product';
+import { Courier } from '../../../types/component/shipment';
 import {
   CreateProductResponse,
   GetAncestorsCategoryResponse,
@@ -32,6 +30,7 @@ import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { handleNumberInvalidKey } from '../../../utils/validation';
 import { formikPreorderDay } from '../../../utils/yupValidation';
 import SectionHeading from '../../common/SectionHeading/index';
+import CouriersConfiguration from '../ShipmentContent/CouriersConfiguration';
 import { Action, ButtonAddMore } from './Button';
 import CategoryModal from './CategoryModal';
 import { Label } from './Form';
@@ -42,6 +41,8 @@ const ProductAddContent = () => {
   const [createProduct, { isLoading: createProductIsLoading }] =
     useCreateProductUpsertModelMutation();
   const [getAncestorsCategory] = useLazyGetAncestorsCategoryQuery();
+  const { data: getShipmentData, isLoading: getShipmentIsLoading } =
+    useGetSelectedShipmentQuery();
 
   const productFormik = useFormik({
     initialValues: {
@@ -119,7 +120,7 @@ const ProductAddContent = () => {
           images: [],
         },
       ],
-      couriers: [],
+      couriers: [] as Courier[],
     },
     validationSchema: Yup.object({
       // id: Yup.number().required('Please enter id'),
@@ -199,6 +200,10 @@ const ProductAddContent = () => {
   });
 
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
+
+  const updateCouriers = (couriers: Courier[]) => {
+    productFormik.setFieldValue('couriers', couriers);
+  };
 
   const handlePreorderToggleOnChange = () => {
     if (productFormik.values.process_day == 2) {
@@ -860,6 +865,12 @@ const ProductAddContent = () => {
     );
   };
 
+  useEffect(() => {
+    if (getShipmentData?.data?.couriers !== undefined) {
+      productFormik.setFieldValue('couriers', getShipmentData?.data?.couriers);
+    }
+  }, [getShipmentData]);
+
   return (
     <>
       <Form
@@ -1258,6 +1269,52 @@ const ProductAddContent = () => {
                     </span>
                   </div>
                 </FormLayout.InputContainer>
+              </FormLayout.LabelInputContainer>
+              {productFormik.values.process_day !== 2 && (
+                <>
+                  <FormLayout.LabelInputContainer>
+                    <FormLayout.LabelContainer />
+                    <FormLayout.InputContainer>
+                      <>
+                        <div className='flex items-center gap-2'>
+                          <Input
+                            type='number'
+                            name='preorder_day'
+                            className='w-full'
+                            value={productFormik.values.preorder_day}
+                            onChange={productFormik.handleChange}
+                            onFocus={() =>
+                              (productFormik.touched.preorder_day = true)
+                            }
+                            onKeyDown={handleNumberInvalidKey}
+                          />
+                          <span>days</span>
+                        </div>
+                      </>
+                    </FormLayout.InputContainer>
+                  </FormLayout.LabelInputContainer>
+                  <FormLayout.InputError>
+                    {productFormik.touched.preorder_day &&
+                      productFormik.errors.preorder_day && (
+                        <label className='label-text-alt text-error'>
+                          {productFormik.errors.preorder_day}
+                        </label>
+                      )}
+                  </FormLayout.InputError>
+                </>
+              )}
+            </FormLayout.LabelInputErrorContainer>
+            <FormLayout.LabelInputErrorContainer>
+              <FormLayout.LabelInputContainer>
+                <FormLayout.LabelContainer justify='start'>
+                  <Label>Couriers</Label>
+                </FormLayout.LabelContainer>
+                <div className='col-span-3'>
+                  <CouriersConfiguration
+                    data={productFormik.values.couriers}
+                    updateData={updateCouriers}
+                  />
+                </div>
               </FormLayout.LabelInputContainer>
               {productFormik.values.process_day !== 2 && (
                 <>
