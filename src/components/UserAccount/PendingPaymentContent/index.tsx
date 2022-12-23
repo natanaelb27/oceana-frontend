@@ -1,6 +1,5 @@
-import { Badge, Button, Card, Divider, Dropdown, Tooltip } from 'react-daisyui';
+import { Button, Card, Divider, Dropdown, Tooltip } from 'react-daisyui';
 import {
-  HiOutlineClock,
   HiOutlineShoppingBag,
   HiOutlineDotsVertical,
   HiOutlineDotsHorizontal,

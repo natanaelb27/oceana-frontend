@@ -2,7 +2,11 @@ import { Avatar, Card, Divider, Menu } from 'react-daisyui';
 import { BsCreditCard2Back } from 'react-icons/bs';
 import { CgProfile } from 'react-icons/cg';
 import { GoHistory, GoHome } from 'react-icons/go';
-import { HiOutlineClipboard, HiOutlineClipboardList, HiOutlineCurrencyDollar, HiOutlineReceiptRefund } from 'react-icons/hi';
+import {
+  HiOutlineClipboardList,
+  HiOutlineCurrencyDollar,
+  HiOutlineReceiptRefund,
+} from 'react-icons/hi';
 import { IoWalletOutline } from 'react-icons/io5';
 import { NavLink } from 'react-router-dom';
 
