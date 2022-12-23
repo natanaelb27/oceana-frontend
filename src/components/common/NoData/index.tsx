@@ -18,11 +18,11 @@ const NoData = ({
   return (
     <div className='flex flex-col gap-5 text-center items-center'>
       <Image
-        src={require('./../../../assets/images/no-data.png')}
+        src={require('./../../../assets/images/no-data.gif')}
         alt='no-data'
-        className='object-contain h-48 w-96'
+        className='object-contain max-w-xs -my-12'
       ></Image>
-      <div className='flex flex-col gap-3 text-center items-center w-96'>
+      <div className='flex flex-col gap-3 text-center items-center max-w-xs'>
         <span className='font-bold text-xl'>{title}</span>
         <span className='font-light'>{message}</span>
         {buttonMessage ? (

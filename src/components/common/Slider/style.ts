@@ -5,25 +5,19 @@ import tw from 'tailwind-styled-components';
 export const StyledCarousel = tw(Carousel)<any>`
   carousel-center
   w-full
-  p-4
-  px-6
-  gap-10
+  pt-2.5
+  gap-4
   rounded-box
   
-  md:gap-24
-  md:px-12
+  md:gap-10
+  md:px-8
 `;
 
 export const SliderNavBtn = tw.button<any>`
   absolute
   btn
-  btn-xs
+  btn-ghost
   btn-circle
-  bg-base-300
-  text-base-content
-  hover:bg-base-200
-  drop-shadow-lg
-  border-none
-  md:top-[40%]
-  md:btn-md
+  top-[50%]
+  bottom-[50%]
 `;

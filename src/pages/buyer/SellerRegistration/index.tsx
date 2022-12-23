@@ -31,6 +31,7 @@ import {
 } from '../../../types/response';
 import { useLazyGetSubDistrictsQuery } from '../../../store/services/subDistrictService';
 import { SubDistrictQuery } from '../../../types/query';
+import { Image } from '../../../components/common';
 
 const SellerRegistration = () => {
   const { data: getAddressesData } = useGetAddressesQuery();
@@ -192,7 +193,9 @@ const SellerRegistration = () => {
         <div className='grid grid-cols-12 gap-4'>
           <div className='col-span-12 md:col-span-6 flex items-center'>
             <div className='flex justify-center'>
-              <img src='https://assets.tokopedia.net/assets-tokopedia-lite/v2/zeus/kratos/8d9aee94.png' />
+              <Image
+                src={require('../../../assets/images/register-shop.gif')}
+              />
             </div>
           </div>
           <div className='col-span-12 md:col-span-6'>
