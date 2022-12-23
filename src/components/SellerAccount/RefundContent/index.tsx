@@ -70,6 +70,7 @@ import DatePicker, { CalendarContainer } from 'react-datepicker';
 import { IoWalletOutline } from 'react-icons/io5';
 import DateCountdown from '../../common/DateCountdown';
 import { useLazyGetRefundDetailsQuery } from '../../../store/services/refundService';
+import Zoom from 'react-medium-image-zoom';
 
 type OpenModal = {
   approveRefund: boolean;
@@ -521,7 +522,7 @@ const RefundContent = () => {
       <Modal
         open={openModal.detailRefund}
         responsive
-        className='md:w-9/12 md:max-w-2xl px-0'
+        className='md:w-12/12 md:max-w-4xl px-0'
         onClickBackdrop={handleModalClose}
       >
         <Button
@@ -536,10 +537,11 @@ const RefundContent = () => {
         <Modal.Header className='text-center font-bold'>
           Refund Detail
         </Modal.Header>
-        <Modal.Body className='max-h-[48rem] overflow-y-scroll'>
+        <Divider className='m-0 hidden md:flex'></Divider>
+        <Modal.Body className='max-h-[48rem] md:grid md:grid-cols-3 md:gap-2 overflow-hidden'>
           {getRefundDetailsData?.data && (
-            <div className='flex flex-col gap-2'>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+            <div className='flex flex-col gap-2 overflow-y-scroll col-span-2 md:border-r-2 md:border-base-200'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>
                     {capitalizeFirstLetter(
@@ -569,6 +571,39 @@ const RefundContent = () => {
                   </span>
                 </div>
               </div>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
+                <div className='flex justify-between items-center'>
+                  <span className='font-bold'>Refund Media</span>
+                </div>
+                {getRefundDetailsData?.data?.images?.length ||
+                getRefundDetailsData?.data?.videos?.length ||
+                0 > 0 ? (
+                  <div className='flex flex-wrap gap-4'>
+                    {getRefundDetailsData?.data?.videos?.map((video, n) => {
+                      return (
+                        <video
+                          key={n}
+                          src={video || ''}
+                          controls
+                          className='h-12 w-12 md:h-20 md:w-40 rounded-md'
+                        />
+                      );
+                    })}
+                    {getRefundDetailsData?.data?.images?.map((image, n) => {
+                      return (
+                        <Zoom key={n}>
+                          <img
+                            src={image}
+                            className='border rounded-lg w-20 h-20'
+                          ></img>
+                        </Zoom>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <NoData title='It seems that this refund has no media uploaded'></NoData>
+                )}
+              </div>
               <div className='flex flex-col gap-2 p-5'>
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>Refund Details</span>
@@ -595,7 +630,7 @@ const RefundContent = () => {
                               />
                             </div>
                             <div className='flex flex-col col-span-4'>
-                              <span className='font-bold line-clamp-2 md:line-clamp-1  cursor-pointer'>
+                              <span className='font-bold line-clamp-2 md:line-clamp-1 cursor-pointer'>
                                 {refundItems.product_name || ''}
                               </span>
                               <span className='font-light text-sm line-clamp-2 md:line-clamp-1'>
@@ -645,32 +680,54 @@ const RefundContent = () => {
                       );
                     }
                   )}
-                  <div className='flex justify-end gap-1'>
-                    <span className='font-light'>Total Refund Amount: </span>
+                  <div className='flex flex-col items-end'>
+                    <span className='font-light'>Total Refund Amount</span>
                     <span className='font-bold'>
                       {toRupiah(
                         getRefundDetailsData?.data?.total_merchant_lost_amount
                       )}
                     </span>
                   </div>
-                  <div className='flex justify-end gap-2'>
-                    <Button
-                      className='normal-case btn-primary'
-                      startIcon={<HiOutlineCheck />}
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      className='normal-case btn-error'
-                      startIcon={<HiOutlineX />}
-                    >
-                      Reject
-                    </Button>
-                  </div>
                 </div>
               </div>
             </div>
           )}
+          <div className='hidden md:flex flex-col justify-between items-center'>
+            <div className='flex flex-col p-5 gap-2 col-span-1 w-full'>
+              <Button
+                className='normal-case btn-primary'
+                startIcon={<HiOutlineCheck />}
+              >
+                Approve
+              </Button>
+              <Button
+                className='normal-case btn-error'
+                startIcon={<HiOutlineX />}
+              >
+                Reject
+              </Button>
+            </div>
+            <Image
+              src={require('./../../../assets/images/fish.png')}
+              alt='no-data'
+              className='object-contain'
+            ></Image>
+          </div>
+
+          <div className='flex md:hidden gap-2 justify-end px-5 pb-5'>
+            <Button
+              className='normal-case btn-primary'
+              startIcon={<HiOutlineCheck />}
+            >
+              Approve
+            </Button>
+            <Button
+              className='normal-case btn-error'
+              startIcon={<HiOutlineX />}
+            >
+              Reject
+            </Button>
+          </div>
         </Modal.Body>
       </Modal>
     </div>

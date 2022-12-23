@@ -922,7 +922,7 @@ const OrderContent = () => {
           )}
           {getMerchantOrderDetailsData?.data && (
             <div className='flex flex-col gap-2'>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
                   <div className='flex gap-2 items-center'>
                     <span className='font-bold'>
@@ -1049,7 +1049,7 @@ const OrderContent = () => {
                   </span>
                 </div>
               </div>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>Product Details</span>
                   <div className='flex items-center gap-1 cursor-pointer hover:text-primary'>
@@ -1124,7 +1124,7 @@ const OrderContent = () => {
                   )}
                 </div>
               </div>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <span className='font-bold'>Shipping Info</span>
                 <div className='flex flex-col gap-2'>
                   <div className='grid grid-cols-10'>

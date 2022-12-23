@@ -20,8 +20,8 @@ export interface RefundDetails {
   refund_request_datetime: string;
   rejected_datetime: string;
   refund_status: string;
-  images: string;
-  videos: string;
+  images: string[];
+  videos: string[];
   refund_items: RefundItems[];
   total_user_refund_amount: number;
   total_merchant_lost_amount: number;
