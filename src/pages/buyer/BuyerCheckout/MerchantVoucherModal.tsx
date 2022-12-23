@@ -1,12 +1,6 @@
-import { current } from '@reduxjs/toolkit';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Modal } from 'react-daisyui';
 import { Skeleton, VoucherTicket } from '../../../components/common';
-import {
-  LIMIT_SELLER_VOUCHER_ALL,
-  VOUCHER_AVAILABILITY,
-  VOUCHER_STATUS,
-} from '../../../constants';
 import { useLazyGetAllMerchantVoucherByBuyerQuery } from '../../../store/services/shopService';
 import {
   MarketplaceVoucher,
@@ -21,7 +15,7 @@ type MerchantVoucherModalProps = {
   currentMerchantID: number;
   currentMerchantName: string;
   merchantVouchers: MerchantVouchersByMerchantID | null;
-  subtotalPayment: number;
+  subtotalBeforeShipping: number;
   voucherQuery: MerchantVoucherQuery;
   open: boolean;
   onClose: () => void;
@@ -34,7 +28,7 @@ const MerchantVoucherModal = ({
   currentMerchantID,
   currentMerchantName,
   merchantVouchers,
-  subtotalPayment,
+  subtotalBeforeShipping,
   voucherQuery,
   open,
   onClose,
@@ -108,7 +102,9 @@ const MerchantVoucherModal = ({
             <VoucherTicket
               key={voucherByBuyer.id}
               currentVoucher={voucherByBuyer}
-              disabled={voucherByBuyer.minimum_spend_amount > subtotalPayment}
+              disabled={
+                voucherByBuyer.minimum_spend_amount > subtotalBeforeShipping
+              }
               selectedVoucher={
                 merchantVouchers && merchantVouchers[currentMerchantID]
               }

@@ -4,21 +4,46 @@ import {
   DeliveryService,
   MarketplaceVoucher,
   MerchantVoucher,
+  MerchantVouchersByMerchantID,
 } from '../types/component';
 
-export const calculateSubtotal = (
-  products: CartProduct[],
-  shippingFee = 0,
-  shopVoucher = 0
-): number =>
+export const calculateDiscount = (
+  voucher: MarketplaceVoucher | MerchantVoucher,
+  totalBeforeShipping: number
+) => {
+  return !voucher
+    ? 0
+    : voucher.discount_type.toLocaleLowerCase() === 'percentage'
+    ? Math.min(
+        (voucher.discount / 100) * totalBeforeShipping,
+        voucher.maximum_discount_amount
+      )
+    : voucher.discount;
+};
+
+export const calculateSubtotalBeforeShipping = (products: CartProduct[]) =>
   products.reduce(
     (partialSubtotal, currentProduct) =>
       partialSubtotal +
       currentProduct.price_after_discount * currentProduct.quantity,
     0
-  ) +
-  shippingFee -
-  shopVoucher;
+  );
+
+export const calculateSubtotal = (
+  products: CartProduct[],
+  shippingFee = 0,
+  merchantVoucher?: MerchantVoucher | null
+): number => {
+  const subtotalBeforeShipping = calculateSubtotalBeforeShipping(products);
+  if (!merchantVoucher) {
+    return subtotalBeforeShipping + shippingFee;
+  }
+
+  const discount = calculateDiscount(merchantVoucher, subtotalBeforeShipping);
+  const subtotal = subtotalBeforeShipping - discount + shippingFee;
+
+  return subtotal;
+};
 
 export const calculateTotalBeforeShipping = (
   checkout: CartGroupedByMerchant[]
@@ -31,7 +56,7 @@ export const calculateTotalBeforeShipping = (
 
 export const calculateTotalWithShipping = (
   checkout: CartGroupedByMerchant[],
-  deliveryService: DeliveryService | null
+  deliveryService?: DeliveryService | null
 ): number =>
   checkout.reduce(
     (partialTotal, currentMerchant) =>
@@ -46,39 +71,37 @@ export const calculateTotalWithShipping = (
     0
   );
 
+export const calculateTotalDiscount = (
+  checkout: CartGroupedByMerchant[],
+  merchantVouchers: MerchantVouchersByMerchantID
+) =>
+  checkout.reduce(
+    (partialDiscountTotal, currentMerchant) =>
+      partialDiscountTotal +
+      calculateDiscount(
+        merchantVouchers[currentMerchant.merchant_id] as MerchantVoucher,
+        calculateSubtotalBeforeShipping(currentMerchant.products)
+      ),
+    0
+  );
+
 export const calculateTotal = (
   checkout: CartGroupedByMerchant[],
   deliveryService: DeliveryService | null,
-  marketplaceVoucher: MarketplaceVoucher | null
+  marketplaceVoucher: MarketplaceVoucher | null,
+  merchantVouchers: MerchantVouchersByMerchantID | null
 ): number => {
-  if (!marketplaceVoucher) {
-    return checkout.reduce(
-      (partialTotal, currentMerchant) =>
-        partialTotal +
-        calculateSubtotal(
-          currentMerchant.products,
-          !deliveryService
-            ? 0
-            : deliveryService[currentMerchant.merchant_id]?.courier_services[0]
-                .shipping_fee
-        ),
-      0
-    );
-  }
-
-  let total = 0;
   const totalBeforeShipping = calculateTotalBeforeShipping(checkout);
   const shippingFee =
     calculateTotalWithShipping(checkout, deliveryService) - totalBeforeShipping;
-  if (marketplaceVoucher?.discount_type.toLocaleLowerCase() === 'percentage') {
-    const discount = Math.min(
-      (marketplaceVoucher.discount / 100) * totalBeforeShipping,
-      marketplaceVoucher.maximum_discount_amount
-    );
-    total = totalBeforeShipping - discount + shippingFee;
-  } else {
-    total = totalBeforeShipping - marketplaceVoucher?.discount + shippingFee;
-  }
+  const discountMarketplace = !marketplaceVoucher
+    ? 0
+    : calculateDiscount(marketplaceVoucher, totalBeforeShipping);
+  const discountMerchants = !merchantVouchers
+    ? 0
+    : calculateTotalDiscount(checkout, merchantVouchers);
+  const total =
+    totalBeforeShipping - discountMarketplace - discountMerchants + shippingFee;
 
   return total;
 };

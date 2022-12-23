@@ -114,8 +114,10 @@ const BuyerCheckout = () => {
     useState<DeliveryService | null>(null);
   const [currentMerchantID, setCurrentMerchantID] = useState<number>(0);
   const [currentMerchantName, setCurrentMerchantName] = useState<string>('');
-  const [currentMerchantSubtotal, setCurrentMerchantSubtotal] =
-    useState<number>(0);
+  const [
+    currentMerchantSubtotalBeforeShipping,
+    setCurrentMerchantSubtotalBeforeShipping,
+  ] = useState<number>(0);
   const [getShippingCostRequest, setGetShippingCostRequest] =
     useState<GetRajaOngkirShippingCostRequest | null>(null);
   const [additionalNotes, setAdditionalNotes] =
@@ -341,21 +343,32 @@ const BuyerCheckout = () => {
           }
         });
 
-        const shippingFee = deliveryService
-          ? (deliveryService[cartGroupedByMerchant.merchant_id]
-              ?.courier_services[0].shipping_fee as number)
-          : 0;
+        let shippingFee = 0;
+        let courierServiceID = 0;
+        if (deliveryService) {
+          shippingFee = deliveryService[cartGroupedByMerchant.merchant_id]
+            ?.courier_services[0].shipping_fee as number;
+          courierServiceID = deliveryService[cartGroupedByMerchant.merchant_id]
+            ?.courier_services[0].id as number;
+        }
+        const merchantVoucherID =
+          merchantVouchers &&
+          merchantVouchers[cartGroupedByMerchant.merchant_id]
+            ? (merchantVouchers[cartGroupedByMerchant.merchant_id]
+                ?.id as number)
+            : 0;
 
         const checkoutCartOrderItem: CheckoutCartOrderItem = {
           merchant_id: cartGroupedByMerchant.merchant_id,
-          merchant_voucher_id: null,
-          courier_service_id: 1,
+          merchant_voucher_id: merchantVoucherID,
+          courier_service_id: courierServiceID,
           shipping_fee: shippingFee,
           products: checkoutCartProducts,
         };
         return checkoutCartOrderItem;
       }
     );
+
     const marketplaceVoucherID = marketplaceVoucher
       ? marketplaceVoucher.id
       : null;
@@ -406,9 +419,14 @@ const BuyerCheckout = () => {
 
   useEffect(() => {
     setTotalPayment(
-      calculateTotal(checkout, deliveryService, marketplaceVoucher)
+      calculateTotal(
+        checkout,
+        deliveryService,
+        marketplaceVoucher,
+        merchantVouchers
+      )
     );
-  }, [checkout, deliveryService, marketplaceVoucher]);
+  }, [checkout, deliveryService, marketplaceVoucher, merchantVouchers]);
 
   useEffect(() => {
     if (!getAddressesData?.data) {
@@ -672,7 +690,9 @@ const BuyerCheckout = () => {
                 onClick={() => {
                   setCurrentMerchantID(merchant_id);
                   setCurrentMerchantName(name);
-                  setCurrentMerchantSubtotal(calculateSubtotal(products));
+                  setCurrentMerchantSubtotalBeforeShipping(
+                    calculateSubtotal(products)
+                  );
                   setVoucherQuery((prev) => ({
                     ...prev,
                     merchantID: merchant_id,
@@ -698,7 +718,9 @@ const BuyerCheckout = () => {
                 onClickVoucher={() => {
                   setCurrentMerchantID(merchant_id);
                   setCurrentMerchantName(name);
-                  setCurrentMerchantSubtotal(calculateSubtotal(products));
+                  setCurrentMerchantSubtotalBeforeShipping(
+                    calculateSubtotal(products)
+                  );
                   setVoucherQuery((prev) => ({
                     ...prev,
                     merchantID: merchant_id,
@@ -714,12 +736,29 @@ const BuyerCheckout = () => {
                 <p>Subtotal</p>
               </div>
               <p className='text-xl font-bold'>
-                {deliveryService
+                {deliveryService && merchantVouchers
+                  ? toRupiah(
+                      calculateSubtotal(
+                        products,
+                        deliveryService[merchant_id]?.courier_services[0]
+                          .shipping_fee,
+                        merchantVouchers[merchant_id]
+                      )
+                    )
+                  : deliveryService
                   ? toRupiah(
                       calculateSubtotal(
                         products,
                         deliveryService[merchant_id]?.courier_services[0]
                           .shipping_fee
+                      )
+                    )
+                  : merchantVouchers
+                  ? toRupiah(
+                      calculateSubtotal(
+                        products,
+                        0,
+                        merchantVouchers[merchant_id]
                       )
                     )
                   : toRupiah(calculateSubtotal(products))}
@@ -848,7 +887,7 @@ const BuyerCheckout = () => {
         currentMerchantID={currentMerchantID}
         currentMerchantName={currentMerchantName}
         merchantVouchers={merchantVouchers}
-        subtotalPayment={currentMerchantSubtotal}
+        subtotalBeforeShipping={currentMerchantSubtotalBeforeShipping}
         voucherQuery={voucherQuery}
         open={openModal.merchantVoucher}
         onClose={handleModalClose}
@@ -858,7 +897,7 @@ const BuyerCheckout = () => {
       <MarketplaceVoucherModal
         activeMarketplaceVouchers={getActiveMarketplaceVoucherData.data}
         currentMarketplaceVoucher={marketplaceVoucher}
-        totalPayment={calculateTotal(checkout, null, null)}
+        totalPayment={calculateTotal(checkout, null, null, null)}
         open={openModal.marketplaceVoucher}
         onClose={handleModalClose}
         setMarketplaceVoucher={setMarketplaceVoucher}
