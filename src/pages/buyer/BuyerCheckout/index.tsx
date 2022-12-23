@@ -548,8 +548,21 @@ const BuyerCheckout = () => {
                         <div className='text-sm mt-0.5'>
                           {titleCase(product.product_variation)}
                         </div>
-                        <div className='font-bold'>
-                          {toRupiah(product.price_after_discount)}
+                        <div className='mb-1'>
+                          {product.price !== product.price_after_discount ? (
+                            <div className='flex items-center'>
+                              <div className='text-base font-bold'>
+                                {toRupiah(product.price_after_discount)}
+                              </div>
+                              <h5 className='text-xs line-through ml-1'>
+                                {toRupiah(product.price)}
+                              </h5>
+                            </div> // prevents looping
+                          ) : (
+                            <div className='text-base font-bold'>
+                              {toRupiah(product.price_after_discount)}
+                            </div>
+                          )}
                         </div>
                         <div className='flex items-center justify-between'>
                           <div>{`x${product.quantity}`}</div>

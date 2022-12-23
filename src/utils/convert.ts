@@ -33,7 +33,11 @@ export const toETD = (n: string) =>
     ? `${n} days`
     : n.toLocaleLowerCase().replace('hari', 'days');
 
-export const toDiscountString = (discount: number, discountType: string) =>
+export const toDiscountString = (
+  discount: number,
+  discountType: string,
+  maximumDiscountAmount: number
+) =>
   discountType.toLocaleLowerCase() === 'percentage'
-    ? `${discount}%`
+    ? `${discount}% up to ${toRupiah(maximumDiscountAmount)}`
     : toRupiah(discount);

@@ -1,4 +1,3 @@
-import { cartApi } from '../store/services/cartService';
 import {
   CartGroupedByMerchant,
   CartProduct,

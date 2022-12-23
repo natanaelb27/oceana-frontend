@@ -56,7 +56,8 @@ const VoucherTicket = ({
       <div className='font-bold'>
         {toDiscountString(
           currentVoucher.discount,
-          currentVoucher.discount_type
+          currentVoucher.discount_type,
+          currentVoucher.maximum_discount_amount
         )}
       </div>
     </div>
