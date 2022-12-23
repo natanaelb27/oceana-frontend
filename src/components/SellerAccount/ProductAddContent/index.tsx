@@ -180,12 +180,11 @@ const ProductAddContent = () => {
     onSubmit: (values) => {
       values.package_size = '500';
       createProduct({
-        merchantID: values.merchant_id,
         request: values,
       })
         .unwrap()
         .then(() => {
-          notifySuccessToast('Shipment has been updated!');
+          notifySuccessToast('Product has been created!');
         })
         .catch((err) => {
           if ('data' in err) {
@@ -1268,7 +1267,7 @@ const ProductAddContent = () => {
                       <>
                         <div className='flex items-center gap-2'>
                           <Input
-                            type='text'
+                            type='number'
                             name='preorder_day'
                             className='w-full'
                             value={productFormik.values.preorder_day}
@@ -1276,6 +1275,7 @@ const ProductAddContent = () => {
                             onFocus={() =>
                               (productFormik.touched.preorder_day = true)
                             }
+                            onKeyDown={handleNumberInvalidKey}
                           />
                           <span>days</span>
                         </div>

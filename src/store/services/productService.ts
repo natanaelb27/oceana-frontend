@@ -65,10 +65,10 @@ export const productApi = baseApi.injectEndpoints({
     }),
     createProductUpsertModel: builder.mutation<
       GetProductUpsertModelResponse,
-      { merchantID: number; request: UpsertProductRequest }
+      { request: UpsertProductRequest }
     >({
-      query: ({ merchantID, request }) => ({
-        url: `/my-shop/${merchantID}/products`,
+      query: ({ request }) => ({
+        url: '/my-shop/products',
         method: 'POST',
         body: request,
       }),
