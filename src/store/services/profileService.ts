@@ -110,7 +110,7 @@ export const profileApi = baseApi.injectEndpoints({
         url: `/profile/orders/${id}/complete-order`,
         method: 'PATCH',
       }),
-      invalidatesTags: ['Order', 'OrderDetails'],
+      invalidatesTags: ['Order'],
     }),
   }),
 });

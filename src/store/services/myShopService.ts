@@ -12,6 +12,7 @@ import {
   UpdateMerchantResponse,
   UpdateMerchantVoucherResponse,
   UpdateOrderStatusResponse,
+  GetAllRefundDetailsResponse,
 } from '../../types/response';
 import {
   MerchantPromotionDetailsResponse,
@@ -86,28 +87,28 @@ export const myShopApi = baseApi.injectEndpoints({
         url: `/my-shop/transaction-history/${id}`,
         method: 'GET',
       }),
-      providesTags: ['OrderDetails'],
+      providesTags: ['Order'],
     }),
     updateProcessOrder: builder.mutation<UpdateOrderStatusResponse, string>({
       query: (id) => ({
         url: `/my-shop/orders/${id}/process-order`,
         method: 'PATCH',
       }),
-      invalidatesTags: ['Order', 'OrderDetails'],
+      invalidatesTags: ['Order'],
     }),
     updateProcessDelivery: builder.mutation<UpdateOrderStatusResponse, string>({
       query: (id) => ({
         url: `/my-shop/orders/${id}/process-delivery`,
         method: 'PATCH',
       }),
-      invalidatesTags: ['Order', 'OrderDetails'],
+      invalidatesTags: ['Order'],
     }),
     sellerCancelOrder: builder.mutation<UpdateOrderStatusResponse, string>({
       query: (id) => ({
         url: `/my-shop/orders/${id}/cancel-order`,
         method: 'PATCH',
       }),
-      invalidatesTags: ['Order', 'OrderDetails'],
+      invalidatesTags: ['Order'],
     }),
     getMerchantPromotion: builder.query<MerchantPromotionResponse, string>({
       query: (query) => ({
@@ -163,7 +164,14 @@ export const myShopApi = baseApi.injectEndpoints({
         url: `/my-shop/orders/${id}/claim-funds`,
         method: 'PATCH',
       }),
-      invalidatesTags: ['Order', 'OrderDetails', 'Profile'],
+      invalidatesTags: ['Order', 'Profile'],
+    }),
+    getAllMerchantRefunds: builder.query<GetAllRefundDetailsResponse, string>({
+      query: (query) => ({
+        url: `/my-shop/refunds?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Refund'],
     }),
   }),
 });
@@ -190,4 +198,6 @@ export const {
   useDeleteMerchantPromotionMutation,
   useUpdateMyShopPhotoMutation,
   useSellerClaimFundsMutation,
+  useGetAllMerchantRefundsQuery,
+  useLazyGetAllMerchantRefundsQuery,
 } = myShopApi;

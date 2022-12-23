@@ -35,7 +35,6 @@ import {
   DELIVERY_STATUS,
   LIMIT_TRANSACTION_HISTORY,
   REVIEW_STATUS,
-  VOUCHER_STATUS,
 } from '../../../constants';
 import { TransactionHistoryQuery } from '../../../types/query';
 import {
@@ -47,7 +46,7 @@ import {
   useSellerClaimFundsMutation,
 } from '../../../store/services/myShopService';
 import { toTransactionHistoryQuery } from '../../../utils/mapperDTO';
-import { ConfirmationModal, Pager } from '../../common';
+import { ConfirmationModal, Image, Pager } from '../../common';
 import { stringCompare } from '../../../utils/validation';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import {
@@ -55,6 +54,7 @@ import {
   toRupiah,
   toStringDate,
   toStringDatetime,
+  toStringTime,
 } from '../../../utils/convert';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { UpdateOrderStatusResponse } from '../../../types/response';
@@ -86,7 +86,7 @@ const OrderContent = () => {
     detailOrder: false,
   });
 
-  const [filterStatus, setFilterStatus] = useState<string>(VOUCHER_STATUS.ALL);
+  const [filterStatus, setFilterStatus] = useState<string>(DELIVERY_STATUS.ALL);
 
   const [transactionHistoryQuery, setTransactionHistoryQuery] =
     useState<TransactionHistoryQuery>({
@@ -529,7 +529,7 @@ const OrderContent = () => {
   };
 
   const handleProcessRefundClick = () => {
-    navigate('/seller/refunds');
+    navigate('/seller/refund');
   };
 
   const handleViewOrderTrackingClick = () => {
@@ -595,7 +595,7 @@ const OrderContent = () => {
         onChange={handleFilterStatusClick}
         className='mb-3 border-b-2'
       >
-        <Tabs.Tab value={VOUCHER_STATUS.ALL}>All</Tabs.Tab>
+        <Tabs.Tab value={DELIVERY_STATUS.ALL}>All</Tabs.Tab>
         <Tabs.Tab value={DELIVERY_STATUS.PENDING_PAYMENT}>Unpaid</Tabs.Tab>
         <Tabs.Tab value={DELIVERY_STATUS.PENDING_SELLER}>New Order</Tabs.Tab>
         <Tabs.Tab value={DELIVERY_STATUS.ON_PROCESS}>To Ship</Tabs.Tab>
@@ -639,7 +639,7 @@ const OrderContent = () => {
                       <div className='flex flex-col max-w-md'>
                         <div className='flex'>
                           <div className='flex mr-5'>
-                            <img
+                            <Image
                               src={firstProduct?.product_image || ''}
                               alt={firstProduct?.product_name || ''}
                               className='h-12 w-12 md:h-20 md:w-20 rounded-md'
@@ -680,7 +680,14 @@ const OrderContent = () => {
                         <span>{toRupiah(Math.round(total_price))}</span>
                       </div>
                       <div className='flex flex-col gap-2 text-sm'>
-                        {toStringDate(transaction_datetime)}
+                        <div className='flex flex-col text-sm'>
+                          <span className='font-bold'>
+                            {toStringDate(transaction_datetime)}
+                          </span>
+                          <span className='opacity-50'>
+                            {toStringTime(transaction_datetime)}
+                          </span>
+                        </div>
                         <Badge
                           color={getBadgeColor(order_status)}
                           size='xs'
@@ -1062,7 +1069,7 @@ const OrderContent = () => {
                         >
                           <div className='grid grid-cols-5 md:grid-cols-8'>
                             <div className='mr-5 col-span-1'>
-                              <img
+                              <Image
                                 src={orderDetail.product_image || ''}
                                 alt={orderDetail.product_name || ''}
                                 className='h-12 w-12 md:h-18 md:w-18 rounded-md'
@@ -1110,12 +1117,6 @@ const OrderContent = () => {
                                 {toRupiah(Math.round(orderDetail.total_price))}
                               </span>
                             </div>
-                            <Button
-                              className='normal-case md:w-auto'
-                              color='primary'
-                            >
-                              Buy Again
-                            </Button>
                           </div>
                         </Card>
                       );
