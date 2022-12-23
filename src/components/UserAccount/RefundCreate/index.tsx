@@ -1,10 +1,19 @@
+import { useState } from 'react';
 import { Button, Card, Divider, Input, Textarea } from 'react-daisyui';
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from 'react-icons/ai';
 import { useParams } from 'react-router-dom';
+import { MEDIA_TYPE } from '../../../constants';
 import { Image } from '../../common';
+import UploadFileCard from '../../common/UploadFileCard';
 
 const RefundCreate = () => {
   const { orderID } = useParams();
+  const [images, setImages] = useState<File[]>([]);
+  const [videos, setVideos] = useState<File[]>([]);
+
+  const handleSubmitRefundClick = () => {
+    console.log('submit refund');
+  };
 
   return (
     <div className='p-4 md:p-10'>
@@ -78,8 +87,27 @@ const RefundCreate = () => {
             Max. of 5 pictures and 1 video (Format .jpg, .jpeg, .png, .mp4,
             .mkv, .mov){' '}
           </div>
+          <div className='flex items-center gap-2'>
+            <UploadFileCard
+              files={images}
+              setFiles={setImages}
+              uploadLimit={5}
+              fileType={MEDIA_TYPE.IMAGE}
+            />
+            <UploadFileCard
+              files={videos}
+              setFiles={setVideos}
+              uploadLimit={1}
+              fileType={MEDIA_TYPE.VIDEO}
+            />
+          </div>
         </Card.Body>
       </Card>
+      <div className='flex justify-end'>
+        <Button className='w-full md:w-48 mt-3 bg-primary hover:bg-secondary border-none transition-all duration-300'>
+          Submit
+        </Button>
+      </div>
     </div>
   );
 };

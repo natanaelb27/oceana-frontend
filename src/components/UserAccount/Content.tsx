@@ -56,7 +56,7 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === UserAccountContent.Refund) {
-      return null;
+      return <RefundContent />;
     }
     
     if (content === UserAccountContent.PendingPayment) {
