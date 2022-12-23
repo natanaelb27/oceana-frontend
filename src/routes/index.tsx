@@ -37,6 +37,14 @@ const BuyerSealabsPay = React.lazy(
   () => import('../pages/buyer/BuyerSealabsPay')
 );
 const BuyerWallet = React.lazy(() => import('../pages/buyer/BuyerWallet'));
+const BuyerPendingPayment = React.lazy(
+  () => import('../pages/buyer/BuyerPendingPayment')
+);
+const BuyerReview = React.lazy(() => import('../pages/buyer/BuyerReview'));
+const BuyerReviewDetail = React.lazy(
+  () => import('../pages/buyer/BuyerReviewDetail')
+);
+
 const SellerRegistration = React.lazy(
   () => import('../pages/buyer/SellerRegistration')
 );
@@ -199,8 +207,20 @@ const Routes = () => {
               element: <BuyerPurchaseHistory />,
             },
             {
+              path: '/user/pending-payment',
+              element: <BuyerPendingPayment />,
+            },
+            {
               path: '/user/refund',
               element: <BuyerRefund />,
+            },
+            {
+              path: '/user/review',
+              element: <BuyerReview />,
+            },
+            {
+              path: '/user/review/detail/:orderID',
+              element: <BuyerReviewDetail />,
             },
             {
               path: '/cart',
