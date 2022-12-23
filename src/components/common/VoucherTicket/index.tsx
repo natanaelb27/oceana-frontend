@@ -19,7 +19,16 @@ const VoucherTicket = ({
   selectedVoucher,
   onClickVoucher: onChangeVoucher,
 }: VoucherTicketProps) => (
-  <div className='group grid grid-cols-4'>
+  <div
+    className='group grid grid-cols-4'
+    onClick={
+      !onChangeVoucher || disabled
+        ? () => {
+            return;
+          }
+        : () => onChangeVoucher(currentVoucher)
+    }
+  >
     <div
       className={`clip-right flex justify-center items-center text-5xl text-base-100 rounded-l-xl ${
         selectedVoucher && selectedVoucher.id === currentVoucher.id
@@ -30,13 +39,6 @@ const VoucherTicket = ({
           ? 'bg-base-300 group-hover:bg-base-300 group-active:bg-base-300'
           : ''
       }`}
-      onClick={
-        !onChangeVoucher || disabled
-          ? () => {
-              return;
-            }
-          : () => onChangeVoucher(currentVoucher)
-      }
     >
       {currentVoucher.discount_type.toLocaleLowerCase() === 'percentage' ? (
         <CgMathPercent />
