@@ -1,58 +1,12 @@
-import {
-  ChangeEvent,
-  createElement,
-  forwardRef,
-  FormEvent,
-  ReactNode,
-  Ref,
-  useState,
-  useRef,
-  MouseEvent,
-  MouseEventHandler,
-} from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  Divider,
-  Form,
-  Input,
-  InputGroup,
-  Rating,
-  Tabs,
-  Textarea,
-} from 'react-daisyui';
-import { useOutsideAlerter } from '../../../hooks';
-import { Image, Pager } from '../../common';
-import {
-  HiOutlineCalendar,
-  HiOutlineClock,
-  HiOutlineShoppingBag,
-  HiSearch,
-} from 'react-icons/hi';
-import {
-  LIMIT_TRANSACTION_HISTORY,
-  DELIVERY_STATUS,
-  REVIEW_STATUS,
-} from '../../../constants';
-import { TransactionHistoryQuery } from '../../../types/query';
-import {
-  useGetAllTransactionHistoryQuery,
-  useGetOrderDetailsQuery,
-} from '../../../store/services/orderService';
-import { toTransactionHistoryQuery } from '../../../utils/mapperDTO';
-import { toStringDate, toStringDatetime } from '../../../utils/convert';
-import DatePicker, { CalendarContainer } from 'react-datepicker';
-import moment from 'moment';
-import NoData from '../../common/NoData';
+import { Card, Divider, Rating } from 'react-daisyui';
+import { Image } from '../../common';
+import { useGetOrderDetailsQuery } from '../../../store/services/orderService';
+import { toStringDatetime } from '../../../utils/convert';
 import { useNavigate, useParams } from 'react-router-dom';
 import Zoom from 'react-medium-image-zoom';
 import ReviewForm from './ReviewForm';
 
 const ReviewDetailContent = () => {
-  const [filterReviewStatus, setFilterReviewStatus] = useState<string>(
-    REVIEW_STATUS.NOT_REVIEWED
-  );
   const navigate = useNavigate();
   const params = useParams();
 
@@ -215,9 +169,6 @@ const ReviewDetailContent = () => {
                         }`}
                       >
                         <ReviewForm
-                          order_detail_length={
-                            getOrderDetailsData?.data?.order_details.length || 0
-                          }
                           order_detail_data={order_detail}
                         ></ReviewForm>
                       </div>

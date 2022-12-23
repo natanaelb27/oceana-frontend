@@ -158,6 +158,13 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['MerchantPromotion'],
     }),
+    sellerClaimFunds: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/claim-funds`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'OrderDetails', 'Profile'],
+    }),
   }),
 });
 
@@ -182,4 +189,5 @@ export const {
   useUpdateMerchantPromotionMutation,
   useDeleteMerchantPromotionMutation,
   useUpdateMyShopPhotoMutation,
+  useSellerClaimFundsMutation,
 } = myShopApi;

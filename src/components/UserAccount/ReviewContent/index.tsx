@@ -33,10 +33,7 @@ import {
   REVIEW_STATUS,
 } from '../../../constants';
 import { TransactionHistoryQuery } from '../../../types/query';
-import {
-  useGetAllTransactionHistoryQuery,
-  useGetOrderDetailsQuery,
-} from '../../../store/services/orderService';
+import { useGetAllTransactionHistoryQuery } from '../../../store/services/orderService';
 import { toTransactionHistoryQuery } from '../../../utils/mapperDTO';
 import { toStringDate } from '../../../utils/convert';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
@@ -557,7 +554,13 @@ const ReviewContent = () => {
           transactionHistoryQuery.filterEndTransactionDate === '' &&
           transactionHistoryQuery.search === '' ? (
           <div className='col-span-12'>
-            <NoData title={`${transactionHistoryQuery.filterIsReviewed === 'true' ? 'Oops, it seems that you dont have any reviewed orders' : 'Oops, it seems that you dont have any orders waiting to be reviewed'}`} />
+            <NoData
+              title={`${
+                transactionHistoryQuery.filterIsReviewed === 'true'
+                  ? 'Oops, it seems that you dont have any reviewed orders'
+                  : 'Oops, it seems that you dont have any orders waiting to be reviewed'
+              }`}
+            />
           </div>
         ) : (
           <div className='col-span-12'>

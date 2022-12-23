@@ -12,7 +12,6 @@ import {
   Badge,
   Button,
   Card,
-  Countdown,
   Divider,
   Dropdown,
   Form,
@@ -44,7 +43,6 @@ import {
 import { TransactionHistoryQuery } from '../../../types/query';
 import {
   useGetAllTransactionHistoryQuery,
-  useGetOrderDetailsQuery,
   useLazyGetOrderDetailsQuery,
 } from '../../../store/services/orderService';
 import { toTransactionHistoryQuery } from '../../../utils/mapperDTO';
@@ -60,7 +58,6 @@ import DatePicker, { CalendarContainer } from 'react-datepicker';
 import moment from 'moment';
 import NoData from '../../common/NoData';
 import { stringCompare } from '../../../utils/validation';
-import { computeDatetime, getDateDiffNow } from '../../../utils/date';
 import DateCountdown from '../../common/DateCountdown';
 import { useNavigate } from 'react-router-dom';
 import { useUpdateCompleteOrderMutation } from '../../../store/services/profileService';
@@ -94,21 +91,18 @@ const PurchaseContent = () => {
     toTransactionHistoryQuery(transactionHistoryQuery)
   );
 
-  const [
-    updateCompleteOrder,
-    {
-      isLoading: updateCompleteOrderIsLoading,
-    },
-  ] = useUpdateCompleteOrderMutation();
+  const [updateCompleteOrder, { isLoading: updateCompleteOrderIsLoading }] =
+    useUpdateCompleteOrderMutation();
 
   const [orderID, setOrderID] = useState<string | null>(null);
 
   // const { data: getOrderDetailsData, isLoading: getOrderDetailsLoading } =
   //   useGetOrderDetailsQuery(orderID || '');
 
-
-  const [getOrderDetails, { data: getOrderDetailsData, isLoading: getOrderDetailsLoading }] =
-    useLazyGetOrderDetailsQuery();
+  const [
+    getOrderDetails,
+    { data: getOrderDetailsData, isLoading: getOrderDetailsLoading },
+  ] = useLazyGetOrderDetailsQuery();
 
   const getBadgeColor = (orderStatus: string) => {
     if (stringCompare(orderStatus, DELIVERY_STATUS.COMPLETED)) {
@@ -174,7 +168,7 @@ const PurchaseContent = () => {
   const handleViewDetailsClick = (id: string) => {
     setOrderID(id);
     getOrderDetails(id);
-    
+
     setOpenModal({
       detailOrder: true,
       completeOrder: false,
@@ -822,6 +816,7 @@ const PurchaseContent = () => {
                         <Button
                           className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
                           color='primary'
+                          loading={updateCompleteOrderIsLoading}
                           onClick={() => {
                             handleCompleteOrderClick(
                               transactionHistory?.order_id

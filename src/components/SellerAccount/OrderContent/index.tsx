@@ -1,7 +1,5 @@
 import {
-  ChangeEvent,
   createElement,
-  FormEvent,
   forwardRef,
   ReactNode,
   Ref,
@@ -13,25 +11,16 @@ import {
   Badge,
   Button,
   Card,
-  Countdown,
   Divider,
-  Form,
-  Input,
-  InputGroup,
   Modal,
   Steps,
   Table,
   Tabs,
   Tooltip,
 } from 'react-daisyui';
-import { CgClose, CgMathPercent } from 'react-icons/cg';
+import { CgClose } from 'react-icons/cg';
 import {
-  HiOutlineClipboardCopy,
-  HiOutlineCurrencyDollar,
   HiOutlineClipboardList,
-  HiPlus,
-  HiSearch,
-  HiOutlinePencil,
   HiOutlineXCircle,
   HiOutlineCalendar,
   HiOutlineClock,
@@ -44,31 +33,20 @@ import {
 } from 'react-icons/hi';
 import {
   DELIVERY_STATUS,
-  DISCOUNT_TYPE,
-  LIMIT_SELLER_VOUCHER_LIST,
   LIMIT_TRANSACTION_HISTORY,
   REVIEW_STATUS,
   VOUCHER_STATUS,
 } from '../../../constants';
+import { TransactionHistoryQuery } from '../../../types/query';
 import {
-  MerchantVoucherQuery,
-  TransactionHistoryQuery,
-} from '../../../types/query';
-import { Merchant } from '../../../types/component';
-import { useGetAllMerchantVoucherQuery } from '../../../store/services/shopService';
-import {
-  useDeleteMerchantVoucherMutation,
   useGetAllMerchantTransactionHistoryQuery,
   useSellerCancelOrderMutation,
   useUpdateProcessDeliveryMutation,
   useUpdateProcessOrderMutation,
-  useGetMerchantOrderDetailsQuery,
   useLazyGetMerchantOrderDetailsQuery,
+  useSellerClaimFundsMutation,
 } from '../../../store/services/myShopService';
-import {
-  toMerchantVoucherQuery,
-  toTransactionHistoryQuery,
-} from '../../../utils/mapperDTO';
+import { toTransactionHistoryQuery } from '../../../utils/mapperDTO';
 import { ConfirmationModal, Pager } from '../../common';
 import { stringCompare } from '../../../utils/validation';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
@@ -77,20 +55,15 @@ import {
   toRupiah,
   toStringDate,
   toStringDatetime,
-  toStringTime,
 } from '../../../utils/convert';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
-import {
-  DeleteMerchantVoucherResponse,
-  UpdateOrderStatusResponse,
-} from '../../../types/response';
+import { UpdateOrderStatusResponse } from '../../../types/response';
 import NoData from '../../common/NoData';
 import useOutsideAlerter from '../../../hooks/OutsideAlerter';
 import moment from 'moment';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
 import { IoWalletOutline } from 'react-icons/io5';
 import DateCountdown from '../../common/DateCountdown';
-import { computeDatetime, getDateDiffNow } from '../../../utils/date';
 
 type OpenModal = {
   processOrder: boolean;
@@ -143,15 +116,10 @@ const OrderContent = () => {
 
   const [orderID, setOrderID] = useState<string | null>(null);
 
-  // const {
-  //   data: getMerchantOrderDetailsData,
-  //   isLoading: getOrderDetailsLoading,
-  // } = useGetMerchantOrderDetailsQuery(orderID || '');
-
-  const [getMerchantOrderDetails, {
-    data: getMerchantOrderDetailsData,
-    isLoading: getOrderDetailsLoading,
-  }] = useLazyGetMerchantOrderDetailsQuery();
+  const [
+    getMerchantOrderDetails,
+    { data: getMerchantOrderDetailsData, isLoading: getOrderDetailsLoading },
+  ] = useLazyGetMerchantOrderDetailsQuery();
 
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
 
@@ -353,23 +321,17 @@ const OrderContent = () => {
     return 'warning';
   };
 
-  const [
-    updateProcessOrder,
-    { isLoading: updateProcessOrderLoading, error: updateProcessOrderError },
-  ] = useUpdateProcessOrderMutation();
+  const [updateProcessOrder, { isLoading: updateProcessOrderIsLoading }] =
+    useUpdateProcessOrderMutation();
 
-  const [
-    updateProcessDelivery,
-    {
-      isLoading: updateProcessDeliveryLoading,
-      error: updateProcessDeliveryError,
-    },
-  ] = useUpdateProcessDeliveryMutation();
+  const [updateProcessDelivery, { isLoading: updateProcessDeliveryIsLoading }] =
+    useUpdateProcessDeliveryMutation();
 
-  const [
-    sellerCancelOrder,
-    { isLoading: sellerCancelOrderLoading, error: sellerCancelOrderError },
-  ] = useSellerCancelOrderMutation();
+  const [sellerCancelOrder, { isLoading: sellerCancelOrderIsLoading }] =
+    useSellerCancelOrderMutation();
+
+  const [sellerClaimFunds, { isLoading: sellerClaimFundsIsLoading }] =
+    useSellerClaimFundsMutation();
 
   const handleModalClose = () => {
     setOpenModal({
@@ -535,6 +497,22 @@ const OrderContent = () => {
     if (!orderID) {
       return;
     }
+
+    sellerClaimFunds(orderID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Order funds has been claimed!');
+      })
+      .catch((err) => {
+        if (err && 'data' in err) {
+          const response = err.data as UpdateOrderStatusResponse;
+
+          notifyErrorToast(response.message);
+        }
+      })
+      .finally(() => {
+        setOrderID(null);
+      });
   };
 
   const handleOrderDetailClick = (id: string) => {
@@ -642,13 +620,7 @@ const OrderContent = () => {
             <Table.Body>
               {getAllMerchantTransactionHistoryData?.data.map(
                 ({
-                  transaction_id,
                   order_id,
-                  invoice_number,
-                  merchant_id,
-                  shop_name,
-                  user_id,
-                  user_full_name,
                   courier_description,
                   order_details,
                   transaction_datetime,
@@ -763,6 +735,7 @@ const OrderContent = () => {
                             <Button
                               color='success'
                               size='sm'
+                              loading={updateProcessOrderIsLoading}
                               onClick={() => handleProcessOrderClick(order_id)}
                               disabled={
                                 !stringCompare(
@@ -778,6 +751,7 @@ const OrderContent = () => {
                             <Button
                               color='error'
                               size='sm'
+                              loading={sellerCancelOrderIsLoading}
                               onClick={() => handleCancelOrderClick(order_id)}
                               disabled={
                                 !stringCompare(
@@ -793,6 +767,7 @@ const OrderContent = () => {
                             <Button
                               color='success'
                               size='sm'
+                              loading={updateProcessDeliveryIsLoading}
                               onClick={() =>
                                 handleProcessDeliveryClick(order_id)
                               }
@@ -825,6 +800,7 @@ const OrderContent = () => {
                             <Button
                               color='success'
                               size='sm'
+                              loading={sellerClaimFundsIsLoading}
                               onClick={() => handleClaimFundsClick(order_id)}
                               disabled={
                                 !stringCompare(

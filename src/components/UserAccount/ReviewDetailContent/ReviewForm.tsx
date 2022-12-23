@@ -1,13 +1,6 @@
-import { ChangeEvent, MouseEventHandler, useState } from 'react';
-import { Button, Input, Rating, Textarea } from 'react-daisyui';
-import {
-  HiInformationCircle,
-  HiOutlineCamera,
-  HiOutlineInformationCircle,
-  HiOutlinePencil,
-  HiOutlineVideoCamera,
-  HiPencil,
-} from 'react-icons/hi';
+import { ChangeEvent, useState } from 'react';
+import { Button, Rating, Textarea } from 'react-daisyui';
+import { HiInformationCircle, HiPencil } from 'react-icons/hi';
 import { MEDIA_TYPE } from '../../../constants';
 import { useCreateProductReviewMutation } from '../../../store/services/reviewService';
 import { OrderDetail } from '../../../types/component';
@@ -17,14 +10,10 @@ import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import UploadFileCard from '../../common/UploadFileCard';
 
 type ContentProps = {
-  order_detail_length: number;
   order_detail_data: OrderDetail;
 };
 
-const ReviewForm = ({
-  order_detail_length,
-  order_detail_data,
-}: ContentProps) => {
+const ReviewForm = ({ order_detail_data }: ContentProps) => {
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
 
