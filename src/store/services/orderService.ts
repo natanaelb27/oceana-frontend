@@ -1,5 +1,6 @@
 import {
   GetAllTransactionHistoryResponse,
+  GetAllUserPendingPaymentResponse,
   GetOrderDetailsResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
@@ -16,13 +17,22 @@ export const orderApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Order'],
     }),
-
     getOrderDetails: builder.query<GetOrderDetailsResponse, string>({
       query: (id) => ({
         url: `/profile/transaction-history/${id}`,
         method: 'GET',
       }),
       providesTags: ['OrderDetails'],
+    }),
+    getAllUserPendingPayment: builder.query<
+      GetAllUserPendingPaymentResponse,
+      void
+    >({
+      query: () => ({
+        url: '/profile/pending-payment',
+        method: 'GET',
+      }),
+      providesTags: ['Order'],
     }),
   }),
 });
@@ -32,4 +42,6 @@ export const {
   useLazyGetAllTransactionHistoryQuery,
   useGetOrderDetailsQuery,
   useLazyGetOrderDetailsQuery,
+  useGetAllUserPendingPaymentQuery,
+  useLazyGetAllUserPendingPaymentQuery,
 } = orderApi;

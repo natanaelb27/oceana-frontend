@@ -5,7 +5,11 @@ export enum UserAccountContent {
   SealabsPay,
   Purchase,
   Refunds,
-  RefundCreate
+  RefundCreate,
+  Review,
+  ReviewDetail,
+  Refund,
+  PendingPayment,
 }
 
 export enum SellerAccountContent {
