@@ -8,7 +8,7 @@ import {
   useGetShipmentQuery,
   useUpdateShipmentMutation,
 } from '../../../store/services/shipmentService';
-import { Shipment } from '../../../types/component/shipment';
+import { Courier, Shipment } from '../../../types/component/shipment';
 import { UpdateShipmentResponse } from '../../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { formikProcessDayAnndPreorderDay } from '../../../utils/yupValidation';
@@ -41,7 +41,18 @@ const ShipmentContent = () => {
     },
   });
 
-  const updateData = (newData: Shipment) => {
+  const updateData = (newCouriers: Courier[]) => {
+    const newData =
+      data !== undefined
+        ? (JSON.parse(JSON.stringify(data)) as typeof data)
+        : null;
+
+    if (newData === null) {
+      return;
+    }
+
+    newData.couriers = newCouriers;
+
     setData(newData);
   };
 
@@ -155,11 +166,12 @@ const ShipmentContent = () => {
             icon={<BiPackage />}
           />
           <Divider />
-          <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-            {data !== undefined && (
-              <CouriersConfiguration data={data} updateData={updateData} />
-            )}
-          </div>
+          {data !== undefined && (
+            <CouriersConfiguration
+              data={data.couriers}
+              updateData={updateData}
+            />
+          )}
           <Divider />
           <div className='flex flex-col lg:flex-row items-start lg:items-center justify-start lg:justify-between'>
             <SectionHeading

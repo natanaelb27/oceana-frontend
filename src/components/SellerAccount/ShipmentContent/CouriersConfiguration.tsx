@@ -1,11 +1,11 @@
-import React, { ChangeEvent } from 'react';
-import { Collapse, Checkbox, Divider } from 'react-daisyui';
-import { Shipment } from '../../../types/component/shipment';
+import { ChangeEvent } from 'react';
+import { Checkbox, Collapse, Divider } from 'react-daisyui';
+import { Courier } from '../../../types/component/shipment';
 import { Image } from '../../common';
 
 type CouriersConfigurationProps = {
-  data: Shipment;
-  updateData: (newData: Shipment) => void;
+  data: Courier[];
+  updateData: (newData: Courier[]) => void;
 };
 
 const CouriersConfiguration = ({
@@ -17,27 +17,23 @@ const CouriersConfiguration = ({
     indexCourier: number
   ) => {
     // deep copy using this method
-    const newData = data
-      ? (JSON.parse(JSON.stringify(data)) as typeof data)
-      : null;
+    const newData = JSON.parse(JSON.stringify(data)) as typeof data;
 
     // if not exist then do nothing
     if (
-      newData?.couriers?.[indexCourier]?.is_selected === null ||
-      newData?.couriers?.[indexCourier]?.is_selected === undefined
+      newData[indexCourier]?.is_selected === null ||
+      newData[indexCourier]?.is_selected === undefined
     ) {
       return;
     }
 
     // set courier is selected
-    newData.couriers[indexCourier].is_selected = e.target.checked;
+    newData[indexCourier].is_selected = e.target.checked;
 
     // also set its all courier services is selected to true
-    for (const indexCourierService in newData.couriers[indexCourier]
-      .courier_services) {
-      newData.couriers[indexCourier].courier_services[
-        indexCourierService
-      ].is_selected = e.target.checked;
+    for (const indexCourierService in newData[indexCourier].courier_services) {
+      newData[indexCourier].courier_services[indexCourierService].is_selected =
+        e.target.checked;
     }
 
     updateData(newData);
@@ -49,38 +45,34 @@ const CouriersConfiguration = ({
     indexCourierService: number
   ) => {
     // deep copy using this method
-    const newData = data
-      ? (JSON.parse(JSON.stringify(data)) as typeof data)
-      : null;
+    const newData = JSON.parse(JSON.stringify(data)) as typeof data;
 
     if (
-      newData?.couriers?.[indexCourier]?.courier_services[indexCourierService]
+      newData[indexCourier]?.courier_services[indexCourierService]
         .is_selected === null ||
-      newData?.couriers?.[indexCourier]?.courier_services[indexCourierService]
+      newData[indexCourier]?.courier_services[indexCourierService]
         .is_selected === undefined
     ) {
       return;
     }
 
-    newData.couriers[indexCourier].courier_services[
-      indexCourierService
-    ].is_selected = e.target.checked;
+    newData[indexCourier].courier_services[indexCourierService].is_selected =
+      e.target.checked;
 
     // check if at least one courier service is selected then also set its courier is selected to true, else false
     let atLeastOneCourierServiceIsSelected = false;
-    for (const indexCourierService in newData.couriers[indexCourier]
-      .courier_services) {
+    for (const indexCourierService in newData[indexCourier].courier_services) {
       if (
-        newData.couriers[indexCourier].courier_services[indexCourierService]
+        newData[indexCourier].courier_services[indexCourierService]
           .is_selected === true
       ) {
         atLeastOneCourierServiceIsSelected = true;
       }
     }
     if (atLeastOneCourierServiceIsSelected === true) {
-      newData.couriers[indexCourier].is_selected = true;
+      newData[indexCourier].is_selected = true;
     } else {
-      newData.couriers[indexCourier].is_selected = false;
+      newData[indexCourier].is_selected = false;
     }
 
     updateData(newData);
@@ -88,8 +80,8 @@ const CouriersConfiguration = ({
 
   return (
     // loop through courier
-    <>
-      {data?.couriers.map((courier, indexCourier) => (
+    <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+      {data.map((courier, indexCourier) => (
         <div
           className='hover:scale-[102%] transition-all'
           key={'courier-' + indexCourier}
@@ -153,7 +145,7 @@ const CouriersConfiguration = ({
           </Collapse>
         </div>
       ))}
-    </>
+    </div>
   );
 };
 
