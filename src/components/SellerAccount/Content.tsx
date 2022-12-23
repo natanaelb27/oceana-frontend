@@ -61,7 +61,7 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === SellerAccountContent.Promotion) {
-      return <PromotionContent profile={profile} />;
+      return <PromotionContent />;
     }
 
     if (content === SellerAccountContent.PromotionDetail) {
@@ -78,7 +78,12 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === SellerAccountContent.PromotionEdit) {
-      return <PromotionDetailContent profile={profile} />;
+      return (
+        <PromotionFormContent
+          profile={profile}
+          content={SellerAccountPromotionFormContent.Edit}
+        />
+      );
     }
 
     if (content === SellerAccountContent.Order) {

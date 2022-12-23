@@ -8,7 +8,7 @@ import {
 } from '../../store/services/productService';
 import {
   useFavoriteProductMutation,
-  useGetFavoriteProductQuery,
+  useLazyGetFavoriteProductQuery,
 } from '../../store/services/favoriteProductService';
 import { useLazyGetAllReviewsQuery } from '../../store/services/reviewService';
 import { useGetShopInformationQuery } from '../../store/services/shopService';
@@ -33,10 +33,7 @@ import { useAppSelector } from '../../store/store';
 import { selectRole } from '../../store/slices/authSlice';
 import { validateUserRole } from '../../utils/auth';
 import { Role } from '../../types/role';
-import {
-  GetPurchasedQuantitiesResponse,
-  UpdateUserCartResponse,
-} from '../../types/response';
+import { UpdateUserCartResponse } from '../../types/response';
 import {
   LIMIT_REVIEWS_IN_PRODUCT_PAGE,
   LIMIT_SIMILAR_PRODUCTS_IN_PRODUCT_PAGE,
@@ -90,7 +87,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     data: getShopInformationData,
     isLoading: getShopInformationIsLoading,
   } = useGetShopInformationQuery(merchantID);
-  const { data: getFavoriteProduct } = useGetFavoriteProductQuery(productID);
+  const [getFavoriteData, { data: getFavoriteProductData }] =
+    useLazyGetFavoriteProductQuery();
   const [
     getAllSimilarProducts,
     {
@@ -271,9 +269,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
           notifySuccessToast('Product removed from favorite list');
           setProductLikeCount(productLikeCount - 1);
         }
-      })
-      .catch((err) => {
-        console.error(err);
       });
   };
 
@@ -290,6 +285,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     const fetchData = () => {
       if (role === Role.Buyer || role === Role.Seller) {
         viewPost(productID);
+        getFavoriteData(productID);
       }
       getProductDetail(productID).then(({ data }) => {
         if (!data?.data) {
@@ -297,25 +293,15 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
         }
         setProductLikeCount(data.data.like_count);
         if (data.data.product_variation.length === 0) {
-          getPurchasedQuantities(
-            toPurchasedQuantitiesQuery({
-              product_item_id: data.data.product_model[0].product_item_id,
-              product_id: Number(productID),
-              quantity: purchasedQuantitiesQuery.quantity,
-            })
-          )
-            .unwrap()
-            .then(({ data }) => {
-              if (!data) {
-                return;
-              }
-            })
-            .catch((err) => {
-              if (err && 'data' in err) {
-                const data = err.data as GetPurchasedQuantitiesResponse;
-                notifyErrorToast(data.message);
-              }
-            });
+          if (role === Role.Buyer || role === Role.Seller) {
+            getPurchasedQuantities(
+              toPurchasedQuantitiesQuery({
+                product_item_id: data.data.product_model[0].product_item_id,
+                product_id: Number(productID),
+                quantity: purchasedQuantitiesQuery.quantity,
+              })
+            );
+          }
         }
         getAllSimilarProducts(
           toProductQuery({
@@ -332,14 +318,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             merchantCities: [],
             courierServices: [],
           })
-        )
-          .unwrap()
-          .then((res) => {
-            console.log({ res });
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        );
         getMerchantSimilarProducts(
           toProductQuery({
             search: '',
@@ -355,25 +334,12 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             merchantCities: [],
             courierServices: [],
           })
-        )
-          .unwrap()
-          .then((res) => {
-            console.log({ res });
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        );
       });
       getReviews({
         id: Number(productID),
         query: toReviewQuery(reviewQuery),
-      })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      });
     };
 
     fetchData();
@@ -383,27 +349,22 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     if (purchasedQuantitiesQuery.product_item_id === 0) {
       return;
     }
+
+    if (role !== Role.Buyer && role !== Role.Seller) {
+      return;
+    }
+
     getPurchasedQuantities(toPurchasedQuantitiesQuery(purchasedQuantitiesQuery))
       .unwrap()
       .then(({ data }) => {
         if (!data) {
           return;
         }
-      })
-      .catch((err) => {
-        console.error(err);
       });
   }, [purchasedQuantitiesQuery]);
 
   useEffect(() => {
-    getReviews({ id: Number(productID), query: toReviewQuery(reviewQuery) })
-      .unwrap()
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    getReviews({ id: Number(productID), query: toReviewQuery(reviewQuery) });
   }, [reviewQuery]);
 
   const handleChangeReviewPage = (n: number) => {
@@ -556,7 +517,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                   selectedVariantImage={selectedVariantImage}
                   handleClickFavoriteProduct={handleClickFavoriteProduct}
                   favoriteProductValue={Boolean(
-                    getFavoriteProduct?.data?.is_favorite
+                    getFavoriteProductData?.data?.is_favorite
                   )}
                   productLikeCount={productLikeCount}
                 />

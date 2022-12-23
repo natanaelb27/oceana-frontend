@@ -476,6 +476,7 @@ const BuyerCart = () => {
                     <Image
                       src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
                       className='rounded-lg h-full w-full'
+                      alt='Cart Item'
                     />
                   </div>
                   <div className='h-24 flex flex-col'>

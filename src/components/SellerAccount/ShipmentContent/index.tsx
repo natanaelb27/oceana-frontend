@@ -224,7 +224,11 @@ const ShipmentContent = () => {
                   checked={courier.is_selected}
                   onChange={(e) => handleCourierOnChange(e, indexCourier)}
                 />
-                <Image src={courier.logo_url} className='h-12' />
+                <Image
+                  src={courier.logo_url}
+                  alt={courier.name}
+                  className='h-12'
+                />
                 <div>
                   <p className='text-xl font-medium'>{courier.name}</p>
                   <p className='text-sm font-medium text-gray-500'>
@@ -281,7 +285,6 @@ const ShipmentContent = () => {
       'preorderDay',
       getShipmentData?.data.preorder_day || 0
     );
-    console.log('use');
     setData({ ...getShipmentData?.data });
   }, [getShipmentData]);
 

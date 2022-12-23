@@ -8,11 +8,11 @@ type LoadingDataProps = {
 const LoadingData = ({ title, message }: LoadingDataProps) => {
   return (
     <div className='flex flex-col gap-5 text-center items-center'>
-      <LazyLoad threshold={0.5}>
+      <LazyLoad threshold={0.5} className='min-h-12'>
         <img
           src={require('./../../../assets/images/loading.gif')}
-          alt='no-data'
-          className='object-contain max-w-xs -my-12'
+          alt='loading-data'
+          className='object-contain max-w-xs -my-10'
           onError={({ currentTarget }) => {
             currentTarget.onerror = null;
             currentTarget.src = require('./../../../assets/images/no-image.webp');

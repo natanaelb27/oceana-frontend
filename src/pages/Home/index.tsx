@@ -92,11 +92,13 @@ const Home = () => {
   const [getAllProducts] = useLazyGetAllProductsQuery();
 
   useEffect(() => {
-    if (
-      !('value' in homeCategoryStorage && 'timestamp' in homeCategoryStorage) ||
-      homeCategoryStorage.value.length === 0 ||
-      moment(homeCategoryStorage.timestamp).isBefore(moment())
-    ) {
+    try {
+      if (homeCategoryStorage.value.length === 0) {
+        throw new Error('empty storage value');
+      }
+
+      setCategories(homeCategoryStorage.value);
+    } catch (e) {
       getAllCategory(toCategoryQuery(categoryQuery))
         .unwrap()
         .then((res) => {
@@ -106,15 +108,15 @@ const Home = () => {
             timestamp: moment().add(1, 'day').toDate(),
           });
         });
-    } else {
-      setCategories(homeCategoryStorage.value);
     }
 
-    if (
-      !('value' in recommendedStorage && 'timestamp' in recommendedStorage) ||
-      recommendedStorage.value.length === 0 ||
-      moment(recommendedStorage.timestamp).isBefore(moment())
-    ) {
+    try {
+      if (recommendedStorage.value.length === 0) {
+        throw new Error('empty storage value');
+      }
+
+      setRecommended(recommendedStorage.value);
+    } catch (e) {
       getRecommendedProductsQuery(toProductQuery(recommendedProductQuery))
         .unwrap()
         .then((res) => {
@@ -124,15 +126,15 @@ const Home = () => {
             timestamp: moment().add(1, 'h').toDate(),
           });
         });
-    } else {
-      setRecommended(recommendedStorage.value);
     }
 
-    if (
-      !('value' in productsStorage && 'timestamp' in productsStorage) ||
-      productsStorage.value.length === 0 ||
-      moment(productsStorage.timestamp).isBefore(moment())
-    ) {
+    try {
+      if (productsStorage.value.length === 0) {
+        throw new Error('empty storage value');
+      }
+
+      setProducts(productsStorage.value);
+    } catch (e) {
       getAllProducts(toProductQuery(allProductQuery))
         .unwrap()
         .then((res) => {
@@ -142,8 +144,6 @@ const Home = () => {
             timestamp: moment().add(1, 'h').toDate(),
           });
         });
-    } else {
-      setProducts(productsStorage.value);
     }
   }, []);
 

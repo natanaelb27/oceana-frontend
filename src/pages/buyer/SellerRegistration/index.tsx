@@ -195,6 +195,7 @@ const SellerRegistration = () => {
             <div className='flex justify-center'>
               <Image
                 src={require('../../../assets/images/register-shop.gif')}
+                alt='Logo'
               />
             </div>
           </div>

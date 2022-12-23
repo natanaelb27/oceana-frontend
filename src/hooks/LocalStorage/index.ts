@@ -16,7 +16,13 @@ const useStorage =
     const storedString = storage.getItem(keyPrefix + storageKey);
     let parsedObject = null;
 
-    if (storedString !== null) parsedObject = JSON.parse(storedString);
+    if (storedString !== null) {
+      try {
+        parsedObject = JSON.parse(storedString);
+      } catch (e) {
+        parsedObject = null;
+      }
+    }
 
     const [value, setValue] = useState<T>(parsedObject ?? fallbackState);
 

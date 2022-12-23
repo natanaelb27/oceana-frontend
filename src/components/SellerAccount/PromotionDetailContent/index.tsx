@@ -154,7 +154,9 @@ const PromotionDetailContent = ({ profile }: PromotionDetailContentProps) => {
                       {stringCompare(discount_type, DISCOUNT_TYPE.NOMINAL) ? (
                         <p>
                           Discount{' '}
-                          <span className='font-bold'>{toRupiah(10000)}</span>
+                          <span className='font-bold'>
+                            {toRupiah(discount)}
+                          </span>
                         </p>
                       ) : (
                         <p>

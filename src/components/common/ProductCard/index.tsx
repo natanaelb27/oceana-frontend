@@ -52,6 +52,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <Image
               src={product.media_url}
               className='object-cover w-full h-full'
+              alt={product.name}
             />
           </figure>
           <div className='pt-2.5 pb-4 px-4'>

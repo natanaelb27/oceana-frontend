@@ -122,8 +122,6 @@ const WalletContent = () => {
     );
   }
 
-  console.log({ data: getWalletDetailsData.data.wallet_transaction_history });
-
   return (
     <div className='p-4 md:p-10'>
       <h5 className='font-bold text-2xl text-primary'>Wallet</h5>

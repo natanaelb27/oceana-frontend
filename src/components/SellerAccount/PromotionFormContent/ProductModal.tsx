@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { Button, Checkbox, Divider, Modal, Table } from 'react-daisyui';
 import { CgClose } from 'react-icons/cg';
 import { HiSearch } from 'react-icons/hi';
@@ -15,7 +15,9 @@ import { Image, LoadingData, NoData } from '../../common';
 
 type ProductModalProps = {
   open: boolean;
+  products: SelectedProductMerchantPromotion;
   onClose: () => void;
+  onConfirm: (newProducts: SelectedProductMerchantPromotion) => void;
   merchantID: string;
   startDate: Date | null;
   endDate: Date | null;
@@ -23,21 +25,19 @@ type ProductModalProps = {
 
 const ProductModal = ({
   open,
+  products,
   onClose,
+  onConfirm,
   merchantID,
   startDate,
   endDate,
 }: ProductModalProps) => {
-  if (!startDate || !endDate) {
-    return null;
-  }
-
   const [search, setSearch] = useState<string>('');
   const [productQuery, setProductQuery] = useState<AvailableProductQuery>({
     search: '',
     filterCategory: 0,
-    filterStartDatetime: startDate,
-    filterEndDatetime: endDate,
+    filterStartDatetime: new Date(),
+    filterEndDatetime: new Date(),
   });
   const [
     selectedProductMerchantPromotion,
@@ -48,6 +48,15 @@ const ProductModal = ({
     useGetCategoriesByMerchantIDQuery(merchantID || '');
   const { data: getProductsData, isFetching: getProductsDataIsFetching } =
     useGetAvailableProductsQuery(toAvailableProductQuery(productQuery));
+
+  useEffect(() => {
+    setSelectedProductMerchantPromotion(products);
+    setProductQuery({
+      ...productQuery,
+      filterStartDatetime: startDate,
+      filterEndDatetime: endDate,
+    });
+  }, [startDate, endDate]);
 
   const handleCategoryChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setProductQuery({
@@ -94,7 +103,6 @@ const ProductModal = ({
     }
 
     const value = e.target.checked;
-    console.log({ value });
     let newSelectedProductMerchantPromotion = {
       ...selectedProductMerchantPromotion,
     };
@@ -109,7 +117,6 @@ const ProductModal = ({
         total_stock,
       }) => {
         if (!selectedProductMerchantPromotion?.[product_id] && value) {
-          console.log('second');
           newSelectedProductMerchantPromotion = {
             ...newSelectedProductMerchantPromotion,
             [product_id]: {
@@ -137,8 +144,14 @@ const ProductModal = ({
       filterStartDatetime: null,
       filterEndDatetime: null,
     });
+    setSelectedProductMerchantPromotion({});
 
     onClose();
+  };
+
+  const handleConfirmClick = () => {
+    onConfirm(selectedProductMerchantPromotion);
+    handleClose();
   };
 
   const selectedAll = getProductsData?.data?.every(({ product_id }) =>
@@ -157,7 +170,7 @@ const ProductModal = ({
         <CgClose className='text-lg' />
       </Button>
       <Modal.Header className='text-center font-bold text-primary'>
-        Add Products
+        Choose Products
       </Modal.Header>
       <Modal.Body>
         <div className='grid grid-cols-12 gap-4 w-full'>
@@ -286,7 +299,7 @@ const ProductModal = ({
         <Button type='button' onClick={handleClose}>
           Cancel
         </Button>
-        <Button type='button' color='primary'>
+        <Button type='button' color='primary' onClick={handleConfirmClick}>
           Confirm
         </Button>
       </Modal.Actions>

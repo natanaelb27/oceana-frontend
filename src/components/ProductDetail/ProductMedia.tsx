@@ -27,7 +27,7 @@ const ProductMedia = ({
   selectedVariantImage,
   handleClickFavoriteProduct,
   favoriteProductValue,
-  productLikeCount
+  productLikeCount,
 }: ProductMediaProps) => {
   const handleCopyClick = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -44,6 +44,7 @@ const ProductMedia = ({
               selectedVariantImage === '' ? images[0] : selectedVariantImage
             }`}
             className='w-full rounded-lg'
+            alt='Product Media'
           />
         </Zoom>
       </div>
@@ -51,7 +52,11 @@ const ProductMedia = ({
         <div className='grid grid-cols-5 gap-2 mb-4'>
           {images.slice(1).map((image, index) => (
             <Zoom key={index}>
-              <Image src={image} className='w-full rounded-lg' />
+              <Image
+                src={image}
+                className='w-full rounded-lg'
+                alt={`Product Media ${index}`}
+              />
             </Zoom>
           ))}
         </div>

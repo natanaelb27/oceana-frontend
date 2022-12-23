@@ -28,7 +28,6 @@ import {
   useDeleteMerchantPromotionMutation,
   useLazyGetMerchantPromotionQuery,
 } from '../../../store/services/myShopService';
-import { Merchant } from '../../../types/component';
 import { MerchantPromotionQuery } from '../../../types/query';
 import { MerchantPromotionDetailsResponse } from '../../../types/response';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
@@ -38,15 +37,11 @@ import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { stringCompare } from '../../../utils/validation';
 import { ConfirmationModal, NoData } from '../../common';
 
-type PromotionContentProps = {
-  profile: Merchant;
-};
-
 type OpenModal = {
   delete: boolean;
 };
 
-const PromotionContent = ({ profile }: PromotionContentProps) => {
+const PromotionContent = () => {
   const [filterStatus, setFilterStatus] = useState<string>(
     PROMOTION_STATUS.ALL
   );

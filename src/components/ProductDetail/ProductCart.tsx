@@ -89,6 +89,7 @@ const ProductCart = ({
                     : selectedVariantImage
                 }`}
                 className='w-20'
+                alt='Cart Image'
               />
               {productVariation &&
               productVariations.length === selectedVariations.length ? (

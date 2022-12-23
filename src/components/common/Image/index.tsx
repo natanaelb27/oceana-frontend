@@ -35,7 +35,7 @@ const Image = ({
       <LazyLoad threshold={0.99}>
         <img
           {...props}
-          alt={alt}
+          alt={alt ? 'Image' : ''}
           className={ClassNames([
             isLoading ? 'hidden' : 'block',
             className !== undefined ? className : '',

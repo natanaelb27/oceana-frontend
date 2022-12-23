@@ -65,7 +65,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           {profile.photo ? (
             <div className='avatar'>
               <div className='w-14 rounded-full'>
-                <Image src={profile.photo} />
+                <Image src={profile.photo} alt='Profile Photo' />
               </div>
             </div>
           ) : (

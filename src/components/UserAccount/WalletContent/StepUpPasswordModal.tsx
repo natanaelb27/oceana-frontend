@@ -37,7 +37,6 @@ const StepUpPasswordModal = ({
       })
         .unwrap()
         .then(() => {
-          console.log('thenn');
           notifySuccessToast('You are verified!');
           setOpen(false);
           nextSetOpen(true);

@@ -1,7 +1,6 @@
 import { MouseEventHandler } from 'react';
 import { Button } from 'react-daisyui';
 import LazyLoad from 'react-lazy-load';
-import Image from '../Image';
 
 type NoDataProps = {
   title?: string | null | undefined;
@@ -22,7 +21,7 @@ const NoData = ({
         <img
           src={require('./../../../assets/images/no-data.gif')}
           alt='no-data'
-          className='object-contain max-w-xs -my-12'
+          className='object-contain max-w-xs -my-10'
           onError={({ currentTarget }) => {
             currentTarget.onerror = null;
             currentTarget.src = require('./../../../assets/images/no-image.webp');
