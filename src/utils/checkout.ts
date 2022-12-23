@@ -1,3 +1,4 @@
+import { cartApi } from '../store/services/cartService';
 import {
   CartGroupedByMerchant,
   CartProduct,
@@ -19,12 +20,20 @@ export const calculateSubtotal = (
   shippingFee -
   shopVoucher;
 
-export const calculateTotal = (
-  cart: CartGroupedByMerchant[],
-  deliveryService: DeliveryService | null,
-  marketplaceVoucher: MarketplaceVoucher | null
-): number => {
-  let total = cart.reduce(
+export const calculateTotalBeforeShipping = (
+  checkout: CartGroupedByMerchant[]
+): number =>
+  checkout.reduce(
+    (partialTotal, currentMerchant) =>
+      partialTotal + calculateSubtotal(currentMerchant.products),
+    0
+  );
+
+export const calculateTotalWithShipping = (
+  checkout: CartGroupedByMerchant[],
+  deliveryService: DeliveryService | null
+): number =>
+  checkout.reduce(
     (partialTotal, currentMerchant) =>
       partialTotal +
       calculateSubtotal(
@@ -37,14 +46,38 @@ export const calculateTotal = (
     0
   );
 
+export const calculateTotal = (
+  checkout: CartGroupedByMerchant[],
+  deliveryService: DeliveryService | null,
+  marketplaceVoucher: MarketplaceVoucher | null
+): number => {
   if (!marketplaceVoucher) {
-    return total;
+    return checkout.reduce(
+      (partialTotal, currentMerchant) =>
+        partialTotal +
+        calculateSubtotal(
+          currentMerchant.products,
+          !deliveryService
+            ? 0
+            : deliveryService[currentMerchant.merchant_id]?.courier_services[0]
+                .shipping_fee
+        ),
+      0
+    );
   }
 
+  let total = 0;
+  const totalBeforeShipping = calculateTotalBeforeShipping(checkout);
+  const shippingFee =
+    calculateTotalWithShipping(checkout, deliveryService) - totalBeforeShipping;
   if (marketplaceVoucher?.discount_type.toLocaleLowerCase() === 'percentage') {
-    total = (1 - marketplaceVoucher.discount / 100) * total;
+    const discount = Math.min(
+      (marketplaceVoucher.discount / 100) * totalBeforeShipping,
+      marketplaceVoucher.maximum_discount_amount
+    );
+    total = totalBeforeShipping - discount + shippingFee;
   } else {
-    total -= marketplaceVoucher?.discount;
+    total = totalBeforeShipping - marketplaceVoucher?.discount + shippingFee;
   }
 
   return total;
