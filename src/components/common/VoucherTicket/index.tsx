@@ -30,6 +30,13 @@ const VoucherTicket = ({
           ? 'bg-base-300 group-hover:bg-base-300 group-active:bg-base-300'
           : ''
       }`}
+      onClick={
+        !onChangeVoucher || disabled
+          ? () => {
+              return;
+            }
+          : () => onChangeVoucher(currentVoucher)
+      }
     >
       {currentVoucher.discount_type.toLocaleLowerCase() === 'percentage' ? (
         <CgMathPercent />
@@ -47,13 +54,6 @@ const VoucherTicket = ({
           ? 'bg-base-200 group-hover:bg-base-200 group-active:bg-base-200'
           : ''
       }`}
-      onClick={
-        !onChangeVoucher || disabled
-          ? () => {
-              return;
-            }
-          : () => onChangeVoucher(currentVoucher)
-      }
     >
       <div>
         {isMarketplaceVoucher(currentVoucher)
