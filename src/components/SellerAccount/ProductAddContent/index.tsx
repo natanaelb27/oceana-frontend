@@ -14,6 +14,7 @@ import { BiPlus } from 'react-icons/bi';
 import { CgTrashEmpty } from 'react-icons/cg';
 import * as Yup from 'yup';
 import {
+  MEDIA_TYPE,
   PRODCUT_CONDITION_TYPE,
   PRODCUT_IS_HAZARDOUS_STATUS,
 } from '../../../constants';
@@ -36,6 +37,7 @@ import CategoryModal from './CategoryModal';
 import { Label } from './Form';
 import * as FormLayout from './FormLayout';
 import * as ProductVariantLayout from './ProductVariantLayout';
+import UploadFileCard from '../../common/UploadFileCard';
 
 const ProductAddContent = () => {
   const [createProduct, { isLoading: createProductIsLoading }] =
@@ -203,6 +205,9 @@ const ProductAddContent = () => {
       return;
     },
   });
+
+  const [images, setImages] = useState<File[]>([]);
+  const [videos, setVideos] = useState<File[]>([]);
 
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
 
@@ -893,6 +898,64 @@ const ProductAddContent = () => {
               title='Product Information'
               description='Basic information about the product.'
             />
+            {/* images */}
+            <FormLayout.LabelInputErrorContainer>
+              <FormLayout.LabelInputContainer>
+                <FormLayout.LabelContainer>
+                  <Label required={true}>Pictures</Label>
+                </FormLayout.LabelContainer>
+                <FormLayout.InputContainer>
+                  <UploadFileCard
+                    files={images}
+                    setFiles={setImages}
+                    uploadLimit={5}
+                    fileType={MEDIA_TYPE.IMAGE}
+                  ></UploadFileCard>
+                </FormLayout.InputContainer>
+              </FormLayout.LabelInputContainer>
+              <FormLayout.InputError>
+                {productFormik.touched.images &&
+                  productFormik.errors.images && (
+                    <label className='label-text-alt text-error'>
+                      {productFormik.errors.images}
+                    </label>
+                  )}
+              </FormLayout.InputError>
+            </FormLayout.LabelInputErrorContainer>
+            {/* videos */}
+            <FormLayout.LabelInputErrorContainer>
+              <FormLayout.LabelInputContainer>
+                <FormLayout.LabelContainer justify='justify-start'>
+                  <Label required={true}>Videos</Label>
+                </FormLayout.LabelContainer>
+                <FormLayout.InputContainer>
+                  <div className='flex flex-col md:flex-row gap-2'>
+                    <UploadFileCard
+                      files={videos}
+                      setFiles={setVideos}
+                      uploadLimit={1}
+                      fileType={MEDIA_TYPE.VIDEO}
+                    ></UploadFileCard>
+                    <p className='text-sm text-base-content/60'>
+                      Size: Max. 30MB and max. resolution 1,280x1,280px
+                      <br />
+                      Duration: 10-60 seconds Format: MP4 Note: You got displays
+                      the product while the video is being processed.
+                      <br />
+                      Videos will appears after successfully processing.
+                    </p>
+                  </div>
+                </FormLayout.InputContainer>
+              </FormLayout.LabelInputContainer>
+              <FormLayout.InputError>
+                {productFormik.touched.videos &&
+                  productFormik.errors.videos && (
+                    <label className='label-text-alt text-error'>
+                      {productFormik.errors.videos}
+                    </label>
+                  )}
+              </FormLayout.InputError>
+            </FormLayout.LabelInputErrorContainer>
             {/* name */}
             <FormLayout.LabelInputErrorContainer>
               <FormLayout.LabelInputContainer>
