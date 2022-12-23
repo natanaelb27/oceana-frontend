@@ -1,13 +1,16 @@
 import { CgMathPercent } from 'react-icons/cg';
 import { HiOutlineCurrencyDollar } from 'react-icons/hi';
-import { MarketplaceVoucher } from '../../types/component';
-import { toDiscountString } from '../../utils/convert';
+import { MarketplaceVoucher, MerchantVoucher } from '../../../types/component';
+import { isMarketplaceVoucher } from '../../../utils/checkout';
+import { toDiscountString } from '../../../utils/convert';
 
 type VoucherTicketProps = {
   disabled?: boolean;
-  currentVoucher: MarketplaceVoucher;
-  selectedVoucher: MarketplaceVoucher | null;
-  onClickVoucher: ((voucher: MarketplaceVoucher) => void) | (() => void);
+  currentVoucher: MarketplaceVoucher | MerchantVoucher;
+  selectedVoucher: MarketplaceVoucher | MerchantVoucher | null;
+  onClickVoucher:
+    | ((voucher: MarketplaceVoucher | MerchantVoucher) => void)
+    | (() => void);
 };
 
 const VoucherTicket = ({
@@ -52,7 +55,11 @@ const VoucherTicket = ({
           : () => onChangeVoucher(currentVoucher)
       }
     >
-      <div>{currentVoucher.name}</div>
+      <div>
+        {isMarketplaceVoucher(currentVoucher)
+          ? (currentVoucher as MarketplaceVoucher).name
+          : (currentVoucher as MerchantVoucher).code}
+      </div>
       <div className='font-bold'>
         {toDiscountString(
           currentVoucher.discount,

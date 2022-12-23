@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal } from 'react-daisyui';
-import { VoucherTicket } from '../../../components/BuyerCheckout';
-import { MarketplaceVoucher } from '../../../types/component';
+import { VoucherTicket } from '../../../components/common';
+import { MarketplaceVoucher, MerchantVoucher } from '../../../types/component';
 import { notifyInfoToast } from '../../../utils/toast';
 
 type MarketplaceVoucherModalProps = {
@@ -27,8 +27,10 @@ const MarketplaceVoucherModal = ({
     notifyInfoToast('No available vouchers');
     return null;
   }
-  const handleChangeVoucher = (voucher: MarketplaceVoucher) => {
-    setMarketplaceVoucher(voucher);
+  const handleChangeMarketplaceVoucher = (
+    voucher: MarketplaceVoucher | MerchantVoucher
+  ) => {
+    setMarketplaceVoucher(voucher as MarketplaceVoucher);
     onClose();
   };
   return (
@@ -48,7 +50,7 @@ const MarketplaceVoucherModal = ({
             disabled={voucher.minimum_spend_amount > totalPayment}
             currentVoucher={voucher}
             selectedVoucher={currentMarketplaceVoucher}
-            onClickVoucher={handleChangeVoucher}
+            onClickVoucher={handleChangeMarketplaceVoucher}
           />
         ))}
       </Modal.Body>

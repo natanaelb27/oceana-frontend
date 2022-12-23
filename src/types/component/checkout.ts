@@ -1,3 +1,4 @@
+import { MerchantVoucher } from './merchantVoucher';
 import { Courier } from './shipment';
 
 export interface CheckoutCartProductItem {
@@ -26,4 +27,8 @@ export interface DeliveryService {
 
 export interface AdditionalNotes {
   [product_item_id: number]: string;
+}
+
+export interface MerchantVouchersByMerchantID {
+  [merchant_id: number]: MerchantVoucher | null;
 }

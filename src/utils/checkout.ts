@@ -3,6 +3,7 @@ import {
   CartProduct,
   DeliveryService,
   MarketplaceVoucher,
+  MerchantVoucher,
 } from '../types/component';
 
 export const calculateSubtotal = (
@@ -89,3 +90,7 @@ export const calculateTotalWeight = (products: CartProduct[]): number =>
       currentProduct.product_weight * currentProduct.quantity,
     0
   );
+
+export const isMarketplaceVoucher = (
+  voucher: MarketplaceVoucher | MerchantVoucher
+): boolean => 'name' in voucher;

@@ -6,15 +6,23 @@ import { FaAddressBook, FaListUl } from 'react-icons/fa';
 import { HiOutlineLocationMarker, HiOutlineTruck } from 'react-icons/hi';
 import { ImPriceTag, ImPriceTags } from 'react-icons/im';
 import {
-  IoAddSharp,
   IoBagCheckOutline,
+  IoTicketOutline,
   IoWalletOutline,
 } from 'react-icons/io5';
 import { MdNavigateNext, MdOutlineAddLocationAlt } from 'react-icons/md';
 import { TbDiscount2 } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
-import { VoucherTicket } from '../../../components/BuyerCheckout';
-import { NoData, SealabsPayImg } from '../../../components/common';
+import {
+  NoData,
+  SealabsPayImg,
+  VoucherTicket,
+} from '../../../components/common';
+import {
+  LIMIT_SELLER_VOUCHER_ALL,
+  VOUCHER_AVAILABILITY,
+  VOUCHER_STATUS,
+} from '../../../constants';
 import { STATUS_INTERNAL_SERVER_ERROR } from '../../../constants/statusCodes';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
 import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
@@ -26,6 +34,7 @@ import {
   Address,
   DeliveryService,
   MarketplaceVoucher,
+  MerchantVoucher,
   PaymentMethod,
 } from '../../../types/component';
 import {
@@ -33,7 +42,9 @@ import {
   CheckoutCartOrderItem,
   CheckoutCartProduct,
   CheckoutCartProductItem,
+  MerchantVouchersByMerchantID,
 } from '../../../types/component/checkout';
+import { MerchantVoucherQuery } from '../../../types/query';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import {
@@ -56,6 +67,7 @@ import {
 } from '../../../utils/toast';
 import DeliveryServiceModal from './DeliveryServiceModal';
 import MarketplaceVoucherModal from './MarketplaceVoucherModal';
+import MerchantVoucherModal from './MerchantVoucherModal';
 import PaymentMethodModal from './PaymentMethodModal';
 import PaymentWalletPinModal from './PaymentWalletPinModal';
 import ShippingAddressModal from './ShippingAddressModal';
@@ -66,7 +78,7 @@ type OpenCheckoutModal = {
     change: boolean;
   };
   deliveryService: boolean;
-  shopVoucher: boolean;
+  merchantVoucher: boolean;
   marketplaceVoucher: boolean;
   paymentMethod: boolean;
   paymentWalletPin: boolean;
@@ -87,7 +99,7 @@ const BuyerCheckout = () => {
       change: false,
     },
     deliveryService: false,
-    shopVoucher: false,
+    merchantVoucher: false,
     marketplaceVoucher: false,
     paymentMethod: false,
     paymentWalletPin: false,
@@ -101,12 +113,27 @@ const BuyerCheckout = () => {
   const [deliveryService, setDeliveryService] =
     useState<DeliveryService | null>(null);
   const [currentMerchantID, setCurrentMerchantID] = useState<number>(0);
+  const [currentMerchantName, setCurrentMerchantName] = useState<string>('');
+  const [currentMerchantSubtotal, setCurrentMerchantSubtotal] =
+    useState<number>(0);
   const [getShippingCostRequest, setGetShippingCostRequest] =
     useState<GetRajaOngkirShippingCostRequest | null>(null);
   const [additionalNotes, setAdditionalNotes] =
     useState<AdditionalNotes | null>(null);
   const [marketplaceVoucher, setMarketplaceVoucher] =
     useState<MarketplaceVoucher | null>(null);
+  const [merchantVouchers, setMerchantVouchers] =
+    useState<MerchantVouchersByMerchantID | null>(null);
+  const [voucherQuery, setVoucherQuery] = useState<MerchantVoucherQuery>({
+    limit: LIMIT_SELLER_VOUCHER_ALL,
+    page: 1,
+    sortBy: '',
+    sort: '',
+    searchVoucherCode: '',
+    filterVoucherStatus: VOUCHER_STATUS.ONGOING,
+    filterVoucherAvailability: VOUCHER_AVAILABILITY.AVAILABLE,
+    merchantID: currentMerchantID,
+  });
 
   const handleAddAddressClick = () => {
     setOpenModal({
@@ -115,7 +142,7 @@ const BuyerCheckout = () => {
         change: false,
       },
       deliveryService: false,
-      shopVoucher: false,
+      merchantVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
@@ -129,7 +156,7 @@ const BuyerCheckout = () => {
         change: true,
       },
       deliveryService: false,
-      shopVoucher: false,
+      merchantVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
@@ -157,18 +184,18 @@ const BuyerCheckout = () => {
       notifyInfoToast('Please pick a shipping address');
       return;
     }
+    setCurrentMerchantID(merchantID);
     setOpenModal({
       shippingAddress: {
         add: false,
         change: false,
       },
       deliveryService: true,
-      shopVoucher: false,
+      merchantVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
     });
-    setCurrentMerchantID(merchantID);
     setGetShippingCostRequest({
       origin,
       destination: shippingAddress.city_id,
@@ -178,14 +205,14 @@ const BuyerCheckout = () => {
     });
   };
 
-  const handleShopVoucherClick = () => {
+  const handleMerchantVoucherClick = () => {
     setOpenModal({
       shippingAddress: {
         add: false,
         change: false,
       },
       deliveryService: false,
-      shopVoucher: true,
+      merchantVoucher: true,
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
@@ -199,7 +226,7 @@ const BuyerCheckout = () => {
         change: false,
       },
       deliveryService: false,
-      shopVoucher: false,
+      merchantVoucher: false,
       marketplaceVoucher: true,
       paymentMethod: false,
       paymentWalletPin: false,
@@ -213,7 +240,7 @@ const BuyerCheckout = () => {
         change: false,
       },
       deliveryService: false,
-      shopVoucher: false,
+      merchantVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: true,
       paymentWalletPin: false,
@@ -227,7 +254,7 @@ const BuyerCheckout = () => {
         change: false,
       },
       deliveryService: false,
-      shopVoucher: false,
+      merchantVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: true,
@@ -241,7 +268,7 @@ const BuyerCheckout = () => {
         change: false,
       },
       deliveryService: false,
-      shopVoucher: false,
+      merchantVoucher: false,
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
@@ -639,6 +666,48 @@ const BuyerCheckout = () => {
               )}
             </Card>
             <Divider />
+            {!merchantVouchers || !merchantVouchers[merchant_id] ? (
+              <Card
+                className='group p-4 shadow-md hover:bg-base-200 active:bg-base-100 cursor-pointer'
+                onClick={() => {
+                  setCurrentMerchantID(merchant_id);
+                  setCurrentMerchantName(name);
+                  setCurrentMerchantSubtotal(calculateSubtotal(products));
+                  setVoucherQuery((prev) => ({
+                    ...prev,
+                    merchantID: merchant_id,
+                  }));
+                  handleMerchantVoucherClick();
+                }}
+              >
+                <Card.Title className='flex justify-between'>
+                  <div className='text-base group-hover:text-primary group-active:text-base-content'>
+                    {`${name}'s Vouchers`}
+                  </div>
+                  <div>
+                    <MdNavigateNext className='text-2xl' />
+                  </div>
+                </Card.Title>
+              </Card>
+            ) : (
+              <VoucherTicket
+                currentVoucher={
+                  merchantVouchers[merchant_id] as MerchantVoucher
+                }
+                selectedVoucher={merchantVouchers[merchant_id]}
+                onClickVoucher={() => {
+                  setCurrentMerchantID(merchant_id);
+                  setCurrentMerchantName(name);
+                  setCurrentMerchantSubtotal(calculateSubtotal(products));
+                  setVoucherQuery((prev) => ({
+                    ...prev,
+                    merchantID: merchant_id,
+                  }));
+                  handleMerchantVoucherClick();
+                }}
+              />
+            )}
+            <Divider />
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-1'>
                 <ImPriceTag />
@@ -678,7 +747,7 @@ const BuyerCheckout = () => {
               size='md'
               onClick={handleMarketplaceVoucherClick}
             >
-              <IoAddSharp className='text-3xl' />
+              <IoTicketOutline className='text-2xl' />
             </Button>
           </Tooltip>
         </Card.Title>
@@ -739,7 +808,7 @@ const BuyerCheckout = () => {
       </Card>
 
       {/* Total and make order button sticky bottom */}
-      <Card className='container p-4 fixed bottom-0 left-0 rounded-b-none rounded-t-3xl bg-neutral md:relative'>
+      <Card className='container p-6 fixed -bottom-1 left-0 z-[100] rounded-b-none rounded-t-3xl bg-neutral md:relative md:z-0'>
         <Card.Title className='flex justify-between text-neutral-content'>
           <div className='flex items-center gap-2'>
             <ImPriceTags />
@@ -775,6 +844,16 @@ const BuyerCheckout = () => {
         setDeliveryService={setDeliveryService}
       />
       {/* Shop Promotion/Voucher Modal */}
+      <MerchantVoucherModal
+        currentMerchantID={currentMerchantID}
+        currentMerchantName={currentMerchantName}
+        merchantVouchers={merchantVouchers}
+        subtotalPayment={currentMerchantSubtotal}
+        voucherQuery={voucherQuery}
+        open={openModal.merchantVoucher}
+        onClose={handleModalClose}
+        setMerchantVouchers={setMerchantVouchers}
+      />
       {/* Marketplace Voucher Modal */}
       <MarketplaceVoucherModal
         activeMarketplaceVouchers={getActiveMarketplaceVoucherData.data}

@@ -15,3 +15,4 @@ export { default as NoData } from './NoData';
 export { default as SealabsPayImg } from './SealabsPayImg';
 export { default as SealabsPayCardImg } from './SealabsPayCardImg';
 export { default as SectionHeading } from './SectionHeading';
+export { default as VoucherTicket } from './VoucherTicket';
