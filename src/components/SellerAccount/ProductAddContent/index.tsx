@@ -179,7 +179,12 @@ const ProductAddContent = () => {
       // couriers: [],
     }),
     onSubmit: (values) => {
-      values.package_size = '500';
+      values.package_size =
+        (values.package_size_length || '-') +
+        'x' +
+        (values.package_size_width || '-') +
+        'x' +
+        (values.package_size_height || '-');
       createProduct({
         request: values,
       })
