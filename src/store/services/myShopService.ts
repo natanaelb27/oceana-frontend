@@ -6,9 +6,12 @@ import {
 import {
   CreateMerchantVoucherResponse,
   DeleteMerchantVoucherResponse,
+  GetAllTransactionHistoryResponse,
   GetMerchantResponse,
+  GetOrderDetailsResponse,
   UpdateMerchantResponse,
   UpdateMerchantVoucherResponse,
+  UpdateOrderStatusResponse,
 } from '../../types/response';
 import {
   MerchantPromotionDetailsResponse,
@@ -68,6 +71,44 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['MerchantVoucher'],
     }),
+    getAllMerchantTransactionHistory: builder.query<
+      GetAllTransactionHistoryResponse,
+      string
+    >({
+      query: (query) => ({
+        url: `/my-shop/transaction-history?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Order'],
+    }),
+    getMerchantOrderDetails: builder.query<GetOrderDetailsResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/transaction-history/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['OrderDetails'],
+    }),
+    updateProcessOrder: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/process-order`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'OrderDetails'],
+    }),
+    updateProcessDelivery: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/process-delivery`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'OrderDetails'],
+    }),
+    sellerCancelOrder: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/cancel-order`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'OrderDetails'],
+    }),
     getMerchantPromotion: builder.query<MerchantPromotionResponse, string>({
       query: (query) => ({
         url: `/my-shop/promotions?${query}`,
@@ -117,6 +158,13 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['MerchantPromotion'],
     }),
+    sellerClaimFunds: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/claim-funds`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'OrderDetails', 'Profile'],
+    }),
   }),
 });
 
@@ -126,6 +174,13 @@ export const {
   useCreateMerchantVoucherMutation,
   useUpdateMerchantVoucherMutation,
   useDeleteMerchantVoucherMutation,
+  useGetAllMerchantTransactionHistoryQuery,
+  useLazyGetAllMerchantTransactionHistoryQuery,
+  useGetMerchantOrderDetailsQuery,
+  useLazyGetMerchantOrderDetailsQuery,
+  useUpdateProcessOrderMutation,
+  useUpdateProcessDeliveryMutation,
+  useSellerCancelOrderMutation,
   useGetMerchantPromotionQuery,
   useLazyGetMerchantPromotionQuery,
   useGetMerchantPromotionDetailsQuery,
@@ -134,4 +189,5 @@ export const {
   useUpdateMerchantPromotionMutation,
   useDeleteMerchantPromotionMutation,
   useUpdateMyShopPhotoMutation,
+  useSellerClaimFundsMutation,
 } = myShopApi;

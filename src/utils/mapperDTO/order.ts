@@ -11,6 +11,7 @@ export const toTransactionHistoryQuery = (query: TransactionHistoryQuery) => {
   result +=
     '&filter-start-transaction-date=' + query.filterStartTransactionDate;
   result += '&filter-end-transaction-date=' + query.filterEndTransactionDate;
+  result += '&filter-is-reviewed=' + query.filterIsReviewed;
 
   return result;
 };
