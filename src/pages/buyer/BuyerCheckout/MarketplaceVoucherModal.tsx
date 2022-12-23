@@ -7,6 +7,7 @@ import { notifyInfoToast } from '../../../utils/toast';
 type MarketplaceVoucherModalProps = {
   activeMarketplaceVouchers: MarketplaceVoucher[];
   currentMarketplaceVoucher: MarketplaceVoucher | null;
+  totalPayment: number;
   open: boolean;
   onClose: () => void;
   setMarketplaceVoucher: React.Dispatch<
@@ -17,6 +18,7 @@ type MarketplaceVoucherModalProps = {
 const MarketplaceVoucherModal = ({
   activeMarketplaceVouchers,
   currentMarketplaceVoucher,
+  totalPayment,
   open,
   onClose,
   setMarketplaceVoucher,
@@ -43,6 +45,7 @@ const MarketplaceVoucherModal = ({
         {activeMarketplaceVouchers.map((voucher) => (
           <VoucherTicket
             key={voucher.id}
+            disabled={voucher.minimum_spend_amount > totalPayment}
             currentVoucher={voucher}
             selectedVoucher={currentMarketplaceVoucher}
             onClickVoucher={handleChangeVoucher}

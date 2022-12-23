@@ -43,7 +43,6 @@ import {
 } from '../../../utils/checkout';
 import {
   pascalCaseToTitleCase,
-  toDiscountString,
   toETD,
   toPhoneNumber,
   toRupiah,
@@ -762,6 +761,7 @@ const BuyerCheckout = () => {
       <MarketplaceVoucherModal
         activeMarketplaceVouchers={getActiveMarketplaceVoucherData.data}
         currentMarketplaceVoucher={marketplaceVoucher}
+        totalPayment={calculateTotal(checkout, null, null)}
         open={openModal.marketplaceVoucher}
         onClose={handleModalClose}
         setMarketplaceVoucher={setMarketplaceVoucher}

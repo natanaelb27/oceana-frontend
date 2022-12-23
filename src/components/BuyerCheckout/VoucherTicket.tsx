@@ -4,12 +4,14 @@ import { MarketplaceVoucher } from '../../types/component';
 import { toDiscountString } from '../../utils/convert';
 
 type VoucherTicketProps = {
+  disabled?: boolean;
   currentVoucher: MarketplaceVoucher;
   selectedVoucher: MarketplaceVoucher | null;
   onClickVoucher: ((voucher: MarketplaceVoucher) => void) | (() => void);
 };
 
 const VoucherTicket = ({
+  disabled,
   currentVoucher,
   selectedVoucher,
   onClickVoucher: onChangeVoucher,
@@ -20,6 +22,10 @@ const VoucherTicket = ({
         selectedVoucher && selectedVoucher.id === currentVoucher.id
           ? 'bg-secondary group-hover:bg-secondary/80 group-active:bg-secondary'
           : 'bg-primary group-hover:bg-primary/80 group-active:bg-primary'
+      }  ${
+        disabled
+          ? 'bg-base-300 group-hover:bg-base-300 group-active:bg-base-300'
+          : ''
       }`}
     >
       {currentVoucher.discount_type.toLocaleLowerCase() === 'percentage' ? (
@@ -33,9 +39,13 @@ const VoucherTicket = ({
         selectedVoucher && selectedVoucher.id === currentVoucher.id
           ? 'bg-secondary/10 group-active:bg-secondary/20'
           : 'bg-primary/40 group-hover:bg-primary/20 group-active:bg-primary/40'
+      } ${
+        disabled
+          ? 'bg-base-300 group-hover:bg-base-300 group-active:bg-base-300'
+          : ''
       }`}
       onClick={
-        !onChangeVoucher
+        !onChangeVoucher || disabled
           ? () => {
               return;
             }
