@@ -4,9 +4,10 @@ import { UserAccountContent } from '../../types/content';
 import AddressContent from './AddressContent';
 import PurchaseContent from './PurchaseContent';
 import ProfileContent from './ProfileContent';
-import RefundContent from './RefundContent';
 import SealabsPayContent from './SealabsPayContent';
 import WalletContent from './WalletContent';
+import RefundContent from './RefundContent';
+import RefundCreate from './RefundCreate';
 
 type ContentProps = {
   profile: Profile | null | undefined;
@@ -37,6 +38,10 @@ const Content = ({ profile, content }: ContentProps) => {
 
     if (content === UserAccountContent.Refunds) {
       return <RefundContent />;
+    }
+
+    if (content === UserAccountContent.RefundCreate) {
+      return <RefundCreate />;
     }
 
     return null;

@@ -93,7 +93,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
             </NavLink>
           </Menu.Item>
           <Menu.Item>
-            <NavLink to='/user/refund'>
+            <NavLink end to='/user/refund'>
               <HiOutlineReceiptRefund />
               Refunds
             </NavLink>
