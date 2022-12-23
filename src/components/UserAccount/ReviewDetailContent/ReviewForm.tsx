@@ -57,6 +57,16 @@ const ReviewForm = ({
       });
   };
 
+  const [showReviewTips, setShowReviewTips] = useState<boolean>(false);
+
+  const handleReviewTipsMouseOver = () => {
+    setShowReviewTips(true);
+  };
+
+  const handleReviewTipsMouseOut = () => {
+    setShowReviewTips(false);
+  };
+
   return (
     <div className='flex gap-3'>
       <img
@@ -91,9 +101,50 @@ const ReviewForm = ({
         <div className='mt-2 flex justify-between gap-5'>
           <div className='flex flex-col w-[75%] gap-2'>
             <div className='flex flex-col gap-1'>
-              <span className='font-light text-sm'>
-                Leave a review for this product
-              </span>
+              <div className='flex items-center gap-1'>
+                <span className='font-light text-sm'>
+                  Leave a review for this product
+                </span>
+                <div
+                  className='w-[25%] hidden md:block'
+                  onMouseOver={handleReviewTipsMouseOver}
+                  onMouseOut={handleReviewTipsMouseOut}
+                >
+                  <HiInformationCircle className='text-ghost' />
+                  <div
+                    className={`border-2 p-2 flex flex-col gap-2 absolute bg-base-100 transition-opacity ease-in-out duration-300  ${
+                      showReviewTips ? 'flex opacity-100' : 'hidden opacity-0'
+                    }`}
+                  >
+                    <div className='flex gap-2 items-center'>
+                      <HiInformationCircle className='text-ghost' />
+                      <span className='font-bold text-sm text-'>
+                        Writing Review Tips
+                      </span>
+                    </div>
+                    <ul className='text-xs flex flex-col gap-2'>
+                      <li className='flex flex-col'>
+                        <span className='font-bold'>
+                          Conformity with the description
+                        </span>
+                        <span>Ex: The size and color match the photo</span>
+                      </li>
+                      <li className='flex flex-col'>
+                        <span className='font-bold'>Product Functionality</span>
+                        <span>Ex: The product is working fine</span>
+                      </li>
+                      <li className='flex flex-col'>
+                        <span className='font-bold'>
+                          Willing to recommend this product to a friend
+                        </span>
+                        <span>
+                          Ex: Good quality, fast delivery, recommended
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
               <Textarea
                 className='text-xs resize-none h-24'
                 onChange={handleReviewTextChange}
@@ -121,38 +172,6 @@ const ReviewForm = ({
                 uploadLimit={1}
                 fileType={MEDIA_TYPE.VIDEO}
               ></UploadFileCard>
-            </div>
-          </div>
-          <div className='w-[25%] hidden md:block'>
-            <div className='border-2 p-2 flex flex-col gap-2'>
-              <div className='flex gap-2 items-center'>
-                <HiInformationCircle className='text-warning' />
-                <span className='font-bold text-sm text-'>
-                  Writing Review Tips
-                </span>
-              </div>
-              <ul className='text-xs'>
-                <li className='flex flex-col'>
-                  <span className='font-bold'>
-                    Conformity with the description
-                  </span>
-                  <span>Ex: The size and color match the photo</span>
-                </li>
-              </ul>
-              <ul className='text-xs'>
-                <li className='flex flex-col'>
-                  <span className='font-bold'>Product Functionality</span>
-                  <span>Ex: The product is working fine</span>
-                </li>
-              </ul>
-              <ul className='text-xs'>
-                <li className='flex flex-col'>
-                  <span className='font-bold'>
-                    Willing to recommend this product to a friend
-                  </span>
-                  <span>Ex: Good quality, fast delivery, recommended</span>
-                </li>
-              </ul>
             </div>
           </div>
         </div>
