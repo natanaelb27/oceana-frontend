@@ -50,7 +50,7 @@ const ProductAddContent = () => {
       name: '',
       description: '',
       category_id: 0,
-      category_name: 'Choose a category...',
+      category_name: '',
       merchant_id: 0,
       weight: 0,
       is_hazardous: false,
@@ -126,7 +126,7 @@ const ProductAddContent = () => {
       // id: Yup.number().required('Please enter id'),
       name: Yup.string().required('Please enter name').min(3),
       description: Yup.string().required('Please enter description'),
-      category_id: Yup.number().required('Please enter category_id'),
+      category_id: Yup.number().min(1, 'Please enter category'),
       // merchant_id: Yup.number().required('Please enter merchant_id'),
       weight: Yup.number().required('Please enter weight').min(1),
       // is_hazardous: Yup.boolean().required('Please enter is hazardous'),
@@ -929,10 +929,13 @@ const ProductAddContent = () => {
                       className='w-full flex justify-start cursor-pointer textarea textarea-bordered border-2 rounded-lg'
                       onFocus={() => (productFormik.touched.category_id = true)}
                       onClick={() => {
+                        productFormik.touched.category_id = true;
                         setOpenCategoryModal(true);
                       }}
                     >
-                      {productFormik.values.category_name}
+                      {productFormik.values.category_name || (
+                        <span className='text-neutral'>Choose a Category</span>
+                      )}
                     </div>
                   </div>
                 </FormLayout.InputContainer>
