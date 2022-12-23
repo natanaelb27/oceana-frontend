@@ -41,7 +41,7 @@ const VoucherTicket = ({
           : 'bg-primary/40 group-hover:bg-primary/20 group-active:bg-primary/40'
       } ${
         disabled
-          ? 'bg-base-300 group-hover:bg-base-300 group-active:bg-base-300'
+          ? 'bg-base-200 group-hover:bg-base-200 group-active:bg-base-200'
           : ''
       }`}
       onClick={

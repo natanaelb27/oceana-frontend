@@ -149,6 +149,7 @@ const BuyerCheckout = () => {
 
   const handleDeliveryServiceClick = (
     merchantID: number,
+    productIDs: number[],
     origin: number,
     totalWeight: number
   ) => {
@@ -173,6 +174,7 @@ const BuyerCheckout = () => {
       destination: shippingAddress.city_id,
       weight: totalWeight,
       courier: '',
+      product_ids: productIDs,
     });
   };
 
@@ -294,7 +296,8 @@ const BuyerCheckout = () => {
 
             const checkoutCartProduct: CheckoutCartProduct = {
               product_id: product.product_id,
-              product_merchant_promotion_id: null, //NOTE: what's promo_id in getCartByUserID
+              product_merchant_promotion_id:
+                product.product_merchant_promotion_id,
               product_items: checkoutCartProductItems,
             };
             checkoutCartProducts.push(checkoutCartProduct);
@@ -502,6 +505,7 @@ const BuyerCheckout = () => {
                   onClick={() =>
                     handleDeliveryServiceClick(
                       merchant_id,
+                      products.map((product) => product.product_id),
                       city_id,
                       calculateTotalWeight(products)
                     )
@@ -582,6 +586,7 @@ const BuyerCheckout = () => {
               onClick={() =>
                 handleDeliveryServiceClick(
                   merchant_id,
+                  products.map((product) => product.product_id),
                   city_id,
                   calculateTotalWeight(products)
                 )

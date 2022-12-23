@@ -3,4 +3,5 @@ export type GetRajaOngkirShippingCostRequest = {
   destination: number;
   weight: number;
   courier: string;
+  product_ids: number[];
 };
