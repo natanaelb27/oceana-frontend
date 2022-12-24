@@ -5,6 +5,7 @@ export interface RajaOngkirShippingServiceCost {
 }
 
 export interface RajaOngkirShippingService {
+  courier_service_id: number;
   service: string;
   description: string;
   cost: RajaOngkirShippingServiceCost[];

@@ -90,7 +90,7 @@ const DeliveryServiceModal = ({
           {
             code: courierService.service,
             description: courierService.description,
-            id: 0,
+            id: courierService.courier_service_id,
             is_selected: true,
             shipping_fee: courierService.cost[0].value,
             etd: courierService.cost[0].etd,
