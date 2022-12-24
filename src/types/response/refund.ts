@@ -15,3 +15,18 @@ export type GetRefundDetailsResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type UpdateRefundResponse = {
+  data: {
+    id: string;
+    order_id: string;
+    reason: string;
+    refund_request_datetime: string;
+    status: string;
+    rejected_datetime: string;
+  };
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};

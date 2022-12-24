@@ -335,7 +335,6 @@ const PurchaseContent = () => {
       setDateRange([null, null]);
       setTransactionHistoryQuery({
         ...transactionHistoryQuery,
-        page: 1,
         filterStartTransactionDate: '',
         filterEndTransactionDate: '',
       });
@@ -711,7 +710,7 @@ const PurchaseContent = () => {
                       transactionHistory?.order_status,
                       DELIVERY_STATUS.PENDING_SELLER
                     ) ? (
-                      <Tooltip message='auto cancel countdown'>
+                      <Tooltip message='auto cancel order'>
                         <DateCountdown
                           date={moment(
                             transactionHistory?.seller_confirmation_expiration_datetime
@@ -724,7 +723,7 @@ const PurchaseContent = () => {
                       transactionHistory?.order_status,
                       DELIVERY_STATUS.ON_PROCESS
                     ) ? (
-                      <Tooltip message='auto cancel countdown'>
+                      <Tooltip message='auto cancel order'>
                         <DateCountdown
                           date={moment(
                             transactionHistory?.on_process_expiration_datetime
@@ -737,10 +736,38 @@ const PurchaseContent = () => {
                       transactionHistory?.order_status,
                       DELIVERY_STATUS.DELIVERED
                     ) ? (
-                      <Tooltip message='auto complete countdown'>
+                      <Tooltip message='auto complete order'>
                         <DateCountdown
                           date={moment(
                             transactionHistory?.delivered_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
+                      </Tooltip>
+                    ) : null}
+
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.COMPLAINED
+                    ) &&
+                    transactionHistory?.refund_seller_confirmation_expiration_datetime ? (
+                      <Tooltip message='auto approve refund'>
+                        <DateCountdown
+                          date={moment(
+                            transactionHistory?.refund_seller_confirmation_expiration_datetime
+                          ).toDate()}
+                        ></DateCountdown>
+                      </Tooltip>
+                    ) : null}
+
+                    {stringCompare(
+                      transactionHistory?.order_status,
+                      DELIVERY_STATUS.COMPLAINED
+                    ) &&
+                    transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                      <Tooltip message='auto complete order'>
+                        <DateCountdown
+                          date={moment(
+                            transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime
                           ).toDate()}
                         ></DateCountdown>
                       </Tooltip>
@@ -758,7 +785,7 @@ const PurchaseContent = () => {
                     }
                   >
                     <div className='mr-5'>
-                      <img
+                      <Image
                         src={firstProduct?.product_image || ''}
                         alt={firstProduct?.product_name || ''}
                         className='h-12 w-12 md:h-20 md:w-20 rounded-md'
@@ -793,7 +820,7 @@ const PurchaseContent = () => {
                       </div>
                     </div>
                   </div>
-                  <div className='flex mt-3 gap-3 items-center justify-between md:justify-end'>
+                  <div className='flex mt-5 md:mt-3 gap-3 items-center justify-between md:justify-end'>
                     <span
                       className='hidden text-primary font-medium text-sm cursor-pointer md:block'
                       onClick={() =>
@@ -838,6 +865,31 @@ const PurchaseContent = () => {
                           </Dropdown.Menu>
                         </Dropdown>
                       </div>
+                    ) : stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.COMPLAINED
+                      ) &&
+                      transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                      <div className='flex gap-1'>
+                        <Button
+                          className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
+                          color='primary'
+                        >
+                          Buy Again
+                        </Button>
+                        <Dropdown
+                          horizontal='left'
+                          vertical='end'
+                          className='hidden md:flex'
+                        >
+                          <Dropdown.Toggle color='ghost'>
+                            <HiOutlineDotsHorizontal></HiOutlineDotsHorizontal>
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu className='w-52'>
+                            <Dropdown.Item>Refund</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
                     ) : (
                       <Button
                         className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
@@ -846,6 +898,7 @@ const PurchaseContent = () => {
                         Buy Again
                       </Button>
                     )}
+
                     <Button
                       className='normal-case md:w-auto md:pl-7 md:pr-7 flex md:hidden'
                       color='primary'
@@ -870,6 +923,25 @@ const PurchaseContent = () => {
                           </Dropdown.Toggle>
                           <Dropdown.Menu className='w-52'>
                             <Dropdown.Item>Complete</Dropdown.Item>
+                            <Dropdown.Item>Refund</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
+                    ) : stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.COMPLAINED
+                      ) &&
+                      transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                      <div className='flex gap-1'>
+                        <Dropdown
+                          horizontal='left'
+                          vertical='end'
+                          className='flex md:hidden'
+                        >
+                          <Dropdown.Toggle color='ghost'>
+                            <HiOutlineDotsVertical></HiOutlineDotsVertical>
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu className='w-52'>
                             <Dropdown.Item>Refund</Dropdown.Item>
                           </Dropdown.Menu>
                         </Dropdown>
@@ -940,7 +1012,7 @@ const PurchaseContent = () => {
           Filter Status
         </Modal.Header>
         <Modal.Body>
-          <div className='flex flex-col px-4'>
+          <div className='flex flex-col px-4 text-sm'>
             <label
               className='flex flex-row justify-between label cursor-pointer'
               onClick={() => handleModalFilterStatusClick(DELIVERY_STATUS.ALL)}
@@ -971,7 +1043,7 @@ const PurchaseContent = () => {
                 <span className='font-light'>Pending Payment</span>
                 <Radio size='md' color='primary' name='filter-status' />
               </label> */}
-              <Divider className='m-0'></Divider>
+              {/* <Divider className='m-0'></Divider> */}
               <label
                 className='flex flex-row justify-between label cursor-pointer ml-6'
                 onClick={() =>
@@ -1101,7 +1173,7 @@ const PurchaseContent = () => {
                       </Badge>
                     ) : null}
 
-                    {stringCompare(
+                    {/* {stringCompare(
                       getOrderDetailsData?.data.order_status,
                       DELIVERY_STATUS.PENDING_SELLER
                     ) ? (
@@ -1150,7 +1222,7 @@ const PurchaseContent = () => {
                           ).toDate()}
                         ></DateCountdown>
                       </Tooltip>
-                    ) : null}
+                    ) : null} */}
                   </div>
                   <div
                     className='flex cursor-pointer text-primary items-center gap-1'
@@ -1209,6 +1281,95 @@ const PurchaseContent = () => {
                     )}
                   </span>
                 </div>
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.PENDING_SELLER
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Cancel Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .seller_confirmation_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.ON_PROCESS
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Cancel Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .on_process_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.DELIVERED
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Complete Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .delivered_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.COMPLAINED
+                ) &&
+                getOrderDetailsData?.data
+                  ?.refund_seller_confirmation_expiration_datetime ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Approve Refund</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .refund_seller_confirmation_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.COMPLAINED
+                ) &&
+                getOrderDetailsData?.data
+                  ?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Complete Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .refund_rejected_auto_complete_order_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
               </div>
               <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>

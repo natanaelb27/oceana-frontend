@@ -13,6 +13,7 @@ import {
   UpdateMerchantVoucherResponse,
   UpdateOrderStatusResponse,
   GetAllRefundDetailsResponse,
+  UpdateRefundResponse,
 } from '../../types/response';
 import {
   MerchantPromotionDetailsResponse,
@@ -173,6 +174,20 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Refund'],
     }),
+    sellerApproveRefund: builder.mutation<UpdateRefundResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/refunds/${id}/approve`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'Refund'],
+    }),
+    sellerRejectRefund: builder.mutation<UpdateRefundResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/refunds/${id}/reject`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'Refund'],
+    }),
   }),
 });
 
@@ -200,4 +215,6 @@ export const {
   useSellerClaimFundsMutation,
   useGetAllMerchantRefundsQuery,
   useLazyGetAllMerchantRefundsQuery,
+  useSellerApproveRefundMutation,
+  useSellerRejectRefundMutation,
 } = myShopApi;

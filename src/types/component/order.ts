@@ -33,6 +33,8 @@ export interface OrderList {
   seller_confirmation_expiration_datetime: string | null;
   on_process_expiration_datetime: string | null;
   delivered_expiration_datetime: string | null;
+  refund_seller_confirmation_expiration_datetime: string | null;
+  refund_rejected_auto_complete_order_expiration_datetime: string | null;
 }
 
 export interface OrderTracking {
@@ -76,6 +78,8 @@ export interface OrderListDetail {
   seller_confirmation_expiration_datetime: string | null;
   on_process_expiration_datetime: string | null;
   delivered_expiration_datetime: string | null;
+  refund_seller_confirmation_expiration_datetime: string | null;
+  refund_rejected_auto_complete_order_expiration_datetime: string | null;
 }
 
 export interface PendingPayment {

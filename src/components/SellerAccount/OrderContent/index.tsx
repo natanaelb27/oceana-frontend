@@ -236,7 +236,6 @@ const OrderContent = () => {
       setDateRange([null, null]);
       setTransactionHistoryQuery({
         ...transactionHistoryQuery,
-        page: 1,
         filterStartTransactionDate: '',
         filterEndTransactionDate: '',
       });
@@ -631,6 +630,8 @@ const OrderContent = () => {
                   seller_confirmation_expiration_datetime,
                   on_process_expiration_datetime,
                   delivered_expiration_datetime,
+                  refund_seller_confirmation_expiration_datetime,
+                  refund_rejected_auto_complete_order_expiration_datetime,
                 }) => {
                   const productCount = order_details.length;
                   const firstProduct = order_details.at(0);
@@ -700,7 +701,7 @@ const OrderContent = () => {
                           order_status,
                           DELIVERY_STATUS.PENDING_SELLER
                         ) ? (
-                          <Tooltip message='auto cancel countdown'>
+                          <Tooltip message='auto cancel order'>
                             <DateCountdown
                               date={moment(
                                 seller_confirmation_expiration_datetime
@@ -713,7 +714,7 @@ const OrderContent = () => {
                           order_status,
                           DELIVERY_STATUS.ON_PROCESS
                         ) ? (
-                          <Tooltip message='auto cancel countdown'>
+                          <Tooltip message='auto cancel order'>
                             <DateCountdown
                               date={moment(
                                 on_process_expiration_datetime
@@ -726,10 +727,37 @@ const OrderContent = () => {
                           order_status,
                           DELIVERY_STATUS.DELIVERED
                         ) ? (
-                          <Tooltip message='auto complete countdown'>
+                          <Tooltip message='auto complete order'>
                             <DateCountdown
                               date={moment(
                                 delivered_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+
+                        {stringCompare(
+                          order_status,
+                          DELIVERY_STATUS.COMPLAINED
+                        ) && refund_seller_confirmation_expiration_datetime ? (
+                          <Tooltip message='auto approve refund'>
+                            <DateCountdown
+                              date={moment(
+                                refund_seller_confirmation_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+
+                        {stringCompare(
+                          order_status,
+                          DELIVERY_STATUS.COMPLAINED
+                        ) &&
+                        refund_rejected_auto_complete_order_expiration_datetime ? (
+                          <Tooltip message='auto complete order'>
+                            <DateCountdown
+                              date={moment(
+                                refund_rejected_auto_complete_order_expiration_datetime
                               ).toDate()}
                             ></DateCountdown>
                           </Tooltip>
@@ -940,7 +968,7 @@ const OrderContent = () => {
                       </Badge>
                     ) : null}
 
-                    {stringCompare(
+                    {/* {stringCompare(
                       getMerchantOrderDetailsData?.data.order_status,
                       DELIVERY_STATUS.PENDING_SELLER
                     ) ? (
@@ -989,7 +1017,7 @@ const OrderContent = () => {
                           ).toDate()}
                         ></DateCountdown>
                       </Tooltip>
-                    ) : null}
+                    ) : null} */}
                   </div>
                   <div
                     className='flex cursor-pointer text-primary items-center gap-1'
@@ -1048,6 +1076,95 @@ const OrderContent = () => {
                     )}
                   </span>
                 </div>
+
+                {stringCompare(
+                  getMerchantOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.PENDING_SELLER
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Cancel Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getMerchantOrderDetailsData?.data
+                            .seller_confirmation_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getMerchantOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.ON_PROCESS
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Cancel Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getMerchantOrderDetailsData?.data
+                            .on_process_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getMerchantOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.DELIVERED
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Complete Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getMerchantOrderDetailsData?.data
+                            .delivered_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getMerchantOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.COMPLAINED
+                ) &&
+                getMerchantOrderDetailsData?.data
+                  ?.refund_seller_confirmation_expiration_datetime ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Approve Refund</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getMerchantOrderDetailsData?.data
+                            .refund_seller_confirmation_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getMerchantOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.COMPLAINED
+                ) &&
+                getMerchantOrderDetailsData?.data
+                  ?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Complete Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getMerchantOrderDetailsData?.data
+                            .refund_rejected_auto_complete_order_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
               </div>
               <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>

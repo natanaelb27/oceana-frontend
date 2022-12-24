@@ -28,7 +28,7 @@ import {
   HiSearch,
 } from 'react-icons/hi';
 import {
-  LIMIT_TRANSACTION_HISTORY,
+  LIMIT_REVIEW_HISTORY,
   DELIVERY_STATUS,
   REVIEW_STATUS,
 } from '../../../constants';
@@ -49,7 +49,7 @@ const ReviewContent = () => {
   const handleFilterReviewStatusClick = (status: string) => {
     setFilterReviewStatus(status);
     setTransactionHistoryQuery({
-      limit: LIMIT_TRANSACTION_HISTORY,
+      limit: LIMIT_REVIEW_HISTORY,
       page: 1,
       search: '',
       filterOrderStatus: DELIVERY_STATUS.COMPLETED,
@@ -64,7 +64,7 @@ const ReviewContent = () => {
 
   const [transactionHistoryQuery, setTransactionHistoryQuery] =
     useState<TransactionHistoryQuery>({
-      limit: LIMIT_TRANSACTION_HISTORY,
+      limit: LIMIT_REVIEW_HISTORY,
       page: 1,
       search: '',
       filterOrderStatus: DELIVERY_STATUS.COMPLETED,
@@ -220,7 +220,6 @@ const ReviewContent = () => {
       setDateRange([null, null]);
       setTransactionHistoryQuery({
         ...transactionHistoryQuery,
-        page: 1,
         filterStartTransactionDate: '',
         filterEndTransactionDate: '',
       });
@@ -265,7 +264,7 @@ const ReviewContent = () => {
     setDateRange([null, null]);
 
     setTransactionHistoryQuery({
-      limit: LIMIT_TRANSACTION_HISTORY,
+      limit: LIMIT_REVIEW_HISTORY,
       page: 1,
       search: '',
       filterOrderStatus: DELIVERY_STATUS.COMPLETED,

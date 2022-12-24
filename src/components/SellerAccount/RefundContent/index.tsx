@@ -49,6 +49,8 @@ import {
   useLazyGetMerchantOrderDetailsQuery,
   useSellerClaimFundsMutation,
   useGetAllMerchantRefundsQuery,
+  useSellerApproveRefundMutation,
+  useSellerRejectRefundMutation,
 } from '../../../store/services/myShopService';
 import { toRefundQuery } from '../../../utils/mapperDTO';
 import { ConfirmationModal, Image, Pager } from '../../common';
@@ -62,7 +64,10 @@ import {
   toStringTime,
 } from '../../../utils/convert';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
-import { UpdateOrderStatusResponse } from '../../../types/response';
+import {
+  UpdateOrderStatusResponse,
+  UpdateRefundResponse,
+} from '../../../types/response';
 import NoData from '../../common/NoData';
 import useOutsideAlerter from '../../../hooks/OutsideAlerter';
 import moment from 'moment';
@@ -240,7 +245,6 @@ const RefundContent = () => {
       setDateRange([null, null]);
       setRefundQuery({
         ...refundQuery,
-        page: 1,
         filterStartDate: '',
         filterEndDate: '',
       });
@@ -311,17 +315,11 @@ const RefundContent = () => {
     return 'warning';
   };
 
-  const [updateProcessOrder, { isLoading: updateProcessOrderIsLoading }] =
-    useUpdateProcessOrderMutation();
+  const [sellerApproveRefund, { isLoading: sellerApproveRefundIsLoading }] =
+    useSellerApproveRefundMutation();
 
-  const [updateProcessDelivery, { isLoading: updateProcessDeliveryIsLoading }] =
-    useUpdateProcessDeliveryMutation();
-
-  const [sellerCancelOrder, { isLoading: sellerCancelOrderIsLoading }] =
-    useSellerCancelOrderMutation();
-
-  const [sellerClaimFunds, { isLoading: sellerClaimFundsIsLoading }] =
-    useSellerClaimFundsMutation();
+  const [sellerRejectRefund, { isLoading: sellerRejectRefundIsLoading }] =
+    useSellerRejectRefundMutation();
 
   const handleModalClose = () => {
     setOpenModal({
@@ -359,6 +357,82 @@ const RefundContent = () => {
       filterStartDate: '',
       filterEndDate: '',
     });
+  };
+
+  const handleRefundApproveClick = (id: string) => {
+    setOpenModal({
+      detailRefund: false,
+      approveRefund: true,
+      rejectRefund: false,
+    });
+
+    setRefundID(id);
+  };
+
+  const handleRefundApprove = () => {
+    setOpenModal({
+      detailRefund: false,
+      approveRefund: false,
+      rejectRefund: false,
+    });
+
+    if (!refundID) {
+      return;
+    }
+
+    sellerApproveRefund(refundID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Refund has been approved!');
+      })
+      .catch((err) => {
+        if (err && 'data' in err) {
+          const response = err.data as UpdateRefundResponse;
+
+          notifyErrorToast(response.message);
+        }
+      })
+      .finally(() => {
+        setRefundID(null);
+      });
+  };
+
+  const handleRefundRejectClick = (id: string) => {
+    setOpenModal({
+      detailRefund: false,
+      approveRefund: false,
+      rejectRefund: true,
+    });
+
+    setRefundID(id);
+  };
+
+  const handleRefundReject = () => {
+    setOpenModal({
+      detailRefund: false,
+      approveRefund: false,
+      rejectRefund: false,
+    });
+
+    if (!refundID) {
+      return;
+    }
+
+    sellerRejectRefund(refundID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Refund has been rejected!');
+      })
+      .catch((err) => {
+        if (err && 'data' in err) {
+          const response = err.data as UpdateRefundResponse;
+
+          notifyErrorToast(response.message);
+        }
+      })
+      .finally(() => {
+        setRefundID(null);
+      });
   };
 
   return (
@@ -432,6 +506,7 @@ const RefundContent = () => {
                 refund_items,
                 total_user_refund_amount,
                 total_merchant_lost_amount,
+                refund_seller_confirmation_expiration_datetime,
               }) => {
                 const productCount = refund_items.length;
                 const firstProduct = refund_items.at(0);
@@ -489,6 +564,16 @@ const RefundContent = () => {
                       >
                         {refund_status}
                       </Badge>
+                      {stringCompare(refund_status, REFUND_STATUS.ONGOING) &&
+                      refund_seller_confirmation_expiration_datetime ? (
+                        <Tooltip message='auto approve refund'>
+                          <DateCountdown
+                            date={moment(
+                              refund_seller_confirmation_expiration_datetime
+                            ).toDate()}
+                          ></DateCountdown>
+                        </Tooltip>
+                      ) : null}
                     </div>
                     <div className='flex'>
                       <Tooltip message='Detail'>
@@ -522,7 +607,11 @@ const RefundContent = () => {
       <Modal
         open={openModal.detailRefund}
         responsive
-        className='md:w-12/12 md:max-w-4xl px-0'
+        className={`md:w-12/12 px-0 ${
+          getRefundDetailsData?.data?.refund_status === REFUND_STATUS.ONGOING
+            ? 'md:max-w-4xl'
+            : 'md:max-w-2xl'
+        }`}
         onClickBackdrop={handleModalClose}
       >
         <Button
@@ -537,17 +626,29 @@ const RefundContent = () => {
         <Modal.Header className='text-center font-bold'>
           Refund Detail
         </Modal.Header>
-        <Divider className='m-0 hidden md:flex'></Divider>
-        <Modal.Body className='max-h-[48rem] md:grid md:grid-cols-3 md:gap-2 overflow-hidden'>
-          {getRefundDetailsData?.data && (
-            <div className='flex flex-col gap-2 overflow-y-scroll col-span-2 md:border-r-2 md:border-base-200'>
+        {getRefundDetailsData?.data?.refund_status === REFUND_STATUS.ONGOING ? (
+          <Divider className='m-0 hidden md:flex'></Divider>
+        ) : null}
+        <Modal.Body className='max-h-[48rem] md:grid md:grid-cols-3 md:gap-2 md:overflow-hidden'>
+          {getRefundDetailsIsLoading && <div>Loading</div>}
+          {!getRefundDetailsIsLoading && getRefundDetailsData?.data && (
+            <div
+              className={`flex flex-col gap-2 md:max-h-[48rem] md:overflow-y-auto md:border-r-2 md:border-base-200 ${
+                getRefundDetailsData?.data?.refund_status ===
+                REFUND_STATUS.ONGOING
+                  ? 'col-span-2'
+                  : 'col-span-3'
+              }`}
+            >
               <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
-                  <span className='font-bold'>
-                    {capitalizeFirstLetter(
-                      getRefundDetailsData?.data?.refund_status
-                    )}
-                  </span>
+                  <div className='flex gap-2 items-center'>
+                    <span className='font-bold'>
+                      {capitalizeFirstLetter(
+                        getRefundDetailsData?.data?.refund_status
+                      )}
+                    </span>
+                  </div>
                 </div>
                 <Divider className='m-0'></Divider>
                 <div className='flex justify-between items-center'>
@@ -570,6 +671,24 @@ const RefundContent = () => {
                     )}
                   </span>
                 </div>
+                {stringCompare(
+                  getRefundDetailsData?.data?.refund_status,
+                  REFUND_STATUS.ONGOING &&
+                    getRefundDetailsData?.data
+                      ?.refund_seller_confirmation_expiration_datetime
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Approve Refund</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getRefundDetailsData?.data
+                            ?.refund_seller_confirmation_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
               </div>
               <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
@@ -585,7 +704,7 @@ const RefundContent = () => {
                           key={n}
                           src={video || ''}
                           controls
-                          className='h-12 w-12 md:h-20 md:w-40 rounded-md'
+                          className='h-20 w-40 rounded-md'
                         />
                       );
                     })}
@@ -603,6 +722,18 @@ const RefundContent = () => {
                 ) : (
                   <NoData title='It seems that this refund has no media uploaded'></NoData>
                 )}
+              </div>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
+                <div className='flex justify-between items-center'>
+                  <span className='font-bold'>Refund Reason</span>
+                </div>
+                <div className='border-2 p-2 min-h-12'>
+                  <span className='text-sm'>
+                    {getRefundDetailsData?.data?.refund_reason
+                      ? getRefundDetailsData?.data?.refund_reason
+                      : null}
+                  </span>
+                </div>
               </div>
               <div className='flex flex-col gap-2 p-5'>
                 <div className='flex justify-between items-center'>
@@ -692,44 +823,88 @@ const RefundContent = () => {
               </div>
             </div>
           )}
-          <div className='hidden md:flex flex-col justify-between items-center'>
-            <div className='flex flex-col p-5 gap-2 col-span-1 w-full'>
+          {getRefundDetailsData?.data?.refund_status ===
+          REFUND_STATUS.ONGOING ? (
+            <div className='flex md:hidden gap-2 justify-end px-5 pb-5 mt-0'>
               <Button
                 className='normal-case btn-primary'
                 startIcon={<HiOutlineCheck />}
+                loading={sellerApproveRefundIsLoading}
+                onClick={() => {
+                  handleRefundApproveClick(
+                    getRefundDetailsData?.data?.refund_id || ''
+                  );
+                }}
               >
                 Approve
               </Button>
               <Button
                 className='normal-case btn-error'
                 startIcon={<HiOutlineX />}
+                loading={sellerRejectRefundIsLoading}
+                onClick={() => {
+                  handleRefundRejectClick(
+                    getRefundDetailsData?.data?.refund_id || ''
+                  );
+                }}
               >
                 Reject
               </Button>
             </div>
-            <Image
-              src={require('./../../../assets/images/fish.png')}
-              alt='no-data'
-              className='object-contain'
-            ></Image>
-          </div>
+          ) : null}
 
-          <div className='flex md:hidden gap-2 justify-end px-5 pb-5'>
-            <Button
-              className='normal-case btn-primary'
-              startIcon={<HiOutlineCheck />}
-            >
-              Approve
-            </Button>
-            <Button
-              className='normal-case btn-error'
-              startIcon={<HiOutlineX />}
-            >
-              Reject
-            </Button>
-          </div>
+          {getRefundDetailsData?.data?.refund_status ===
+          REFUND_STATUS.ONGOING ? (
+            <div className='hidden md:flex flex-col justify-between items-center'>
+              <div className='flex flex-col p-5 gap-2 col-span-1 w-full'>
+                <Button
+                  className='normal-case btn-primary'
+                  startIcon={<HiOutlineCheck />}
+                  loading={sellerApproveRefundIsLoading}
+                  onClick={() => {
+                    handleRefundApproveClick(
+                      getRefundDetailsData?.data?.refund_id || ''
+                    );
+                  }}
+                >
+                  Approve
+                </Button>
+                <Button
+                  className='normal-case btn-error'
+                  startIcon={<HiOutlineX />}
+                  loading={sellerRejectRefundIsLoading}
+                  onClick={() => {
+                    handleRefundRejectClick(
+                      getRefundDetailsData?.data?.refund_id || ''
+                    );
+                  }}
+                >
+                  Reject
+                </Button>
+              </div>
+              <Image
+                src={require('./../../../assets/images/fish.png')}
+                alt='no-data'
+                className='object-contain'
+              ></Image>
+            </div>
+          ) : null}
         </Modal.Body>
       </Modal>
+      <ConfirmationModal
+        open={openModal.approveRefund}
+        title='Are you sure you want to approve this refund?'
+        message='This action cannot be undone.'
+        onClose={handleModalClose}
+        onAccepted={handleRefundApprove}
+      ></ConfirmationModal>
+      <ConfirmationModal
+        open={openModal.rejectRefund}
+        title='Are you sure you want to reject this refund?'
+        message='This action cannot be undone.'
+        onClose={handleModalClose}
+        onAccepted={handleRefundReject}
+      ></ConfirmationModal>
     </div>
   );
 };

@@ -11,6 +11,7 @@ export const LIMIT_SIMILAR_PRODUCTS_IN_PRODUCT_PAGE = 12;
 export const LIMIT_SELLER_VOUCHER_LIST = 10;
 export const LIMIT_REVIEWS_IN_PRODUCT_PAGE = 5;
 export const LIMIT_TRANSACTION_HISTORY = 10;
+export const LIMIT_REVIEW_HISTORY = 10;
 export const LIMIT_REFUND = 10;
 
 export const VOUCHER_STATUS = {
