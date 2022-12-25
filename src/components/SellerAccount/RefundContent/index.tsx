@@ -566,13 +566,15 @@ const RefundContent = () => {
                       </Badge>
                       {stringCompare(refund_status, REFUND_STATUS.ONGOING) &&
                       refund_seller_confirmation_expiration_datetime ? (
-                        <Tooltip message='auto approve refund'>
-                          <DateCountdown
-                            date={moment(
-                              refund_seller_confirmation_expiration_datetime
-                            ).toDate()}
-                          ></DateCountdown>
-                        </Tooltip>
+                        <div className='w-fit'>
+                          <Tooltip message='auto approve refund'>
+                            <DateCountdown
+                              date={moment(
+                                refund_seller_confirmation_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        </div>
                       ) : null}
                     </div>
                     <div className='flex'>
