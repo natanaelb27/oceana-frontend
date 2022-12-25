@@ -9,6 +9,7 @@ type ContentProps = {
   setFiles: (f: File[]) => void;
   uploadLimit: number;
   fileType: string;
+  multiple?: boolean;
 };
 
 const UploadFileCard = ({
@@ -16,6 +17,7 @@ const UploadFileCard = ({
   setFiles,
   uploadLimit,
   fileType,
+  multiple = true,
 }: ContentProps) => {
   const [filesView, setFilesView] = useState<string[]>([]);
 
@@ -84,7 +86,7 @@ const UploadFileCard = ({
               const target = e.target as HTMLInputElement;
               target.value = '';
             }}
-            multiple
+            multiple={multiple}
             accept={
               fileType === MEDIA_TYPE.IMAGE
                 ? 'image/*'

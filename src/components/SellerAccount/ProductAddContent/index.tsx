@@ -27,7 +27,11 @@ import {
   CreateProductResponse,
   GetAncestorsCategoryResponse,
 } from '../../../types/response';
-import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import {
+  notifyErrorToast,
+  notifySuccessToast,
+  notifyInfoToast,
+} from '../../../utils/toast';
 import { handleNumberInvalidKey } from '../../../utils/validation';
 import { formikPreorderDay } from '../../../utils/yupValidation';
 import SectionHeading from '../../common/SectionHeading/index';
@@ -38,6 +42,9 @@ import { Label } from './Form';
 import * as FormLayout from './FormLayout';
 import * as ProductVariantLayout from './ProductVariantLayout';
 import UploadFileCard from '../../common/UploadFileCard';
+import { useUploadMediaMutation } from '../../../store/services/mediaService';
+import { toUploadMediaRequest } from '../../../utils/mapperDTO';
+import { UploadMediaResponse } from '../../../types/response/media';
 
 const ProductAddContent = () => {
   const [createProduct, { isLoading: createProductIsLoading }] =
@@ -45,6 +52,9 @@ const ProductAddContent = () => {
   const [getAncestorsCategory] = useLazyGetAncestorsCategoryQuery();
   const { data: getShipmentData, isLoading: getShipmentIsLoading } =
     useGetSelectedShipmentQuery();
+
+  const [uploadMedia, { isLoading: uploadMediaIsLoading }] =
+    useUploadMediaMutation();
 
   const productFormik = useFormik({
     initialValues: {
@@ -61,7 +71,7 @@ const ProductAddContent = () => {
       package_size_width: 0,
       package_size_height: 0,
       condition: PRODCUT_CONDITION_TYPE.NEW,
-      status: '',
+      status: 'active',
       process_day: 2,
       preorder_day: 0,
       images: [],
@@ -211,6 +221,66 @@ const ProductAddContent = () => {
 
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
 
+  useEffect(() => {
+    let getter: File[] | undefined = undefined;
+    let setter: React.Dispatch<React.SetStateAction<File[]>> | undefined =
+      undefined;
+    let productFormikMediaFields = '';
+
+    if (images.length > productFormik.values.images.length) {
+      productFormikMediaFields = 'images';
+      getter = images;
+      setter = setImages;
+    } else if (videos.length > productFormik.values.videos.length) {
+      productFormikMediaFields = 'videos';
+      getter = videos;
+      setter = setVideos;
+    }
+
+    if (
+      getter === undefined ||
+      setter === undefined ||
+      productFormikMediaFields === ''
+    ) {
+      return;
+    }
+    notifyInfoToast(`Uploading ${productFormikMediaFields}...`);
+
+    uploadMedia({ formData: toUploadMediaRequest(getter[getter.length - 1]) })
+      .unwrap()
+      .then(({ data }) => {
+        notifySuccessToast(`${productFormikMediaFields} has been uploaded!`);
+        const productFormikMedias = [
+          ...(productFormikMediaFields === 'images'
+            ? productFormik.values.images
+            : productFormik.values.videos),
+          data?.media_url,
+        ];
+        productFormik.setFieldValue(
+          productFormikMediaFields,
+          productFormikMedias
+        );
+      })
+      .catch((err) => {
+        if ('data' in err) {
+          const response = err.data as UploadMediaResponse;
+          notifyErrorToast(response.message);
+        } else {
+          notifyErrorToast('upload media failed');
+        }
+        if (
+          getter === undefined ||
+          setter === undefined ||
+          productFormikMediaFields === ''
+        ) {
+          return;
+        }
+        const currentMedia = [...getter];
+        currentMedia.splice(currentMedia.length - 1, 1);
+        setter(currentMedia);
+      });
+  }, [images, videos]);
+  console.log(images);
   const updateCouriers = (couriers: Courier[]) => {
     productFormik.setFieldValue('couriers', couriers);
   };
@@ -910,6 +980,7 @@ const ProductAddContent = () => {
                     setFiles={setImages}
                     uploadLimit={5}
                     fileType={MEDIA_TYPE.IMAGE}
+                    multiple={false}
                   ></UploadFileCard>
                 </FormLayout.InputContainer>
               </FormLayout.LabelInputContainer>
@@ -935,6 +1006,7 @@ const ProductAddContent = () => {
                       setFiles={setVideos}
                       uploadLimit={1}
                       fileType={MEDIA_TYPE.VIDEO}
+                      multiple={false}
                     ></UploadFileCard>
                     <p className='text-sm text-base-content/60'>
                       Size: Max. 30MB and max. resolution 1,280x1,280px
@@ -1427,7 +1499,7 @@ const ProductAddContent = () => {
           color='primary'
           type='submit'
           form='addProductForm'
-          loading={createProductIsLoading}
+          loading={createProductIsLoading || uploadMediaIsLoading}
         >
           Save
         </Button>
