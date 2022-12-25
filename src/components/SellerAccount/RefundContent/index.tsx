@@ -482,7 +482,7 @@ const RefundContent = () => {
       <div className='overflow-x-auto'>
         <Table className='w-[100%] z-0'>
           <Table.Head>
-            <span>Invoice Number</span>
+            {/* <span>Invoice Number</span> */}
             <span>Products</span>
             <span>Refund Total</span>
             <span>Refund Request Date</span>
@@ -512,7 +512,7 @@ const RefundContent = () => {
                 const firstProduct = refund_items.at(0);
                 return (
                   <Table.Row key={refund_id}>
-                    <div className='flex text-sm'>{invoice_number}</div>
+                    {/* <div className='flex text-sm'>{invoice_number}</div> */}
                     <div className='flex flex-col max-w-md'>
                       <div className='flex'>
                         <div className='flex mr-5'>
@@ -673,10 +673,23 @@ const RefundContent = () => {
                 </div>
                 {stringCompare(
                   getRefundDetailsData?.data?.refund_status,
-                  REFUND_STATUS.ONGOING &&
-                    getRefundDetailsData?.data
-                      ?.refund_seller_confirmation_expiration_datetime
+                  REFUND_STATUS.REJECTED
                 ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Refund Rejected Date</span>
+                    <span className='text-sm'>
+                      {toLongStringDatetime(
+                        getRefundDetailsData?.data.rejected_datetime
+                      )}
+                    </span>
+                  </div>
+                ) : null}
+                {stringCompare(
+                  getRefundDetailsData?.data?.refund_status,
+                  REFUND_STATUS.ONGOING
+                ) &&
+                getRefundDetailsData?.data
+                  ?.refund_seller_confirmation_expiration_datetime ? (
                   <div className='flex justify-between items-center'>
                     <span className='text-sm'>Auto Approve Refund</span>
                     <span className='text-sm'>
@@ -727,7 +740,7 @@ const RefundContent = () => {
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>Refund Reason</span>
                 </div>
-                <div className='border-2 p-2 min-h-12'>
+                <div className='border-[1px] border-base-300 p-2 min-h-12'>
                   <span className='text-sm'>
                     {getRefundDetailsData?.data?.refund_reason
                       ? getRefundDetailsData?.data?.refund_reason

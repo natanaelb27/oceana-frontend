@@ -690,7 +690,7 @@ const PurchaseContent = () => {
                         <Badge
                           color='error'
                           size='xs'
-                          className='hidden md:flex font-bold p-2 rounded-none text-white'
+                          className='font-bold p-2 rounded-none text-white'
                         >
                           refund
                         </Badge>
@@ -1090,7 +1090,7 @@ const PurchaseContent = () => {
         <Modal.Header className='text-center font-bold'>
           Transaction Detail
         </Modal.Header>
-        <Modal.Body className='max-h-[48rem] overflow-y-scroll'>
+        <Modal.Body className='max-h-[48rem] md:overflow-y-scroll'>
           {getOrderDetailsLoading && (
             <Card className='col-span-12 shadow animate-pulse'>
               <div className='p-4'>
@@ -1119,57 +1119,6 @@ const PurchaseContent = () => {
                         refund
                       </Badge>
                     ) : null}
-
-                    {/* {stringCompare(
-                      getOrderDetailsData?.data.order_status,
-                      DELIVERY_STATUS.PENDING_SELLER
-                    ) ? (
-                      <Tooltip
-                        position='bottom'
-                        message='auto cancel countdown'
-                      >
-                        <DateCountdown
-                          date={moment(
-                            getOrderDetailsData?.data
-                              .seller_confirmation_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
-
-                    {stringCompare(
-                      getOrderDetailsData?.data.order_status,
-                      DELIVERY_STATUS.ON_PROCESS
-                    ) ? (
-                      <Tooltip
-                        position='bottom'
-                        message='auto cancel countdown'
-                      >
-                        <DateCountdown
-                          date={moment(
-                            getOrderDetailsData?.data
-                              .on_process_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
-
-                    {stringCompare(
-                      getOrderDetailsData?.data.order_status,
-                      DELIVERY_STATUS.DELIVERED
-                    ) ? (
-                      <Tooltip
-                        position='bottom'
-                        message='auto complete countdown'
-                      >
-                        <DateCountdown
-                          date={moment(
-                            getOrderDetailsData?.data
-                              .delivered_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null} */}
                   </div>
                   <div
                     className='flex cursor-pointer text-primary items-center gap-1'
