@@ -584,19 +584,6 @@ const PurchaseContent = () => {
               : 'hidden md:flex gap-2 overflow-x-auto overflow-y-hidden px-1'
           }
         >
-          {/* <Button
-            className={
-              'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
-              (activeOngoingStatusButton === DELIVERY_STATUS.PENDING_PAYMENT
-                ? 'btn-active'
-                : '')
-            }
-            onClick={() =>
-              handleOngoingStatusClick(DELIVERY_STATUS.PENDING_PAYMENT)
-            }
-          >
-            Waiting for Payment
-          </Button> */}
           <Button
             className={
               'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
@@ -679,99 +666,147 @@ const PurchaseContent = () => {
                 key={n}
               >
                 <div className='p-4'>
-                  <div className='flex items-center mb-2.5 gap-3 justify-between md:justify-start'>
-                    <div className='flex gap-3 items-center'>
-                      <HiOutlineShoppingBag className='text-info text-xl' />
-                      <span className='font-light text-sm'>
-                        {toStringDate(transactionHistory.transaction_datetime)}
-                      </span>
-                    </div>
-                    <Badge
-                      color={getBadgeColor(transactionHistory.order_status)}
-                      size='sm'
-                      className='truncate p-2 font-bold'
-                    >
-                      {transactionHistory.order_status}
-                    </Badge>
-                    <span className='font-light text-sm hidden md:block'>
-                      {transactionHistory?.invoice_number}
-                    </span>
-                    {transactionHistory?.refund_id ? (
+                  <div className='flex items-center mb-2.5 gap-3 justify-between'>
+                    <div className='flex items-center gap-3 justify-between md:justify-start'>
+                      <div className='flex gap-3 items-center'>
+                        <HiOutlineShoppingBag className='text-info text-xl' />
+                        <span className='font-light text-sm'>
+                          {toStringDate(
+                            transactionHistory.transaction_datetime
+                          )}
+                        </span>
+                      </div>
                       <Badge
-                        color='error'
-                        size='xs'
-                        className='font-bold p-2 rounded-none text-white'
+                        color={getBadgeColor(transactionHistory.order_status)}
+                        size='sm'
+                        className='truncate p-2 font-bold hidden md:flex'
                       >
-                        refund
+                        {transactionHistory.order_status}
                       </Badge>
-                    ) : null}
+                      <span className='font-light text-sm hidden md:block'>
+                        {transactionHistory?.invoice_number}
+                      </span>
+                      {transactionHistory?.refund_id ? (
+                        <Badge
+                          color='error'
+                          size='xs'
+                          className='hidden md:flex font-bold p-2 rounded-none text-white'
+                        >
+                          refund
+                        </Badge>
+                      ) : null}
 
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.PENDING_SELLER
-                    ) ? (
-                      <Tooltip message='auto cancel order'>
-                        <DateCountdown
-                          date={moment(
-                            transactionHistory?.seller_confirmation_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
+                      {stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.PENDING_SELLER
+                      ) ? (
+                        <Tooltip
+                          message='auto cancel order'
+                          className='hidden md:flex'
+                        >
+                          <DateCountdown
+                            date={moment(
+                              transactionHistory?.seller_confirmation_expiration_datetime
+                            ).toDate()}
+                          ></DateCountdown>
+                        </Tooltip>
+                      ) : null}
 
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.ON_PROCESS
-                    ) ? (
-                      <Tooltip message='auto cancel order'>
-                        <DateCountdown
-                          date={moment(
-                            transactionHistory?.on_process_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
+                      {stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.ON_PROCESS
+                      ) ? (
+                        <Tooltip
+                          message='auto cancel order'
+                          className='hidden md:flex'
+                        >
+                          <DateCountdown
+                            date={moment(
+                              transactionHistory?.on_process_expiration_datetime
+                            ).toDate()}
+                          ></DateCountdown>
+                        </Tooltip>
+                      ) : null}
 
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.DELIVERED
-                    ) ? (
-                      <Tooltip message='auto complete order'>
-                        <DateCountdown
-                          date={moment(
-                            transactionHistory?.delivered_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
+                      {stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.DELIVERED
+                      ) ? (
+                        <Tooltip
+                          message='auto complete order'
+                          className='hidden md:flex'
+                        >
+                          <DateCountdown
+                            date={moment(
+                              transactionHistory?.delivered_expiration_datetime
+                            ).toDate()}
+                          ></DateCountdown>
+                        </Tooltip>
+                      ) : null}
 
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.COMPLAINED
-                    ) &&
-                    transactionHistory?.refund_seller_confirmation_expiration_datetime ? (
-                      <Tooltip message='auto approve refund'>
-                        <DateCountdown
-                          date={moment(
-                            transactionHistory?.refund_seller_confirmation_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
+                      {stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.COMPLAINED
+                      ) &&
+                      transactionHistory?.refund_seller_confirmation_expiration_datetime ? (
+                        <Tooltip
+                          message='auto approve refund'
+                          className='hidden md:flex'
+                        >
+                          <DateCountdown
+                            date={moment(
+                              transactionHistory?.refund_seller_confirmation_expiration_datetime
+                            ).toDate()}
+                          ></DateCountdown>
+                        </Tooltip>
+                      ) : null}
 
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.COMPLAINED
-                    ) &&
-                    transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime ? (
-                      <Tooltip message='auto complete order'>
-                        <DateCountdown
-                          date={moment(
-                            transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
+                      {stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.COMPLAINED
+                      ) &&
+                      transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                        <Tooltip
+                          message='auto complete order'
+                          className='hidden md:flex'
+                        >
+                          <DateCountdown
+                            date={moment(
+                              transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime
+                            ).toDate()}
+                          ></DateCountdown>
+                        </Tooltip>
+                      ) : null}
+                    </div>
+                    <div className='flex gap-1 items-center'>
+                      <Badge
+                        color={getBadgeColor(transactionHistory.order_status)}
+                        size='sm'
+                        className='truncate p-2 font-bold flex md:hidden'
+                      >
+                        {transactionHistory.order_status}
+                      </Badge>
+                      {stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.DELIVERED
+                      ) ||
+                      (stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.COMPLAINED
+                      ) &&
+                        transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime) ? (
+                        <div className='flex gap-1'>
+                          <Dropdown horizontal='center' vertical='end'>
+                            <Dropdown.Toggle color='ghost' size='sm'>
+                              <HiOutlineDotsVertical></HiOutlineDotsVertical>
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu className='w-52'>
+                              <Dropdown.Item>Refund</Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                   <div className='mb-1'>
                     <span className='font-bold'>
@@ -852,43 +887,6 @@ const PurchaseContent = () => {
                         >
                           Complete
                         </Button>
-                        <Dropdown
-                          horizontal='left'
-                          vertical='end'
-                          className='hidden md:flex'
-                        >
-                          <Dropdown.Toggle color='ghost'>
-                            <HiOutlineDotsHorizontal></HiOutlineDotsHorizontal>
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu className='w-52'>
-                            <Dropdown.Item>Refund</Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </div>
-                    ) : stringCompare(
-                        transactionHistory?.order_status,
-                        DELIVERY_STATUS.COMPLAINED
-                      ) &&
-                      transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime ? (
-                      <div className='flex gap-1'>
-                        <Button
-                          className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
-                          color='primary'
-                        >
-                          Buy Again
-                        </Button>
-                        <Dropdown
-                          horizontal='left'
-                          vertical='end'
-                          className='hidden md:flex'
-                        >
-                          <Dropdown.Toggle color='ghost'>
-                            <HiOutlineDotsHorizontal></HiOutlineDotsHorizontal>
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu className='w-52'>
-                            <Dropdown.Item>Refund</Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
                       </div>
                     ) : (
                       <Button
@@ -908,45 +906,6 @@ const PurchaseContent = () => {
                     >
                       View Details
                     </Button>
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.DELIVERED
-                    ) ? (
-                      <div className='flex gap-1'>
-                        <Dropdown
-                          horizontal='left'
-                          vertical='end'
-                          className='flex md:hidden'
-                        >
-                          <Dropdown.Toggle color='ghost'>
-                            <HiOutlineDotsVertical></HiOutlineDotsVertical>
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu className='w-52'>
-                            <Dropdown.Item>Complete</Dropdown.Item>
-                            <Dropdown.Item>Refund</Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </div>
-                    ) : stringCompare(
-                        transactionHistory?.order_status,
-                        DELIVERY_STATUS.COMPLAINED
-                      ) &&
-                      transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime ? (
-                      <div className='flex gap-1'>
-                        <Dropdown
-                          horizontal='left'
-                          vertical='end'
-                          className='flex md:hidden'
-                        >
-                          <Dropdown.Toggle color='ghost'>
-                            <HiOutlineDotsVertical></HiOutlineDotsVertical>
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu className='w-52'>
-                            <Dropdown.Item>Refund</Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </div>
-                    ) : null}
                   </div>
                 </div>
               </Card>
@@ -1032,18 +991,6 @@ const PurchaseContent = () => {
             </label>
             <Divider className='m-0'></Divider>
             <div className='flex flex-col'>
-              {/* <label
-                className='flex flex-row justify-between label cursor-pointer ml-6'
-                onClick={() =>
-                  handleModalFilterOngoingStatusClick(
-                    DELIVERY_STATUS.PENDING_PAYMENT
-                  )
-                }
-              >
-                <span className='font-light'>Pending Payment</span>
-                <Radio size='md' color='primary' name='filter-status' />
-              </label> */}
-              {/* <Divider className='m-0'></Divider> */}
               <label
                 className='flex flex-row justify-between label cursor-pointer ml-6'
                 onClick={() =>
