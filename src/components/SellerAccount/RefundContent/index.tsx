@@ -84,19 +84,12 @@ type OpenModal = {
 };
 
 const RefundContent = () => {
-  const navigate = useNavigate();
-
-  const [openOrderTracking, setOpenOrderTracking] = useState<boolean>(false);
-
   const [openModal, setOpenModal] = useState<OpenModal>({
     approveRefund: false,
     rejectRefund: false,
     detailRefund: false,
   });
 
-  const [filterGroupedStatus, setFilterGroupedStatus] = useState<string>(
-    REFUND_GROUPED_STATUS.ALL
-  );
   const [filterStatus, setFilterStatus] = useState<string>(REFUND_STATUS.ALL);
 
   const [refundQuery, setRefundQuery] = useState<RefundQuery>({
@@ -344,7 +337,7 @@ const RefundContent = () => {
 
   const handleResetFilterClick = () => {
     setDateRange([null, null]);
-    setFilterStatus(DELIVERY_STATUS.ALL);
+    setFilterStatus(REFUND_STATUS.ALL);
 
     setRefundQuery({
       sort: '',
@@ -480,120 +473,126 @@ const RefundContent = () => {
       </Tabs>
 
       <div className='overflow-x-auto'>
-        <Table className='w-[100%] z-0'>
-          <Table.Head>
-            {/* <span>Invoice Number</span> */}
-            <span>Products</span>
-            <span>Refund Total</span>
-            <span>Refund Request Date</span>
-            <span></span>
-          </Table.Head>
-          <Table.Body>
-            {getAllMerchantRefundsData?.data?.map(
-              ({
-                refund_id,
-                order_id,
-                invoice_number,
-                merchant_id,
-                shop_name,
-                user_id,
-                user_full_name,
-                refund_request_datetime,
-                rejected_datetime,
-                refund_status,
-                images,
-                videos,
-                refund_items,
-                total_user_refund_amount,
-                total_merchant_lost_amount,
-                refund_seller_confirmation_expiration_datetime,
-              }) => {
-                const productCount = refund_items.length;
-                const firstProduct = refund_items.at(0);
-                return (
-                  <Table.Row key={refund_id}>
-                    {/* <div className='flex text-sm'>{invoice_number}</div> */}
-                    <div className='flex flex-col max-w-md'>
-                      <div className='flex'>
-                        <div className='flex mr-5'>
-                          <Image
-                            src={firstProduct?.product_image || ''}
-                            alt={firstProduct?.product_name || ''}
-                            className='h-12 w-12 md:h-20 md:w-20 rounded-md'
-                          />
-                        </div>
-                        <div className='flex flex-col w-[70%]'>
-                          <div className='flex gap-2 items-center'>
-                            <span className='font-bold line-clamp-2 md:line-clamp-1 mt-0'>
-                              {firstProduct?.product_name || ''}
-                            </span>
+        {getAllMerchantRefundsData?.data &&
+        getAllMerchantRefundsData?.data?.length > 0 ? (
+          <Table className='w-[100%] z-0'>
+            <Table.Head>
+              <span>Products</span>
+              <span>Refund Total</span>
+              <span>Refund Request Date</span>
+              <span></span>
+            </Table.Head>
+            <Table.Body>
+              {getAllMerchantRefundsData?.data?.map(
+                ({
+                  refund_id,
+                  refund_request_datetime,
+                  refund_status,
+                  refund_items,
+                  total_merchant_lost_amount,
+                  refund_seller_confirmation_expiration_datetime,
+                }) => {
+                  const productCount = refund_items.length;
+                  const firstProduct = refund_items.at(0);
+                  return (
+                    <Table.Row key={refund_id}>
+                      <div className='flex flex-col max-w-md'>
+                        <div className='flex'>
+                          <div className='flex mr-5'>
+                            <Image
+                              src={firstProduct?.product_image || ''}
+                              alt={firstProduct?.product_name || ''}
+                              className='h-12 w-12 md:h-20 md:w-20 rounded-md'
+                            />
                           </div>
-                          <span className='font-light text-sm'>
-                            {firstProduct?.refund_quantity} item
-                            {firstProduct?.refund_quantity || 0 > 1
-                              ? 's'
-                              : null}
-                          </span>
-                          {productCount > 1 ? (
+                          <div className='flex flex-col w-[70%]'>
+                            <div className='flex gap-2 items-center'>
+                              <span className='font-bold line-clamp-2 md:line-clamp-1 mt-0'>
+                                {firstProduct?.product_name || ''}
+                              </span>
+                            </div>
                             <span className='font-light text-sm'>
-                              +{productCount - 1} other product
-                              {productCount > 2 ? 's' : null}
+                              {firstProduct?.refund_quantity} item
+                              {firstProduct?.refund_quantity || 0 > 1
+                                ? 's'
+                                : null}
                             </span>
-                          ) : null}
+                            {productCount > 1 ? (
+                              <span className='font-light text-sm'>
+                                +{productCount - 1} other product
+                                {productCount > 2 ? 's' : null}
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className='flex text-sm'>
-                      <span>
-                        {toRupiah(Math.round(total_merchant_lost_amount))}
-                      </span>
-                    </div>
-                    <div className='flex flex-col gap-2'>
-                      <div className='flex flex-col text-sm'>
-                        <span className='font-bold'>
-                          {toStringDate(refund_request_datetime)}
-                        </span>
-                        <span className='opacity-50'>
-                          {toStringTime(refund_request_datetime)}
+                      <div className='flex text-sm'>
+                        <span>
+                          {toRupiah(Math.round(total_merchant_lost_amount))}
                         </span>
                       </div>
-                      <Badge
-                        size='xs'
-                        className='font-bold p-2'
-                        color={getBadgeColor(refund_status)}
-                      >
-                        {refund_status}
-                      </Badge>
-                      {stringCompare(refund_status, REFUND_STATUS.ONGOING) &&
-                      refund_seller_confirmation_expiration_datetime ? (
-                        <div className='w-fit'>
-                          <Tooltip message='auto approve refund'>
-                            <DateCountdown
-                              date={moment(
-                                refund_seller_confirmation_expiration_datetime
-                              ).toDate()}
-                            ></DateCountdown>
-                          </Tooltip>
+                      <div className='flex flex-col gap-2'>
+                        <div className='flex flex-col text-sm'>
+                          <span className='font-bold'>
+                            {toStringDate(refund_request_datetime)}
+                          </span>
+                          <span className='opacity-50'>
+                            {toStringTime(refund_request_datetime)}
+                          </span>
                         </div>
-                      ) : null}
-                    </div>
-                    <div className='flex'>
-                      <Tooltip message='Detail'>
-                        <Button
-                          color='info'
-                          size='sm'
-                          onClick={() => handleRefundDetailClick(refund_id)}
+                        <Badge
+                          size='xs'
+                          className='font-bold p-2'
+                          color={getBadgeColor(refund_status)}
                         >
-                          <HiOutlineClipboardList className='text-lg' />
-                        </Button>
-                      </Tooltip>
-                    </div>
-                  </Table.Row>
-                );
-              }
-            )}
-          </Table.Body>
-        </Table>
+                          {refund_status}
+                        </Badge>
+                        {stringCompare(refund_status, REFUND_STATUS.ONGOING) &&
+                        refund_seller_confirmation_expiration_datetime ? (
+                          <div className='w-fit'>
+                            <Tooltip message='auto approve refund'>
+                              <DateCountdown
+                                date={moment(
+                                  refund_seller_confirmation_expiration_datetime
+                                ).toDate()}
+                              ></DateCountdown>
+                            </Tooltip>
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className='flex'>
+                        <Tooltip message='Detail'>
+                          <Button
+                            color='info'
+                            size='sm'
+                            onClick={() => handleRefundDetailClick(refund_id)}
+                          >
+                            <HiOutlineClipboardList className='text-lg' />
+                          </Button>
+                        </Tooltip>
+                      </div>
+                    </Table.Row>
+                  );
+                }
+              )}
+            </Table.Body>
+          </Table>
+        ) : refundQuery.filterStartDate === '' &&
+          refundQuery.filterEndDate === '' &&
+          refundQuery.filterGroupedStatus === REFUND_GROUPED_STATUS.ALL &&
+          refundQuery.filterStatus === REFUND_STATUS.ALL ? (
+          <NoData
+            title='No complaints from buyers'
+            message='You have not received a complaint from the buyer'
+          ></NoData>
+        ) : (
+          <NoData
+            title='Oops, there are no transactions that match the filter'
+            message='Try to reset or change your filter'
+            buttonMessage='Reset Filter'
+            buttonHandleClick={handleResetFilterClick}
+          ></NoData>
+        )}
       </div>
       <div className='mt-6 flex justify-center'>
         <Pager
