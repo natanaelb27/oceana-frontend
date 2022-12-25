@@ -358,219 +358,255 @@ const ReviewContent = () => {
       </div>
       <div className='grid grid-cols-12 gap-4'>
         {getAllTransactionHistoryLoading && (
-          <Card className='col-span-12 shadow animate-pulse'>
-            <div className='p-4'>
-              <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
-              <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
-              <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
-            </div>
-          </Card>
-        )}
-        {getAllTransactionHistoryData?.data &&
-        getAllTransactionHistoryData?.data.length > 0 ? (
-          getAllTransactionHistoryData?.data.map((transactionHistory, n) => {
-            return (
-              <Card
-                className='col-span-12 shadow border-r-0 border-b-4 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
-                key={n}
-              >
+          <div className='grid col-span-12 gap-4'>
+            <div className='grid grid-cols-12 gap-4'>
+              <Card className='col-span-12 shadow animate-pulse h-48'>
                 <div className='p-4'>
-                  <div className='flex items-center mb-2.5 gap-3 justify-between md:justify-start'>
-                    <div className='flex gap-3 items-center'>
-                      <HiOutlineShoppingBag className='text-info text-xl' />
-                      <span className='font-light text-sm'>
-                        {toStringDate(transactionHistory.transaction_datetime)}
-                      </span>
-                    </div>
-                    <span className='font-light text-sm hidden md:block'>
-                      {transactionHistory?.invoice_number}
-                    </span>
-                  </div>
-                  <div className='grid md:grid-cols-6 gap-5'>
-                    <div className='flex gap-5 items-center col-span-2 md:border-r'>
-                      <img
-                        src={transactionHistory?.shop_photo || ''}
-                        alt={transactionHistory?.shop_name || ''}
-                        className='h-12 w-12 md:h-20 md:w-20 rounded-md'
-                      />
-                      <div className='flex flex-col gap-1'>
-                        <span
-                          className='font-light text-primary cursor-pointer'
-                          onClick={() => {
-                            handleNavigateShop(transactionHistory?.merchant_id);
-                          }}
-                        >
-                          {transactionHistory.shop_name}
-                        </span>
-                        <Badge
-                          color='secondary'
-                          size='xs'
-                          className='font-bold p-2 rounded-none text-white'
-                        >
-                          Merchant
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className='flex  flex-col gap-3 col-span-4'>
-                      <span className='font-bold text-sm'>Product List</span>
-                      {transactionHistory?.order_details?.map(
-                        (orderDetail, n) => {
-                          if (n == 2) {
-                            return null;
-                          }
-                          return (
-                            <div
-                              key={n}
-                              className='grid grid-flow-col grid-cols-4 gap-5 items-center'
-                            >
-                              <div className='flex gap-5 items-center col-span-3'>
-                                <img
-                                  src={orderDetail?.product_image || ''}
-                                  alt={orderDetail?.product_name || ''}
-                                  className='h-12 w-12 md:h-20 md:w-20 rounded-md'
-                                />
-                                {/* desktop version */}
-                                <div className='hidden md:flex flex-col gap-1 w-full'>
-                                  <span className='font-bold text-sm line-clamp-2 md:line-clamp-1'>
-                                    {orderDetail.product_name}
-                                  </span>
-                                  <span className='text-xs font-light'>
-                                    {orderDetail.product_variations}
-                                  </span>
-                                  {orderDetail?.product_review_id ? (
-                                    <Rating
-                                      value={orderDetail?.rating || 0}
-                                      size='sm'
-                                    >
-                                      {[1, 2, 3, 4, 5].map((rating, i) => {
-                                        return (
-                                          <Rating.Item
-                                            key={i}
-                                            name='rating-1'
-                                            value={rating}
-                                            className='mask mask-star-2 bg-orange-400'
-                                          />
-                                        );
-                                      })}
-                                    </Rating>
-                                  ) : (
-                                    <span className='text-xs font-light'>
-                                      Not reviewed yet
-                                    </span>
-                                  )}
-                                </div>
-                                {/* mobile version */}
-                                <div
-                                  className='flex md:hidden flex-col gap-1 cursor-pointer w-full'
-                                  onClick={() => {
-                                    handleNavigateReviewDetails(
-                                      transactionHistory?.order_id
-                                    );
-                                  }}
-                                >
-                                  <span className='font-bold text-sm line-clamp-2 md:line-clamp-1'>
-                                    {orderDetail.product_name}
-                                  </span>
-                                  <span className='text-xs font-light'>
-                                    {orderDetail.product_variations}
-                                  </span>
-                                  {orderDetail?.product_review_id ? (
-                                    <Rating
-                                      value={orderDetail?.rating || 0}
-                                      size='sm'
-                                    >
-                                      {[1, 2, 3, 4, 5].map((rating, i) => {
-                                        return (
-                                          <Rating.Item
-                                            key={i}
-                                            name='rating-1'
-                                            value={rating}
-                                            className='mask mask-star-2 bg-orange-400'
-                                          />
-                                        );
-                                      })}
-                                    </Rating>
-                                  ) : (
-                                    <span className='text-xs font-light'>
-                                      Not reviewed yet
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                              <div className='normal-case col-span-3 hidden md:flex justify-center '>
-                                {orderDetail?.product_review_id ? (
-                                  <Button
-                                    className='normal-case text-xs text-base-100 w-32'
-                                    color='primary'
-                                    size='sm'
-                                    onClick={() => {
-                                      handleNavigateReviewDetails(
-                                        transactionHistory?.order_id
-                                      );
-                                    }}
-                                  >
-                                    View Review
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    className='normal-case text-xs text-base-100 w-32'
-                                    color='primary'
-                                    size='sm'
-                                    onClick={() => {
-                                      handleNavigateReviewDetails(
-                                        transactionHistory?.order_id
-                                      );
-                                    }}
-                                  >
-                                    Create Review
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        }
-                      )}
-                      {transactionHistory?.order_details?.length > 2 ? (
-                        <span
-                          className='text-sm font-bold text-primary cursor-pointer'
-                          onClick={() => {
-                            handleNavigateReviewDetails(
-                              transactionHistory?.order_id
-                            );
-                          }}
-                        >
-                          load more (+
-                          {transactionHistory?.order_details?.length - 2})
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
+                  <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                  <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-3/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-4/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
                 </div>
               </Card>
-            );
-          })
-        ) : transactionHistoryQuery.filterStartTransactionDate === '' &&
-          transactionHistoryQuery.filterEndTransactionDate === '' &&
-          transactionHistoryQuery.search === '' ? (
-          <div className='col-span-12'>
-            <NoData
-              title={`${
-                transactionHistoryQuery.filterIsReviewed === 'true'
-                  ? 'Oops, it seems that you dont have any reviewed orders'
-                  : 'Oops, it seems that you dont have any orders waiting to be reviewed'
-              }`}
-            />
-          </div>
-        ) : (
-          <div className='col-span-12'>
-            <NoData
-              title='Oops, there are no transactions that match the filter'
-              message='Try to reset or change your filter'
-              buttonMessage='Reset Filter'
-              buttonHandleClick={handleResetFilterClick}
-            ></NoData>
+            </div>
+            <div className='grid grid-cols-12 gap-4'>
+              <Card className='col-span-12 shadow animate-pulse h-48'>
+                <div className='p-4'>
+                  <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                  <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-3/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-4/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                </div>
+              </Card>
+            </div>
+            <div className='grid grid-cols-12 gap-4'>
+              <Card className='col-span-12 shadow animate-pulse h-48'>
+                <div className='p-4'>
+                  <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                  <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-3/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-4/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                </div>
+              </Card>
+            </div>
           </div>
         )}
+        {!getAllTransactionHistoryLoading &&
+          (getAllTransactionHistoryData?.data &&
+          getAllTransactionHistoryData?.data.length > 0 ? (
+            getAllTransactionHistoryData?.data.map((transactionHistory, n) => {
+              return (
+                <Card
+                  className='col-span-12 shadow border-r-0 border-b-4 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
+                  key={n}
+                >
+                  <div className='p-4'>
+                    <div className='flex items-center mb-2.5 gap-3 justify-between md:justify-start'>
+                      <div className='flex gap-3 items-center'>
+                        <HiOutlineShoppingBag className='text-info text-xl' />
+                        <span className='font-light text-sm'>
+                          {toStringDate(
+                            transactionHistory.transaction_datetime
+                          )}
+                        </span>
+                      </div>
+                      <span className='font-light text-sm hidden md:block'>
+                        {transactionHistory?.invoice_number}
+                      </span>
+                    </div>
+                    <div className='grid md:grid-cols-6 gap-5'>
+                      <div className='flex gap-5 items-center col-span-2 md:border-r'>
+                        <img
+                          src={transactionHistory?.shop_photo || ''}
+                          alt={transactionHistory?.shop_name || ''}
+                          className='h-12 w-12 md:h-20 md:w-20 rounded-md'
+                        />
+                        <div className='flex flex-col gap-1'>
+                          <span
+                            className='font-light text-primary cursor-pointer'
+                            onClick={() => {
+                              handleNavigateShop(
+                                transactionHistory?.merchant_id
+                              );
+                            }}
+                          >
+                            {transactionHistory.shop_name}
+                          </span>
+                          <Badge
+                            color='secondary'
+                            size='xs'
+                            className='font-bold p-2 rounded-none text-white'
+                          >
+                            Merchant
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className='flex  flex-col gap-3 col-span-4'>
+                        <span className='font-bold text-sm'>Product List</span>
+                        {transactionHistory?.order_details?.map(
+                          (orderDetail, n) => {
+                            if (n == 2) {
+                              return null;
+                            }
+                            return (
+                              <div
+                                key={n}
+                                className='grid grid-flow-col grid-cols-4 gap-5 items-center'
+                              >
+                                <div className='flex gap-5 items-center col-span-3'>
+                                  <img
+                                    src={orderDetail?.product_image || ''}
+                                    alt={orderDetail?.product_name || ''}
+                                    className='h-12 w-12 md:h-20 md:w-20 rounded-md'
+                                  />
+                                  {/* desktop version */}
+                                  <div className='hidden md:flex flex-col gap-1 w-full'>
+                                    <span className='font-bold text-sm line-clamp-2 md:line-clamp-1'>
+                                      {orderDetail.product_name}
+                                    </span>
+                                    <span className='text-xs font-light'>
+                                      {orderDetail.product_variations}
+                                    </span>
+                                    {orderDetail?.product_review_id ? (
+                                      <Rating
+                                        value={orderDetail?.rating || 0}
+                                        size='sm'
+                                      >
+                                        {[1, 2, 3, 4, 5].map((rating, i) => {
+                                          return (
+                                            <Rating.Item
+                                              key={i}
+                                              name='rating-1'
+                                              value={rating}
+                                              className='mask mask-star-2 bg-orange-400'
+                                            />
+                                          );
+                                        })}
+                                      </Rating>
+                                    ) : (
+                                      <span className='text-xs font-light'>
+                                        Not reviewed yet
+                                      </span>
+                                    )}
+                                  </div>
+                                  {/* mobile version */}
+                                  <div
+                                    className='flex md:hidden flex-col gap-1 cursor-pointer w-full'
+                                    onClick={() => {
+                                      handleNavigateReviewDetails(
+                                        transactionHistory?.order_id
+                                      );
+                                    }}
+                                  >
+                                    <span className='font-bold text-sm line-clamp-2 md:line-clamp-1'>
+                                      {orderDetail.product_name}
+                                    </span>
+                                    <span className='text-xs font-light'>
+                                      {orderDetail.product_variations}
+                                    </span>
+                                    {orderDetail?.product_review_id ? (
+                                      <Rating
+                                        value={orderDetail?.rating || 0}
+                                        size='sm'
+                                      >
+                                        {[1, 2, 3, 4, 5].map((rating, i) => {
+                                          return (
+                                            <Rating.Item
+                                              key={i}
+                                              name='rating-1'
+                                              value={rating}
+                                              className='mask mask-star-2 bg-orange-400'
+                                            />
+                                          );
+                                        })}
+                                      </Rating>
+                                    ) : (
+                                      <span className='text-xs font-light'>
+                                        Not reviewed yet
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className='normal-case col-span-3 hidden md:flex justify-center '>
+                                  {orderDetail?.product_review_id ? (
+                                    <Button
+                                      className='normal-case text-xs text-base-100 w-32'
+                                      color='primary'
+                                      size='sm'
+                                      onClick={() => {
+                                        handleNavigateReviewDetails(
+                                          transactionHistory?.order_id
+                                        );
+                                      }}
+                                    >
+                                      View Review
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      className='normal-case text-xs text-base-100 w-32'
+                                      color='primary'
+                                      size='sm'
+                                      onClick={() => {
+                                        handleNavigateReviewDetails(
+                                          transactionHistory?.order_id
+                                        );
+                                      }}
+                                    >
+                                      Create Review
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+                        )}
+                        {transactionHistory?.order_details?.length > 2 ? (
+                          <span
+                            className='text-sm font-bold text-primary cursor-pointer'
+                            onClick={() => {
+                              handleNavigateReviewDetails(
+                                transactionHistory?.order_id
+                              );
+                            }}
+                          >
+                            load more (+
+                            {transactionHistory?.order_details?.length - 2})
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })
+          ) : transactionHistoryQuery.filterStartTransactionDate === '' &&
+            transactionHistoryQuery.filterEndTransactionDate === '' &&
+            transactionHistoryQuery.search === '' ? (
+            <div className='col-span-12'>
+              <NoData
+                title={`${
+                  transactionHistoryQuery.filterIsReviewed === 'true'
+                    ? 'Oops, it seems that you dont have any reviewed orders'
+                    : 'Oops, it seems that you dont have any orders waiting to be reviewed'
+                }`}
+              />
+            </div>
+          ) : (
+            <div className='col-span-12'>
+              <NoData
+                title='Oops, there are no transactions that match the filter'
+                message='Try to reset or change your filter'
+                buttonMessage='Reset Filter'
+                buttonHandleClick={handleResetFilterClick}
+              ></NoData>
+            </div>
+          ))}
       </div>
       <div className='mt-6 flex justify-center'>
         <Pager
