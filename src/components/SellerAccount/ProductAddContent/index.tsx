@@ -52,9 +52,16 @@ const ProductAddContent = () => {
   const [getAncestorsCategory] = useLazyGetAncestorsCategoryQuery();
   const { data: getShipmentData, isLoading: getShipmentIsLoading } =
     useGetSelectedShipmentQuery();
-
   const [uploadMedia, { isLoading: uploadMediaIsLoading }] =
     useUploadMediaMutation();
+
+  const singleProductItem: PUMProductItem = {
+    id: 0,
+    price: 0,
+    sku: '',
+    stock_quantity: 0,
+    variant_index: [],
+  };
 
   const productFormik = useFormik({
     initialValues: {
@@ -165,7 +172,7 @@ const ProductAddContent = () => {
       product_items: Yup.array().of(
         Yup.object().shape({
           id: Yup.number().required('Please enter id'),
-          sku: Yup.string().required('Please enter sku'),
+          sku: Yup.string(),
           variant_index: Yup.array().required('Please enter variant index'),
           price: Yup.number()
             .required('Please enter price')
@@ -280,7 +287,7 @@ const ProductAddContent = () => {
         setter(currentMedia);
       });
   }, [images, videos]);
-  console.log(images);
+
   const updateCouriers = (couriers: Courier[]) => {
     productFormik.setFieldValue('couriers', couriers);
   };
@@ -435,7 +442,7 @@ const ProductAddContent = () => {
     ) as PUMProductItem[];
 
     if (variants.length === 0) {
-      productFormik.setFieldValue('product_items', []);
+      productFormik.setFieldValue('product_items', [singleProductItem]);
       return;
     }
 
@@ -950,7 +957,7 @@ const ProductAddContent = () => {
       productFormik.setFieldValue('couriers', getShipmentData?.data?.couriers);
     }
   }, [getShipmentData]);
-
+  console.log(productFormik.errors);
   return (
     <>
       <Form
@@ -1225,39 +1232,120 @@ const ProductAddContent = () => {
         <Card className='shadow bg-base-100'>
           <div className='flex flex-col gap-2 p-4 md:p-10'>
             <SectionHeading
-              title='Product Variant'
-              description='Manage the product.'
-            />
-            {/* input: product variant */}
-            <FormLayout.LabelInputContainer>
-              <FormLayout.LabelContainer justify='justify-start'>
-                <Label>Variants</Label>
-              </FormLayout.LabelContainer>
-              <FormLayout.InputContainer>
-                {renderVariants()}
-              </FormLayout.InputContainer>
-            </FormLayout.LabelInputContainer>
-            {/* input: product variations */}
-            <FormLayout.LabelInputContainer>
-              <FormLayout.LabelContainer justify='justify-start'>
-                <Label>Variations</Label>
-              </FormLayout.LabelContainer>
-              <FormLayout.InputContainer>
-                {renderVariations()}
-              </FormLayout.InputContainer>
-            </FormLayout.LabelInputContainer>
-          </div>
-        </Card>
-        {/* Product Management */}
-        <Card className='shadow bg-base-100'>
-          <div className='flex flex-col gap-2 p-4 md:p-10'>
-            <SectionHeading
               title='Product Management'
               description='Manage the product.'
             />
-            {/* toods: product status toggle */}
-            {/* todos: stock */}
-            {/* todos: product sku */}
+            {/* input: product variant */}
+            <FormLayout.LabelInputErrorContainer>
+              <FormLayout.LabelInputContainer>
+                <FormLayout.LabelContainer justify='justify-start'>
+                  <Label>Variants</Label>
+                </FormLayout.LabelContainer>
+                <FormLayout.InputContainer>
+                  {renderVariants()}
+                </FormLayout.InputContainer>
+              </FormLayout.LabelInputContainer>
+              <FormLayout.InputError></FormLayout.InputError>
+            </FormLayout.LabelInputErrorContainer>
+            {/* input: product variations */}
+            {productFormik.values.variants.length >= 1 ? (
+              <FormLayout.LabelInputContainer>
+                <FormLayout.LabelContainer justify='justify-start'>
+                  <Label>Variations</Label>
+                </FormLayout.LabelContainer>
+                <FormLayout.InputContainer>
+                  {renderVariations()}
+                </FormLayout.InputContainer>
+              </FormLayout.LabelInputContainer>
+            ) : (
+              <>
+                {/* input: price */}
+                <FormLayout.LabelInputErrorContainer>
+                  <FormLayout.LabelInputContainer>
+                    <FormLayout.LabelContainer justify='justify-start'>
+                      <Label required={true}>Price</Label>
+                    </FormLayout.LabelContainer>
+                    <FormLayout.InputContainer>
+                      <div className='flex items-center gap-2 max-w-xs'>
+                        <InputGroup>
+                          <span>Rp</span>
+                          <Input
+                            type='number'
+                            name='product_items[0].price'
+                            className='w-full'
+                            value={productFormik.values.product_items[0].price}
+                            onChange={productFormik.handleChange}
+                            onFocus={() => {
+                              productFormik.setFieldTouched(
+                                'product_items[0].price',
+                                true
+                              );
+                            }}
+                            onKeyDown={handleNumberInvalidKey}
+                          />
+                        </InputGroup>
+                      </div>
+                    </FormLayout.InputContainer>
+                  </FormLayout.LabelInputContainer>
+                  <FormLayout.InputError>
+                    {productFormik.touched.product_items?.[0]?.price &&
+                      getIn(
+                        productFormik.errors.product_items?.[0],
+                        'price'
+                      ) && (
+                        <label className='label-text-alt text-error'>
+                          {getIn(
+                            productFormik.errors.product_items?.[0],
+                            'price'
+                          )}
+                        </label>
+                      )}
+                  </FormLayout.InputError>
+                </FormLayout.LabelInputErrorContainer>
+                {/* input: stock */}
+                <FormLayout.LabelInputErrorContainer>
+                  <FormLayout.LabelInputContainer>
+                    <FormLayout.LabelContainer justify='justify-start'>
+                      <Label required={true}>Stock</Label>
+                    </FormLayout.LabelContainer>
+                    <FormLayout.InputContainer>
+                      <div className='flex items-center gap-2 max-w-xs'>
+                        <Input
+                          type='number'
+                          name='product_items[0].stock_quantity'
+                          className='w-full'
+                          value={
+                            productFormik.values.product_items[0].stock_quantity
+                          }
+                          onChange={productFormik.handleChange}
+                          onFocus={() => {
+                            productFormik.setFieldTouched(
+                              'product_items[0].stock_quantity',
+                              true
+                            );
+                          }}
+                          onKeyDown={handleNumberInvalidKey}
+                        />
+                      </div>
+                    </FormLayout.InputContainer>
+                  </FormLayout.LabelInputContainer>
+                  <FormLayout.InputError>
+                    {productFormik.touched.product_items?.[0]?.stock_quantity &&
+                      getIn(
+                        productFormik.errors.product_items?.[0],
+                        'stock_quantity'
+                      ) && (
+                        <label className='label-text-alt text-error'>
+                          {getIn(
+                            productFormik.errors.product_items?.[0],
+                            'stock_quantity'
+                          )}
+                        </label>
+                      )}
+                  </FormLayout.InputError>
+                </FormLayout.LabelInputErrorContainer>
+              </>
+            )}
           </div>
         </Card>
         {/* Shipment */}
