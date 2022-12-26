@@ -57,7 +57,8 @@ const RefundCreate = () => {
   const [totalRefund, setTotalRefund] = useState(0);
   const [createRefundOrder, { isLoading: createRefundOrderIsLoading }] =
     useCreateRefundOrderMutation();
-  const { data: orderDetailsData, isLoading: orderDetailsIsLoading } = useGetOrderDetailsQuery(orderID);
+  const { data: orderDetailsData, isLoading: orderDetailsIsLoading } =
+    useGetOrderDetailsQuery(orderID);
   const [getCalculatedRefundDetails, { data: calculatedRefundDetailsData }] =
     useLazyGetCalculatedRefundDetailsQuery();
 
@@ -183,12 +184,12 @@ const RefundCreate = () => {
       images.length + videos.length === 0
     ) {
       return;
-    } else {
-      createRefundOrder([
-        toCreateRefundOrderRequest(orderDetail, reason, images, videos),
-        orderID,
-      ]);
     }
+    console.log('submit');
+    createRefundOrder([
+      toCreateRefundOrderRequest(orderDetail, reason, images, videos),
+      orderID,
+    ]);
   };
 
   const handleChangeReason = (e: React.SyntheticEvent) => {
@@ -321,7 +322,7 @@ const RefundCreate = () => {
       <div className='flex justify-end'>
         <Button
           className='w-full md:w-48 mt-3 bg-primary hover:bg-secondary border-none transition-all duration-300'
-          onSubmit={handleSubmitRefundClick}
+          onClick={handleSubmitRefundClick}
         >
           Submit
         </Button>

@@ -13,18 +13,11 @@ export const refundApi = baseApi.injectEndpoints({
       [FormData, string]
     >({
       query: ([request, id]) => ({
-        url: `/refund/${id}`,
+        url: `/profile/refunds/${id}`,
         method: 'POST',
         body: request,
       }),
       invalidatesTags: ['Refund'],
-    }),
-    getAllRefundOrders: builder.query<GetAllRefundDetailsResponse, string>({
-      query: (query) => ({
-        url: `/refund?${query}`,
-        method: 'GET',
-      }),
-      providesTags: ['Refund'],
     }),
     getCalculatedRefundDetails: builder.query<
       GetCalculatedRefundDetailsResponse,
@@ -41,8 +34,6 @@ export const refundApi = baseApi.injectEndpoints({
 
 export const {
   useCreateRefundOrderMutation,
-  useGetAllRefundOrdersQuery,
-  useLazyGetAllRefundOrdersQuery,
   useGetCalculatedRefundDetailsQuery,
   useLazyGetCalculatedRefundDetailsQuery
 } = refundApi;
