@@ -480,17 +480,23 @@ const BuyerCheckout = () => {
       </h1>
       <div className='grid grid-cols-1 md:grid-cols-12'>
         {/* Shipping address */}
-        <Card className='p-4 mb-4 shadow-lg md:col-span-7'>
+        <Card
+          className='group p-4 mb-4 shadow-lg cursor-pointer md:col-span-7 hover:bg-base-200'
+          onClick={
+            shippingAddress.id
+              ? handleChangeAddressClick
+              : handleAddAddressClick
+          }
+        >
           <Card.Title className='flex justify-between'>
-            <div className='flex items-center gap-2'>
+            <div className='flex items-center gap-2 group-hover:text-primary'>
               <HiOutlineLocationMarker />
               <h2>Shipping Address</h2>
             </div>
             {shippingAddress.id ? (
               <Tooltip message='Change shipping address' position='left'>
                 <Button
-                  className='shadow-md'
-                  color='primary'
+                  className='bg-primary border-none shadow-md group-hover:bg-secondary'
                   shape='circle'
                   size='md'
                   onClick={handleChangeAddressClick}
@@ -501,8 +507,7 @@ const BuyerCheckout = () => {
             ) : (
               <Tooltip message='Add a shipping address' position='left'>
                 <Button
-                  className='shadow-md'
-                  color='primary'
+                  className='bg-primary border-none shadow-md group-hover:bg-secondary'
                   shape='circle'
                   size='md'
                   onClick={handleAddAddressClick}
@@ -774,7 +779,7 @@ const BuyerCheckout = () => {
 
         {/* Voucher card */}
         <Card
-          className='group p-4 mb-4 shadow-lg md:col-span-7 hover:cursor-pointer hover:bg-base-200'
+          className='group p-4 mb-4 shadow-lg md:col-span-7 cursor-pointer hover:bg-base-200'
           onClick={handleMarketplaceVoucherClick}
         >
           <Card.Title className='flex justify-between'>
