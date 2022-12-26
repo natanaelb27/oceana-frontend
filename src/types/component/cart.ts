@@ -4,6 +4,7 @@ export interface CartProduct {
   product_item_id: number;
   product_name: string;
   product_variation: string;
+  product_media_url: string;
   quantity: number;
   stock_quantity: number;
   price: number;
