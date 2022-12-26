@@ -16,7 +16,7 @@ export const reviewApi = baseApi.injectEndpoints({
         method: 'POST',
         body: request,
       }),
-      invalidatesTags: ['Product', 'Order', 'OrderDetails'],
+      invalidatesTags: ['Product', 'Order'],
     }),
     getAllReviews: builder.query<GetAllReviewsResponse, GetAllReviewsRequest>({
       query: ({ id, query }) => ({

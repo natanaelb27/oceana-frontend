@@ -24,6 +24,7 @@ export enum SellerAccountContent {
   PromotionAdd,
   PromotionEdit,
   Order,
+  Refund,
   ShipmentSetting,
 }
 
