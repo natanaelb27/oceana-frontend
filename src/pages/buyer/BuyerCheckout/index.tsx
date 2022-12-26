@@ -547,7 +547,7 @@ const BuyerCheckout = () => {
                 </div>
                 <Tooltip message='Delivery service' position='left'>
                   <Button
-                    className='shadow-md md:hidden'
+                    className='shadow-md'
                     color='primary'
                     shape='circle'
                     size='md'
@@ -709,7 +709,7 @@ const BuyerCheckout = () => {
                       {`${name}'s Vouchers`}
                     </div>
                     <div>
-                      <MdNavigateNext className='text-2xl' />
+                      <MdNavigateNext className='text-2xl group-hover:text-primary' />
                     </div>
                   </Card.Title>
                 </Card>
@@ -773,19 +773,23 @@ const BuyerCheckout = () => {
         )}
 
         {/* Voucher card */}
-        <Card className='p-4 mb-4 shadow-lg md:col-span-7'>
+        <Card
+          className='group p-4 mb-4 shadow-lg md:col-span-7 hover:cursor-pointer hover:bg-base-200'
+          onClick={handleMarketplaceVoucherClick}
+        >
           <Card.Title className='flex justify-between'>
             <div className='flex items-center gap-2'>
               <div className='flex items-center text-primary gap-1'>
-                <TbDiscount2 className='text-primary' />
-                <span className='font-main italic'>Oceana</span>
+                <TbDiscount2 className='text-primary group-hover:text-secondary' />
+                <span className='font-main italic group-hover:text-secondary'>
+                  Oceana
+                </span>
               </div>
               <h2>Vouchers</h2>
             </div>
             <Tooltip message="Add a voucher, it's on us!" position='left'>
               <Button
-                className='shadow-md'
-                color='primary'
+                className='bg-primary border-none shadow-md group-hover:bg-secondary'
                 shape='circle'
                 size='md'
                 onClick={handleMarketplaceVoucherClick}
