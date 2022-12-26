@@ -10,3 +10,4 @@ export * from './sealabsPay';
 export * from './wallet';
 export * from './review';
 export * from './rajaOngkir';
+export * from './checkout';

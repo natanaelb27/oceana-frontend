@@ -54,11 +54,3 @@ export type GetFavoriteProductResponse = {
   message: string;
   metadata: Metadata | null;
 };
-
-export type ProductCheckCourierServiceResponse = {
-  data: { available_products: number[] } | null;
-  code: number;
-  error: string | null;
-  message: string;
-  metadata: Metadata | null;
-};

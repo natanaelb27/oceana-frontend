@@ -1,13 +1,13 @@
-import { PayCartWithWalletRequest } from '../../types/request/checkout';
 import {
   IncrementUserCartRequest,
   UpdateUserCartRequest,
+  PayCartWithWalletRequest,
 } from '../../types/request';
 import {
   GetUserCartResponse,
   UpdateUserCartResponse,
+  WalletPaymentResponse,
 } from '../../types/response';
-import { WalletPaymentResponse } from '../../types/response/checkout';
 import { baseApi } from '../store';
 
 export const cartApi = baseApi.injectEndpoints({

@@ -1,39 +1,52 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-daisyui';
 import { Image, Skeleton } from '../../../components/common';
-import { useLazyGetProductsLogisticsQuery } from '../../../store/services/productService';
+import {
+  useCheckProductCourierServicesMutation,
+  useLazyGetProductsLogisticsQuery,
+} from '../../../store/services/productService';
 import { useGetRajaOngkirShippingCostMutation } from '../../../store/services/rajaOngkir';
 import {
+  AvailableProductsForDelivery,
   Courier,
   DeliveryService,
   RajaOngkirShippingService,
 } from '../../../types/component';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
 import { toETD, toRupiah } from '../../../utils/convert';
+import { toProductCheckCourierService } from '../../../utils/mapperDTO';
 import { notifyErrorToast } from '../../../utils/toast';
 
 type DeliveryServiceModalProps = {
   deliveryService: DeliveryService | null;
   currentMerchantID: number;
+  currentMerchantProductIDs: number[];
   getShippingCostRequest: GetRajaOngkirShippingCostRequest | null;
   open: boolean;
   onClose: () => void;
   setDeliveryService: React.Dispatch<
     React.SetStateAction<DeliveryService | null>
   >;
+  setAvailableProductsForDelivery: React.Dispatch<
+    React.SetStateAction<AvailableProductsForDelivery>
+  >;
 };
 
 const DeliveryServiceModal = ({
   deliveryService,
   currentMerchantID,
+  currentMerchantProductIDs,
   getShippingCostRequest,
   open,
   onClose,
   setDeliveryService,
+  setAvailableProductsForDelivery,
 }: DeliveryServiceModalProps) => {
   const [getProductsLogistics, { data: getProductsLogisticsData }] =
     useLazyGetProductsLogisticsQuery();
   const [getRajaOngkirShippingCost] = useGetRajaOngkirShippingCostMutation();
+  const [checkProductCourierServices] =
+    useCheckProductCourierServicesMutation();
   const [openCourierServicesModal, setOpenCourierServicesModal] =
     useState<boolean>(false);
   const [courierServices, setCourierServices] = useState<
@@ -102,6 +115,22 @@ const DeliveryServiceModal = ({
         ],
       },
     }));
+    checkProductCourierServices(
+      toProductCheckCourierService(
+        courier.code,
+        courierService.service,
+        currentMerchantProductIDs
+      )
+    )
+      .unwrap()
+      .then((res) => {
+        const { data } = res;
+        if (!data) return;
+        setAvailableProductsForDelivery((prev) => ({
+          ...prev,
+          [currentMerchantID]: data.available_products,
+        }));
+      });
     handleCourierServiceModalClose();
   };
 

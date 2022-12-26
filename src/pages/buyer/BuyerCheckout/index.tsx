@@ -116,6 +116,9 @@ const BuyerCheckout = () => {
   const [availableProductsForDelivery, setAvailableProductsForDelivery] =
     useState<AvailableProductsForDelivery>({});
   const [currentMerchantID, setCurrentMerchantID] = useState<number>(0);
+  const [currentMerchantProductIDs, setCurrentMerchantProductIDs] = useState<
+    number[]
+  >([]);
   const [currentMerchantName, setCurrentMerchantName] = useState<string>('');
   const [
     currentMerchantSubtotalBeforeShipping,
@@ -190,6 +193,7 @@ const BuyerCheckout = () => {
       return;
     }
     setCurrentMerchantID(merchantID);
+    setCurrentMerchantProductIDs(productIDs);
     setOpenModal({
       shippingAddress: {
         add: false,
@@ -952,10 +956,12 @@ const BuyerCheckout = () => {
       <DeliveryServiceModal
         deliveryService={deliveryService}
         currentMerchantID={currentMerchantID}
+        currentMerchantProductIDs={currentMerchantProductIDs}
         getShippingCostRequest={getShippingCostRequest}
         open={openModal.deliveryService}
         onClose={handleModalClose}
         setDeliveryService={setDeliveryService}
+        setAvailableProductsForDelivery={setAvailableProductsForDelivery}
       />
       {/* Shop Promotion/Voucher Modal */}
       <MerchantVoucherModal

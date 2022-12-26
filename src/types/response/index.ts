@@ -18,3 +18,4 @@ export * from './subDistrict';
 export * from './wallet';
 export * from './review';
 export * from './rajaOngkir';
+export * from './checkout';

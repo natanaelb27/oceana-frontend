@@ -1,5 +1,8 @@
-import { CheckoutCartOrderItem } from '../../types/component/checkout';
-import { PayCartWithWalletRequest } from '../../types/request/checkout';
+import { CheckoutCartOrderItem } from '../../types/component';
+import {
+  PayCartWithWalletRequest,
+  ProductCheckCourierServiceRequest,
+} from '../../types/request';
 
 export const toPayCartWithWalletRequest = (
   cartOrderItems: CheckoutCartOrderItem[],
@@ -15,4 +18,14 @@ export const toPayCartWithWalletRequest = (
   address_id: addressID,
   pin,
   total_payment: totalPayment,
+});
+
+export const toProductCheckCourierService = (
+  courierCode: string,
+  courierServiceCode: string,
+  productIDs: number[]
+): ProductCheckCourierServiceRequest => ({
+  courier_code: courierCode,
+  courier_service_code: courierServiceCode,
+  product_ids: productIDs,
 });

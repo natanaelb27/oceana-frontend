@@ -8,3 +8,9 @@ export type PayCartWithWalletRequest = {
   pin: string;
   total_payment: number;
 };
+
+export type ProductCheckCourierServiceRequest = {
+  courier_code: string;
+  courier_service_code: string;
+  product_ids: number[];
+};

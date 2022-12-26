@@ -1,11 +1,11 @@
-import { ProductCheckCourierService } from '../../types/component';
+import { ProductCheckCourierServiceRequest } from '../../types/request';
 import {
   GetAllProductsResponse,
   GetProductDetailsResponse,
   GetPurchasedQuantitiesResponse,
   GetShipmentResponse,
-  ProductCheckCourierServiceResponse,
   ViewPostResponse,
+  ProductCheckCourierServiceResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -50,7 +50,7 @@ export const productApi = baseApi.injectEndpoints({
     }),
     checkProductCourierServices: builder.mutation<
       ProductCheckCourierServiceResponse,
-      ProductCheckCourierService
+      ProductCheckCourierServiceRequest
     >({
       query: (request) => ({
         url: '/products/check-courier-service',
