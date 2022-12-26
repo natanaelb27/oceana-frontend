@@ -32,7 +32,7 @@ import {
   notifySuccessToast,
   notifyInfoToast,
 } from '../../../utils/toast';
-import { handleNumberInvalidKey } from '../../../utils/validation';
+import { getCount, handleNumberInvalidKey } from '../../../utils/validation';
 import { formikPreorderDay } from '../../../utils/yupValidation';
 import SectionHeading from '../../common/SectionHeading/index';
 import CouriersConfiguration from '../ShipmentContent/CouriersConfiguration';
@@ -149,27 +149,30 @@ const ProductAddContent = () => {
       category_id: Yup.number().min(1, 'Please enter category'),
       // merchant_id: Yup.number().required('Please enter merchant_id'),
       weight: Yup.number().required('Please enter weight').min(1),
-      // is_hazardous: Yup.boolean().required('Please enter is hazardous'),
-      // package_size: Yup.string().required('Please enter package_size'),
       package_size_length: Yup.number()
-        .min(0, 'length must be between 10 to 1000')
-        .max(1000, 'length must be between 10 to 1000')
-        .label('length')
-        .positive(),
+        .min(1)
+        .max(1000)
+        .required()
+        .label('length'),
       package_size_width: Yup.number()
-        .min(0, 'length must be between 10 to 1000')
-        .max(1000, 'length must be between 10 to 1000'),
+        .min(1)
+        .max(1000)
+        .required()
+        .label('width'),
       package_size_height: Yup.number()
-        .min(0, 'length must be between 10 to 1000')
-        .max(1000, 'length must be between 10 to 1000'),
-      // condition: Yup.string().required('Please enter condition'),
+        .min(1)
+        .max(1000)
+        .required()
+        .label('height'),
       // status: Yup.string().required('Please enter status'),
       process_day: Yup.number().required('Please enter process_day'),
       preorder_day: Yup.number().test('preorder_day', (value, ctx) =>
         formikPreorderDay(ctx, value)
       ),
-      // images: Yup.array().of(Yup.string().required('Please enter images')),
-      // videos: Yup.array().of(Yup.string().required('Please enter videos')),
+      images: Yup.array()
+        .of(Yup.string().required('Please enter images'))
+        .min(1),
+      videos: Yup.array().of(Yup.string()),
       product_items: Yup.array().of(
         Yup.object().shape({
           id: Yup.number().required('Please enter id'),
@@ -1092,6 +1095,8 @@ const ProductAddContent = () => {
         className='flex flex-col gap-4 p-1 md:p-4 rounded-lg bg-base-200'
         onSubmit={(e) => {
           e.preventDefault();
+          const count = getCount(productFormik.errors, 0);
+          notifyErrorToast(`There is ${count} mistakes`);
           productFormik.handleSubmit();
         }}
       >

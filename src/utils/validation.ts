@@ -30,3 +30,15 @@ export const handleNumberInvalidKey = (e: KeyboardEvent<HTMLInputElement>) => {
   const invalidChars = ['e', 'E', '+', '-', '.'];
   return invalidChars.includes(e.key) && e.preventDefault();
 };
+
+export const getCount = (data: any, level: number) => {
+  let count = 0;
+  for (const k in data) {
+    if (typeof data[k] === 'object') {
+      count += getCount(data[k], level + 1);
+    } else {
+      count += 1;
+    }
+  }
+  return count;
+};
