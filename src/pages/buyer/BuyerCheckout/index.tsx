@@ -43,7 +43,7 @@ import {
   CheckoutCartOrderItem,
   CheckoutCartProduct,
   CheckoutCartProductItem,
-  MerchantVouchersByMerchantID,
+  MerchantVouchers,
 } from '../../../types/component/checkout';
 import { MerchantVoucherQuery } from '../../../types/query';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
@@ -128,7 +128,7 @@ const BuyerCheckout = () => {
   const [marketplaceVoucher, setMarketplaceVoucher] =
     useState<MarketplaceVoucher | null>(null);
   const [merchantVouchers, setMerchantVouchers] =
-    useState<MerchantVouchersByMerchantID | null>(null);
+    useState<MerchantVouchers | null>(null);
   const [voucherQuery, setVoucherQuery] = useState<MerchantVoucherQuery>({
     limit: LIMIT_SELLER_VOUCHER_ALL,
     page: 1,
@@ -423,7 +423,20 @@ const BuyerCheckout = () => {
     checkout.forEach((cartItem) =>
       cartItem.products.forEach((productItem) => {
         initialNotes[productItem.product_item_id] = '';
-        initialAvailableProductsForDelivery[productItem.product_id] = false;
+
+        if (!initialAvailableProductsForDelivery[cartItem.merchant_id]) {
+          initialAvailableProductsForDelivery[cartItem.merchant_id] = [
+            productItem.product_id,
+          ];
+        } else if (
+          !initialAvailableProductsForDelivery[cartItem.merchant_id].includes(
+            productItem.product_id
+          )
+        ) {
+          initialAvailableProductsForDelivery[cartItem.merchant_id].push(
+            productItem.product_id
+          );
+        }
       })
     );
     setAdditionalNotes(initialNotes);
@@ -604,7 +617,9 @@ const BuyerCheckout = () => {
                       <div
                         key={product.carts_id}
                         className={`grid grid-cols-3 p-3 mb-1 rounded-xl md:grid-cols-8 ${
-                          !availableProductsForDelivery[product.product_id]
+                          !availableProductsForDelivery[merchant_id].includes(
+                            product.product_id
+                          )
                             ? 'bg-neutral/80 text-neutral-content/80'
                             : ''
                         }`}
@@ -613,7 +628,9 @@ const BuyerCheckout = () => {
                           <img
                             src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
                             className={`rounded-lg h-full w-full ${
-                              !availableProductsForDelivery[product.product_id]
+                              !availableProductsForDelivery[
+                                merchant_id
+                              ].includes(product.product_id)
                                 ? 'opacity-60'
                                 : 'opacity-100'
                             }`}
@@ -662,7 +679,9 @@ const BuyerCheckout = () => {
                             color='primary'
                             id={String(product.product_item_id)}
                             placeholder={
-                              !availableProductsForDelivery[product.product_id]
+                              !availableProductsForDelivery[
+                                merchant_id
+                              ].includes(product.product_id)
                                 ? 'Product not available for delivery'
                                 : 'Additional Notes (optional)'
                             }
@@ -675,7 +694,9 @@ const BuyerCheckout = () => {
                             }
                             onChange={handleChangeAdditionalNotes}
                             disabled={
-                              !availableProductsForDelivery[product.product_id]
+                              !availableProductsForDelivery[
+                                merchant_id
+                              ].includes(product.product_id)
                             }
                           />
                         </div>

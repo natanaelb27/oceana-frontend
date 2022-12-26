@@ -4,7 +4,7 @@ import {
   DeliveryService,
   MarketplaceVoucher,
   MerchantVoucher,
-  MerchantVouchersByMerchantID,
+  MerchantVouchers,
 } from '../types/component';
 
 export const calculateDiscount = (
@@ -73,7 +73,7 @@ export const calculateTotalWithShipping = (
 
 export const calculateTotalDiscount = (
   checkout: CartGroupedByMerchant[],
-  merchantVouchers: MerchantVouchersByMerchantID
+  merchantVouchers: MerchantVouchers
 ) =>
   checkout.reduce(
     (partialDiscountTotal, currentMerchant) =>
@@ -89,7 +89,7 @@ export const calculateTotal = (
   checkout: CartGroupedByMerchant[],
   deliveryService: DeliveryService | null,
   marketplaceVoucher: MarketplaceVoucher | null,
-  merchantVouchers: MerchantVouchersByMerchantID | null
+  merchantVouchers: MerchantVouchers | null
 ): number => {
   const totalBeforeShipping = calculateTotalBeforeShipping(checkout);
   const shippingFee =

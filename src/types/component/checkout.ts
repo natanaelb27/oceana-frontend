@@ -29,10 +29,10 @@ export interface AdditionalNotes {
   [product_item_id: number]: string;
 }
 
-export interface MerchantVouchersByMerchantID {
+export interface MerchantVouchers {
   [merchant_id: number]: MerchantVoucher | null;
 }
 
 export interface AvailableProductsForDelivery {
-  [product_id: number]: boolean;
+  [merchant_id: number]: number[];
 }

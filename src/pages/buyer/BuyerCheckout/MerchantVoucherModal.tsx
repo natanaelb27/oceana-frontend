@@ -5,7 +5,7 @@ import { useLazyGetAllMerchantVoucherByBuyerQuery } from '../../../store/service
 import {
   MarketplaceVoucher,
   MerchantVoucher,
-  MerchantVouchersByMerchantID,
+  MerchantVouchers,
 } from '../../../types/component';
 import { MerchantVoucherQuery } from '../../../types/query';
 import { toMerchantVoucherQuery } from '../../../utils/mapperDTO';
@@ -14,13 +14,13 @@ import { notifyInfoToast } from '../../../utils/toast';
 type MerchantVoucherModalProps = {
   currentMerchantID: number;
   currentMerchantName: string;
-  merchantVouchers: MerchantVouchersByMerchantID | null;
+  merchantVouchers: MerchantVouchers | null;
   subtotalBeforeShipping: number;
   voucherQuery: MerchantVoucherQuery;
   open: boolean;
   onClose: () => void;
   setMerchantVouchers: React.Dispatch<
-    React.SetStateAction<MerchantVouchersByMerchantID | null>
+    React.SetStateAction<MerchantVouchers | null>
   >;
 };
 
