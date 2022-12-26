@@ -39,6 +39,7 @@ import {
 } from '../../../types/component';
 import {
   AdditionalNotes,
+  AvailableProductsForDelivery,
   CheckoutCartOrderItem,
   CheckoutCartProduct,
   CheckoutCartProductItem,
@@ -112,6 +113,8 @@ const BuyerCheckout = () => {
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [deliveryService, setDeliveryService] =
     useState<DeliveryService | null>(null);
+  const [availableProductsForDelivery, setAvailableProductsForDelivery] =
+    useState<AvailableProductsForDelivery>({});
   const [currentMerchantID, setCurrentMerchantID] = useState<number>(0);
   const [currentMerchantName, setCurrentMerchantName] = useState<string>('');
   const [
@@ -415,12 +418,16 @@ const BuyerCheckout = () => {
 
   useEffect(() => {
     const initialNotes: AdditionalNotes = {};
+    const initialAvailableProductsForDelivery: AvailableProductsForDelivery =
+      {};
     checkout.forEach((cartItem) =>
       cartItem.products.forEach((productItem) => {
         initialNotes[productItem.product_item_id] = '';
+        initialAvailableProductsForDelivery[productItem.product_id] = false;
       })
     );
     setAdditionalNotes(initialNotes);
+    setAvailableProductsForDelivery(initialAvailableProductsForDelivery);
   }, []);
 
   useEffect(() => {
@@ -596,12 +603,20 @@ const BuyerCheckout = () => {
                     return (
                       <div
                         key={product.carts_id}
-                        className='grid grid-cols-3 py-3 md:grid-cols-8'
+                        className={`grid grid-cols-3 p-3 mb-1 rounded-xl md:grid-cols-8 ${
+                          !availableProductsForDelivery[product.product_id]
+                            ? 'bg-neutral/80 text-neutral-content/80'
+                            : ''
+                        }`}
                       >
                         <div className='h-20 w-20 md:h-24 md:w-24 md:col-span-1'>
                           <img
                             src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
-                            className='rounded-lg h-full w-full'
+                            className={`rounded-lg h-full w-full ${
+                              !availableProductsForDelivery[product.product_id]
+                                ? 'opacity-60'
+                                : 'opacity-100'
+                            }`}
                             onError={({ currentTarget }) => {
                               currentTarget.onerror = null;
                               currentTarget.src =
@@ -643,10 +658,14 @@ const BuyerCheckout = () => {
                         </div>
                         <div className='col-span-4'>
                           <Input
-                            className='w-full'
+                            className='w-full disabled:placeholder-error disabled:bg-neutral animate-pulse'
                             color='primary'
                             id={String(product.product_item_id)}
-                            placeholder='Additional Notes (optional)'
+                            placeholder={
+                              !availableProductsForDelivery[product.product_id]
+                                ? 'Product not available for delivery'
+                                : 'Additional Notes (optional)'
+                            }
                             size='sm'
                             type='text'
                             value={
@@ -655,6 +674,9 @@ const BuyerCheckout = () => {
                                 : ''
                             }
                             onChange={handleChangeAdditionalNotes}
+                            disabled={
+                              !availableProductsForDelivery[product.product_id]
+                            }
                           />
                         </div>
                       </div>

@@ -32,3 +32,7 @@ export interface AdditionalNotes {
 export interface MerchantVouchersByMerchantID {
   [merchant_id: number]: MerchantVoucher | null;
 }
+
+export interface AvailableProductsForDelivery {
+  [product_id: number]: boolean;
+}

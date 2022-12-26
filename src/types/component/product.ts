@@ -105,3 +105,9 @@ export interface FavoriteProduct {
   product_id: number;
   is_favorite: boolean;
 }
+
+export interface ProductCheckCourierService {
+  courier_code: string;
+  courier_service_code: string;
+  product_ids: number[];
+}

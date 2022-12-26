@@ -1,8 +1,10 @@
+import { ProductCheckCourierService } from '../../types/component';
 import {
   GetAllProductsResponse,
   GetProductDetailsResponse,
   GetPurchasedQuantitiesResponse,
   GetShipmentResponse,
+  ProductCheckCourierServiceResponse,
   ViewPostResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
@@ -46,6 +48,16 @@ export const productApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Shipment'],
     }),
+    checkProductCourierServices: builder.mutation<
+      ProductCheckCourierServiceResponse,
+      ProductCheckCourierService
+    >({
+      query: (request) => ({
+        url: '/products/check-courier-service',
+        method: 'POST',
+        body: request,
+      }),
+    }),
   }),
 });
 
@@ -58,4 +70,5 @@ export const {
   useLazyGetPurchasedQuantitiesQuery,
   useViewPostMutation,
   useLazyGetProductsLogisticsQuery,
+  useCheckProductCourierServicesMutation,
 } = productApi;
