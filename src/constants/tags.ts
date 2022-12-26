@@ -4,7 +4,7 @@ export const TAG_TYPES = [
   'Category',
   'MyShop',
   'Order',
-  'OrderDetails',
+  'Refund',
   'Product',
   'Profile',
   'Cart',

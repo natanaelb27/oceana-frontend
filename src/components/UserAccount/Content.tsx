@@ -46,7 +46,7 @@ const Content = ({ profile, content }: ContentProps) => {
     if (content === UserAccountContent.RefundCreate) {
       return <RefundCreate />;
     }
-    
+
     if (content === UserAccountContent.Review) {
       return <ReviewContent />;
     }
@@ -58,11 +58,10 @@ const Content = ({ profile, content }: ContentProps) => {
     if (content === UserAccountContent.Refund) {
       return <RefundContent />;
     }
-    
+
     if (content === UserAccountContent.PendingPayment) {
       return <PendingPaymentContent />;
     }
-
   };
   return <Card className='shadow'>{renderContent()}</Card>;
 };

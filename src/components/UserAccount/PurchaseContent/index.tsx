@@ -121,6 +121,31 @@ const PurchaseContent = () => {
     return 'warning';
   };
 
+  const getStatusDisplay = (orderStatus: string) => {
+    switch (orderStatus) {
+      case DELIVERY_STATUS.ALL:
+        return 'All';
+      case DELIVERY_STATUS.ONGOING:
+        return 'Ongoing';
+      case DELIVERY_STATUS.PENDING_SELLER:
+        return 'Waiting for Confirmation';
+      case DELIVERY_STATUS.ON_PROCESS:
+        return 'On Process';
+      case DELIVERY_STATUS.OUT_FOR_DELIVERY:
+        return 'Out for Delivery';
+      case DELIVERY_STATUS.DELIVERED:
+        return 'Delivered';
+      case DELIVERY_STATUS.COMPLAINED:
+        return 'Complained';
+      case DELIVERY_STATUS.COMPLETED:
+        return 'Completed';
+      case DELIVERY_STATUS.CANCELED:
+        return 'Canceled';
+      default:
+        return '';
+    }
+  };
+
   const [openModal, setOpenModal] = useState<OpenModal>({
     detailOrder: false,
     completeOrder: false,
@@ -339,7 +364,6 @@ const PurchaseContent = () => {
       setDateRange([null, null]);
       setTransactionHistoryQuery({
         ...transactionHistoryQuery,
-        page: 1,
         filterStartTransactionDate: '',
         filterEndTransactionDate: '',
       });
@@ -568,19 +592,23 @@ const PurchaseContent = () => {
               Canceled
             </Button>
           </div>
-          <Button
-            className='normal-case flex flex-row gap-1 justify-between btn-outline min-w-[30%] md:hidden'
-            onClick={handleFilterStatusClick}
-          >
-            {activeOngoingStatusButton || activeStatusButton}{' '}
-            <HiOutlineChevronDown className='text-sm' />
-          </Button>
-          <Button
-            className='normal-case text-sm btn-outline btn-primary'
-            onClick={handleResetFilterClick}
-          >
-            Reset Filter
-          </Button>
+          <div className='flex items-center gap-2 overflow-x-auto'>
+            <Button
+              className='normal-case flex flex-row gap-1 justify-between btn-outline min-w-[30%] md:hidden'
+              onClick={handleFilterStatusClick}
+            >
+              {getStatusDisplay(
+                activeOngoingStatusButton || activeStatusButton
+              )}{' '}
+              <HiOutlineChevronDown className='text-sm' />
+            </Button>
+            <Button
+              className='normal-case text-sm btn-outline btn-primary'
+              onClick={handleResetFilterClick}
+            >
+              Reset Filter
+            </Button>
+          </div>
         </div>
         <div
           className={
@@ -589,19 +617,6 @@ const PurchaseContent = () => {
               : 'hidden md:flex gap-2 overflow-x-auto overflow-y-hidden px-1'
           }
         >
-          {/* <Button
-            className={
-              'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
-              (activeOngoingStatusButton === DELIVERY_STATUS.PENDING_PAYMENT
-                ? 'btn-active'
-                : '')
-            }
-            onClick={() =>
-              handleOngoingStatusClick(DELIVERY_STATUS.PENDING_PAYMENT)
-            }
-          >
-            Waiting for Payment
-          </Button> */}
           <Button
             className={
               'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
@@ -665,129 +680,265 @@ const PurchaseContent = () => {
       </div>
       <div className='grid grid-cols-12 gap-4'>
         {getAllTransactionHistoryLoading && (
-          <Card className='col-span-12 shadow animate-pulse'>
-            <div className='p-4'>
-              <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
-              <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
-              <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
-            </div>
-          </Card>
-        )}
-        {getAllTransactionHistoryData?.data &&
-        getAllTransactionHistoryData?.data.length > 0 ? (
-          getAllTransactionHistoryData?.data.map((transactionHistory, n) => {
-            const productCount = transactionHistory.order_details.length;
-            const firstProduct = transactionHistory.order_details.at(0);
-            return (
-              <Card
-                className='col-span-12 shadow border-r-0 border-b-4 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
-                key={n}
-              >
+          <div className='grid col-span-12 gap-4'>
+            <div className='grid grid-cols-12 gap-4'>
+              <Card className='col-span-12 shadow animate-pulse h-48'>
                 <div className='p-4'>
-                  <div className='flex items-center mb-2.5 gap-3 justify-between md:justify-start'>
-                    <div className='flex gap-3 items-center'>
-                      <HiOutlineShoppingBag className='text-info text-xl' />
-                      <span className='font-light text-sm'>
-                        {toStringDate(transactionHistory.transaction_datetime)}
-                      </span>
-                    </div>
-                    <Badge
-                      color={getBadgeColor(transactionHistory.order_status)}
-                      size='sm'
-                      className='truncate p-2 font-bold'
-                    >
-                      {transactionHistory.order_status}
-                    </Badge>
-                    <span className='font-light text-sm hidden md:block'>
-                      {transactionHistory?.invoice_number}
-                    </span>
-                    {transactionHistory?.refund_id ? (
-                      <Badge
-                        color='error'
-                        size='xs'
-                        className='font-bold p-2 rounded-none text-white'
-                      >
-                        refund
-                      </Badge>
-                    ) : null}
-
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.PENDING_SELLER
-                    ) ? (
-                      <Tooltip message='auto cancel countdown'>
-                        <DateCountdown
-                          date={moment(
-                            transactionHistory?.seller_confirmation_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
-
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.ON_PROCESS
-                    ) ? (
-                      <Tooltip message='auto cancel countdown'>
-                        <DateCountdown
-                          date={moment(
-                            transactionHistory?.on_process_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
-
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.DELIVERED
-                    ) ? (
-                      <Tooltip message='auto complete countdown'>
-                        <DateCountdown
-                          date={moment(
-                            transactionHistory?.delivered_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
-                  </div>
-                  <div className='mb-1'>
-                    <span className='font-bold'>
-                      {transactionHistory.shop_name}
-                    </span>
-                  </div>
-                  <div
-                    className='flex cursor-pointer'
-                    onClick={() =>
-                      handleViewDetailsClick(transactionHistory.order_id)
-                    }
-                  >
-                    <div className='mr-5'>
-                      <img
-                        src={firstProduct?.product_image || ''}
-                        alt={firstProduct?.product_name || ''}
-                        className='h-12 w-12 md:h-20 md:w-20 rounded-md'
-                      />
-                    </div>
-                    <div className='flex flex-col w-[70%]'>
-                      <span className='font-bold line-clamp-2 md:line-clamp-1 mt-0'>
-                        {firstProduct?.product_name || ''}
-                      </span>
-                      <span className='font-light text-sm'>
-                        {firstProduct?.quantity} item
-                        {firstProduct?.quantity || 0 > 1
-                          ? 's'
-                          : null} &times; {toRupiah(firstProduct?.price || 0)}
-                      </span>
-                      {productCount > 1 ? (
-                        <span className='font-light text-sm'>
-                          +{productCount - 1} other product
-                          {productCount > 2 ? 's' : null}
+                  <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                  <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-3/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-4/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                </div>
+              </Card>
+            </div>
+            <div className='grid grid-cols-12 gap-4'>
+              <Card className='col-span-12 shadow animate-pulse h-48'>
+                <div className='p-4'>
+                  <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                  <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-3/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-4/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                </div>
+              </Card>
+            </div>
+            <div className='grid grid-cols-12 gap-4'>
+              <Card className='col-span-12 shadow animate-pulse h-48'>
+                <div className='p-4'>
+                  <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                  <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-3/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-4/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
+        {!getAllTransactionHistoryLoading &&
+          (getAllTransactionHistoryData?.data &&
+          getAllTransactionHistoryData?.data.length > 0 ? (
+            getAllTransactionHistoryData?.data.map((transactionHistory, n) => {
+              const productCount = transactionHistory.order_details.length;
+              const firstProduct = transactionHistory.order_details.at(0);
+              return (
+                <Card
+                  className='col-span-12 shadow border-r-0 border-b-4 md:border-b-0 border-r-primary border-b-primary transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
+                  key={n}
+                >
+                  <div className='p-4'>
+                    <div className='flex items-center mb-2.5 gap-3 justify-between'>
+                      <div className='flex items-center gap-3 justify-between md:justify-start'>
+                        <div className='flex gap-3 items-center'>
+                          <HiOutlineShoppingBag className='text-info text-xl' />
+                          <span className='font-light text-sm'>
+                            {toStringDate(
+                              transactionHistory.transaction_datetime
+                            )}
+                          </span>
+                        </div>
+                        <Badge
+                          color={getBadgeColor(transactionHistory.order_status)}
+                          size='sm'
+                          className='truncate p-2 font-bold hidden md:flex'
+                        >
+                          {transactionHistory.order_status}
+                        </Badge>
+                        <span className='font-light text-sm hidden md:block'>
+                          {transactionHistory?.invoice_number}
                         </span>
-                      ) : null}
+                        {transactionHistory?.refund_id ? (
+                          <Badge
+                            color='error'
+                            size='xs'
+                            className='font-bold p-2 rounded-none text-white'
+                          >
+                            refund
+                          </Badge>
+                        ) : null}
+
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.PENDING_SELLER
+                        ) ? (
+                          <Tooltip
+                            message='auto cancel order'
+                            className='hidden md:flex'
+                          >
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.seller_confirmation_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.ON_PROCESS
+                        ) ? (
+                          <Tooltip
+                            message='auto cancel order'
+                            className='hidden md:flex'
+                          >
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.on_process_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.DELIVERED
+                        ) ? (
+                          <Tooltip
+                            message='auto complete order'
+                            className='hidden md:flex'
+                          >
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.delivered_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.COMPLAINED
+                        ) &&
+                        transactionHistory?.refund_seller_confirmation_expiration_datetime ? (
+                          <Tooltip
+                            message='auto approve refund'
+                            className='hidden md:flex'
+                          >
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.refund_seller_confirmation_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.COMPLAINED
+                        ) &&
+                        transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                          <Tooltip
+                            message='auto complete order'
+                            className='hidden md:flex'
+                          >
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+                      </div>
+                      <div className='flex gap-1 items-center'>
+                        <Badge
+                          color={getBadgeColor(transactionHistory.order_status)}
+                          size='sm'
+                          className='truncate p-2 font-bold flex md:hidden'
+                        >
+                          {transactionHistory.order_status}
+                        </Badge>
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.DELIVERED
+                        ) ||
+                        (stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.COMPLAINED
+                        ) &&
+                          transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime) ? (
+                          <div className='flex gap-1'>
+                            <Dropdown horizontal='center' vertical='end'>
+                              <Dropdown.Toggle color='ghost' size='sm'>
+                                <HiOutlineDotsVertical></HiOutlineDotsVertical>
+                              </Dropdown.Toggle>
+                              <Dropdown.Menu className='w-52'>
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    handleRefundClick(
+                                      transactionHistory?.order_id
+                                    )
+                                  }
+                                >
+                                  Refund
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
-                    <div className='hidden md:flex items-center'>
-                      <div className='divider divider-horizontal'></div>
-                      <div className='flex flex-col'>
+                    <div className='mb-1'>
+                      <span className='font-bold'>
+                        {transactionHistory.shop_name}
+                      </span>
+                    </div>
+                    <div
+                      className='flex cursor-pointer'
+                      onClick={() =>
+                        handleViewDetailsClick(transactionHistory.order_id)
+                      }
+                    >
+                      <div className='mr-5'>
+                        <Image
+                          src={firstProduct?.product_image || ''}
+                          alt={firstProduct?.product_name || ''}
+                          className='h-12 w-12 md:h-20 md:w-20 rounded-md'
+                        />
+                      </div>
+                      <div className='flex flex-col w-[70%]'>
+                        <span className='font-bold line-clamp-2 md:line-clamp-1 mt-0'>
+                          {firstProduct?.product_name || ''}
+                        </span>
+                        <span className='font-light text-sm'>
+                          {firstProduct?.quantity} item
+                          {(firstProduct?.quantity || 0) > 1 ? 's' : null}{' '}
+                          &times; {toRupiah(firstProduct?.price || 0)}
+                        </span>
+                        {productCount > 1 ? (
+                          <span className='font-light text-sm'>
+                            +{productCount - 1} other product
+                            {productCount > 2 ? 's' : null}
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className='hidden md:flex items-center'>
+                        <div className='divider divider-horizontal'></div>
+                        <div className='flex flex-col'>
+                          <span className='font-light text-sm'>
+                            Total Amount
+                          </span>
+                          <span className='font-bold'>
+                            {toRupiah(
+                              Math.round(transactionHistory?.total_price)
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className='flex mt-5 md:mt-3 gap-3 items-center justify-between md:justify-end'>
+                      <span
+                        className='hidden text-primary font-medium text-sm cursor-pointer md:block'
+                        onClick={() =>
+                          handleViewDetailsClick(transactionHistory.order_id)
+                        }
+                      >
+                        View Transaction Details
+                      </span>
+                      <div className='flex flex-col md:hidden'>
                         <span className='font-light text-sm'>Total Amount</span>
                         <span className='font-bold'>
                           {toRupiah(
@@ -795,137 +946,69 @@ const PurchaseContent = () => {
                           )}
                         </span>
                       </div>
-                    </div>
-                  </div>
-                  <div className='flex mt-3 gap-3 items-center justify-between md:justify-end'>
-                    <span
-                      className='hidden text-primary font-medium text-sm cursor-pointer md:block'
-                      onClick={() =>
-                        handleViewDetailsClick(transactionHistory.order_id)
-                      }
-                    >
-                      View Transaction Details
-                    </span>
-                    <div className='flex flex-col md:hidden'>
-                      <span className='font-light text-sm'>Total Amount</span>
-                      <span className='font-bold'>
-                        {toRupiah(Math.round(transactionHistory?.total_price))}
-                      </span>
-                    </div>
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.DELIVERED
-                    ) ? (
-                      <div className='flex gap-1'>
+                      {stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.DELIVERED
+                      ) ? (
+                        <div className='flex gap-1'>
+                          <Button
+                            className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
+                            color='primary'
+                            loading={updateCompleteOrderIsLoading}
+                            onClick={() => {
+                              handleCompleteOrderClick(
+                                transactionHistory?.order_id
+                              );
+                            }}
+                          >
+                            Complete
+                          </Button>
+                        </div>
+                      ) : (
                         <Button
                           className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
                           color='primary'
-                          loading={updateCompleteOrderIsLoading}
-                          onClick={() => {
-                            handleCompleteOrderClick(
-                              transactionHistory?.order_id
-                            );
-                          }}
                         >
-                          Complete
+                          Buy Again
                         </Button>
-                        <Dropdown
-                          horizontal='left'
-                          vertical='end'
-                          className='hidden md:flex'
-                        >
-                          <Dropdown.Toggle color='ghost'>
-                            <HiOutlineDotsHorizontal></HiOutlineDotsHorizontal>
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu className='w-52'>
-                            <Dropdown.Item
-                              onClick={() =>
-                                handleRefundClick(transactionHistory?.order_id)
-                              }
-                            >
-                              Refund
-                            </Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </div>
-                    ) : (
+                      )}
+
                       <Button
-                        className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
+                        className='normal-case md:w-auto md:pl-7 md:pr-7 flex md:hidden'
                         color='primary'
+                        onClick={() =>
+                          handleViewDetailsClick(transactionHistory.order_id)
+                        }
                       >
-                        Buy Again
+                        View Details
                       </Button>
-                    )}
-                    <Button
-                      className='normal-case md:w-auto md:pl-7 md:pr-7 flex md:hidden'
-                      color='primary'
-                      onClick={() =>
-                        handleViewDetailsClick(transactionHistory.order_id)
-                      }
-                    >
-                      View Details
-                    </Button>
-                    {stringCompare(
-                      transactionHistory?.order_status,
-                      DELIVERY_STATUS.DELIVERED
-                    ) ? (
-                      <div className='flex gap-1'>
-                        <Dropdown
-                          horizontal='left'
-                          vertical='end'
-                          className='flex md:hidden'
-                        >
-                          <Dropdown.Toggle color='ghost'>
-                            <HiOutlineDotsVertical></HiOutlineDotsVertical>
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu className='w-52'>
-                            <Dropdown.Item
-                              onClick={() => {
-                                handleCompleteOrderClick(
-                                  transactionHistory?.order_id
-                                );
-                              }}
-                            >
-                              Complete
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                              onClick={() =>
-                                handleRefundClick(transactionHistory?.order_id)
-                              }
-                            >
-                              Refund
-                            </Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </div>
-                    ) : null}
+                    </div>
                   </div>
-                </div>
-              </Card>
-            );
-          })
-        ) : stringCompare(activeStatusButton, DELIVERY_STATUS.ALL) &&
-          transactionHistoryQuery.filterStartTransactionDate === '' &&
-          transactionHistoryQuery.filterEndTransactionDate === '' &&
-          transactionHistoryQuery.search === '' ? (
-          <div className='col-span-12'>
-            <NoData
-              title='Oops, it seems that you have never made a purchase'
-              message='Start shopping and fulfill your needs at Oceana'
-              buttonMessage='Start Shopping'
-              buttonHandleClick={handleStartShoppingClick}
-            />
-          </div>
-        ) : (
-          <div className='col-span-12'>
-            <NoData
-              title='Oops, there are no transactions that match the filter'
-              message='Try to reset or change your filter'
-              buttonMessage='Reset Filter'
-              buttonHandleClick={handleResetFilterClick}
-            ></NoData>
-          </div>
-        )}
+                </Card>
+              );
+            })
+          ) : stringCompare(activeStatusButton, DELIVERY_STATUS.ALL) &&
+            transactionHistoryQuery.filterStartTransactionDate === '' &&
+            transactionHistoryQuery.filterEndTransactionDate === '' &&
+            transactionHistoryQuery.search === '' ? (
+            <div className='col-span-12'>
+              <NoData
+                title='Oops, it seems that you have never made a purchase'
+                message='Start shopping and fulfill your needs at Oceana'
+                buttonMessage='Start Shopping'
+                buttonHandleClick={handleStartShoppingClick}
+              />
+            </div>
+          ) : (
+            <div className='col-span-12'>
+              <NoData
+                title='Oops, there are no transactions that match the filter'
+                message='Try to reset or change your filter'
+                buttonMessage='Reset Filter'
+                buttonHandleClick={handleResetFilterClick}
+              ></NoData>
+            </div>
+          ))}
       </div>
       <div className='mt-6 flex justify-center'>
         <Pager
@@ -964,13 +1047,22 @@ const PurchaseContent = () => {
           Filter Status
         </Modal.Header>
         <Modal.Body>
-          <div className='flex flex-col px-4'>
+          <div className='flex flex-col px-4 text-sm'>
             <label
               className='flex flex-row justify-between label cursor-pointer'
               onClick={() => handleModalFilterStatusClick(DELIVERY_STATUS.ALL)}
             >
               <span className='font-bold'>All Transactions</span>
-              <Radio size='md' color='primary' name='filter-status' />
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.ALL
+                }
+                readOnly
+              />
             </label>
             <Divider className='m-0'></Divider>
             <label
@@ -980,22 +1072,19 @@ const PurchaseContent = () => {
               }
             >
               <span className='font-bold'>All Ongoing Transactions</span>
-              <Radio size='md' color='primary' name='filter-status' />
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.ONGOING
+                }
+                readOnly
+              />
             </label>
             <Divider className='m-0'></Divider>
             <div className='flex flex-col'>
-              {/* <label
-                className='flex flex-row justify-between label cursor-pointer ml-6'
-                onClick={() =>
-                  handleModalFilterOngoingStatusClick(
-                    DELIVERY_STATUS.PENDING_PAYMENT
-                  )
-                }
-              >
-                <span className='font-light'>Pending Payment</span>
-                <Radio size='md' color='primary' name='filter-status' />
-              </label> */}
-              <Divider className='m-0'></Divider>
               <label
                 className='flex flex-row justify-between label cursor-pointer ml-6'
                 onClick={() =>
@@ -1005,7 +1094,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Waiting for Confirmation</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.PENDING_SELLER
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -1017,7 +1115,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>On Process</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.ON_PROCESS
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -1029,7 +1136,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Out for Delivery</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.OUT_FOR_DELIVERY
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -1039,7 +1155,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Delivered</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.DELIVERED
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -1051,29 +1176,56 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Complained</span>
-                <Radio size='md' color='primary' name='filter-status' />
-              </label>
-              <Divider className='m-0'></Divider>
-              <label
-                className='flex flex-row justify-between label cursor-pointer'
-                onClick={() =>
-                  handleModalFilterOngoingStatusClick(DELIVERY_STATUS.COMPLETED)
-                }
-              >
-                <span className='font-bold'>Completed</span>
-                <Radio size='md' color='primary' name='filter-status' />
-              </label>
-              <Divider className='m-0'></Divider>
-              <label
-                className='flex flex-row justify-between label cursor-pointer'
-                onClick={() =>
-                  handleModalFilterOngoingStatusClick(DELIVERY_STATUS.CANCELED)
-                }
-              >
-                <span className='font-bold'>Canceled</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.COMPLAINED
+                  }
+                  readOnly
+                />
               </label>
             </div>
+            <Divider className='m-0'></Divider>
+            <label
+              className='flex flex-row justify-between label cursor-pointer'
+              onClick={() =>
+                handleModalFilterOngoingStatusClick(DELIVERY_STATUS.COMPLETED)
+              }
+            >
+              <span className='font-bold'>Completed</span>
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.COMPLETED
+                }
+                readOnly
+              />
+            </label>
+            <Divider className='m-0'></Divider>
+            <label
+              className='flex flex-row justify-between label cursor-pointer'
+              onClick={() =>
+                handleModalFilterOngoingStatusClick(DELIVERY_STATUS.CANCELED)
+              }
+            >
+              <span className='font-bold'>Canceled</span>
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.CANCELED
+                }
+                readOnly
+              />
+            </label>
           </div>
         </Modal.Body>
       </Modal>
@@ -1095,7 +1247,7 @@ const PurchaseContent = () => {
         <Modal.Header className='text-center font-bold'>
           Transaction Detail
         </Modal.Header>
-        <Modal.Body className='max-h-[48rem] overflow-y-scroll'>
+        <Modal.Body className='max-h-[48rem] md:overflow-y-scroll'>
           {getOrderDetailsLoading && (
             <Card className='col-span-12 shadow animate-pulse'>
               <div className='p-4'>
@@ -1107,7 +1259,7 @@ const PurchaseContent = () => {
           )}
           {getOrderDetailsData?.data && (
             <div className='flex flex-col gap-2'>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
                   <div className='flex gap-2 items-center'>
                     <span className='font-bold'>
@@ -1123,57 +1275,6 @@ const PurchaseContent = () => {
                       >
                         refund
                       </Badge>
-                    ) : null}
-
-                    {stringCompare(
-                      getOrderDetailsData?.data.order_status,
-                      DELIVERY_STATUS.PENDING_SELLER
-                    ) ? (
-                      <Tooltip
-                        position='bottom'
-                        message='auto cancel countdown'
-                      >
-                        <DateCountdown
-                          date={moment(
-                            getOrderDetailsData?.data
-                              .seller_confirmation_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
-
-                    {stringCompare(
-                      getOrderDetailsData?.data.order_status,
-                      DELIVERY_STATUS.ON_PROCESS
-                    ) ? (
-                      <Tooltip
-                        position='bottom'
-                        message='auto cancel countdown'
-                      >
-                        <DateCountdown
-                          date={moment(
-                            getOrderDetailsData?.data
-                              .on_process_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
-                    ) : null}
-
-                    {stringCompare(
-                      getOrderDetailsData?.data.order_status,
-                      DELIVERY_STATUS.DELIVERED
-                    ) ? (
-                      <Tooltip
-                        position='bottom'
-                        message='auto complete countdown'
-                      >
-                        <DateCountdown
-                          date={moment(
-                            getOrderDetailsData?.data
-                              .delivered_expiration_datetime
-                          ).toDate()}
-                        ></DateCountdown>
-                      </Tooltip>
                     ) : null}
                   </div>
                   <div
@@ -1233,8 +1334,97 @@ const PurchaseContent = () => {
                     )}
                   </span>
                 </div>
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.PENDING_SELLER
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Cancel Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .seller_confirmation_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.ON_PROCESS
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Cancel Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .on_process_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.DELIVERED
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Complete Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .delivered_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.COMPLAINED
+                ) &&
+                getOrderDetailsData?.data
+                  ?.refund_seller_confirmation_expiration_datetime ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Approve Refund</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .refund_seller_confirmation_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.COMPLAINED
+                ) &&
+                getOrderDetailsData?.data
+                  ?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Complete Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .refund_rejected_auto_complete_order_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
               </div>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>Product Details</span>
                   <div
@@ -1323,7 +1513,7 @@ const PurchaseContent = () => {
                   )}
                 </div>
               </div>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <span className='font-bold'>Shipping Info</span>
                 <div className='flex flex-col gap-2'>
                   <div className='grid grid-cols-10'>

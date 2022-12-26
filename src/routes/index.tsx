@@ -14,6 +14,7 @@ import {
   SealabsPayRegisterRedirect,
   SealabsPayTopup,
   SealabsPayTopupRedirect,
+  ShopRefund,
 } from '../pages';
 
 const Home = React.lazy(() => import('../pages/Home'));
@@ -356,8 +357,12 @@ const Routes = () => {
                   element: <ShopEditPromotion />,
                 },
                 {
-                  path: '/seller/orders/',
+                  path: '/seller/order/',
                   element: <ShopOrder />,
+                },
+                {
+                  path: '/seller/refund/',
+                  element: <ShopRefund />,
                 },
                 {
                   path: '/seller/settings/shipment/',

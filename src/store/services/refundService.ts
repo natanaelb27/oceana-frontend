@@ -1,9 +1,9 @@
-import { GetCalculatedRefundDetailsRequest } from '../../types/request/refund';
+import { GetCalculatedRefundDetailsRequest } from '../../types/request/';
 import {
   CreateRefundOrderResponse,
-  GetAllRefundDetailsResponse,
   GetCalculatedRefundDetailsResponse,
-} from '../../types/response/refund';
+  GetRefundDetailsResponse,
+} from '../../types/response/';
 import { baseApi } from '../store';
 
 export const refundApi = baseApi.injectEndpoints({
@@ -29,11 +29,20 @@ export const refundApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Refund'],
     }),
+    getRefundDetails: builder.query<GetRefundDetailsResponse, string>({
+      query: (id) => ({
+        url: `/refunds/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['Refund'],
+    }),
   }),
 });
 
 export const {
   useCreateRefundOrderMutation,
   useGetCalculatedRefundDetailsQuery,
-  useLazyGetCalculatedRefundDetailsQuery
+  useLazyGetCalculatedRefundDetailsQuery,
+  useGetRefundDetailsQuery,
+  useLazyGetRefundDetailsQuery,
 } = refundApi;

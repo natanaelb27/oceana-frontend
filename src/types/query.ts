@@ -81,3 +81,15 @@ export type ReviewQuery = {
   comment: boolean;
   rating: number[];
 };
+
+export type RefundQuery = {
+  sort: string;
+  sortBy: string;
+  limit: number;
+  page: number;
+  searchInvoice: string;
+  filterGroupedStatus: string;
+  filterStatus: string;
+  filterStartDate: string;
+  filterEndDate: string;
+};
