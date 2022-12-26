@@ -1,5 +1,5 @@
 import { Metadata } from '../component';
-import { RefundDetails, RefundOrder } from '../component/refund';
+import { CalculatedRefundDetails, RefundDetails, RefundOrder } from '../component/refund';
 
 export type CreateRefundOrderResponse = {
   data: RefundOrder | null;
@@ -11,6 +11,14 @@ export type CreateRefundOrderResponse = {
 
 export type GetAllRefundDetailsResponse = {
   data: RefundDetails[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type GetCalculatedRefundDetailsResponse = {
+  data: CalculatedRefundDetails | null;
   code: number;
   error: string | null;
   message: string;

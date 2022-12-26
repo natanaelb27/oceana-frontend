@@ -129,6 +129,10 @@ const PurchaseContent = () => {
   const [openStatusModal, setOpenStatusModal] = useState<boolean>(false);
   const [openOrderTracking, setOpenOrderTracking] = useState<boolean>(false);
 
+  const handleRefundClick = (id: string) => {
+    navigate(`/user/refund/create/${id}`);
+  };
+
   const handleCompleteOrderClick = (id: string) => {
     setOrderID(id);
 
@@ -834,7 +838,13 @@ const PurchaseContent = () => {
                             <HiOutlineDotsHorizontal></HiOutlineDotsHorizontal>
                           </Dropdown.Toggle>
                           <Dropdown.Menu className='w-52'>
-                            <Dropdown.Item>Refund</Dropdown.Item>
+                            <Dropdown.Item
+                              onClick={() =>
+                                handleRefundClick(transactionHistory?.order_id)
+                              }
+                            >
+                              Refund
+                            </Dropdown.Item>
                           </Dropdown.Menu>
                         </Dropdown>
                       </div>
@@ -869,8 +879,22 @@ const PurchaseContent = () => {
                             <HiOutlineDotsVertical></HiOutlineDotsVertical>
                           </Dropdown.Toggle>
                           <Dropdown.Menu className='w-52'>
-                            <Dropdown.Item>Complete</Dropdown.Item>
-                            <Dropdown.Item>Refund</Dropdown.Item>
+                            <Dropdown.Item
+                              onClick={() => {
+                                handleCompleteOrderClick(
+                                  transactionHistory?.order_id
+                                );
+                              }}
+                            >
+                              Complete
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              onClick={() =>
+                                handleRefundClick(transactionHistory?.order_id)
+                              }
+                            >
+                              Refund
+                            </Dropdown.Item>
                           </Dropdown.Menu>
                         </Dropdown>
                       </div>
