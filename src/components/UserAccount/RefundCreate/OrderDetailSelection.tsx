@@ -92,7 +92,7 @@ const OrderDetailSelection = ({
         <input
           type='checkbox'
           className='checkbox checkbox-success'
-          checked={selectedOrderDetail.at(idx)?.selectOrderDetail}
+          checked={selectedOrderDetail.at(idx)?.selectOrderDetail || false}
           onChange={(e) => {
             handleSelectOrderDetailChange(e, orderDetailData);
           }}
