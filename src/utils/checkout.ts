@@ -1,4 +1,5 @@
 import {
+  AvailableProductsForDelivery,
   CartGroupedByMerchant,
   CartProduct,
   DeliveryService,
@@ -21,20 +22,38 @@ export const calculateDiscount = (
     : voucher.discount;
 };
 
-export const calculateSubtotalBeforeShipping = (products: CartProduct[]) =>
-  products.reduce(
-    (partialSubtotal, currentProduct) =>
-      partialSubtotal +
-      currentProduct.price_after_discount * currentProduct.quantity,
-    0
-  );
+export const calculateSubtotalBeforeShipping = (
+  products: CartProduct[],
+  availableProductForDelivery?: number[]
+) =>
+  !availableProductForDelivery || availableProductForDelivery.length === 0
+    ? products.reduce(
+        (partialSubtotal, currentProduct) =>
+          partialSubtotal +
+          currentProduct.price_after_discount * currentProduct.quantity,
+        0
+      )
+    : products
+        .filter((product) =>
+          availableProductForDelivery.includes(product.product_id)
+        )
+        .reduce(
+          (partialSubtotal, currentProduct) =>
+            partialSubtotal +
+            currentProduct.price_after_discount * currentProduct.quantity,
+          0
+        );
 
 export const calculateSubtotal = (
   products: CartProduct[],
   shippingFee = 0,
-  merchantVoucher?: MerchantVoucher | null
+  merchantVoucher?: MerchantVoucher | null,
+  availableProductForDelivery?: number[]
 ): number => {
-  const subtotalBeforeShipping = calculateSubtotalBeforeShipping(products);
+  const subtotalBeforeShipping = calculateSubtotalBeforeShipping(
+    products,
+    availableProductForDelivery
+  );
   if (!merchantVoucher) {
     return subtotalBeforeShipping + shippingFee;
   }
@@ -46,17 +65,27 @@ export const calculateSubtotal = (
 };
 
 export const calculateTotalBeforeShipping = (
-  checkout: CartGroupedByMerchant[]
+  checkout: CartGroupedByMerchant[],
+  availableProductForDelivery?: AvailableProductsForDelivery
 ): number =>
   checkout.reduce(
     (partialTotal, currentMerchant) =>
-      partialTotal + calculateSubtotal(currentMerchant.products),
+      partialTotal +
+      calculateSubtotal(
+        currentMerchant.products,
+        0,
+        null,
+        availableProductForDelivery
+          ? availableProductForDelivery[currentMerchant.merchant_id]
+          : []
+      ),
     0
   );
 
 export const calculateTotalWithShipping = (
   checkout: CartGroupedByMerchant[],
-  deliveryService?: DeliveryService | null
+  deliveryService?: DeliveryService | null,
+  availableProductForDelivery?: AvailableProductsForDelivery
 ): number =>
   checkout.reduce(
     (partialTotal, currentMerchant) =>
@@ -66,21 +95,31 @@ export const calculateTotalWithShipping = (
         !deliveryService
           ? 0
           : deliveryService[currentMerchant.merchant_id]?.courier_services[0]
-              .shipping_fee
+              .shipping_fee,
+        null,
+        availableProductForDelivery
+          ? availableProductForDelivery[currentMerchant.merchant_id]
+          : []
       ),
     0
   );
 
 export const calculateTotalDiscount = (
   checkout: CartGroupedByMerchant[],
-  merchantVouchers: MerchantVouchers
+  merchantVouchers: MerchantVouchers,
+  availableProductForDelivery?: AvailableProductsForDelivery
 ) =>
   checkout.reduce(
     (partialDiscountTotal, currentMerchant) =>
       partialDiscountTotal +
       calculateDiscount(
         merchantVouchers[currentMerchant.merchant_id] as MerchantVoucher,
-        calculateSubtotalBeforeShipping(currentMerchant.products)
+        calculateSubtotalBeforeShipping(
+          currentMerchant.products,
+          availableProductForDelivery
+            ? availableProductForDelivery[currentMerchant.merchant_id]
+            : []
+        )
       ),
     0
   );
@@ -89,17 +128,29 @@ export const calculateTotal = (
   checkout: CartGroupedByMerchant[],
   deliveryService: DeliveryService | null,
   marketplaceVoucher: MarketplaceVoucher | null,
-  merchantVouchers: MerchantVouchers | null
+  merchantVouchers: MerchantVouchers | null,
+  availableProductForDelivery?: AvailableProductsForDelivery
 ): number => {
-  const totalBeforeShipping = calculateTotalBeforeShipping(checkout);
+  const totalBeforeShipping = calculateTotalBeforeShipping(
+    checkout,
+    availableProductForDelivery
+  );
   const shippingFee =
-    calculateTotalWithShipping(checkout, deliveryService) - totalBeforeShipping;
+    calculateTotalWithShipping(
+      checkout,
+      deliveryService,
+      availableProductForDelivery
+    ) - totalBeforeShipping;
   const discountMarketplace = !marketplaceVoucher
     ? 0
     : calculateDiscount(marketplaceVoucher, totalBeforeShipping);
   const discountMerchants = !merchantVouchers
     ? 0
-    : calculateTotalDiscount(checkout, merchantVouchers);
+    : calculateTotalDiscount(
+        checkout,
+        merchantVouchers,
+        availableProductForDelivery
+      );
   const total =
     totalBeforeShipping - discountMarketplace - discountMerchants + shippingFee;
 

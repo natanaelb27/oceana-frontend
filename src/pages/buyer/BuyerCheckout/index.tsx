@@ -329,7 +329,14 @@ const BuyerCheckout = () => {
             ? additionalNotes[product.product_item_id]
             : '';
 
-          if (productIndex < 0) {
+          // check if product available for delivery
+          if (
+            !availableProductsForDelivery[
+              cartGroupedByMerchant.merchant_id
+            ].includes(product.product_id)
+          ) {
+            // do nothing, don't add to checkout request
+          } else if (productIndex < 0) {
             const checkoutCartProductItems: CheckoutCartProductItem[] = [];
 
             checkoutCartProductItems.push({
@@ -461,10 +468,17 @@ const BuyerCheckout = () => {
         checkout,
         deliveryService,
         marketplaceVoucher,
-        merchantVouchers
+        merchantVouchers,
+        availableProductsForDelivery
       )
     );
-  }, [checkout, deliveryService, marketplaceVoucher, merchantVouchers]);
+  }, [
+    checkout,
+    deliveryService,
+    marketplaceVoucher,
+    merchantVouchers,
+    availableProductsForDelivery,
+  ]);
 
   useEffect(() => {
     if (!getAddressesData?.data) {
@@ -761,7 +775,13 @@ const BuyerCheckout = () => {
                     setCurrentMerchantID(merchant_id);
                     setCurrentMerchantName(name);
                     setCurrentMerchantSubtotalBeforeShipping(
-                      calculateSubtotal(products)
+                      calculateSubtotal(
+                        products.filter((product) =>
+                          availableProductsForDelivery[merchant_id].includes(
+                            product.product_id
+                          )
+                        )
+                      )
                     );
                     setVoucherQuery((prev) => ({
                       ...prev,
@@ -790,7 +810,13 @@ const BuyerCheckout = () => {
                     setCurrentMerchantID(merchant_id);
                     setCurrentMerchantName(name);
                     setCurrentMerchantSubtotalBeforeShipping(
-                      calculateSubtotal(products)
+                      calculateSubtotal(
+                        products.filter((product) =>
+                          availableProductsForDelivery[merchant_id].includes(
+                            product.product_id
+                          )
+                        )
+                      )
                     );
                     setVoucherQuery((prev) => ({
                       ...prev,
@@ -813,7 +839,8 @@ const BuyerCheckout = () => {
                           products,
                           deliveryService[merchant_id]?.courier_services[0]
                             .shipping_fee,
-                          merchantVouchers[merchant_id]
+                          merchantVouchers[merchant_id],
+                          availableProductsForDelivery[merchant_id]
                         )
                       )
                     : deliveryService
@@ -821,7 +848,9 @@ const BuyerCheckout = () => {
                         calculateSubtotal(
                           products,
                           deliveryService[merchant_id]?.courier_services[0]
-                            .shipping_fee
+                            .shipping_fee,
+                          null,
+                          availableProductsForDelivery[merchant_id]
                         )
                       )
                     : merchantVouchers
@@ -829,10 +858,18 @@ const BuyerCheckout = () => {
                         calculateSubtotal(
                           products,
                           0,
-                          merchantVouchers[merchant_id]
+                          merchantVouchers[merchant_id],
+                          availableProductsForDelivery[merchant_id]
                         )
                       )
-                    : toRupiah(calculateSubtotal(products))}
+                    : toRupiah(
+                        calculateSubtotal(
+                          products,
+                          0,
+                          null,
+                          availableProductsForDelivery[merchant_id]
+                        )
+                      )}
                 </p>
               </div>
             </Card>
