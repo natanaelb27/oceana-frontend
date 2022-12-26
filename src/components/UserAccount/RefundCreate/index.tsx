@@ -170,7 +170,7 @@ const RefundCreate = () => {
 
     createRefundOrder([
       toCreateRefundOrderRequest(selectedOD, reason, images, videos),
-      orderID || '',
+      orderID,
     ]).then(() => {
       navigate('/user/refund');
     });
