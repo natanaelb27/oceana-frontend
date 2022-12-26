@@ -2,6 +2,7 @@ import {
   GetAllProductsResponse,
   GetProductDetailsResponse,
   GetPurchasedQuantitiesResponse,
+  GetShipmentResponse,
   ViewPostResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
@@ -38,6 +39,13 @@ export const productApi = baseApi.injectEndpoints({
         method: 'POST',
       }),
     }),
+    getProductsLogistics: builder.query<GetShipmentResponse, number>({
+      query: (merchantID) => ({
+        url: `/products/logistics/${merchantID}`,
+        method: 'GET',
+      }),
+      providesTags: ['Shipment'],
+    }),
   }),
 });
 
@@ -49,4 +57,5 @@ export const {
   useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
   useViewPostMutation,
+  useLazyGetProductsLogisticsQuery,
 } = productApi;

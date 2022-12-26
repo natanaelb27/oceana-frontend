@@ -710,8 +710,9 @@ const BuyerCheckout = () => {
                   }}
                 >
                   <Card.Title className='flex justify-between'>
-                    <div className='text-base group-hover:text-primary group-active:text-base-content'>
-                      {`${name}'s Vouchers`}
+                    <div className='flex gap-2 group-hover:text-primary group-active:text-base-content'>
+                      <IoTicketOutline />
+                      <div className='text-base '>{`${name}'s Vouchers`}</div>
                     </div>
                     <div>
                       <MdNavigateNext className='text-2xl group-hover:text-primary' />

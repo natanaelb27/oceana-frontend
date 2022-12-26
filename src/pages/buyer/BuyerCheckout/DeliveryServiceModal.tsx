@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Modal } from 'react-daisyui';
 import { Image, Skeleton } from '../../../components/common';
+import { useLazyGetProductsLogisticsQuery } from '../../../store/services/productService';
 import { useGetRajaOngkirShippingCostMutation } from '../../../store/services/rajaOngkir';
-import { useLazyGetShipmentSelectedQuery } from '../../../store/services/shipmentService';
 import {
   Courier,
   DeliveryService,
@@ -31,8 +31,8 @@ const DeliveryServiceModal = ({
   onClose,
   setDeliveryService,
 }: DeliveryServiceModalProps) => {
-  const [getShipmentSelected, { data: getShipmenSelectedtData }] =
-    useLazyGetShipmentSelectedQuery();
+  const [getProductsLogistics, { data: getProductsLogisticsData }] =
+    useLazyGetProductsLogisticsQuery();
   const [getRajaOngkirShippingCost] = useGetRajaOngkirShippingCostMutation();
   const [openCourierServicesModal, setOpenCourierServicesModal] =
     useState<boolean>(false);
@@ -72,7 +72,9 @@ const DeliveryServiceModal = ({
         });
       })
       .catch(() => {
-        notifyErrorToast('Something went wrong, please try again');
+        notifyErrorToast(
+          `Services unavailable for ${selectedCourier.name}, please try another courier`
+        );
         handleCourierServiceModalClose();
       });
   };
@@ -111,10 +113,10 @@ const DeliveryServiceModal = ({
   };
 
   useEffect(() => {
-    if (open) getShipmentSelected();
+    if (open) getProductsLogistics(currentMerchantID);
   }, [open]);
 
-  if (!getShipmenSelectedtData?.data) {
+  if (!getProductsLogisticsData?.data) {
     return (
       <Modal
         open={open}
@@ -150,7 +152,7 @@ const DeliveryServiceModal = ({
         </Modal.Header>
         <Modal.Body className='h-80 overflow-y-auto hide-scrollbar md:h-96'>
           <div className='grid grid-cols-2 gap-4'>
-            {getShipmenSelectedtData.data.couriers.map((courier) => (
+            {getProductsLogisticsData.data.couriers.map((courier) => (
               <div
                 key={courier.id}
                 id={courier.code}
