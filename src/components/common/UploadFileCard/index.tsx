@@ -74,7 +74,7 @@ const UploadFileCard = ({
   useEffect(() => {
     const filesViewArray = files.map((file) => URL.createObjectURL(file));
     setFilesView([...filesViewArray]);
-  }, []);
+  }, [setFiles]);
 
   return (
     <div className='relative flex flex-wrap gap-2'>

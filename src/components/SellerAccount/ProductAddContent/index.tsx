@@ -226,6 +226,9 @@ const ProductAddContent = () => {
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
   const [variantImages, setVariantImages] = useState<File[][]>([]);
+  const [variantImagesIndex, setVariantImagesIndex] = useState<
+    number | undefined
+  >(undefined);
 
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
 
@@ -304,6 +307,49 @@ const ProductAddContent = () => {
     productFormik.setFieldValue('videos', videos);
   };
 
+  useEffect(() => {
+    if (
+      variantImagesIndex === undefined ||
+      variantImages[variantImagesIndex].length === 0
+    ) {
+      return;
+    }
+
+    notifyInfoToast('Uploading variant image...');
+
+    uploadMedia({
+      formData: toUploadMediaRequest(variantImages[variantImagesIndex][0]),
+    })
+      .unwrap()
+      .then(({ data }) => {
+        notifySuccessToast('variant imagehas been uploaded!');
+        productFormik.setFieldValue(
+          `variants[0]images[${variantImagesIndex}]`,
+          data?.media_url
+        );
+      })
+      .catch((err) => {
+        if ('data' in err) {
+          const response = err.data as UploadMediaResponse;
+          notifyErrorToast(response.message);
+        } else {
+          notifyErrorToast('upload media failed');
+        }
+
+        const currentMedia = [...variantImages];
+        currentMedia[variantImagesIndex].splice(0, 1);
+        setVariantImages(currentMedia);
+      })
+      .finally(() => {
+        setVariantImagesIndex(undefined);
+      });
+  }, [variantImages && variantImagesIndex !== undefined]);
+
+  const handleVariantImagesOnDelete = (index: number) => {
+    productFormik.setFieldValue(`variants[0].images[${index}]`, '');
+    setVariantImagesIndex(undefined);
+  };
+
   const handleSetFilesVariantImages = (
     newVariantImages: File[],
     index: number
@@ -312,41 +358,8 @@ const ProductAddContent = () => {
     newVariantImagesState[index] = newVariantImages;
 
     setVariantImages(newVariantImagesState);
-
-    notifyInfoToast('Uploading variant image...');
-
-    // uploadMedia({ formData: toUploadMediaRequest(variantImages[index][0]) })
-    //   .unwrap()
-    //   .then(({ data }) => {
-    //     notifySuccessToast('variant imagehas been uploaded!');
-    //     const newProductFormikVariantImages = [
-    //       ...productFormik.values.variants[0].images,
-    //       data?.media_url,
-    //     ];
-    //     productFormik.setFieldValue('variants[0]images', newProductFormikVariantImages);
-    //   })
-    //   .catch((err) => {
-    //     if ('data' in err) {
-    //       const response = err.data as UploadMediaResponse;
-    //       notifyErrorToast(response.message);
-    //     } else {
-    //       notifyErrorToast('upload media failed');
-    //     }
-    //     if (
-    //       getter === undefined ||
-    //       setter === undefined ||
-    //       productFormikMediaFields === ''
-    //     ) {
-    //       return;
-    //     }
-    //     const currentMedia = [...getter];
-    //     currentMedia.splice(currentMedia.length - 1, 1);
-    //     setter(currentMedia);
-    //   });
+    setVariantImagesIndex(index);
   };
-  // console.log(productFormik.values.variants);
-  console.log(productFormik.values.images);
-  console.log(productFormik.values.videos);
 
   const updateCouriers = (couriers: Courier[]) => {
     productFormik.setFieldValue('couriers', couriers);
@@ -390,7 +403,6 @@ const ProductAddContent = () => {
     newData.push(newVariant);
 
     updateProductItemsAccordingToVariants(newData);
-
     productFormik.setFieldValue('variants', newData);
   };
 
@@ -553,14 +565,14 @@ const ProductAddContent = () => {
     // delete variant
     newVariants.splice(index, 1);
 
-    if (index === 0) {
-      setVariantImages([]);
-    }
-
     // delete product items
     updateProductItemsAccordingToVariants(newVariants);
 
     productFormik.setFieldValue('variants', newVariants);
+
+    if (index === 0) {
+      setVariantImages([]);
+    }
   };
 
   const handleDeleteVariantOptionOnClick = (
@@ -616,7 +628,6 @@ const ProductAddContent = () => {
         });
       })
       .finally(() => {
-        console.log(id);
         productFormik.setFieldValue('category_name', categoryNames);
         productFormik.setFieldValue('category_id', id);
         setOpenCategoryModal(false);
@@ -905,6 +916,11 @@ const ProductAddContent = () => {
                                   uploadLimit={1}
                                   fileType={MEDIA_TYPE.IMAGE}
                                   multiple={false}
+                                  onDelete={() => {
+                                    handleVariantImagesOnDelete(
+                                      valueVariantIndex
+                                    );
+                                  }}
                                 />
                               </td>
                             )}
@@ -1659,39 +1675,6 @@ const ProductAddContent = () => {
                   />
                 </div>
               </FormLayout.LabelInputContainer>
-              {productFormik.values.process_day !== 2 && (
-                <>
-                  <FormLayout.LabelInputContainer>
-                    <FormLayout.LabelContainer />
-                    <FormLayout.InputContainer>
-                      <>
-                        <div className='flex items-center gap-2'>
-                          <Input
-                            type='number'
-                            name='preorder_day'
-                            className='w-full'
-                            value={productFormik.values.preorder_day}
-                            onChange={productFormik.handleChange}
-                            onFocus={() =>
-                              (productFormik.touched.preorder_day = true)
-                            }
-                            onKeyDown={handleNumberInvalidKey}
-                          />
-                          <span>days</span>
-                        </div>
-                      </>
-                    </FormLayout.InputContainer>
-                  </FormLayout.LabelInputContainer>
-                  <FormLayout.InputError>
-                    {productFormik.touched.preorder_day &&
-                      productFormik.errors.preorder_day && (
-                        <label className='label-text-alt text-error'>
-                          {productFormik.errors.preorder_day}
-                        </label>
-                      )}
-                  </FormLayout.InputError>
-                </>
-              )}
             </FormLayout.LabelInputErrorContainer>
           </div>
         </Card>
