@@ -23,14 +23,16 @@ const MarketplaceVoucherModal = ({
   onClose,
   setMarketplaceVoucher,
 }: MarketplaceVoucherModalProps) => {
-  if (activeMarketplaceVouchers.length === 0) {
+  if (activeMarketplaceVouchers.length === 0 && open) {
     notifyInfoToast('No available vouchers');
     return null;
   }
   const handleChangeMarketplaceVoucher = (
-    voucher: MarketplaceVoucher | MerchantVoucher
+    voucher: MarketplaceVoucher | MerchantVoucher | null
   ) => {
-    setMarketplaceVoucher(voucher as MarketplaceVoucher);
+    voucher?.id === currentMarketplaceVoucher?.id
+      ? setMarketplaceVoucher(null)
+      : setMarketplaceVoucher(voucher as MarketplaceVoucher);
     onClose();
   };
   return (

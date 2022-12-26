@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal } from 'react-daisyui';
 import { Image, Skeleton } from '../../../components/common';
 import { useGetRajaOngkirShippingCostMutation } from '../../../store/services/rajaOngkir';
-import { useGetShipmentQuery } from '../../../store/services/shipmentService';
+import { useLazyGetShipmentSelectedQuery } from '../../../store/services/shipmentService';
 import {
-  RajaOngkirShippingService,
   Courier,
   DeliveryService,
+  RajaOngkirShippingService,
 } from '../../../types/component';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
 import { toETD, toRupiah } from '../../../utils/convert';
@@ -31,7 +31,8 @@ const DeliveryServiceModal = ({
   onClose,
   setDeliveryService,
 }: DeliveryServiceModalProps) => {
-  const { data: getShipmentData } = useGetShipmentQuery();
+  const [getShipmentSelected, { data: getShipmenSelectedtData }] =
+    useLazyGetShipmentSelectedQuery();
   const [getRajaOngkirShippingCost] = useGetRajaOngkirShippingCostMutation();
   const [openCourierServicesModal, setOpenCourierServicesModal] =
     useState<boolean>(false);
@@ -109,7 +110,11 @@ const DeliveryServiceModal = ({
     onClose();
   };
 
-  if (!getShipmentData?.data) {
+  useEffect(() => {
+    if (open) getShipmentSelected();
+  }, [open]);
+
+  if (!getShipmenSelectedtData?.data) {
     return (
       <Modal
         open={open}
@@ -145,7 +150,7 @@ const DeliveryServiceModal = ({
         </Modal.Header>
         <Modal.Body className='h-80 overflow-y-auto hide-scrollbar md:h-96'>
           <div className='grid grid-cols-2 gap-4'>
-            {getShipmentData.data.couriers.map((courier) => (
+            {getShipmenSelectedtData.data.couriers.map((courier) => (
               <div
                 key={courier.id}
                 id={courier.code}

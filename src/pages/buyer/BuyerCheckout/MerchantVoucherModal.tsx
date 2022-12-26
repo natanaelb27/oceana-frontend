@@ -39,13 +39,18 @@ const MerchantVoucherModal = ({
     { data: getAllMerchantVoucherByBuyerData },
   ] = useLazyGetAllMerchantVoucherByBuyerQuery();
 
-  const handleChangeMerchantVoucher = (
-    voucher: MarketplaceVoucher | MerchantVoucher
+  const handleClickMerchantVoucher = (
+    voucher: MarketplaceVoucher | MerchantVoucher | null
   ) => {
-    setMerchantVouchers((prev) => ({
-      ...prev,
-      [currentMerchantID]: voucher as MerchantVoucher,
-    }));
+    merchantVouchers && merchantVouchers[currentMerchantID]?.id === voucher?.id
+      ? setMerchantVouchers((prev) => ({
+          ...prev,
+          [currentMerchantID]: null,
+        }))
+      : setMerchantVouchers((prev) => ({
+          ...prev,
+          [currentMerchantID]: voucher as MerchantVoucher,
+        }));
     onClose();
   };
 
@@ -54,7 +59,9 @@ const MerchantVoucherModal = ({
       getAllMerchantVoucherByBuyer(toMerchantVoucherQuery(voucherQuery)).then(
         (response) => {
           if (response.data?.data.merchant_voucher.length === 0) {
-            notifyInfoToast('No available vouchers');
+            notifyInfoToast(
+              `No available vouchers ${currentMerchantName}'s shop`
+            );
             onClose();
             return null;
           }
@@ -108,7 +115,7 @@ const MerchantVoucherModal = ({
               selectedVoucher={
                 merchantVouchers && merchantVouchers[currentMerchantID]
               }
-              onClickVoucher={handleChangeMerchantVoucher}
+              onClickVoucher={handleClickMerchantVoucher}
             />
           )
         )}

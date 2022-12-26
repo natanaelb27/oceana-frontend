@@ -361,7 +361,7 @@ const BuyerCheckout = () => {
         const checkoutCartOrderItem: CheckoutCartOrderItem = {
           merchant_id: cartGroupedByMerchant.merchant_id,
           merchant_voucher_id: merchantVoucherID,
-          courier_service_id: courierServiceID, // TODO: BE not returning courier_service_id
+          courier_service_id: courierServiceID,
           shipping_fee: shippingFee,
           products: checkoutCartProducts,
         };
@@ -480,7 +480,7 @@ const BuyerCheckout = () => {
       </h1>
       <div className='grid grid-cols-1 md:grid-cols-12'>
         {/* Shipping address */}
-        <Card className='p-4 mb-4 shadow-lg md:col-span-8'>
+        <Card className='p-4 mb-4 shadow-lg md:col-span-7'>
           <Card.Title className='flex justify-between'>
             <div className='flex items-center gap-2'>
               <HiOutlineLocationMarker />
@@ -538,7 +538,7 @@ const BuyerCheckout = () => {
           ) => (
             <Card
               key={merchant_id}
-              className='p-4 mb-4 shadow-lg md:col-span-8'
+              className='p-4 mb-4 shadow-lg md:col-span-7'
             >
               <Card.Title className='flex justify-between'>
                 <div className='flex items-center gap-2'>
@@ -579,7 +579,7 @@ const BuyerCheckout = () => {
                         key={product.carts_id}
                         className='grid grid-cols-3 py-3 md:grid-cols-8'
                       >
-                        <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2 md:col-span-2'>
+                        <div className='h-20 w-20 md:h-24 md:w-24 md:col-span-1'>
                           <img
                             src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
                             className='rounded-lg h-full w-full'
@@ -590,7 +590,7 @@ const BuyerCheckout = () => {
                             }}
                           />
                         </div>
-                        <div className='w-full flex flex-col col-span-2 md:col-span-6'>
+                        <div className='w-full flex flex-col col-span-2 md:col-span-7'>
                           <div className='justify-start mt-2 md:mt-0'>
                             {titleCase(product.product_name)}
                           </div>
@@ -622,7 +622,7 @@ const BuyerCheckout = () => {
                             </div>
                           </div>
                         </div>
-                        <div className='col-span-3'>
+                        <div className='col-span-4'>
                           <Input
                             className='w-full'
                             color='primary'
@@ -773,7 +773,7 @@ const BuyerCheckout = () => {
         )}
 
         {/* Voucher card */}
-        <Card className='p-4 mb-4 shadow-lg md:col-span-8'>
+        <Card className='p-4 mb-4 shadow-lg md:col-span-7'>
           <Card.Title className='flex justify-between'>
             <div className='flex items-center gap-2'>
               <div className='flex items-center text-primary gap-1'>
@@ -806,7 +806,7 @@ const BuyerCheckout = () => {
         </Card>
 
         {/* Payment method card */}
-        <Card className='col-span-1 p-4 mb-4 shadow-lg md:col-span-8'>
+        <Card className='col-span-1 p-4 mb-4 shadow-lg md:col-span-7'>
           <Card.Title className='flex justify-between'>
             <div className='flex items-center gap-2'>
               {paymentMethod === PaymentMethod.Wallet ? (
@@ -850,6 +850,7 @@ const BuyerCheckout = () => {
           </Card.Body>
         </Card>
 
+        <div className='col-span-1' />
         {/* Total and make order button sticky bottom */}
         <Card className='container p-6 fixed -bottom-1 left-0 z-[100] rounded-b-none rounded-t-3xl bg-neutral md:col-span-4 md:sticky md:top-0 md:right-0 md:w-full md:z-0'>
           <Card.Title className='flex justify-between text-neutral-content'>
