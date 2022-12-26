@@ -14,6 +14,13 @@ export const shipmentApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Shipment'],
     }),
+    getSelectedShipment: builder.query<GetShipmentResponse, void>({
+      query: () => ({
+        url: '/my-shop/logistics/selected',
+        method: 'GET',
+      }),
+      providesTags: ['Shipment'],
+    }),
     updateShipment: builder.mutation<
       UpdateShipmentResponse,
       { request: UpdateShipmentRequest }
@@ -28,4 +35,8 @@ export const shipmentApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetShipmentQuery, useUpdateShipmentMutation } = shipmentApi;
+export const {
+  useGetShipmentQuery,
+  useGetSelectedShipmentQuery,
+  useUpdateShipmentMutation,
+} = shipmentApi;

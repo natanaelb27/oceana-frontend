@@ -2,6 +2,7 @@ export * from './address';
 export * from './auth';
 export * from './cart';
 export * from './marketplaceVoucher';
+export * from './media';
 export * from './merchant';
 export * from './merchantPromotion';
 export * from './merchantVoucher';
