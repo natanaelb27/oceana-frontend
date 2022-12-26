@@ -17,7 +17,7 @@ export const refundApi = baseApi.injectEndpoints({
         method: 'POST',
         body: request,
       }),
-      invalidatesTags: ['Refund'],
+      invalidatesTags: ['Refund', 'Order'],
     }),
     getCalculatedRefundDetails: builder.query<
       GetCalculatedRefundDetailsResponse,
