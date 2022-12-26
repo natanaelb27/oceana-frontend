@@ -27,4 +27,5 @@ export interface RefundDetails {
   total_user_refund_amount: number;
   total_merchant_lost_amount: number;
   refund_seller_confirmation_expiration_datetime: string;
+  refund_rejected_auto_complete_order_expiration_datetime: string;
 }

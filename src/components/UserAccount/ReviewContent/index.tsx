@@ -294,7 +294,7 @@ const ReviewContent = () => {
     <div className='p-4 md:p-10'>
       <h5 className='font-bold text-2xl text-primary'>Review</h5>
       <Divider />
-      <div className='flex flex-col gap-3 mb-5'>
+      <div className='flex flex-col mb-5'>
         <div>
           <Tabs
             variant='bordered'
@@ -354,6 +354,12 @@ const ReviewContent = () => {
               customInput={createElement(forwardRef(DateCustomInput))}
             />
           </div>
+          <Button
+            className='normal-case text-sm btn-outline btn-primary w-full md:w-fit'
+            onClick={handleResetFilterClick}
+          >
+            Reset Filter
+          </Button>
         </div>
       </div>
       <div className='grid grid-cols-12 gap-4'>

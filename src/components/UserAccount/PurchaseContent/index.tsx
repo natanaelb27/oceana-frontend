@@ -121,6 +121,31 @@ const PurchaseContent = () => {
     return 'warning';
   };
 
+  const getStatusDisplay = (orderStatus: string) => {
+    switch (orderStatus) {
+      case DELIVERY_STATUS.ALL:
+        return 'All';
+      case DELIVERY_STATUS.ONGOING:
+        return 'Ongoing';
+      case DELIVERY_STATUS.PENDING_SELLER:
+        return 'Waiting for Confirmation';
+      case DELIVERY_STATUS.ON_PROCESS:
+        return 'On Process';
+      case DELIVERY_STATUS.OUT_FOR_DELIVERY:
+        return 'Out for Delivery';
+      case DELIVERY_STATUS.DELIVERED:
+        return 'Delivered';
+      case DELIVERY_STATUS.COMPLAINED:
+        return 'Complained';
+      case DELIVERY_STATUS.COMPLETED:
+        return 'Completed';
+      case DELIVERY_STATUS.CANCELED:
+        return 'Canceled';
+      default:
+        return '';
+    }
+  };
+
   const [openModal, setOpenModal] = useState<OpenModal>({
     detailOrder: false,
     completeOrder: false,
@@ -563,19 +588,23 @@ const PurchaseContent = () => {
               Canceled
             </Button>
           </div>
-          <Button
-            className='normal-case flex flex-row gap-1 justify-between btn-outline min-w-[30%] md:hidden'
-            onClick={handleFilterStatusClick}
-          >
-            {activeOngoingStatusButton || activeStatusButton}{' '}
-            <HiOutlineChevronDown className='text-sm' />
-          </Button>
-          <Button
-            className='normal-case text-sm btn-outline btn-primary'
-            onClick={handleResetFilterClick}
-          >
-            Reset Filter
-          </Button>
+          <div className='flex items-center gap-2 overflow-x-auto'>
+            <Button
+              className='normal-case flex flex-row gap-1 justify-between btn-outline min-w-[30%] md:hidden'
+              onClick={handleFilterStatusClick}
+            >
+              {getStatusDisplay(
+                activeOngoingStatusButton || activeStatusButton
+              )}{' '}
+              <HiOutlineChevronDown className='text-sm' />
+            </Button>
+            <Button
+              className='normal-case text-sm btn-outline btn-primary'
+              onClick={handleResetFilterClick}
+            >
+              Reset Filter
+            </Button>
+          </div>
         </div>
         <div
           className={
@@ -1012,7 +1041,16 @@ const PurchaseContent = () => {
               onClick={() => handleModalFilterStatusClick(DELIVERY_STATUS.ALL)}
             >
               <span className='font-bold'>All Transactions</span>
-              <Radio size='md' color='primary' name='filter-status' />
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.ALL
+                }
+                readOnly
+              />
             </label>
             <Divider className='m-0'></Divider>
             <label
@@ -1022,7 +1060,16 @@ const PurchaseContent = () => {
               }
             >
               <span className='font-bold'>All Ongoing Transactions</span>
-              <Radio size='md' color='primary' name='filter-status' />
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.ONGOING
+                }
+                readOnly
+              />
             </label>
             <Divider className='m-0'></Divider>
             <div className='flex flex-col'>
@@ -1035,7 +1082,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Waiting for Confirmation</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.PENDING_SELLER
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -1047,7 +1103,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>On Process</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.ON_PROCESS
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -1059,7 +1124,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Out for Delivery</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.OUT_FOR_DELIVERY
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -1069,7 +1143,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Delivered</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.DELIVERED
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -1081,29 +1164,56 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Complained</span>
-                <Radio size='md' color='primary' name='filter-status' />
-              </label>
-              <Divider className='m-0'></Divider>
-              <label
-                className='flex flex-row justify-between label cursor-pointer'
-                onClick={() =>
-                  handleModalFilterOngoingStatusClick(DELIVERY_STATUS.COMPLETED)
-                }
-              >
-                <span className='font-bold'>Completed</span>
-                <Radio size='md' color='primary' name='filter-status' />
-              </label>
-              <Divider className='m-0'></Divider>
-              <label
-                className='flex flex-row justify-between label cursor-pointer'
-                onClick={() =>
-                  handleModalFilterOngoingStatusClick(DELIVERY_STATUS.CANCELED)
-                }
-              >
-                <span className='font-bold'>Canceled</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.COMPLAINED
+                  }
+                  readOnly
+                />
               </label>
             </div>
+            <Divider className='m-0'></Divider>
+            <label
+              className='flex flex-row justify-between label cursor-pointer'
+              onClick={() =>
+                handleModalFilterOngoingStatusClick(DELIVERY_STATUS.COMPLETED)
+              }
+            >
+              <span className='font-bold'>Completed</span>
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.COMPLETED
+                }
+                readOnly
+              />
+            </label>
+            <Divider className='m-0'></Divider>
+            <label
+              className='flex flex-row justify-between label cursor-pointer'
+              onClick={() =>
+                handleModalFilterOngoingStatusClick(DELIVERY_STATUS.CANCELED)
+              }
+            >
+              <span className='font-bold'>Canceled</span>
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.CANCELED
+                }
+                readOnly
+              />
+            </label>
           </div>
         </Modal.Body>
       </Modal>

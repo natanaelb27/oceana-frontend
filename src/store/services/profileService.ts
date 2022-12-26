@@ -7,6 +7,7 @@ import {
 } from '../../types/request';
 import {
   CheckPasswordVerificationCodeResponse,
+  GetAllRefundDetailsResponse,
   GetProfileResponse,
   RequestPasswordVerificationCodeResponse,
   UpdateOrderStatusResponse,
@@ -71,6 +72,16 @@ export const profileApi = baseApi.injectEndpoints({
       UpdateProfilePasswordRequest
     >({
       query: (request) => ({
+        getAllMerchantRefunds: builder.query<
+          GetAllRefundDetailsResponse,
+          string
+        >({
+          query: (query) => ({
+            url: `/my-shop/refunds?${query}`,
+            method: 'GET',
+          }),
+          providesTags: ['Refund'],
+        }),
         url: '/profile/password',
         method: 'PATCH',
         body: request,
@@ -112,6 +123,13 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Order'],
     }),
+    getAllProfileRefunds: builder.query<GetAllRefundDetailsResponse, string>({
+      query: (query) => ({
+        url: `/profile/refunds?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Refund'],
+    }),
   }),
 });
 
@@ -127,4 +145,6 @@ export const {
   useCheckVerificationCodeMutation,
   useLogoutMutation,
   useUpdateCompleteOrderMutation,
+  useGetAllProfileRefundsQuery,
+  useLazyGetAllProfileRefundsQuery,
 } = profileApi;

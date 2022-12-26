@@ -41,7 +41,11 @@ const DateCountdown = ({ date = null }: DateCountdownProps) => {
             <span>
               {computeDatetime(getDateDiffNow(date?.toString() || '')).days}
             </span>
-            <span>days</span>
+            <span>
+              {computeDatetime(getDateDiffNow(date?.toString() || '')).days > 1
+                ? 'days'
+                : 'day'}
+            </span>
           </div>
         ) : (
           <div className='grid items-center font-bold grid-flow-col text-center auto-cols-max mt-0.5'>

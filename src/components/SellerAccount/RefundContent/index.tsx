@@ -1,5 +1,7 @@
 import {
+  ChangeEvent,
   createElement,
+  FormEvent,
   forwardRef,
   ReactNode,
   Ref,
@@ -11,7 +13,9 @@ import {
   Button,
   Card,
   Divider,
+  Form,
   Input,
+  InputGroup,
   Modal,
   Table,
   Tabs,
@@ -25,9 +29,10 @@ import {
   HiOutlineClock,
   HiOutlineCheck,
   HiOutlineX,
+  HiSearch,
+  HiOutlineChevronRight,
 } from 'react-icons/hi';
 import {
-  DELIVERY_STATUS,
   LIMIT_REFUND,
   REFUND_GROUPED_STATUS,
   REFUND_STATUS,
@@ -57,6 +62,7 @@ import DatePicker, { CalendarContainer } from 'react-datepicker';
 import DateCountdown from '../../common/DateCountdown';
 import { useLazyGetRefundDetailsQuery } from '../../../store/services/refundService';
 import Zoom from 'react-medium-image-zoom';
+import { useNavigate } from 'react-router-dom';
 
 type OpenModal = {
   approveRefund: boolean;
@@ -65,6 +71,7 @@ type OpenModal = {
 };
 
 const RefundContent = () => {
+  const navigate = useNavigate();
   const [openModal, setOpenModal] = useState<OpenModal>({
     approveRefund: false,
     rejectRefund: false,
@@ -84,6 +91,30 @@ const RefundContent = () => {
     filterStartDate: '',
     filterEndDate: '',
   });
+
+  const [search, setSearch] = useState<string>('');
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setRefundQuery({
+      ...refundQuery,
+      page: 1,
+      searchInvoice: search,
+    });
+  };
+
+  const handleSearchClick = () => {
+    setRefundQuery({
+      ...refundQuery,
+      page: 1,
+      searchInvoice: search,
+    });
+  };
 
   const {
     data: getAllMerchantRefundsData,
@@ -273,17 +304,15 @@ const RefundContent = () => {
   };
 
   const getBadgeColor = (orderStatus: string) => {
-    if (stringCompare(orderStatus, DELIVERY_STATUS.COMPLETED)) {
+    if (stringCompare(orderStatus, REFUND_STATUS.COMPLETED)) {
       return 'success';
     }
-
     if (
-      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_BUYER) ||
-      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SELLER) ||
-      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SYSTEM) ||
-      stringCompare(orderStatus, DELIVERY_STATUS.COMPLAINED)
+      stringCompare(orderStatus, REFUND_STATUS.APPROVED) ||
+      stringCompare(orderStatus, REFUND_STATUS.APPROVED_BY_SYSTEM) ||
+      stringCompare(orderStatus, REFUND_STATUS.REJECTED)
     ) {
-      return 'error';
+      return 'info';
     }
 
     return 'warning';
@@ -318,6 +347,7 @@ const RefundContent = () => {
 
   const handleResetFilterClick = () => {
     setDateRange([null, null]);
+    setSearch('');
     setFilterStatus(REFUND_STATUS.ALL);
 
     setRefundQuery({
@@ -409,10 +439,42 @@ const RefundContent = () => {
       });
   };
 
+  const handleNavigateShop = (merchantID: number) => {
+    navigate(`/shops/${merchantID}`);
+  };
+
   return (
     <div className='p-4 md:p-10'>
       <div className='flex flex-col md:flex-row gap-y-3 justify-between items-center'>
         <h5 className='font-bold text-2xl text-primary'>Refund List</h5>
+      </div>
+      <Divider />
+      <Tabs
+        variant='bordered'
+        value={filterStatus}
+        onChange={handleFilterStatusClick}
+        className='mb-3 border-b-2'
+      >
+        <Tabs.Tab value={REFUND_GROUPED_STATUS.ALL}>All</Tabs.Tab>
+        <Tabs.Tab value={REFUND_STATUS.ONGOING}>To Process</Tabs.Tab>
+        <Tabs.Tab value={REFUND_GROUPED_STATUS.PROCESSED}>Processed</Tabs.Tab>
+        <Tabs.Tab value={REFUND_STATUS.COMPLETED}>Completed</Tabs.Tab>
+      </Tabs>
+      <div className='flex flex-col md:flex-row gap-3 mb-4 items-center'>
+        <Form onSubmit={handleFormSubmit} className='w-full md:w-auto'>
+          <InputGroup>
+            <Input
+              type='text'
+              placeholder='Search Invoice...'
+              className='w-full md:max-w-xs'
+              value={search}
+              onChange={handleSearchChange}
+            />
+            <Button onClick={handleSearchClick}>
+              <HiSearch className='text-lg' />
+            </Button>
+          </InputGroup>
+        </Form>
         <div ref={dateWrapperRef} className='w-[100%] md:w-auto'>
           <DatePicker
             selectsRange={true}
@@ -440,29 +502,30 @@ const RefundContent = () => {
             customInput={createElement(forwardRef(DateCustomInput))}
           />
         </div>
+        <Button
+          className='normal-case text-sm btn-outline btn-primary w-full md:w-fit'
+          onClick={handleResetFilterClick}
+        >
+          Reset Filter
+        </Button>
       </div>
-      <Divider />
-      <Tabs
-        variant='bordered'
-        value={filterStatus}
-        onChange={handleFilterStatusClick}
-        className='mb-3 border-b-2'
-      >
-        <Tabs.Tab value={REFUND_GROUPED_STATUS.ALL}>All</Tabs.Tab>
-        <Tabs.Tab value={REFUND_STATUS.ONGOING}>To Process</Tabs.Tab>
-        <Tabs.Tab value={REFUND_GROUPED_STATUS.PROCESSED}>Processed</Tabs.Tab>
-      </Tabs>
-
       <div className='overflow-x-auto'>
         {getAllMerchantRefundsIsLoading && (
           <Table className='w-[100%] z-0'>
             <Table.Head>
+              <span>Invoice No.</span>
               <span>Products</span>
               <span>Refund Total</span>
               <span>Refund Request Date</span>
               <span></span>
             </Table.Head>
             <Table.Body className='shadow animate-pulse'>
+              <Table.Row>
+                <div className='h-4 bg-base-200 w-full rounded-full mb-4'></div>
+                <div className='h-4 bg-base-200 w-full rounded-full mb-4'></div>
+                <div className='h-4 bg-base-200 w-full rounded-full mb-4'></div>
+                <div className='h-4 bg-base-200 w-full rounded-full mb-4'></div>
+              </Table.Row>
               <Table.Row>
                 <div className='h-4 bg-base-200 w-full rounded-full mb-4'></div>
                 <div className='h-4 bg-base-200 w-full rounded-full mb-4'></div>
@@ -489,6 +552,7 @@ const RefundContent = () => {
           getAllMerchantRefundsData?.data?.length > 0 ? (
             <Table className='w-[100%] z-0'>
               <Table.Head>
+                <span>Invoice No.</span>
                 <span>Products</span>
                 <span>Refund Total</span>
                 <span>Refund Request Date</span>
@@ -498,16 +562,23 @@ const RefundContent = () => {
                 {getAllMerchantRefundsData?.data?.map(
                   ({
                     refund_id,
+                    invoice_number,
                     refund_request_datetime,
                     refund_status,
                     refund_items,
                     total_merchant_lost_amount,
                     refund_seller_confirmation_expiration_datetime,
+                    refund_rejected_auto_complete_order_expiration_datetime,
                   }) => {
                     const productCount = refund_items.length;
                     const firstProduct = refund_items.at(0);
                     return (
                       <Table.Row key={refund_id}>
+                        <div>
+                          <span className='text-sm font-light'>
+                            {invoice_number}
+                          </span>
+                        </div>
                         <div className='flex flex-col max-w-md'>
                           <div className='flex'>
                             <div className='flex mr-5'>
@@ -527,7 +598,14 @@ const RefundContent = () => {
                                 {firstProduct?.refund_quantity} item
                                 {(firstProduct?.refund_quantity || 0) > 1
                                   ? 's'
-                                  : null}
+                                  : null}{' '}
+                                &times;{' '}
+                                {toRupiah(
+                                  Math.round(
+                                    (firstProduct?.merchant_lost_amount || 1) /
+                                      (firstProduct?.refund_quantity || 1)
+                                  )
+                                )}
                               </span>
                               {productCount > 1 ? (
                                 <span className='font-light text-sm'>
@@ -574,6 +652,21 @@ const RefundContent = () => {
                               </Tooltip>
                             </div>
                           ) : null}
+                          {stringCompare(
+                            refund_status,
+                            REFUND_STATUS.REJECTED
+                          ) &&
+                          refund_rejected_auto_complete_order_expiration_datetime ? (
+                            <div className='w-fit'>
+                              <Tooltip message='auto complete order'>
+                                <DateCountdown
+                                  date={moment(
+                                    refund_rejected_auto_complete_order_expiration_datetime
+                                  ).toDate()}
+                                ></DateCountdown>
+                              </Tooltip>
+                            </div>
+                          ) : null}
                         </div>
                         <div className='flex'>
                           <Tooltip message='Detail'>
@@ -592,7 +685,8 @@ const RefundContent = () => {
                 )}
               </Table.Body>
             </Table>
-          ) : refundQuery.filterStartDate === '' &&
+          ) : refundQuery.searchInvoice === '' &&
+            refundQuery.filterEndDate === '' &&
             refundQuery.filterEndDate === '' &&
             refundQuery.filterGroupedStatus === REFUND_GROUPED_STATUS.ALL &&
             refundQuery.filterStatus === REFUND_STATUS.ALL ? (
@@ -718,6 +812,25 @@ const RefundContent = () => {
                     </span>
                   </div>
                 ) : null}
+
+                {stringCompare(
+                  getRefundDetailsData?.data?.refund_status,
+                  REFUND_STATUS.REJECTED
+                ) &&
+                getRefundDetailsData?.data
+                  ?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Complete Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getRefundDetailsData?.data
+                            ?.refund_rejected_auto_complete_order_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
               </div>
               <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
@@ -769,6 +882,19 @@ const RefundContent = () => {
               <div className='flex flex-col gap-2 p-5'>
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>Refund Details</span>
+                  <div
+                    className='flex items-center gap-1 cursor-pointer hover:text-primary'
+                    onClick={() => {
+                      handleNavigateShop(
+                        getRefundDetailsData?.data?.merchant_id || 0
+                      );
+                    }}
+                  >
+                    <span className='font-bold text-sm'>
+                      {getRefundDetailsData?.data.shop_name}
+                    </span>
+                    <HiOutlineChevronRight className='text-sm' />
+                  </div>
                 </div>
                 <div className='flex flex-col gap-4'>
                   {getRefundDetailsData?.data.refund_items.map(
