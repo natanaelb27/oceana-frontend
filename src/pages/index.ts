@@ -44,6 +44,7 @@ export { default as ShopPromotionList } from './seller/ShopPromotionList';
 export { default as ShopVoucherDetail } from './seller/ShopVoucherDetail';
 export { default as ShopVoucherList } from './seller/ShopVoucherList';
 export { default as ShopShipmentSetting } from './seller/ShopShipmentSetting';
+export { default as ShopRefund } from './seller/ShopRefund';
 
 export { default as AdminAddVoucher } from './admin/AdminAddVoucher';
 export { default as AdminDetailVoucher } from './admin/AdminDetailVoucher';
