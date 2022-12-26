@@ -815,8 +815,11 @@ const BuyerCheckout = () => {
         </Card>
 
         {/* Payment method card */}
-        <Card className='col-span-1 p-4 mb-4 shadow-lg md:col-span-7'>
-          <Card.Title className='flex justify-between'>
+        <Card
+          className='group col-span-1 p-4 mb-4 shadow-lg cursor-pointer md:col-span-7 hover:bg-base-200'
+          onClick={handlePaymentMethodClick}
+        >
+          <Card.Title className='flex justify-between group-hover:text-primary'>
             <div className='flex items-center gap-2'>
               {paymentMethod === PaymentMethod.Wallet ? (
                 <IoWalletOutline className='w-5 h-5' />
@@ -827,8 +830,7 @@ const BuyerCheckout = () => {
             </div>
             <Tooltip message='Change payment method' position='left'>
               <Button
-                className='shadow-md'
-                color='primary'
+                className='bg-primary border-none shadow-md group-hover:bg-secondary'
                 shape='circle'
                 size='md'
                 onClick={handlePaymentMethodClick}
