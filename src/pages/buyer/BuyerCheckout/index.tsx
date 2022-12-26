@@ -282,6 +282,16 @@ const BuyerCheckout = () => {
       notifyInfoToast('Please pick a shipping address');
       return;
     }
+    // validate active wallet
+    if (!getWalletDetailsData?.data?.is_active) {
+      notifyInfoToast('Please activate your wallet');
+      return;
+    }
+    // validate wallet balance
+    if (walletBalance < totalPayment) {
+      notifyInfoToast('Insufficient wallet balance, please top up your wallet');
+      return;
+    }
     // validate delivery service
     if (!deliveryService) {
       notifyInfoToast('Please pick a delivery service');
@@ -323,10 +333,14 @@ const BuyerCheckout = () => {
             // add to array of cart IDs for BE request
             cartIDs.push(product.carts_id);
 
+            const pmpID =
+              product.product_merchant_promotion_id !== 0
+                ? product.product_merchant_promotion_id
+                : null;
+
             const checkoutCartProduct: CheckoutCartProduct = {
               product_id: product.product_id,
-              product_merchant_promotion_id:
-                product.product_merchant_promotion_id,
+              product_merchant_promotion_id: pmpID,
               product_items: checkoutCartProductItems,
             };
             checkoutCartProducts.push(checkoutCartProduct);
