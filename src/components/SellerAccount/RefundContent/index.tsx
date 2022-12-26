@@ -525,7 +525,7 @@ const RefundContent = () => {
                               </div>
                               <span className='font-light text-sm'>
                                 {firstProduct?.refund_quantity} item
-                                {firstProduct?.refund_quantity || 0 > 1
+                                {(firstProduct?.refund_quantity || 0) > 1
                                   ? 's'
                                   : null}
                               </span>

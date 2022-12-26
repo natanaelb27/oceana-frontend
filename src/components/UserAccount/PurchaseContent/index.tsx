@@ -864,9 +864,8 @@ const PurchaseContent = () => {
                         </span>
                         <span className='font-light text-sm'>
                           {firstProduct?.quantity} item
-                          {firstProduct?.quantity || 0 > 1
-                            ? 's'
-                            : null} &times; {toRupiah(firstProduct?.price || 0)}
+                          {(firstProduct?.quantity || 0) > 1 ? 's' : null}{' '}
+                          &times; {toRupiah(firstProduct?.price || 0)}
                         </span>
                         {productCount > 1 ? (
                           <span className='font-light text-sm'>

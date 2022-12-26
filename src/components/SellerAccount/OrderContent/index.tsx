@@ -698,7 +698,7 @@ const OrderContent = () => {
                               </div>
                               <span className='font-light text-sm'>
                                 {firstProduct?.quantity} item
-                                {firstProduct?.quantity || 0 > 1
+                                {(firstProduct?.quantity || 0) > 1
                                   ? 's'
                                   : null}{' '}
                                 &times; {toRupiah(firstProduct?.price || 0)}
