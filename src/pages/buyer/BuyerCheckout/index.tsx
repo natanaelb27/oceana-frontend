@@ -51,7 +51,9 @@ import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import {
   calculateSubtotal,
   calculateTotal,
+  calculateTotalBeforeShipping,
   calculateTotalWeight,
+  calculateTotalWithShipping,
 } from '../../../utils/checkout';
 import {
   pascalCaseToTitleCase,
@@ -962,7 +964,37 @@ const BuyerCheckout = () => {
 
         <div className='col-span-1' />
         {/* Total and make order button sticky bottom */}
-        <Card className='container p-6 fixed -bottom-1 left-0 z-[100] rounded-b-none rounded-t-3xl bg-neutral md:col-span-4 md:sticky md:top-0 md:right-0 md:w-full md:z-0'>
+        <Card className='container p-6 fixed -bottom-1 left-0 z-[100] rounded-b-none rounded-t-3xl bg-neutral shadow-2xl md:col-span-4 md:sticky md:w-full md:z-0'>
+          <Card.Body className='hidden p-0 text-neutral-content md:inline'>
+            <div className='flex items-center gap-2 text-lg'>
+              <ImPriceTag />
+              <h3>
+                {toRupiah(
+                  calculateTotalBeforeShipping(
+                    checkout,
+                    availableProductsForDelivery
+                  )
+                )}
+              </h3>
+            </div>
+            <div className='flex items-center gap-2 text-lg'>
+              <HiOutlineTruck />
+              <h3>
+                {toRupiah(
+                  calculateTotalWithShipping(
+                    checkout,
+                    deliveryService,
+                    availableProductsForDelivery
+                  ) -
+                    calculateTotalBeforeShipping(
+                      checkout,
+                      availableProductsForDelivery
+                    )
+                )}
+              </h3>
+            </div>
+            <Divider className='m-0' color='primary' />
+          </Card.Body>
           <Card.Title className='flex justify-between text-neutral-content'>
             <div className='flex items-center gap-2'>
               <ImPriceTags />
