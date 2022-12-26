@@ -1637,12 +1637,21 @@ const ProductAddContent = () => {
                       checked={productFormik.values.process_day !== 2}
                       onChange={handlePreorderToggleOnChange}
                     />
-                    <span>
+                    <p className='text-sm'>
                       Activate Pre-Order if you need a longer delivery time.
-                    </span>
+                    </p>
                   </div>
                 </FormLayout.InputContainer>
               </FormLayout.LabelInputContainer>
+              {productFormik.values.process_day === 2 && (
+                <FormLayout.InputError>
+                  <p className='text-sm'>
+                    Send the product within 2 days (excluding Saturdays,
+                    Sundays, national holidays and non-operational delivery
+                    services).
+                  </p>
+                </FormLayout.InputError>
+              )}
               {productFormik.values.process_day !== 2 && (
                 <>
                   <FormLayout.LabelInputContainer>
