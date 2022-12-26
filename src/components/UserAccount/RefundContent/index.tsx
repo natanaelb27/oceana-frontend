@@ -378,7 +378,7 @@ const RefundContent = () => {
       case REFUND_STATUS.ALL:
         return 'All';
       case REFUND_STATUS.ONGOING:
-        return 'In Process';
+        return 'On Process';
       case REFUND_GROUPED_STATUS.PROCESSED:
         return 'Processed';
       case REFUND_STATUS.COMPLETED:
@@ -405,7 +405,7 @@ const RefundContent = () => {
         className='mb-3 border-b-2 hidden md:flex'
       >
         <Tabs.Tab value={REFUND_GROUPED_STATUS.ALL}>All</Tabs.Tab>
-        <Tabs.Tab value={REFUND_STATUS.ONGOING}>In Process</Tabs.Tab>
+        <Tabs.Tab value={REFUND_STATUS.ONGOING}>On Process</Tabs.Tab>
         <Tabs.Tab value={REFUND_GROUPED_STATUS.PROCESSED}>Processed</Tabs.Tab>
         <Tabs.Tab value={REFUND_STATUS.COMPLETED}>Completed</Tabs.Tab>
       </Tabs>

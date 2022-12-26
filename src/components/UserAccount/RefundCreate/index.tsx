@@ -36,7 +36,7 @@ const RefundCreate = () => {
   }
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState<string>('');
   const [errors, setErrors] = useState<Errors>({
     orderDetail: [],
     selectedOrderDetail: '',
@@ -54,7 +54,7 @@ const RefundCreate = () => {
       estimatedRefundPrice: 0,
     },
   ]);
-  const [totalRefund, setTotalRefund] = useState(0);
+  const [totalRefund, setTotalRefund] = useState<number>(0);
   const [createRefundOrder, { isLoading: createRefundOrderIsLoading }] =
     useCreateRefundOrderMutation();
   const {

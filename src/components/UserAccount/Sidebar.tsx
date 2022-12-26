@@ -8,7 +8,7 @@ import {
   HiOutlineReceiptRefund,
 } from 'react-icons/hi';
 import { IoWalletOutline } from 'react-icons/io5';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 import { Profile } from '../../types/component';
 import { Image } from '../common';
@@ -18,6 +18,10 @@ type SidebarProps = {
 };
 
 const Sidebar = ({ profile }: SidebarProps) => {
+  const location = useLocation();
+  const { pathname } = location;
+  const splitLocation = pathname.split('/');
+
   if (!profile) {
     return (
       <Card className='shadow animate-pulse'>
@@ -109,7 +113,15 @@ const Sidebar = ({ profile }: SidebarProps) => {
             </NavLink>
           </Menu.Item>
           <Menu.Item>
-            <NavLink end to='/user/refund'>
+            <NavLink
+              end
+              to='/user/refund'
+              className={
+                splitLocation.slice(0, 3).join('/') === '/user/refund'
+                  ? 'active'
+                  : ''
+              }
+            >
               <HiOutlineReceiptRefund />
               Refunds
             </NavLink>
