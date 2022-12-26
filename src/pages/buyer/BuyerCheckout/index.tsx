@@ -693,7 +693,7 @@ const BuyerCheckout = () => {
                         </div>
                         <div className='col-span-4'>
                           <Input
-                            className='w-full disabled:placeholder-error disabled:bg-neutral animate-pulse'
+                            className='w-full disabled:placeholder-error disabled:bg-neutral disabled:animate-pulse'
                             color='primary'
                             id={String(product.product_item_id)}
                             placeholder={
