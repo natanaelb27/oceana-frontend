@@ -11,9 +11,11 @@ import {
   Button,
   Card,
   Divider,
+  Input,
   Modal,
   Table,
   Tabs,
+  Textarea,
   Tooltip,
 } from 'react-daisyui';
 import { CgClose } from 'react-icons/cg';
@@ -750,17 +752,19 @@ const RefundContent = () => {
                   <NoData title='It seems that this refund has no media uploaded'></NoData>
                 )}
               </div>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
+              <div className='w-full flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>Refund Reason</span>
                 </div>
-                <div className='border-[1px] border-base-300 p-2 min-h-12'>
-                  <span className='text-sm'>
-                    {getRefundDetailsData?.data?.refund_reason
+                <Textarea
+                  className='w-full resize-none min-h-[7rem] disabled:cursor-default'
+                  value={
+                    getRefundDetailsData?.data?.refund_reason
                       ? getRefundDetailsData?.data?.refund_reason
-                      : null}
-                  </span>
-                </div>
+                      : ''
+                  }
+                  disabled
+                ></Textarea>
               </div>
               <div className='flex flex-col gap-2 p-5'>
                 <div className='flex justify-between items-center'>
