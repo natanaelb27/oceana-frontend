@@ -131,7 +131,8 @@ const ProductAddContent = () => {
         {
           name: 'Color',
           options: ['Red', 'Blue'],
-          images: ['red.jpg', 'blue.jpg'],
+          images: [],
+          // images: ['red.jpg', 'blue.jpg'],
         },
         {
           name: 'Size',
@@ -192,10 +193,9 @@ const ProductAddContent = () => {
           options: Yup.array().of(
             Yup.string().required('Please enter option name')
           ),
-          // images: Yup.string(),
+          images: Yup.array().of(Yup.string()),
         })
       ),
-      // couriers: [],
     }),
     onSubmit: (values) => {
       values.package_size =
@@ -225,6 +225,7 @@ const ProductAddContent = () => {
 
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
+  const [variantImages, setVariantImages] = useState<File[][]>([]);
 
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
 
@@ -242,6 +243,8 @@ const ProductAddContent = () => {
       productFormikMediaFields = 'videos';
       getter = videos;
       setter = setVideos;
+    } else {
+      return;
     }
 
     if (
@@ -251,6 +254,7 @@ const ProductAddContent = () => {
     ) {
       return;
     }
+
     notifyInfoToast(`Uploading ${productFormikMediaFields}...`);
 
     uploadMedia({ formData: toUploadMediaRequest(getter[getter.length - 1]) })
@@ -287,6 +291,62 @@ const ProductAddContent = () => {
         setter(currentMedia);
       });
   }, [images, videos]);
+
+  const handleImagesOnDelete = (index: number) => {
+    const images = [...productFormik.values.images];
+    images.splice(index, 1);
+    productFormik.setFieldValue('images', images);
+  };
+
+  const handleVideosOnDelete = (index: number) => {
+    const videos = [...productFormik.values.videos];
+    videos.splice(index, 1);
+    productFormik.setFieldValue('videos', videos);
+  };
+
+  const handleSetFilesVariantImages = (
+    newVariantImages: File[],
+    index: number
+  ) => {
+    const newVariantImagesState = [...variantImages];
+    newVariantImagesState[index] = newVariantImages;
+
+    setVariantImages(newVariantImagesState);
+
+    notifyInfoToast('Uploading variant image...');
+
+    // uploadMedia({ formData: toUploadMediaRequest(variantImages[index][0]) })
+    //   .unwrap()
+    //   .then(({ data }) => {
+    //     notifySuccessToast('variant imagehas been uploaded!');
+    //     const newProductFormikVariantImages = [
+    //       ...productFormik.values.variants[0].images,
+    //       data?.media_url,
+    //     ];
+    //     productFormik.setFieldValue('variants[0]images', newProductFormikVariantImages);
+    //   })
+    //   .catch((err) => {
+    //     if ('data' in err) {
+    //       const response = err.data as UploadMediaResponse;
+    //       notifyErrorToast(response.message);
+    //     } else {
+    //       notifyErrorToast('upload media failed');
+    //     }
+    //     if (
+    //       getter === undefined ||
+    //       setter === undefined ||
+    //       productFormikMediaFields === ''
+    //     ) {
+    //       return;
+    //     }
+    //     const currentMedia = [...getter];
+    //     currentMedia.splice(currentMedia.length - 1, 1);
+    //     setter(currentMedia);
+    //   });
+  };
+  // console.log(productFormik.values.variants);
+  console.log(productFormik.values.images);
+  console.log(productFormik.values.videos);
 
   const updateCouriers = (couriers: Courier[]) => {
     productFormik.setFieldValue('couriers', couriers);
@@ -493,6 +553,10 @@ const ProductAddContent = () => {
     // delete variant
     newVariants.splice(index, 1);
 
+    if (index === 0) {
+      setVariantImages([]);
+    }
+
     // delete product items
     updateProductItemsAccordingToVariants(newVariants);
 
@@ -518,6 +582,11 @@ const ProductAddContent = () => {
       indexVariant,
       indexOption
     );
+
+    // if 1st variant then delete images
+    if (indexVariant === 0) {
+      deleteVariantImages(indexOption);
+    }
 
     productFormik.setFieldValue('variants', newVariants);
   };
@@ -554,9 +623,37 @@ const ProductAddContent = () => {
       });
   };
 
+  const assignVariantImages = () => {
+    const newVariantImages: File[][] = [];
+    if (
+      productFormik.values.variants.length > 0 &&
+      variantImages.length === 0
+    ) {
+      productFormik.values.variants[0].options.forEach(() => {
+        newVariantImages.push([]);
+      });
+      if (newVariantImages.length > 0) {
+        setVariantImages(newVariantImages);
+      }
+    }
+  };
+
+  const deleteVariantImages = (indexOption: number) => {
+    if (
+      productFormik.values.variants[0] === undefined ||
+      variantImages[indexOption] === undefined
+    ) {
+      return;
+    }
+    const newVariantImagesState = [...variantImages];
+    newVariantImagesState.splice(indexOption, 1);
+    setVariantImages(newVariantImagesState);
+  };
+
   const renderVariants = () => {
     // if(productFormik.values.variants.length>0){
     // }
+    assignVariantImages();
     return (
       <div className='flex flex-col gap-3'>
         {
@@ -797,7 +894,18 @@ const ProductAddContent = () => {
                                 className='border border-base-300'
                                 rowSpan={rowSpanValue}
                               >
-                                -
+                                <UploadFileCard
+                                  files={variantImages[valueVariantIndex] || []}
+                                  setFiles={(newVariantImages) => {
+                                    handleSetFilesVariantImages(
+                                      newVariantImages,
+                                      valueVariantIndex
+                                    );
+                                  }}
+                                  uploadLimit={1}
+                                  fileType={MEDIA_TYPE.IMAGE}
+                                  multiple={false}
+                                />
                               </td>
                             )}
                             {/* Options */}
@@ -957,7 +1065,7 @@ const ProductAddContent = () => {
       productFormik.setFieldValue('couriers', getShipmentData?.data?.couriers);
     }
   }, [getShipmentData]);
-  console.log(productFormik.errors);
+
   return (
     <>
       <Form
@@ -988,6 +1096,8 @@ const ProductAddContent = () => {
                     uploadLimit={5}
                     fileType={MEDIA_TYPE.IMAGE}
                     multiple={false}
+                    onDelete={handleImagesOnDelete}
+                    loading={uploadMediaIsLoading}
                   ></UploadFileCard>
                 </FormLayout.InputContainer>
               </FormLayout.LabelInputContainer>
@@ -1014,6 +1124,8 @@ const ProductAddContent = () => {
                       uploadLimit={1}
                       fileType={MEDIA_TYPE.VIDEO}
                       multiple={false}
+                      onDelete={handleVideosOnDelete}
+                      loading={uploadMediaIsLoading}
                     ></UploadFileCard>
                     <p className='text-sm text-base-content/60'>
                       Size: Max. 30MB and max. resolution 1,280x1,280px
@@ -1587,7 +1699,11 @@ const ProductAddContent = () => {
           color='primary'
           type='submit'
           form='addProductForm'
-          loading={createProductIsLoading || uploadMediaIsLoading}
+          loading={
+            getShipmentIsLoading ||
+            createProductIsLoading ||
+            uploadMediaIsLoading
+          }
         >
           Save
         </Button>
