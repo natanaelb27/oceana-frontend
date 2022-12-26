@@ -3,6 +3,7 @@ export * from './cart';
 export * from './category';
 export * from './city';
 export * from './district';
+export * from './media';
 export * from './marketplaceVoucher';
 export * from './merchant';
 export * from './merchantPromotion';

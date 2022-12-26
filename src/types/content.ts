@@ -14,6 +14,7 @@ export enum SellerAccountContent {
   Profile = 0,
   Address,
   Product,
+  ProductAdd,
   Voucher,
   VoucherDetail,
   VoucherAdd,

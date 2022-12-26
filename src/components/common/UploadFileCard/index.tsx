@@ -1,14 +1,19 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { HiOutlineCamera, HiOutlineVideoCamera } from 'react-icons/hi';
 import { MEDIA_TYPE } from '../../../constants';
 import { notifyErrorToast } from '../../../utils/toast';
 import ViewFileCard from './ViewFileCard';
+import { AiOutlineLoading } from 'react-icons/ai';
+import { BiHourglass } from 'react-icons/bi';
 
 type ContentProps = {
   files: File[];
   setFiles: (f: File[]) => void;
   uploadLimit: number;
   fileType: string;
+  multiple?: boolean;
+  onDelete?: (index: number) => void;
+  loading?: boolean;
 };
 
 const UploadFileCard = ({
@@ -16,6 +21,9 @@ const UploadFileCard = ({
   setFiles,
   uploadLimit,
   fileType,
+  multiple = true,
+  onDelete,
+  loading = false,
 }: ContentProps) => {
   const [filesView, setFilesView] = useState<string[]>([]);
 
@@ -46,6 +54,10 @@ const UploadFileCard = ({
   const onClickDeleteFile = (idx: number) => {
     setFiles(files.filter((_, index) => idx !== index));
     setFilesView(filesView.filter((_, index) => idx !== index));
+
+    if (onDelete !== undefined) {
+      onDelete(idx);
+    }
   };
 
   const renderNewReviewFile = () =>
@@ -59,8 +71,18 @@ const UploadFileCard = ({
       />
     ));
 
+  useEffect(() => {
+    const filesViewArray = files.map((file) => URL.createObjectURL(file));
+    setFilesView([...filesViewArray]);
+  }, [setFiles]);
+
   return (
-    <div className='flex flex-wrap gap-2'>
+    <div className='relative flex flex-wrap gap-2'>
+      {loading && (
+        <div className='absolute z-30 bg-primary-content opacity-70 h-full w-full flex items-center justify-center'>
+          <BiHourglass className='text-xl animate-spin' />
+        </div>
+      )}
       {files.length > 0 ? (
         <div className='flex flex-wrap gap-2'>
           {filesView && renderNewReviewFile()}
@@ -84,7 +106,7 @@ const UploadFileCard = ({
               const target = e.target as HTMLInputElement;
               target.value = '';
             }}
-            multiple
+            multiple={multiple}
             accept={
               fileType === MEDIA_TYPE.IMAGE
                 ? 'image/*'

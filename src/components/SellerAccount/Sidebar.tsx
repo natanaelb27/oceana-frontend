@@ -91,7 +91,15 @@ const Sidebar = ({ profile }: SidebarProps) => {
             </NavLink>
           </Menu.Item>
           <Menu.Item>
-            <NavLink to='/seller/marketing/products/list'>
+            <NavLink
+              to='/seller/marketing/products/list'
+              className={
+                splitLocation.slice(0, 4).join('/') ===
+                '/seller/marketing/products'
+                  ? 'active'
+                  : ''
+              }
+            >
               <HiOutlineShoppingBag />
               Product
             </NavLink>
