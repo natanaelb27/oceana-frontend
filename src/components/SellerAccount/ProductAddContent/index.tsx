@@ -921,6 +921,7 @@ const ProductAddContent = () => {
                                       valueVariantIndex
                                     );
                                   }}
+                                  loading={uploadMediaIsLoading}
                                 />
                               </td>
                             )}
@@ -961,6 +962,7 @@ const ProductAddContent = () => {
                                 );
                               }}
                               onKeyDown={handleNumberInvalidKey}
+                              min={0}
                             />
                           </InputGroup>
                         </div>
@@ -1004,6 +1006,7 @@ const ProductAddContent = () => {
                               );
                             }}
                             onKeyDown={handleNumberInvalidKey}
+                            min={0}
                           />
                         </div>
                         {productFormik.touched.product_items?.[indexProductItem]
@@ -1410,6 +1413,7 @@ const ProductAddContent = () => {
                               );
                             }}
                             onKeyDown={handleNumberInvalidKey}
+                            min={0}
                           />
                         </InputGroup>
                       </div>
@@ -1453,6 +1457,7 @@ const ProductAddContent = () => {
                             );
                           }}
                           onKeyDown={handleNumberInvalidKey}
+                          min={0}
                         />
                       </div>
                     </FormLayout.InputContainer>
@@ -1500,6 +1505,7 @@ const ProductAddContent = () => {
                         onChange={productFormik.handleChange}
                         onFocus={() => (productFormik.touched.weight = true)}
                         onKeyDown={handleNumberInvalidKey}
+                        min={0}
                       />
                       <span>gr</span>
                     </InputGroup>
@@ -1537,6 +1543,7 @@ const ProductAddContent = () => {
                             (productFormik.touched.package_size_length = true)
                           }
                           onKeyDown={handleNumberInvalidKey}
+                          min={0}
                         />
                         <span>cm</span>
                       </InputGroup>
@@ -1563,6 +1570,7 @@ const ProductAddContent = () => {
                             (productFormik.touched.package_size_width = true)
                           }
                           onKeyDown={handleNumberInvalidKey}
+                          min={0}
                         />
                         <span>cm</span>
                       </InputGroup>
@@ -1589,6 +1597,7 @@ const ProductAddContent = () => {
                             (productFormik.touched.package_size_height = true)
                           }
                           onKeyDown={handleNumberInvalidKey}
+                          min={0}
                         />
                         <span>cm</span>
                       </InputGroup>
@@ -1646,6 +1655,7 @@ const ProductAddContent = () => {
                               (productFormik.touched.preorder_day = true)
                             }
                             onKeyDown={handleNumberInvalidKey}
+                            min={0}
                           />
                           <span>days</span>
                         </div>
