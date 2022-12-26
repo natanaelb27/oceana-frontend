@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Button, Card, Divider, Input, Textarea } from 'react-daisyui';
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from 'react-icons/ai';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MEDIA_TYPE } from '../../../constants';
 import { useGetOrderDetailsQuery } from '../../../store/services/orderService';
 import {
@@ -30,13 +30,14 @@ type Errors = {
 };
 
 const RefundCreate = () => {
+  const navigate = useNavigate();
   const { orderID } = useParams();
   if (!orderID) {
     return null;
   }
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
-  const [orderDetail, setOrderDetail] = useState<OrderDetailRefund[]>([]);
+  const [orderDetail] = useState<OrderDetailRefund[]>([]);
   const [reason, setReason] = useState('');
   const [errors, setErrors] = useState<Errors>({
     selectedOrderDetail: '',
@@ -55,8 +56,7 @@ const RefundCreate = () => {
     },
   ]);
   const [totalRefund, setTotalRefund] = useState(0);
-  const [createRefundOrder, { isLoading: createRefundOrderIsLoading }] =
-    useCreateRefundOrderMutation();
+  const [createRefundOrder] = useCreateRefundOrderMutation();
   const { data: orderDetailsData, isLoading: orderDetailsIsLoading } =
     useGetOrderDetailsQuery(orderID);
   const [getCalculatedRefundDetails, { data: calculatedRefundDetailsData }] =
@@ -185,11 +185,12 @@ const RefundCreate = () => {
     ) {
       return;
     }
-    console.log('submit');
     createRefundOrder([
       toCreateRefundOrderRequest(orderDetail, reason, images, videos),
       orderID,
-    ]);
+    ]).then(() => {
+      navigate('/user/refund');
+    });
   };
 
   const handleChangeReason = (e: React.SyntheticEvent) => {
