@@ -1,4 +1,4 @@
-const ClassNames = (classNames: string[]) => {
+const ClassNames = (classNames: string[]): string => {
   let classString = '';
   classNames.forEach((data) => {
     classString += ` ${data}`;

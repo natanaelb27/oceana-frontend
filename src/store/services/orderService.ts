@@ -22,7 +22,7 @@ export const orderApi = baseApi.injectEndpoints({
         url: `/profile/transaction-history/${id}`,
         method: 'GET',
       }),
-      providesTags: ['OrderDetails'],
+      providesTags: ['Order'],
     }),
     getAllUserPendingPayment: builder.query<
       GetAllUserPendingPaymentResponse,

@@ -9,6 +9,7 @@ import SealabsPayContent from './SealabsPayContent';
 import WalletContent from './WalletContent';
 import ReviewContent from './ReviewContent';
 import ReviewDetailContent from './ReviewDetailContent';
+import RefundContent from './RefundContent';
 
 type ContentProps = {
   profile: Profile | null | undefined;
@@ -46,13 +47,12 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === UserAccountContent.Refund) {
-      return null;
+      return <RefundContent></RefundContent>;
     }
-    
+
     if (content === UserAccountContent.PendingPayment) {
       return <PendingPaymentContent />;
     }
-
   };
   return <Card className='shadow'>{renderContent()}</Card>;
 };

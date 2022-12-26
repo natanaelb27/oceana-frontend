@@ -1,3 +1,5 @@
+import { Courier } from './shipment';
+
 export interface Product {
   id: number;
   merchant_id: number;
@@ -104,4 +106,39 @@ export interface FavoriteProduct {
   user_id: string;
   product_id: number;
   is_favorite: boolean;
+}
+
+// ... product upsert model
+export interface PUMVariant {
+  name: string;
+  options: string[];
+  images: string[];
+}
+
+export interface PUMProductItem {
+  id: number;
+  sku: string;
+  variant_index: number[];
+  price: number;
+  stock_quantity: number;
+}
+
+export interface PUMProduct {
+  id: number;
+  name: string;
+  description: string;
+  category_id: number;
+  merchant_id: number;
+  weight: number;
+  is_hazardous: boolean;
+  package_size: string;
+  condition: string;
+  status: string;
+  process_day: number;
+  preorder_day: number;
+  images: string[];
+  videos: string[];
+  product_items: PUMProductItem[];
+  variants: PUMVariant[];
+  couriers: Courier[];
 }

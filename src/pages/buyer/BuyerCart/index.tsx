@@ -474,7 +474,7 @@ const BuyerCart = () => {
                   />
                   <div className='h-20 w-20 md:h-24 md:w-24 ml-2 mr-2 h-'>
                     <Image
-                      src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
+                      src={product.product_media_url}
                       className='rounded-lg h-full w-full'
                     />
                   </div>

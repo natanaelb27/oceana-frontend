@@ -1,7 +1,11 @@
+import { UpsertProductRequest } from '../../types/request/product';
 import {
   GetAllProductsResponse,
   GetProductDetailsResponse,
+  GetProductUpsertModelResponse,
   GetPurchasedQuantitiesResponse,
+  FavoriteProductResponse,
+  GetFavoriteProductResponse,
   ViewPostResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
@@ -38,6 +42,49 @@ export const productApi = baseApi.injectEndpoints({
         method: 'POST',
       }),
     }),
+    favoriteProduct: builder.mutation<FavoriteProductResponse, string>({
+      query: (id) => ({
+        url: `/products/${id}/favorite`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Product'],
+    }),
+    getFavoriteProduct: builder.query<GetFavoriteProductResponse, string>({
+      query: (id) => ({
+        url: `/products/${id}/favorite`,
+        method: 'GET',
+      }),
+      providesTags: ['Product'],
+    }),
+    getProductUpsertModel: builder.query<GetProductUpsertModelResponse, void>({
+      query: (id) => ({
+        url: `/products/${id}/model`,
+        method: 'GET',
+      }),
+      providesTags: ['ProductUpsertModel'],
+    }),
+    createProductUpsertModel: builder.mutation<
+      GetProductUpsertModelResponse,
+      { request: UpsertProductRequest }
+    >({
+      query: ({ request }) => ({
+        url: '/my-shop/products',
+        method: 'POST',
+        body: request,
+      }),
+      invalidatesTags: ['ProductUpsertModel'],
+    }),
+    updateProductUpsertModel: builder.mutation<
+      GetProductUpsertModelResponse,
+      { id: number; request: UpsertProductRequest }
+    >({
+      query: ({ id, request }) => ({
+        url: `/my-shop/products/${id}`,
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['ProductUpsertModel'],
+    }),
   }),
 });
 
@@ -49,4 +96,10 @@ export const {
   useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
   useViewPostMutation,
+  useFavoriteProductMutation,
+  useGetFavoriteProductQuery,
+  useLazyGetFavoriteProductQuery,
+  useGetProductUpsertModelQuery,
+  useCreateProductUpsertModelMutation,
+  useUpdateProductUpsertModelMutation,
 } = productApi;

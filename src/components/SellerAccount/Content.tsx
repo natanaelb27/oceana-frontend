@@ -11,6 +11,8 @@ import ShipmentContent from './ShipmentContent';
 import VoucherContent from './VoucherContent';
 import VoucherDetailContent from './VoucherDetailContent';
 import VoucherFormContent from './VoucherFormContent';
+import ProductAddContent from './ProductAddContent/index';
+import RefundContent from './RefundContent';
 
 type ContentProps = {
   profile: Merchant;
@@ -29,6 +31,10 @@ const Content = ({ profile, content }: ContentProps) => {
 
     if (content === SellerAccountContent.Product) {
       // return <AddressContent />;
+    }
+
+    if (content === SellerAccountContent.ProductAdd) {
+      return <ProductAddContent />;
     }
 
     if (content === SellerAccountContent.Voucher) {
@@ -67,6 +73,10 @@ const Content = ({ profile, content }: ContentProps) => {
 
     if (content === SellerAccountContent.Order) {
       return <OrderContent />;
+    }
+
+    if (content === SellerAccountContent.Refund) {
+      return <RefundContent />;
     }
 
     if (content === SellerAccountContent.ShipmentSetting) {

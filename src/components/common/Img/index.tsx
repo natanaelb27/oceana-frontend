@@ -13,7 +13,6 @@ export default function Img({ src, alt, className }: ImageProps) {
   const [error, setError] = useState(false);
 
   if (error) {
-    console.log('test');
     return (
       <img
         src={require('./../../../assets/images/no-data.png')}
