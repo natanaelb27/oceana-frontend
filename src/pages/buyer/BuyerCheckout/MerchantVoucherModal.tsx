@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Modal } from 'react-daisyui';
-import { Skeleton, VoucherTicket } from '../../../components/common';
+import { NoData, Skeleton, VoucherTicket } from '../../../components/common';
 import { useLazyGetAllMerchantVoucherByBuyerQuery } from '../../../store/services/shopService';
 import {
   MarketplaceVoucher,
@@ -9,7 +9,6 @@ import {
 } from '../../../types/component';
 import { MerchantVoucherQuery } from '../../../types/query';
 import { toMerchantVoucherQuery } from '../../../utils/mapperDTO';
-import { notifyInfoToast } from '../../../utils/toast';
 
 type MerchantVoucherModalProps = {
   currentMerchantID: number;
@@ -36,7 +35,10 @@ const MerchantVoucherModal = ({
 }: MerchantVoucherModalProps) => {
   const [
     getAllMerchantVoucherByBuyer,
-    { data: getAllMerchantVoucherByBuyerData },
+    {
+      data: getAllMerchantVoucherByBuyerData,
+      isLoading: getAllMerchantVoucherByBuyerLoading,
+    },
   ] = useLazyGetAllMerchantVoucherByBuyerQuery();
 
   const handleClickMerchantVoucher = (
@@ -56,21 +58,14 @@ const MerchantVoucherModal = ({
 
   useEffect(() => {
     if (open) {
-      getAllMerchantVoucherByBuyer(toMerchantVoucherQuery(voucherQuery)).then(
-        (response) => {
-          if (response.data?.data.merchant_voucher.length === 0) {
-            notifyInfoToast(
-              `No available vouchers ${currentMerchantName}'s shop`
-            );
-            onClose();
-            return null;
-          }
-        }
-      );
+      getAllMerchantVoucherByBuyer(toMerchantVoucherQuery(voucherQuery));
     }
   }, [open]);
 
-  if (!getAllMerchantVoucherByBuyerData?.data) {
+  if (
+    getAllMerchantVoucherByBuyerLoading ||
+    !getAllMerchantVoucherByBuyerData?.data
+  ) {
     return (
       <Modal
         open={open}
@@ -104,21 +99,30 @@ const MerchantVoucherModal = ({
         {`${currentMerchantName}'s Vouchers`}
       </Modal.Header>
       <Modal.Body className='h-96 overflow-auto flex flex-col gap-4'>
-        {getAllMerchantVoucherByBuyerData.data.merchant_voucher.map(
-          (voucherByBuyer) =>
-            voucherByBuyer.current_quota < voucherByBuyer.maximum_quota ? (
-              <VoucherTicket
-                key={voucherByBuyer.id}
-                currentVoucher={voucherByBuyer}
-                disabled={
-                  voucherByBuyer.minimum_spend_amount > subtotalBeforeShipping
-                }
-                selectedVoucher={
-                  merchantVouchers && merchantVouchers[currentMerchantID]
-                }
-                onClickVoucher={handleClickMerchantVoucher}
-              />
-            ) : null
+        {getAllMerchantVoucherByBuyerData.data.merchant_voucher.length === 0 ? (
+          <div className='flex h-full justify-center items-center'>
+            <NoData
+              title='Sorry!'
+              message={`No available vouchers for ${currentMerchantName}'s shop at this time`}
+            />
+          </div>
+        ) : (
+          getAllMerchantVoucherByBuyerData.data.merchant_voucher.map(
+            (voucherByBuyer) =>
+              voucherByBuyer.current_quota < voucherByBuyer.maximum_quota ? (
+                <VoucherTicket
+                  key={voucherByBuyer.id}
+                  currentVoucher={voucherByBuyer}
+                  disabled={
+                    voucherByBuyer.minimum_spend_amount > subtotalBeforeShipping
+                  }
+                  selectedVoucher={
+                    merchantVouchers && merchantVouchers[currentMerchantID]
+                  }
+                  onClickVoucher={handleClickMerchantVoucher}
+                />
+              ) : null
+          )
         )}
       </Modal.Body>
     </Modal>
