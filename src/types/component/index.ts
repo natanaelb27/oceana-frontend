@@ -1,6 +1,7 @@
 export * from './address';
 export * from './cart';
 export * from './category';
+export * from './checkout';
 export * from './city';
 export * from './district';
 export * from './marketplaceVoucher';
@@ -10,6 +11,7 @@ export * from './merchantPromotion';
 export * from './merchantVoucher';
 export * from './metadata';
 export * from './order';
+export * from './paymentMethod';
 export * from './product';
 export * from './profile';
 export * from './province';

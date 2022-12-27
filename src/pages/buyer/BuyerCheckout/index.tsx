@@ -37,15 +37,13 @@ import {
   MarketplaceVoucher,
   MerchantVoucher,
   PaymentMethod,
-} from '../../../types/component';
-import {
   AdditionalNotes,
   AvailableProductsForDelivery,
   CheckoutCartOrderItem,
   CheckoutCartProduct,
   CheckoutCartProductItem,
   MerchantVouchers,
-} from '../../../types/component/checkout';
+} from '../../../types/component';
 import { MerchantVoucherQuery } from '../../../types/query';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
