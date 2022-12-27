@@ -6,6 +6,7 @@ export const TAG_TYPES = [
   'Order',
   'Refund',
   'Product',
+  'FavoriteProduct',
   'Profile',
   'Cart',
   'City',
@@ -13,5 +14,5 @@ export const TAG_TYPES = [
   'Merchant',
   'MerchantVoucher',
   'MerchantPromotion',
-  'Refund'
+  'Refund',
 ];

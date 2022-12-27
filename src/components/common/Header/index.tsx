@@ -13,7 +13,7 @@ import {
 } from 'react-daisyui';
 import { FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { GoPerson } from 'react-icons/go';
-import { HiMoon, HiSun } from 'react-icons/hi';
+import { HiHeart, HiMoon, HiSun } from 'react-icons/hi';
 import { CgLogOut, CgProfile } from 'react-icons/cg';
 import { BiLogOutCircle } from 'react-icons/bi';
 
@@ -249,6 +249,20 @@ const Header = () => {
               )}
               <div className='text-xs'>Wallet ID: {userWalletData.data.id}</div>
             </div>
+            <div
+              className='text-lg p-2 rounded-lg shadow-md mb-1 flex flex-row hover:bg-base-200 hover:cursor-pointer border-r-4 border-r-secondary transition-all duration-200'
+              onClick={handleWishlistClick}
+            >
+              <div className='w-16 flex items-center justify-center'>
+                <HiHeart className='text-4xl text-secondary' />
+              </div>
+              <div className='flex flex-col'>
+                <span className='font-bold'>Wishlist</span>
+                <span className='text-xs'>
+                  List of all your favorite products
+                </span>
+              </div>
+            </div>
             {myShopProfileData?.data ? (
               <div
                 className='text-lg p-2 rounded-lg shadow-md bg-base-100 hover:bg-base-300 hover:cursor-pointer border-r-4 border-r-secondary transition-all duration-200'
@@ -329,6 +343,11 @@ const Header = () => {
 
   const handleWalletClick = () => {
     navigate('/user/account/wallet');
+    setHoverProfile(false);
+  };
+
+  const handleWishlistClick = () => {
+    navigate('/user/wishlist');
     setHoverProfile(false);
   };
 

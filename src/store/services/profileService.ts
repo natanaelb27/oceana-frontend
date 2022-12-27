@@ -7,6 +7,7 @@ import {
 } from '../../types/request';
 import {
   CheckPasswordVerificationCodeResponse,
+  GetAllProductsResponse,
   GetAllRefundDetailsResponse,
   GetProfileResponse,
   RequestPasswordVerificationCodeResponse,
@@ -130,6 +131,13 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Refund'],
     }),
+    getAllUserFavoriteProducts: builder.query<GetAllProductsResponse, string>({
+      query: (query) => ({
+        url: `/profile/favorites?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Product', 'FavoriteProduct'],
+    }),
   }),
 });
 
@@ -147,4 +155,6 @@ export const {
   useUpdateCompleteOrderMutation,
   useGetAllProfileRefundsQuery,
   useLazyGetAllProfileRefundsQuery,
+  useGetAllUserFavoriteProductsQuery,
+  useLazyGetAllUserFavoriteProductsQuery,
 } = profileApi;
