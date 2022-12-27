@@ -5,6 +5,7 @@ import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 import { Layout } from '../components';
 import { Loading } from '../components/common';
 import {
+  BuyerRefundCreate,
   Login,
   NotFound,
   Register,
@@ -214,6 +215,10 @@ const Routes = () => {
             {
               path: '/user/refund',
               element: <BuyerRefund />,
+            },
+            {
+              path: '/user/refund/create/:orderID',
+              element: <BuyerRefundCreate />,
             },
             {
               path: '/user/review',
