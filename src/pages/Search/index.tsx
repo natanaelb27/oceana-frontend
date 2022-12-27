@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Pager, ProductCard, SortBar } from '../../components/common';
 import NoData from '../../components/common/NoData';
 import { FilterSidebar } from '../../components/Search';
-import { LIMIT_SEARCH_PRODUCTS_LIST } from '../../constants';
+import { LIMIT_SEARCH_PRODUCTS_LIST, PRODUCT_STATUS } from '../../constants';
 import { useGetAllCityQuery } from '../../store/services/cityService';
 import { useGetAllProductsQuery } from '../../store/services/productService';
 import { ProductQuery } from '../../types/query';
@@ -38,6 +38,7 @@ const Search = () => {
     rating: 0,
     merchantCities: [],
     courierServices: [],
+    status: PRODUCT_STATUS.ACTIVE,
   });
   const [searchParams] = useSearchParams();
   const { data: resGetAllProducts } = useGetAllProductsQuery(

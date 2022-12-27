@@ -7,6 +7,7 @@ import { CategoryCard, HomeCard, PromoBanner } from '../../components/Home';
 import {
   LIMIT_HOME_ALL_PRODUCTS,
   LIMIT_HOME_RECOMMENDED_PRODUCTS,
+  PRODUCT_STATUS,
 } from '../../constants';
 import { useLocalStorage } from '../../hooks';
 import { useLazyGetAllCategoryQuery } from '../../store/services/categoryService';
@@ -47,6 +48,7 @@ const Home = () => {
     rating: 0,
     merchantCities: [],
     courierServices: [],
+    status: PRODUCT_STATUS.ACTIVE,
   };
   const allProductQuery: ProductQuery = {
     search: '',
@@ -61,6 +63,7 @@ const Home = () => {
     rating: 0,
     merchantCities: [],
     courierServices: [],
+    status: PRODUCT_STATUS.ACTIVE,
   };
   const categoryQuery: CategoryQuery = {
     categoryID: 0,
