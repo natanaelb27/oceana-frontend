@@ -17,6 +17,7 @@ import VoucherDetailContent from './VoucherDetailContent';
 import VoucherFormContent from './VoucherFormContent';
 import ProductAddContent from './ProductAddContent/index';
 import RefundContent from './RefundContent';
+import ProductContent from './ProductContent';
 
 type ContentProps = {
   profile: Merchant;
@@ -34,7 +35,7 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === SellerAccountContent.Product) {
-      // return <AddressContent />;
+      return <ProductContent profile={profile} />;
     }
 
     if (content === SellerAccountContent.ProductAdd) {

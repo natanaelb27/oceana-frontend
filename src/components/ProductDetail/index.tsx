@@ -42,6 +42,7 @@ import { ProductCard } from '../common';
 import { ReviewsSort } from '../../types/sort';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { useNavigate } from 'react-router-dom';
+import { PRODUCT_STATUS } from '../../constants/index';
 
 type ProductDetailProps = {
   merchantID?: string;
@@ -317,6 +318,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             rating: 0,
             merchantCities: [],
             courierServices: [],
+            status: PRODUCT_STATUS.ACTIVE,
           })
         );
         getMerchantSimilarProducts(
@@ -333,6 +335,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             rating: 0,
             merchantCities: [],
             courierServices: [],
+            status: PRODUCT_STATUS.ACTIVE,
           })
         );
       });
