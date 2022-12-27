@@ -50,11 +50,13 @@ export interface ProductVariation {
 }
 
 export interface ProductDetail {
+  id: number;
   name: string;
   is_hazardous: boolean;
   weight: number;
   package_size: string;
   condition: string;
+  status: string;
   category_id: number;
   category: string;
   images: string[];

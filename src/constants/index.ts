@@ -88,3 +88,10 @@ export const REFUND_STATUS = {
   COMPLETED: 'completed',
   REJECTED: 'rejected',
 };
+
+export const LIMIT_SELLER_PRODUCT_LIST = 10;
+
+export const PRODUCT_STATUS = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+};

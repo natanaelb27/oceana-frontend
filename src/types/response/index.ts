@@ -7,6 +7,7 @@ export * from './marketplaceVoucher';
 export * from './merchant';
 export * from './merchantPromotion';
 export * from './merchantVoucher';
+export * from './myShop';
 export * from './order';
 export * from './product';
 export * from './profile';

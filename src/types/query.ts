@@ -14,6 +14,7 @@ export type ProductQuery = {
   rating: number;
   merchantCities: string[];
   courierServices: string[];
+  status: string;
 } & Query;
 
 export type MerchantVoucherQuery = {
