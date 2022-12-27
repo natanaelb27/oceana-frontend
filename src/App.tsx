@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import Routes from './routes';
 import { useLazyGetProfileQuery } from './store/services/profileService';
@@ -14,6 +14,7 @@ import { doesHttpOnlyCookieExist } from './utils/auth';
 import { Loading } from './components/common';
 import Cookies from 'js-cookie';
 import { useRefreshAccessTokenMutation } from './store/services/authService';
+import ErrorBoundary from './ErrorBoundary';
 import NetworkStatusWrapper from './components/NetworkStatusWrapper';
 
 const App = () => {
@@ -64,9 +65,6 @@ const App = () => {
                 })
               );
             })
-            .catch((err) => {
-              console.error(err);
-            })
             .finally(() => {
               setLoading(false);
             });
@@ -80,11 +78,15 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <Loading isLoading={loading} />
-      <NetworkStatusWrapper>
-        <Routes />
-      </NetworkStatusWrapper>
-      <ToastContainer />
+      <ErrorBoundary>
+        <Suspense fallback={null}>
+          <Loading isLoading={loading} />
+          <NetworkStatusWrapper>
+            <Routes />
+          </NetworkStatusWrapper>
+          <ToastContainer />
+        </Suspense>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 };

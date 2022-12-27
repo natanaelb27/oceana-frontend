@@ -32,7 +32,7 @@ const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
       {shopInformation.photo ? (
         <div className='avatar'>
           <div className='w-14 rounded-full'>
-            <Image src={shopInformation.photo} />
+            <Image src={shopInformation.photo} alt='Shop Banner' />
           </div>
         </div>
       ) : (

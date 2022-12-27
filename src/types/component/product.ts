@@ -110,6 +110,15 @@ export interface FavoriteProduct {
   is_favorite: boolean;
 }
 
+export interface AvailableProduct {
+  product_id: number;
+  product_name: string;
+  product_image: string;
+  price_max: string;
+  price_min: string;
+  total_stock: string;
+}
+
 // ... product upsert model
 export interface PUMVariant {
   name: string;

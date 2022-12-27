@@ -1,11 +1,6 @@
-import React, { MouseEventHandler, useState } from 'react';
+import React, { useState } from 'react';
 import { Tooltip } from 'react-daisyui';
-import {
-  HiOutlineX,
-  HiOutlineXCircle,
-  HiTrash,
-  HiXCircle,
-} from 'react-icons/hi';
+import { HiXCircle } from 'react-icons/hi';
 import Zoom from 'react-medium-image-zoom';
 import { MEDIA_TYPE } from '../../../constants';
 

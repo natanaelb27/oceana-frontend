@@ -3,7 +3,6 @@ import React from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
 import { Layout } from '../components';
-import { Loading } from '../components/common';
 import {
   BuyerRefundCreate,
   Login,
@@ -121,9 +120,7 @@ const Routes = () => {
           allowedRoles={[Role.Guest, Role.Buyer, Role.Seller]}
           redirectTo='/admin'
         >
-          <React.Suspense fallback={<Loading isLoading />}>
-            <Layout />
-          </React.Suspense>
+          <Layout />
         </ProtectedRoute>
       ),
       children: [
@@ -355,6 +352,10 @@ const Routes = () => {
                 {
                   path: '/seller/marketing/promotions/edit/:promotionID',
                   element: <ShopEditPromotion />,
+                },
+                {
+                  path: '/seller/marketing/promotions/duplicate/:promotionID',
+                  element: <ShopAddPromotion />,
                 },
                 {
                   path: '/seller/order/',

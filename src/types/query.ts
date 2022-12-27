@@ -28,6 +28,13 @@ export type MerchantVoucherQuery = {
   merchantID: number;
 };
 
+export type MerchantPromotionQuery = {
+  limit: number;
+  page: number;
+  searchPromotionName: string;
+  filterPromotionStatus: string;
+};
+
 export type MarketplaceVoucherQuery = {
   limit: number;
   page: number;
@@ -35,11 +42,6 @@ export type MarketplaceVoucherQuery = {
   sort: string;
   searchVoucherName: string;
   filterVoucherStatus: string;
-};
-
-export type MerchantPromotionQuery = {
-  searchPromotionName: string;
-  filterPromotionStatus: string;
 };
 
 export type TransactionHistoryQuery = {
@@ -82,6 +84,13 @@ export type ReviewQuery = {
   media: boolean;
   comment: boolean;
   rating: number[];
+};
+
+export type AvailableProductQuery = {
+  search: string;
+  filterCategory: number;
+  filterStartDatetime: Date | null;
+  filterEndDatetime: Date | null;
 };
 
 export type RefundQuery = {

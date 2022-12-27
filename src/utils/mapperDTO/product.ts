@@ -1,4 +1,8 @@
-import { ProductQuery, PurchasedQuantitiesQuery } from '../../types/query';
+import {
+  AvailableProductQuery,
+  ProductQuery,
+  PurchasedQuantitiesQuery,
+} from '../../types/query';
 
 export const toProductQuery = (query: ProductQuery) => {
   let result = '';
@@ -26,5 +30,20 @@ export const toPurchasedQuantitiesQuery = (query: PurchasedQuantitiesQuery) => {
   result += 'product-id=' + query.product_id;
   result += '&product-item-id=' + query.product_item_id;
   result += '&quantity=' + query.quantity;
+  return result;
+};
+
+export const toAvailableProductQuery = (query: AvailableProductQuery) => {
+  let result = '';
+
+  result += 'search=' + query.search;
+  result += '&filter-category=' + query.filterCategory;
+  result +=
+    '&filter-start-datetime=' +
+    (query.filterStartDatetime ? query.filterStartDatetime?.toISOString() : '');
+  result +=
+    '&filter-end-datetime=' +
+    (query.filterEndDatetime ? query.filterEndDatetime?.toISOString() : '');
+
   return result;
 };

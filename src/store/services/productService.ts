@@ -4,6 +4,7 @@ import {
 } from '../../types/request';
 import {
   GetAllProductsResponse,
+  GetAvailableProductResponse,
   GetProductDetailsResponse,
   GetProductUpsertModelResponse,
   GetPurchasedQuantitiesResponse,
@@ -46,6 +47,13 @@ export const productApi = baseApi.injectEndpoints({
         url: `/products/${id}/view`,
         method: 'POST',
       }),
+    }),
+    getAvailableProducts: builder.query<GetAvailableProductResponse, string>({
+      query: (query) => ({
+        url: `/products/available-products?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Product'],
     }),
     getProductsLogistics: builder.query<GetShipmentResponse, number>({
       query: (merchantID) => ({
@@ -118,6 +126,8 @@ export const {
   useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
   useViewPostMutation,
+  useGetAvailableProductsQuery,
+  useLazyGetAvailableProductsQuery,
   useLazyGetProductsLogisticsQuery,
   useCheckProductCourierServicesMutation,
   useFavoriteProductMutation,

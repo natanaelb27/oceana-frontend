@@ -313,18 +313,21 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       <div className='grid grid-cols-12 gap-4 md:gap-10'>
         <div className='col-span-12 md:col-span-4'>
           <Card className='shadow max-w-xs'>
-            <Card.Image
-              src={
-                photo
-                  ? photo
-                  : 'https://i.pinimg.com/736x/2a/4d/11/2a4d11d5d32c83812d2e07742578835c.jpg'
-              }
-              onError={({ currentTarget }) => {
-                currentTarget.onerror = null;
-                currentTarget.src = require('../../../assets/images/no-image.webp');
-              }}
-              className='object-cover w-full'
-            />
+            <figure>
+              <img
+                src={
+                  photo
+                    ? photo
+                    : 'https://i.pinimg.com/736x/2a/4d/11/2a4d11d5d32c83812d2e07742578835c.jpg'
+                }
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null;
+                  currentTarget.src = require('./../../../assets/images/no-image.webp');
+                }}
+                className='w-full'
+                alt='Profile Photo'
+              />
+            </figure>
             <div className='p-4'>
               <Button
                 className='w-full normal-case font-medium mb-2.5'

@@ -527,6 +527,7 @@ const BuyerCart = () => {
                     <Image
                       src={product.product_media_url}
                       className='rounded-lg h-full w-full'
+                      alt='Cart Item'
                     />
                   </div>
                   <div className='h-24 flex flex-col'>

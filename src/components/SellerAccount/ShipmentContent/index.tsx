@@ -144,7 +144,6 @@ const ShipmentContent = () => {
       'preorderDay',
       getShipmentData?.data.preorder_day || 0
     );
-    console.log('use');
     setData({ ...getShipmentData?.data });
   }, [getShipmentData]);
 

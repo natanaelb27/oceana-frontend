@@ -109,7 +109,7 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
           </div>
           <progress
             className='progress progress-secondary'
-            value={fiveStarValue}
+            value={isNaN(fiveStarValue) ? 0 : fiveStarValue}
             max={100}
           ></progress>
           <div className='ml-2 w-5 text-center'>
@@ -123,7 +123,7 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
           </div>
           <progress
             className='progress progress-secondary'
-            value={fourStarValue}
+            value={isNaN(fourStarValue) ? 0 : fourStarValue}
             max={100}
           ></progress>
           <div className='ml-2 w-5 text-center'>
@@ -137,7 +137,7 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
           </div>
           <progress
             className='progress progress-secondary'
-            value={threeStarValue}
+            value={isNaN(threeStarValue) ? 0 : threeStarValue}
             max={100}
           ></progress>
           <div className='ml-2 w-5 text-center'>
@@ -151,7 +151,7 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
           </div>
           <progress
             className='progress progress-secondary'
-            value={twoStarValue}
+            value={isNaN(twoStarValue) ? 0 : twoStarValue}
             max={100}
           ></progress>
           <div className='ml-2 w-5 text-center'>
@@ -165,7 +165,7 @@ const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
           </div>
           <progress
             className='progress progress-secondary'
-            value={oneStarValue}
+            value={isNaN(oneStarValue) ? 0 : oneStarValue}
             max={100}
           ></progress>
           <div className='ml-2 w-5 text-center'>

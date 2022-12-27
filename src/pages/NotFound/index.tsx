@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from 'react-daisyui';
+import { useNavigate } from 'react-router-dom';
 
 const colors = [
   null,
@@ -13,9 +14,14 @@ const colors = [
 ];
 
 const NotFound = () => {
+  const navigate = useNavigate();
   const [index, setIndex] = useState<number>(0);
   const handleIconClick = () => {
     setIndex((index + 1) % colors.length);
+  };
+
+  const handleBackToHomeClick = () => {
+    navigate('/');
   };
 
   return (
@@ -53,7 +59,11 @@ const NotFound = () => {
         <p className='text-lg mb-12'>
           But dont worry, you can find plenty of other things on our homepage.
         </p>
-        <Button color='ghost' className='normal-case font-medium text-lg'>
+        <Button
+          color='ghost'
+          className='normal-case font-medium text-lg'
+          onClick={handleBackToHomeClick}
+        >
           Back to home
         </Button>
       </div>

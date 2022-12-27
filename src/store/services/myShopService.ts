@@ -146,7 +146,7 @@ export const myShopApi = baseApi.injectEndpoints({
     >({
       query: ({ id, request }) => ({
         url: `/my-shop/promotions/${id}`,
-        method: 'POST',
+        method: 'PUT',
         body: request,
       }),
       invalidatesTags: ['MerchantPromotion'],

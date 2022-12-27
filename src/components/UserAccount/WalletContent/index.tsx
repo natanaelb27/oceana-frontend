@@ -253,11 +253,14 @@ const WalletContent = () => {
                               moment(startDate),
                               moment(endDate)
                             )
-                          : null
+                          : true
                       )
                       .map((row) =>
                         row.type === WALLET_TRANSACTION_HISTORY_TYPE.DEBIT ? (
-                          <Card className='col-span-12 shadow border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-error border-b-error transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'>
+                          <Card
+                            key={row.id}
+                            className='col-span-12 shadow border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-error border-b-error transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
+                          >
                             <div className='p-4'>
                               <div className='flex flex-col md:flex-row justify-between md:items-center gap-4'>
                                 <div className='flex flex-col'>
@@ -277,7 +280,10 @@ const WalletContent = () => {
                             </div>
                           </Card>
                         ) : (
-                          <Card className='col-span-12 shadow border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-success border-b-success transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'>
+                          <Card
+                            key={row.id}
+                            className='col-span-12 shadow border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-success border-b-success transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
+                          >
                             <div className='p-4'>
                               <div className='flex flex-col md:flex-row justify-between md:items-center gap-4'>
                                 <div className='flex flex-col'>
