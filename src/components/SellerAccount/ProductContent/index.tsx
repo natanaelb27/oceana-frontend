@@ -215,7 +215,7 @@ const ProductContent = ({ profile }: ContentProps) => {
             <Table.Body>
               {response?.data.map((data) => {
                 return (
-                  <Table.Row key={id} align='left'>
+                  <Table.Row key={'products-table-row-' + data.id} align='left'>
                     {/* column: name */}
                     <div className='flex items-center justify-start w-full h-full gap-5'>
                       <Zoom>
@@ -294,19 +294,6 @@ const ProductContent = ({ profile }: ContentProps) => {
                             )}
                           >
                             <BiPencil className='text-lg' />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip message='Set as Inactive'>
-                          <Button
-                            color='error'
-                            size='sm'
-                            onClick={() => handleEditClick(data.id)}
-                            disabled={stringCompare(
-                              status,
-                              PRODUCT_STATUS.INACTIVE
-                            )}
-                          >
-                            <BiCheckDouble className='text-lg' />
                           </Button>
                         </Tooltip>
                       </div>
