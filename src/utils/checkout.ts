@@ -104,7 +104,7 @@ export const calculateTotalWithShipping = (
     0
   );
 
-export const calculateTotalDiscount = (
+export const calculateTotalMerchantDiscount = (
   checkout: CartGroupedByMerchant[],
   merchantVouchers: MerchantVouchers,
   availableProductForDelivery?: AvailableProductsForDelivery
@@ -146,7 +146,7 @@ export const calculateTotal = (
     : calculateDiscount(marketplaceVoucher, totalBeforeShipping);
   const discountMerchants = !merchantVouchers
     ? 0
-    : calculateTotalDiscount(
+    : calculateTotalMerchantDiscount(
         checkout,
         merchantVouchers,
         availableProductForDelivery

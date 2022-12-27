@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Divider, Input, Tooltip } from 'react-daisyui';
+import { Button, Card, Divider, Textarea, Tooltip } from 'react-daisyui';
 import { AiOutlineHome, AiOutlineShop } from 'react-icons/ai';
 import { BiReceipt } from 'react-icons/bi';
 import { FaAddressBook, FaListUl } from 'react-icons/fa';
@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import {
   NoData,
   SealabsPayImg,
+  Skeleton,
   VoucherTicket,
 } from '../../../components/common';
 import {
@@ -31,17 +32,17 @@ import { useGetWalletDetailsQuery } from '../../../store/services/walletService'
 import { selectCheckout } from '../../../store/slices/checkoutSlice';
 import { useAppSelector } from '../../../store/store';
 import {
-  Address,
-  DeliveryService,
-  MarketplaceVoucher,
-  MerchantVoucher,
-  PaymentMethod,
   AdditionalNotes,
+  Address,
   AvailableProductsForDelivery,
   CheckoutCartOrderItem,
   CheckoutCartProduct,
   CheckoutCartProductItem,
+  DeliveryService,
+  MarketplaceVoucher,
+  MerchantVoucher,
   MerchantVouchers,
+  PaymentMethod,
 } from '../../../types/component';
 import { MerchantVoucherQuery } from '../../../types/query';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
@@ -173,7 +174,7 @@ const BuyerCheckout = () => {
   };
 
   const handleChangeAdditionalNotes = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     const productItemID = Number(e.target.id);
     const value = e.target.value;
@@ -521,8 +522,46 @@ const BuyerCheckout = () => {
     !getActiveMarketplaceVoucherData?.data
   ) {
     return (
-      <div className='px-2 container mx-auto flex flex-col animate-pulse'>
-        <div className='h-6 bg-base-200 rounded-full w-36 max-w-3/5'></div>
+      <div className='px-2 container mx-auto flex flex-col'>
+        <Skeleton className='my-4 w-44 h-8 rounded-full' />
+
+        <div className='grid grid-cols-1 md:grid-cols-12'>
+          {Array(4)
+            .fill(0)
+            .map((_, n) => (
+              <Card key={n} className='p-4 mb-4 shadow-lg md:col-span-7'>
+                <Card.Title className='flex justify-between'>
+                  <Skeleton className='w-48 h-7 rounded-full' />
+                  <Skeleton className='w-12 h-12 rounded-full' />
+                </Card.Title>
+                <Card.Body className='p-0 pl-2 flex flex-col '>
+                  <div className='flex flex-col gap-2'>
+                    <Skeleton className='w-40 h-5' />
+                    <Skeleton className='w-72 h-5' />
+                    <Skeleton className='w-32 h-5' />
+                  </div>
+                  <Divider />
+                  <div className='flex justify-between'>
+                    <Skeleton className='w-32 h-5' />
+                    <Skeleton className='w-32 h-5' />
+                  </div>
+                </Card.Body>
+              </Card>
+            ))}
+
+          <div className='col-span-1' />
+          {/* Total and make order button sticky bottom */}
+          <Card className='container p-6 fixed -bottom-1 left-0 z-[100] rounded-b-none rounded-t-3xl bg-neutral shadow-2xl md:col-span-4 md:sticky md:w-full md:z-0'>
+            <Card.Body className='hidden p-0 text-neutral-content md:flex md:flex-col md:mb-2'>
+              <Skeleton className='w-20 h-5' />
+              <Skeleton className='w-20 h-5' />
+            </Card.Body>
+            <Card.Title className='flex justify-between text-neutral-content'>
+              <Skeleton className='w-32 h-7' />
+              <Skeleton className='w-28 h-10 rounded-full' />
+            </Card.Title>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -639,7 +678,7 @@ const BuyerCheckout = () => {
                           !availableProductsForDelivery[merchant_id].includes(
                             product.product_id
                           )
-                            ? 'bg-neutral/80 text-neutral-content/80'
+                            ? 'bg-base-200 text-base-content/50'
                             : ''
                         }`}
                       >
@@ -693,31 +732,27 @@ const BuyerCheckout = () => {
                           </div>
                         </div>
                         <div className='col-span-4'>
-                          <Input
-                            className='w-full disabled:placeholder-error disabled:bg-neutral disabled:animate-pulse'
-                            color='primary'
-                            id={String(product.product_item_id)}
-                            placeholder={
-                              !availableProductsForDelivery[
-                                merchant_id
-                              ].includes(product.product_id)
-                                ? 'Product not available for delivery'
-                                : 'Additional Notes (optional)'
-                            }
-                            size='sm'
-                            type='text'
-                            value={
-                              additionalNotes
-                                ? additionalNotes[product.product_item_id]
-                                : ''
-                            }
-                            onChange={handleChangeAdditionalNotes}
-                            disabled={
-                              !availableProductsForDelivery[
-                                merchant_id
-                              ].includes(product.product_id)
-                            }
-                          />
+                          {!availableProductsForDelivery[merchant_id].includes(
+                            product.product_id
+                          ) ? (
+                            <div className='py-2 flex justify-center text-sm text-error bg-base-300 rounded-3xl animate-pulse'>
+                              Delivery service does not support this product
+                            </div>
+                          ) : (
+                            <Textarea
+                              className='w-full'
+                              color='primary'
+                              id={String(product.product_item_id)}
+                              placeholder='Additional Notes (optional)'
+                              rows={1}
+                              value={
+                                additionalNotes
+                                  ? additionalNotes[product.product_item_id]
+                                  : ''
+                              }
+                              onChange={handleChangeAdditionalNotes}
+                            />
+                          )}
                         </div>
                       </div>
                     );

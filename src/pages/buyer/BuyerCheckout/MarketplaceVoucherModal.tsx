@@ -46,15 +46,17 @@ const MarketplaceVoucherModal = ({
         <span className='font-main italic'>Oceana</span> Vouchers
       </Modal.Header>
       <Modal.Body className='h-96 overflow-auto flex flex-col gap-4'>
-        {activeMarketplaceVouchers.map((voucher) => (
-          <VoucherTicket
-            key={voucher.id}
-            disabled={voucher.minimum_spend_amount > totalPayment}
-            currentVoucher={voucher}
-            selectedVoucher={currentMarketplaceVoucher}
-            onClickVoucher={handleChangeMarketplaceVoucher}
-          />
-        ))}
+        {activeMarketplaceVouchers.map((voucher) =>
+          voucher.current_quota < voucher.maximum_quota ? (
+            <VoucherTicket
+              key={voucher.id}
+              disabled={voucher.minimum_spend_amount > totalPayment}
+              currentVoucher={voucher}
+              selectedVoucher={currentMarketplaceVoucher}
+              onClickVoucher={handleChangeMarketplaceVoucher}
+            />
+          ) : null
+        )}
       </Modal.Body>
     </Modal>
   );
