@@ -1,6 +1,7 @@
 export * from './address';
 export * from './auth';
 export * from './category';
+export * from './checkout';
 export * from './city';
 export * from './marketplaceVoucher';
 export * from './media';

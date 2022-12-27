@@ -1,12 +1,17 @@
-import { UpsertProductRequest } from '../../types/request/product';
+import {
+  ProductCheckCourierServiceRequest,
+  UpsertProductRequest,
+} from '../../types/request';
 import {
   GetAllProductsResponse,
   GetProductDetailsResponse,
   GetProductUpsertModelResponse,
   GetPurchasedQuantitiesResponse,
+  GetShipmentResponse,
   FavoriteProductResponse,
   GetFavoriteProductResponse,
   ViewPostResponse,
+  ProductCheckCourierServiceResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -40,6 +45,23 @@ export const productApi = baseApi.injectEndpoints({
       query: (id) => ({
         url: `/products/${id}/view`,
         method: 'POST',
+      }),
+    }),
+    getProductsLogistics: builder.query<GetShipmentResponse, number>({
+      query: (merchantID) => ({
+        url: `/products/logistics/${merchantID}`,
+        method: 'GET',
+      }),
+      providesTags: ['Shipment'],
+    }),
+    checkProductCourierServices: builder.mutation<
+      ProductCheckCourierServiceResponse,
+      ProductCheckCourierServiceRequest
+    >({
+      query: (request) => ({
+        url: '/products/check-courier-service',
+        method: 'POST',
+        body: request,
       }),
     }),
     favoriteProduct: builder.mutation<FavoriteProductResponse, string>({
@@ -96,6 +118,8 @@ export const {
   useLazyGetProductDetailQuery,
   useLazyGetPurchasedQuantitiesQuery,
   useViewPostMutation,
+  useLazyGetProductsLogisticsQuery,
+  useCheckProductCourierServicesMutation,
   useFavoriteProductMutation,
   useGetFavoriteProductQuery,
   useLazyGetFavoriteProductQuery,

@@ -10,6 +10,9 @@ export const toMerchantVoucherQuery = (query: MerchantVoucherQuery) => {
   result += '&page=' + query.page;
   result += '&search-voucher-code=' + query.searchVoucherCode;
   result += '&filter-voucher-status=' + query.filterVoucherStatus;
+  result +=
+    '&filter-voucher-availability=' +
+    (!query.filterVoucherAvailability ? '' : query.filterVoucherAvailability);
   result += '&merchant-id=' + query.merchantID;
 
   return result;

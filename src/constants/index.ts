@@ -9,6 +9,7 @@ export const LIMIT_HOME_ALL_PRODUCTS = 24;
 export const LIMIT_SEARCH_PRODUCTS_LIST = 30;
 export const LIMIT_SIMILAR_PRODUCTS_IN_PRODUCT_PAGE = 12;
 export const LIMIT_SELLER_VOUCHER_LIST = 10;
+export const LIMIT_SELLER_VOUCHER_ALL = 99999;
 export const LIMIT_REVIEWS_IN_PRODUCT_PAGE = 5;
 export const LIMIT_TRANSACTION_HISTORY = 10;
 export const LIMIT_REVIEW_HISTORY = 10;
@@ -19,6 +20,11 @@ export const VOUCHER_STATUS = {
   ONGOING: 'ongoing',
   UPCOMING: 'upcoming',
   ENDED: 'ended',
+};
+
+export const VOUCHER_AVAILABILITY = {
+  AVAILABLE: 'available',
+  UNAVAILABLE: 'unavailable',
 };
 
 export const PROMOTION_STATUS = {
