@@ -61,7 +61,9 @@ const Header = () => {
       getUserCart();
       getUserProfile();
       getUserWallet();
-      getMyShopProfile();
+      if (role.charAt(1) === '1') {
+        getMyShopProfile();
+      }
     }
   }, []);
 
