@@ -4,7 +4,7 @@ import {
   SealabsPayTransaction,
 } from '../component';
 
-export type SealabsPayRedirectResponse = {
+export type RedirectSealabsPayResponse = {
   data: string | null;
   code: number;
   error: string | null;

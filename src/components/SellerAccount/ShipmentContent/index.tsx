@@ -12,8 +12,7 @@ import { Courier, Shipment } from '../../../types/component/shipment';
 import { UpdateShipmentResponse } from '../../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { formikProcessDayAnndPreorderDay } from '../../../utils/yupValidation';
-import Skeleton from '../../common/Loading/Skeleton';
-import SectionHeading from '../../common/SectionHeading/index';
+import { SectionHeading, Skeleton } from '../../common';
 import CouriersConfiguration from './CouriersConfiguration';
 
 const ShipmentContent = () => {

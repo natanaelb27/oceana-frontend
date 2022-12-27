@@ -24,6 +24,7 @@ export type MerchantVoucherQuery = {
   sort: string;
   searchVoucherCode: string;
   filterVoucherStatus: string;
+  filterVoucherAvailability?: string;
   merchantID: number;
 };
 
