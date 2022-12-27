@@ -4,6 +4,8 @@ export enum UserAccountContent {
   Wallet,
   SealabsPay,
   Purchase,
+  Refunds,
+  RefundCreate,
   Review,
   ReviewDetail,
   Refund,

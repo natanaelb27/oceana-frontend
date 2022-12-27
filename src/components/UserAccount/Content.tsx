@@ -7,9 +7,10 @@ import ProfileContent from './ProfileContent';
 import PendingPaymentContent from './PendingPaymentContent';
 import SealabsPayContent from './SealabsPayContent';
 import WalletContent from './WalletContent';
+import RefundContent from './RefundContent';
+import RefundCreate from './RefundCreate';
 import ReviewContent from './ReviewContent';
 import ReviewDetailContent from './ReviewDetailContent';
-import RefundContent from './RefundContent';
 
 type ContentProps = {
   profile: Profile | null | undefined;
@@ -38,6 +39,14 @@ const Content = ({ profile, content }: ContentProps) => {
       return <PurchaseContent />;
     }
 
+    if (content === UserAccountContent.Refunds) {
+      return <RefundContent />;
+    }
+
+    if (content === UserAccountContent.RefundCreate) {
+      return <RefundCreate />;
+    }
+
     if (content === UserAccountContent.Review) {
       return <ReviewContent />;
     }
@@ -47,7 +56,7 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === UserAccountContent.Refund) {
-      return <RefundContent></RefundContent>;
+      return <RefundContent />;
     }
 
     if (content === UserAccountContent.PendingPayment) {

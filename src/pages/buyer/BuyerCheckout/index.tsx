@@ -155,6 +155,7 @@ const BuyerCheckout = () => {
       paymentMethod: false,
       paymentWalletPin: false,
     });
+    console.log(openModal);
   };
 
   const handleChangeAddressClick = () => {

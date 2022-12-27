@@ -10,6 +10,7 @@ export * from './merchantVoucher';
 export * from './product';
 export * from './profile';
 export * from './rajaOngkir';
+export * from './refund';
 export * from './review';
 export * from './sealabsPay';
 export * from './shipment';

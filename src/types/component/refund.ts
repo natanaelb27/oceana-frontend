@@ -1,4 +1,12 @@
-export interface RefundItems {
+export interface RefundOrder {
+  id: string;
+  order_id: string;
+  reason: string;
+  refund_request_datetime: string;
+  status: string;
+}
+
+interface RefundItems {
   refund_detail_id: string;
   order_detail_id: string;
   product_image: string;
@@ -28,4 +36,16 @@ export interface RefundDetails {
   total_merchant_lost_amount: number;
   refund_seller_confirmation_expiration_datetime: string;
   refund_rejected_auto_complete_order_expiration_datetime: string;
+}
+
+export interface OrderDetailRefund {
+  order_detail_id: string;
+  quantity: number;
+}
+
+export interface CalculatedRefundDetails {
+  order_detail_id: string;
+  amount_user_get: number;
+  amount_merchant_lost: number;
+  quantity: number;
 }
