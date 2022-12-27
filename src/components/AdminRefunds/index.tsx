@@ -17,7 +17,6 @@ import {
 import { CgClose } from 'react-icons/cg';
 import {
   HiCheck,
-  HiOutlineChevronRight,
   HiOutlineClipboardList,
   HiSearch,
 } from 'react-icons/hi';
@@ -201,6 +200,16 @@ const AdminRefunds = () => {
     });
   };
 
+  const handleResetFilterClick = () => {
+    setSearch('');
+
+    setRefundQuery({
+      ...refundQuery,
+      page: 1,
+      searchInvoice: '',
+    });
+  };
+
   return (
     <Card className='shadow-lg bg-base-100'>
       <Card.Body>
@@ -356,7 +365,16 @@ const AdminRefunds = () => {
                   )}
                 </Table.Body>
               </Table>
-            ) : null)}
+            ) : refundQuery.searchInvoice === '' ? (
+              <NoData title='No Refunds' />
+            ) : (
+              <NoData
+              title='Oops, there are no refunds that match the filter'
+              message='Try to reset or change your filter'
+              buttonMessage='Reset Filter'
+              buttonHandleClick={handleResetFilterClick}
+            ></NoData>
+            ))}
           <div className='mt-6 flex justify-center'>
             <Pager
               page={refundQuery.page}
