@@ -1,6 +1,7 @@
 import { ImgHTMLAttributes, useState } from 'react';
 import ClassNames from '../../../utils/classnames';
 import LazyLoad from 'react-lazy-load';
+import Skeleton from '../Loading/Skeleton';
 
 const Image = ({
   alt,
@@ -25,9 +26,9 @@ const Image = ({
   return (
     <>
       {isLoading && (
-        <div
+        <Skeleton
           className={ClassNames([
-            'bg-base-200 rounded-box animate-pulse',
+            'skeleton',
             className !== undefined ? className : '',
           ])}
         />

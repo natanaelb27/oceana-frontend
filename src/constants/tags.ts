@@ -4,7 +4,7 @@ export const TAG_TYPES = [
   'Category',
   'MyShop',
   'Order',
-  'OrderDetails',
+  'Refund',
   'Product',
   'Profile',
   'Cart',
@@ -13,4 +13,5 @@ export const TAG_TYPES = [
   'Merchant',
   'MerchantVoucher',
   'MerchantPromotion',
+  'Refund'
 ];

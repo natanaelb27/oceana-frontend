@@ -329,7 +329,7 @@ const VoucherContent = ({ profile }: ContentProps) => {
                           className='font-bold p-2'
                           color={getBadgeColor(voucher_status)}
                         >
-                          {capitalizeFirstLetter(voucher_status)}
+                          {voucher_status}
                         </Badge>
                       </div>
                       <div className='flex gap-1 justify-left'>

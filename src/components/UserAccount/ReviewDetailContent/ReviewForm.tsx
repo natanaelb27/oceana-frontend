@@ -88,7 +88,7 @@ const ReviewForm = ({ order_detail_data }: ContentProps) => {
           })}
         </Rating>
         <div className='mt-2 flex justify-between gap-5'>
-          <div className='flex flex-col w-[75%] gap-2'>
+          <div className='flex flex-col w-full gap-2'>
             <div className='flex flex-col gap-1'>
               <div className='flex items-center gap-1'>
                 <span className='font-light text-sm'>

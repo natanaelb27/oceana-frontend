@@ -21,7 +21,7 @@ const NoData = ({
         <img
           src={require('./../../../assets/images/no-data.gif')}
           alt='no-data'
-          className='object-contain max-w-xs -my-10'
+          className='object-contain max-w-xs'
           onError={({ currentTarget }) => {
             currentTarget.onerror = null;
             currentTarget.src = require('./../../../assets/images/no-image.webp');

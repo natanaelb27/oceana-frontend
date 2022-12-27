@@ -23,6 +23,7 @@ export type MerchantVoucherQuery = {
   sort: string;
   searchVoucherCode: string;
   filterVoucherStatus: string;
+  filterVoucherAvailability?: string;
   merchantID: number;
 };
 
@@ -89,4 +90,16 @@ export type AvailableProductQuery = {
   filterCategory: number;
   filterStartDatetime: Date | null;
   filterEndDatetime: Date | null;
+};
+
+export type RefundQuery = {
+  sort: string;
+  sortBy: string;
+  limit: number;
+  page: number;
+  searchInvoice: string;
+  filterGroupedStatus: string;
+  filterStatus: string;
+  filterStartDate: string;
+  filterEndDate: string;
 };

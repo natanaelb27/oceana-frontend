@@ -1,13 +1,13 @@
 import {
-  SealabsPayPaymentRequest,
-  SealabsPayRegisterRequest,
+  PaymentSealabsPayRequest,
+  RegisterSealabsPayRequest,
 } from '../../types/request';
 
 export const toSealabsPayPaymentRequest = (
   nameOnCard: string | null,
   cardNumber: string,
   amount: string
-): SealabsPayPaymentRequest => ({
+): PaymentSealabsPayRequest => ({
   name_on_card: nameOnCard,
   card_number: cardNumber,
   amount,
@@ -18,7 +18,7 @@ export const toSealabsPayRegisterRequest = (
   cardNumber: string,
   txnId: string,
   signature: string
-): SealabsPayRegisterRequest => ({
+): RegisterSealabsPayRequest => ({
   name_on_card: nameOnCard,
   card_number: cardNumber,
   txn_id: txnId,

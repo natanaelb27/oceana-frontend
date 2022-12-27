@@ -4,6 +4,7 @@ import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
 import { Layout } from '../components';
 import {
+  BuyerRefundCreate,
   Login,
   NotFound,
   Register,
@@ -12,6 +13,7 @@ import {
   SealabsPayRegisterRedirect,
   SealabsPayTopup,
   SealabsPayTopupRedirect,
+  ShopRefund,
 } from '../pages';
 
 const Home = React.lazy(() => import('../pages/Home'));
@@ -212,6 +214,10 @@ const Routes = () => {
               element: <BuyerRefund />,
             },
             {
+              path: '/user/refund/create/:orderID',
+              element: <BuyerRefundCreate />,
+            },
+            {
               path: '/user/review',
               element: <BuyerReview />,
             },
@@ -352,8 +358,12 @@ const Routes = () => {
                   element: <ShopAddPromotion />,
                 },
                 {
-                  path: '/seller/orders/',
+                  path: '/seller/order/',
                   element: <ShopOrder />,
+                },
+                {
+                  path: '/seller/refund/',
+                  element: <ShopRefund />,
                 },
                 {
                   path: '/seller/settings/shipment/',

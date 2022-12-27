@@ -37,13 +37,15 @@ const DateCountdown = ({ date = null }: DateCountdownProps) => {
       <Badge color='warning' className='flex gap-1 bg-opacity-50 text-xs'>
         <HiOutlineClock />
         {computeDatetime(getDateDiffNow(date?.toString() || '')).days > 0 ? (
-          <div className='font-bold'>
-            <Countdown
-              value={
-                computeDatetime(getDateDiffNow(date?.toString() || '')).days
-              }
-            ></Countdown>{' '}
-            days
+          <div className='grid items-center font-bold grid-flow-col gap-1 text-center mt-0.5'>
+            <span>
+              {computeDatetime(getDateDiffNow(date?.toString() || '')).days}
+            </span>
+            <span>
+              {computeDatetime(getDateDiffNow(date?.toString() || '')).days > 1
+                ? 'days'
+                : 'day'}
+            </span>
           </div>
         ) : (
           <div className='grid items-center font-bold grid-flow-col text-center auto-cols-max mt-0.5'>
@@ -59,7 +61,7 @@ const DateCountdown = ({ date = null }: DateCountdownProps) => {
         )}
       </Badge>
     ) : (
-      <Badge color='warning' className='flex gap-1 bg-opacity-50'>
+      <Badge color='warning' className='flex gap-1 bg-opacity-50 text-xs'>
         <HiOutlineClock />
         <div className='grid items-center font-bold grid-flow-col text-center auto-cols-max mt-0.5'>
           <span className='font-mono'>00:00:00</span>

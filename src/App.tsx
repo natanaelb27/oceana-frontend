@@ -15,6 +15,7 @@ import { Loading } from './components/common';
 import Cookies from 'js-cookie';
 import { useRefreshAccessTokenMutation } from './store/services/authService';
 import ErrorBoundary from './ErrorBoundary';
+import NetworkStatusWrapper from './components/NetworkStatusWrapper';
 
 const App = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -80,7 +81,9 @@ const App = () => {
       <ErrorBoundary>
         <Suspense fallback={null}>
           <Loading isLoading={loading} />
-          <Routes />
+          <NetworkStatusWrapper>
+            <Routes />
+          </NetworkStatusWrapper>
           <ToastContainer />
         </Suspense>
       </ErrorBoundary>

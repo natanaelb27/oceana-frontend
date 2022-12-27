@@ -48,7 +48,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         className='w-full'
       >
         <Card className='w-full shadow transition max-h-[27rem] md:max-h-full md:min-h-[27rem] h-full transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:border-b-4 hover:border-b-secondary'>
-          <figure className='w-full h-64 bg-base-300'>
+          <figure className='w-full h-64'>
             <Image
               src={product.media_url}
               className='object-cover w-full h-full'

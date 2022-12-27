@@ -2,6 +2,7 @@ import {
   AvailableProduct,
   FavoriteProduct,
   Metadata,
+  PUMProduct,
   Product,
   ProductDetail,
   PurchasedQuantities,
@@ -63,3 +64,13 @@ export type GetAvailableProductResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type GetProductUpsertModelResponse = {
+  data: PUMProduct | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};
+
+export type CreateProductResponse = GetProductUpsertModelResponse;

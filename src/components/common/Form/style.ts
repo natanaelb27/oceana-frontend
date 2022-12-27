@@ -15,7 +15,9 @@ export const FormTitle = tw(NavLink)<any>`
   text-center
   text-5xl
   text-primary-content
+  font-main
   font-bold
+  italic
 
   md:text-6xl
 
