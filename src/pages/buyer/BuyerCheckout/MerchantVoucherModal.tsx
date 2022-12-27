@@ -105,19 +105,20 @@ const MerchantVoucherModal = ({
       </Modal.Header>
       <Modal.Body className='h-96 overflow-auto flex flex-col gap-4'>
         {getAllMerchantVoucherByBuyerData.data.merchant_voucher.map(
-          (voucherByBuyer) => (
-            <VoucherTicket
-              key={voucherByBuyer.id}
-              currentVoucher={voucherByBuyer}
-              disabled={
-                voucherByBuyer.minimum_spend_amount > subtotalBeforeShipping
-              }
-              selectedVoucher={
-                merchantVouchers && merchantVouchers[currentMerchantID]
-              }
-              onClickVoucher={handleClickMerchantVoucher}
-            />
-          )
+          (voucherByBuyer) =>
+            voucherByBuyer.current_quota < voucherByBuyer.maximum_quota ? (
+              <VoucherTicket
+                key={voucherByBuyer.id}
+                currentVoucher={voucherByBuyer}
+                disabled={
+                  voucherByBuyer.minimum_spend_amount > subtotalBeforeShipping
+                }
+                selectedVoucher={
+                  merchantVouchers && merchantVouchers[currentMerchantID]
+                }
+                onClickVoucher={handleClickMerchantVoucher}
+              />
+            ) : null
         )}
       </Modal.Body>
     </Modal>
