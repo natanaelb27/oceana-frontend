@@ -4,8 +4,12 @@ import { UserAccountContent } from '../../types/content';
 import AddressContent from './AddressContent';
 import PurchaseContent from './PurchaseContent';
 import ProfileContent from './ProfileContent';
+import PendingPaymentContent from './PendingPaymentContent';
 import SealabsPayContent from './SealabsPayContent';
 import WalletContent from './WalletContent';
+import ReviewContent from './ReviewContent';
+import ReviewDetailContent from './ReviewDetailContent';
+import RefundContent from './RefundContent';
 
 type ContentProps = {
   profile: Profile | null | undefined;
@@ -34,11 +38,21 @@ const Content = ({ profile, content }: ContentProps) => {
       return <PurchaseContent />;
     }
 
-    if (content === UserAccountContent.Refunds) {
-      return null;
+    if (content === UserAccountContent.Review) {
+      return <ReviewContent />;
     }
 
-    return null;
+    if (content === UserAccountContent.ReviewDetail) {
+      return <ReviewDetailContent />;
+    }
+
+    if (content === UserAccountContent.Refund) {
+      return <RefundContent></RefundContent>;
+    }
+
+    if (content === UserAccountContent.PendingPayment) {
+      return <PendingPaymentContent />;
+    }
   };
   return <Card className='shadow'>{renderContent()}</Card>;
 };

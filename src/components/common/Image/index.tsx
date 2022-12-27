@@ -1,6 +1,7 @@
 import { ImgHTMLAttributes, useState } from 'react';
 import ClassNames from '../../../utils/classnames';
 import LazyLoad from 'react-lazy-load';
+import Skeleton from '../Loading/Skeleton';
 
 const Image = ({
   alt,
@@ -25,14 +26,20 @@ const Image = ({
   return (
     <>
       {isLoading && (
-        <div
+        <Skeleton
           className={ClassNames([
-            'bg-base-200 rounded-box animate-pulse',
+            'skeleton',
             className !== undefined ? className : '',
           ])}
         />
       )}
-      <LazyLoad threshold={0.5}>
+      <LazyLoad
+        className={ClassNames([
+          isLoading ? 'z-0 absolute' : 'block',
+          className !== undefined ? className : '',
+        ])}
+        threshold={0.5}
+      >
         <img
           {...props}
           alt={alt}

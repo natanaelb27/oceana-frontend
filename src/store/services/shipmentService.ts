@@ -1,4 +1,4 @@
-import { UpdateShipmentRequest } from '../../types/request/shipment';
+import { UpdateShipmentRequest } from '../../types/request';
 import {
   GetShipmentResponse,
   UpdateShipmentResponse,
@@ -10,6 +10,13 @@ export const shipmentApi = baseApi.injectEndpoints({
     getShipment: builder.query<GetShipmentResponse, void>({
       query: () => ({
         url: '/my-shop/logistics',
+        method: 'GET',
+      }),
+      providesTags: ['Shipment'],
+    }),
+    getSelectedShipment: builder.query<GetShipmentResponse, void>({
+      query: () => ({
+        url: '/my-shop/logistics/selected',
         method: 'GET',
       }),
       providesTags: ['Shipment'],
@@ -41,4 +48,5 @@ export const {
   useUpdateShipmentMutation,
   useGetShipmentSelectedQuery,
   useLazyGetShipmentSelectedQuery,
+  useGetSelectedShipmentQuery,
 } = shipmentApi;

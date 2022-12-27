@@ -1,9 +1,15 @@
-import { ProductCheckCourierServiceRequest } from '../../types/request';
+import {
+  ProductCheckCourierServiceRequest,
+  UpsertProductRequest,
+} from '../../types/request';
 import {
   GetAllProductsResponse,
   GetProductDetailsResponse,
+  GetProductUpsertModelResponse,
   GetPurchasedQuantitiesResponse,
   GetShipmentResponse,
+  FavoriteProductResponse,
+  GetFavoriteProductResponse,
   ViewPostResponse,
   ProductCheckCourierServiceResponse,
 } from '../../types/response';
@@ -58,6 +64,49 @@ export const productApi = baseApi.injectEndpoints({
         body: request,
       }),
     }),
+    favoriteProduct: builder.mutation<FavoriteProductResponse, string>({
+      query: (id) => ({
+        url: `/products/${id}/favorite`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Product'],
+    }),
+    getFavoriteProduct: builder.query<GetFavoriteProductResponse, string>({
+      query: (id) => ({
+        url: `/products/${id}/favorite`,
+        method: 'GET',
+      }),
+      providesTags: ['Product'],
+    }),
+    getProductUpsertModel: builder.query<GetProductUpsertModelResponse, void>({
+      query: (id) => ({
+        url: `/products/${id}/model`,
+        method: 'GET',
+      }),
+      providesTags: ['ProductUpsertModel'],
+    }),
+    createProductUpsertModel: builder.mutation<
+      GetProductUpsertModelResponse,
+      { request: UpsertProductRequest }
+    >({
+      query: ({ request }) => ({
+        url: '/my-shop/products',
+        method: 'POST',
+        body: request,
+      }),
+      invalidatesTags: ['ProductUpsertModel'],
+    }),
+    updateProductUpsertModel: builder.mutation<
+      GetProductUpsertModelResponse,
+      { id: number; request: UpsertProductRequest }
+    >({
+      query: ({ id, request }) => ({
+        url: `/my-shop/products/${id}`,
+        method: 'PATCH',
+        body: request,
+      }),
+      invalidatesTags: ['ProductUpsertModel'],
+    }),
   }),
 });
 
@@ -71,4 +120,10 @@ export const {
   useViewPostMutation,
   useLazyGetProductsLogisticsQuery,
   useCheckProductCourierServicesMutation,
+  useFavoriteProductMutation,
+  useGetFavoriteProductQuery,
+  useLazyGetFavoriteProductQuery,
+  useGetProductUpsertModelQuery,
+  useCreateProductUpsertModelMutation,
+  useUpdateProductUpsertModelMutation,
 } = productApi;

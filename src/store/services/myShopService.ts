@@ -6,9 +6,14 @@ import {
 import {
   CreateMerchantVoucherResponse,
   DeleteMerchantVoucherResponse,
+  GetAllTransactionHistoryResponse,
   GetMerchantResponse,
+  GetOrderDetailsResponse,
   UpdateMerchantResponse,
   UpdateMerchantVoucherResponse,
+  UpdateOrderStatusResponse,
+  GetAllRefundDetailsResponse,
+  UpdateRefundResponse,
 } from '../../types/response';
 import {
   MerchantPromotionDetailsResponse,
@@ -68,6 +73,44 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['MerchantVoucher'],
     }),
+    getAllMerchantTransactionHistory: builder.query<
+      GetAllTransactionHistoryResponse,
+      string
+    >({
+      query: (query) => ({
+        url: `/my-shop/transaction-history?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Order'],
+    }),
+    getMerchantOrderDetails: builder.query<GetOrderDetailsResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/transaction-history/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['Order'],
+    }),
+    updateProcessOrder: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/process-order`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order'],
+    }),
+    updateProcessDelivery: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/process-delivery`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order'],
+    }),
+    sellerCancelOrder: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/cancel-order`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order'],
+    }),
     getMerchantPromotion: builder.query<MerchantPromotionResponse, string>({
       query: (query) => ({
         url: `/my-shop/promotions?${query}`,
@@ -117,6 +160,34 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['MerchantPromotion'],
     }),
+    sellerClaimFunds: builder.mutation<UpdateOrderStatusResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/orders/${id}/claim-funds`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'Profile'],
+    }),
+    getAllMerchantRefunds: builder.query<GetAllRefundDetailsResponse, string>({
+      query: (query) => ({
+        url: `/my-shop/refunds?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Refund'],
+    }),
+    sellerApproveRefund: builder.mutation<UpdateRefundResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/refunds/${id}/approve`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'Refund'],
+    }),
+    sellerRejectRefund: builder.mutation<UpdateRefundResponse, string>({
+      query: (id) => ({
+        url: `/my-shop/refunds/${id}/reject`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'Refund'],
+    }),
   }),
 });
 
@@ -126,6 +197,13 @@ export const {
   useCreateMerchantVoucherMutation,
   useUpdateMerchantVoucherMutation,
   useDeleteMerchantVoucherMutation,
+  useGetAllMerchantTransactionHistoryQuery,
+  useLazyGetAllMerchantTransactionHistoryQuery,
+  useGetMerchantOrderDetailsQuery,
+  useLazyGetMerchantOrderDetailsQuery,
+  useUpdateProcessOrderMutation,
+  useUpdateProcessDeliveryMutation,
+  useSellerCancelOrderMutation,
   useGetMerchantPromotionQuery,
   useLazyGetMerchantPromotionQuery,
   useGetMerchantPromotionDetailsQuery,
@@ -134,4 +212,9 @@ export const {
   useUpdateMerchantPromotionMutation,
   useDeleteMerchantPromotionMutation,
   useUpdateMyShopPhotoMutation,
+  useSellerClaimFundsMutation,
+  useGetAllMerchantRefundsQuery,
+  useLazyGetAllMerchantRefundsQuery,
+  useSellerApproveRefundMutation,
+  useSellerRejectRefundMutation,
 } = myShopApi;

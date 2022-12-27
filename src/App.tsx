@@ -14,6 +14,7 @@ import { doesHttpOnlyCookieExist } from './utils/auth';
 import { Loading } from './components/common';
 import Cookies from 'js-cookie';
 import { useRefreshAccessTokenMutation } from './store/services/authService';
+import NetworkStatusWrapper from './components/NetworkStatusWrapper';
 
 const App = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -80,7 +81,9 @@ const App = () => {
   return (
     <BrowserRouter>
       <Loading isLoading={loading} />
-      <Routes />
+      <NetworkStatusWrapper>
+        <Routes />
+      </NetworkStatusWrapper>
       <ToastContainer />
     </BrowserRouter>
   );

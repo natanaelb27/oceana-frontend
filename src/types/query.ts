@@ -47,6 +47,7 @@ export type TransactionHistoryQuery = {
   filterOngoingOrderStatus: string;
   filterStartTransactionDate: string;
   filterEndTransactionDate: string;
+  filterIsReviewed: string;
   limit: number;
   page: number;
 };
@@ -80,4 +81,16 @@ export type ReviewQuery = {
   media: boolean;
   comment: boolean;
   rating: number[];
+};
+
+export type RefundQuery = {
+  sort: string;
+  sortBy: string;
+  limit: number;
+  page: number;
+  searchInvoice: string;
+  filterGroupedStatus: string;
+  filterStatus: string;
+  filterStartDate: string;
+  filterEndDate: string;
 };
