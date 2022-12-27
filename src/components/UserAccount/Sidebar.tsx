@@ -2,9 +2,13 @@ import { Avatar, Card, Divider, Menu } from 'react-daisyui';
 import { BsCreditCard2Back } from 'react-icons/bs';
 import { CgProfile } from 'react-icons/cg';
 import { GoHistory, GoHome } from 'react-icons/go';
-import { HiOutlineClipboard, HiOutlineClipboardList, HiOutlineCurrencyDollar, HiOutlineReceiptRefund } from 'react-icons/hi';
+import {
+  HiOutlineClipboardList,
+  HiOutlineCurrencyDollar,
+  HiOutlineReceiptRefund,
+} from 'react-icons/hi';
 import { IoWalletOutline } from 'react-icons/io5';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 import { Profile } from '../../types/component';
 import { Image } from '../common';
@@ -14,6 +18,10 @@ type SidebarProps = {
 };
 
 const Sidebar = ({ profile }: SidebarProps) => {
+  const location = useLocation();
+  const { pathname } = location;
+  const splitLocation = pathname.split('/');
+
   if (!profile) {
     return (
       <Card className='shadow animate-pulse'>
@@ -43,7 +51,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           {profile.photo ? (
             <div className='avatar'>
               <div className='w-14 rounded-full'>
-                <Image src={profile.photo} />
+                <Image src={profile.photo} alt='Profile Photo' />
               </div>
             </div>
           ) : (
@@ -105,7 +113,15 @@ const Sidebar = ({ profile }: SidebarProps) => {
             </NavLink>
           </Menu.Item>
           <Menu.Item>
-            <NavLink to='/user/refund'>
+            <NavLink
+              end
+              to='/user/refund'
+              className={
+                splitLocation.slice(0, 3).join('/') === '/user/refund'
+                  ? 'active'
+                  : ''
+              }
+            >
               <HiOutlineReceiptRefund />
               Refunds
             </NavLink>

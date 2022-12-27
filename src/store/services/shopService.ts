@@ -34,6 +34,15 @@ export const shopApi = baseApi.injectEndpoints({
       }),
       providesTags: ['MerchantVoucher'],
     }),
+    getAllMerchantVoucherByBuyer: builder.query<
+      GetMerchantVoucherResponse,
+      string
+    >({
+      query: (query) => ({
+        url: `/shop/vouchers/buyer?${query}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -43,4 +52,6 @@ export const {
   useLazyGetAllMerchantVoucherQuery,
   useGetMerchantVoucherDetailsQuery,
   useLazyGetMerchantVoucherDetailsQuery,
+  useGetAllMerchantVoucherByBuyerQuery,
+  useLazyGetAllMerchantVoucherByBuyerQuery,
 } = shopApi;

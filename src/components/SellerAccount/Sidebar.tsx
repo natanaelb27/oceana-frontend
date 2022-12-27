@@ -66,7 +66,7 @@ const Sidebar = ({ profile }: SidebarProps) => {
           {profile.photo ? (
             <div className='avatar'>
               <div className='w-14 rounded-full'>
-                <Image src={profile.photo} />
+                <Image src={profile.photo} alt='Profile Photo' />
               </div>
             </div>
           ) : (
@@ -91,7 +91,15 @@ const Sidebar = ({ profile }: SidebarProps) => {
             </NavLink>
           </Menu.Item>
           <Menu.Item>
-            <NavLink to='/seller/marketing/products/list'>
+            <NavLink
+              to='/seller/marketing/products/list'
+              className={
+                splitLocation.slice(0, 4).join('/') ===
+                '/seller/marketing/products'
+                  ? 'active'
+                  : ''
+              }
+            >
               <HiOutlineShoppingBag />
               Product
             </NavLink>

@@ -29,6 +29,8 @@ export interface OrderList {
   order_status: string;
   total_price: number;
   refund_id: string | null;
+  ongoing_refund_id: string | null;
+  approved_refund_id: string | null;
   claim_status: boolean;
   seller_confirmation_expiration_datetime: string | null;
   on_process_expiration_datetime: string | null;
@@ -74,6 +76,8 @@ export interface OrderListDetail {
   shipping_fee: number;
   total_payment: number;
   refund_id: string | null;
+  ongoing_refund_id: string | null;
+  approved_refund_id: string | null;
   claim_status: boolean;
   seller_confirmation_expiration_datetime: string | null;
   on_process_expiration_datetime: string | null;

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Pager, ProductCard, SortBar } from '../../components/common';
 import { FilterSidebar } from '../../components/CategorySearch';
-import { LIMIT_SEARCH_PRODUCTS_LIST } from '../../constants';
+import { LIMIT_SEARCH_PRODUCTS_LIST, PRODUCT_STATUS } from '../../constants';
 import {
   useGetAllCategoryQuery,
   useGetAncestorsCategoryQuery,
@@ -47,6 +47,7 @@ const CategorySearch = () => {
     rating: 0,
     merchantCities: [],
     courierServices: [],
+    status: PRODUCT_STATUS.ACTIVE,
   });
   const [searchParams] = useSearchParams();
 

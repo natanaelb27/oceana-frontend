@@ -14,6 +14,7 @@ import {
   UpdateOrderStatusResponse,
   GetAllRefundDetailsResponse,
   UpdateRefundResponse,
+  GetAllMyShopProductsResponse,
 } from '../../types/response';
 import {
   MerchantPromotionDetailsResponse,
@@ -145,7 +146,7 @@ export const myShopApi = baseApi.injectEndpoints({
     >({
       query: ({ id, request }) => ({
         url: `/my-shop/promotions/${id}`,
-        method: 'POST',
+        method: 'PUT',
         body: request,
       }),
       invalidatesTags: ['MerchantPromotion'],
@@ -188,6 +189,13 @@ export const myShopApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Order', 'Refund'],
     }),
+    getAllMyShopProducts: builder.query<GetAllMyShopProductsResponse, string>({
+      query: (query) => ({
+        url: `/my-shop/products?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['MyShopProduct'],
+    }),
   }),
 });
 
@@ -217,4 +225,5 @@ export const {
   useLazyGetAllMerchantRefundsQuery,
   useSellerApproveRefundMutation,
   useSellerRejectRefundMutation,
+  useGetAllMyShopProductsQuery,
 } = myShopApi;

@@ -1,21 +1,13 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Badge,
-  Breadcrumbs,
-  Card,
-  Countdown,
-  Divider,
-  Progress,
-} from 'react-daisyui';
+import { Badge, Breadcrumbs, Card, Divider, Progress } from 'react-daisyui';
 import { CgMathPercent } from 'react-icons/cg';
-import { HiOutlineCurrencyDollar, HiOutlineClock } from 'react-icons/hi';
+import { HiOutlineCurrencyDollar } from 'react-icons/hi';
 import { DISCOUNT_TYPE, VOUCHER_STATUS } from '../../../constants';
 import { Merchant } from '../../../types/component';
 import { useGetMerchantVoucherDetailsQuery } from '../../../store/services/shopService';
 import { stringCompare } from '../../../utils/validation';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import { toRupiah, toStringDate, toStringTime } from '../../../utils/convert';
-import { computeDatetime, getDateDiffNow } from '../../../utils/date';
 import DateCountdown from '../../common/DateCountdown';
 import moment from 'moment';
 

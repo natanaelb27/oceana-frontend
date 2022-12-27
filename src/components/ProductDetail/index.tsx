@@ -8,7 +8,7 @@ import {
 } from '../../store/services/productService';
 import {
   useFavoriteProductMutation,
-  useGetFavoriteProductQuery,
+  useLazyGetFavoriteProductQuery,
 } from '../../store/services/favoriteProductService';
 import { useLazyGetAllReviewsQuery } from '../../store/services/reviewService';
 import { useGetShopInformationQuery } from '../../store/services/shopService';
@@ -33,10 +33,7 @@ import { useAppSelector } from '../../store/store';
 import { selectRole } from '../../store/slices/authSlice';
 import { validateUserRole } from '../../utils/auth';
 import { Role } from '../../types/role';
-import {
-  GetPurchasedQuantitiesResponse,
-  UpdateUserCartResponse,
-} from '../../types/response';
+import { UpdateUserCartResponse } from '../../types/response';
 import {
   LIMIT_REVIEWS_IN_PRODUCT_PAGE,
   LIMIT_SIMILAR_PRODUCTS_IN_PRODUCT_PAGE,
@@ -45,6 +42,7 @@ import { ProductCard } from '../common';
 import { ReviewsSort } from '../../types/sort';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { useNavigate } from 'react-router-dom';
+import { PRODUCT_STATUS } from '../../constants/index';
 
 type ProductDetailProps = {
   merchantID?: string;
@@ -90,7 +88,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     data: getShopInformationData,
     isLoading: getShopInformationIsLoading,
   } = useGetShopInformationQuery(merchantID);
-  const { data: getFavoriteProduct } = useGetFavoriteProductQuery(productID);
+  const [getFavoriteData, { data: getFavoriteProductData }] =
+    useLazyGetFavoriteProductQuery();
   const [
     getAllSimilarProducts,
     {
@@ -271,9 +270,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
           notifySuccessToast('Product removed from favorite list');
           setProductLikeCount(productLikeCount - 1);
         }
-      })
-      .catch((err) => {
-        console.error(err);
       });
   };
 
@@ -290,6 +286,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     const fetchData = () => {
       if (role === Role.Buyer || role === Role.Seller) {
         viewPost(productID);
+        getFavoriteData(productID);
       }
       getProductDetail(productID).then(({ data }) => {
         if (!data?.data) {
@@ -297,25 +294,15 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
         }
         setProductLikeCount(data.data.like_count);
         if (data.data.product_variation.length === 0) {
-          getPurchasedQuantities(
-            toPurchasedQuantitiesQuery({
-              product_item_id: data.data.product_model[0].product_item_id,
-              product_id: Number(productID),
-              quantity: purchasedQuantitiesQuery.quantity,
-            })
-          )
-            .unwrap()
-            .then(({ data }) => {
-              if (!data) {
-                return;
-              }
-            })
-            .catch((err) => {
-              if (err && 'data' in err) {
-                const data = err.data as GetPurchasedQuantitiesResponse;
-                notifyErrorToast(data.message);
-              }
-            });
+          if (role === Role.Buyer || role === Role.Seller) {
+            getPurchasedQuantities(
+              toPurchasedQuantitiesQuery({
+                product_item_id: data.data.product_model[0].product_item_id,
+                product_id: Number(productID),
+                quantity: purchasedQuantitiesQuery.quantity,
+              })
+            );
+          }
         }
         getAllSimilarProducts(
           toProductQuery({
@@ -331,15 +318,9 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             rating: 0,
             merchantCities: [],
             courierServices: [],
+            status: PRODUCT_STATUS.ACTIVE,
           })
-        )
-          .unwrap()
-          .then((res) => {
-            console.log({ res });
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        );
         getMerchantSimilarProducts(
           toProductQuery({
             search: '',
@@ -354,26 +335,14 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
             rating: 0,
             merchantCities: [],
             courierServices: [],
+            status: PRODUCT_STATUS.ACTIVE,
           })
-        )
-          .unwrap()
-          .then((res) => {
-            console.log({ res });
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        );
       });
       getReviews({
         id: Number(productID),
         query: toReviewQuery(reviewQuery),
-      })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      });
     };
 
     fetchData();
@@ -383,27 +352,22 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     if (purchasedQuantitiesQuery.product_item_id === 0) {
       return;
     }
+
+    if (role !== Role.Buyer && role !== Role.Seller) {
+      return;
+    }
+
     getPurchasedQuantities(toPurchasedQuantitiesQuery(purchasedQuantitiesQuery))
       .unwrap()
       .then(({ data }) => {
         if (!data) {
           return;
         }
-      })
-      .catch((err) => {
-        console.error(err);
       });
   }, [purchasedQuantitiesQuery]);
 
   useEffect(() => {
-    getReviews({ id: Number(productID), query: toReviewQuery(reviewQuery) })
-      .unwrap()
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    getReviews({ id: Number(productID), query: toReviewQuery(reviewQuery) });
   }, [reviewQuery]);
 
   const handleChangeReviewPage = (n: number) => {
@@ -531,56 +495,14 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                 </div>
               </Card>
             </div>
-          </div>
-          <div className='col-span-12 md:col-span-3'>
-            <ReviewStatsAndFilter isLoading={true} />
-          </div>
-          <div className='col-span-12 md:col-span-6'>
-            <div className='grid grid-col-12 gap-4 mb-10'>
-              <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+            <div className='col-span-12 md:col-span-3'>
+              <ReviewStatsAndFilter isLoading={true} />
             </div>
-            <Divider />
-            <div className='grid grid-cols-12 gap-4 mb-10'>
-              <div className='h-4 bg-base-200 rounded-full col-span-12 w-2/5 mb-1'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-3'></div>
-              <div className='h-4 bg-base-200 rounded-full col-span-9'></div>
+            <div className='col-span-12 md:col-span-6'>
+              <Reviews isLoading={true} />
+              <Reviews isLoading={true} />
+              <Reviews isLoading={true} />
             </div>
-            <Divider />
-            <ShopBanner isLoading={true} />
-          </div>
-          <div className='col-span-12 md:col-span-3'>
-            <Card className='shadow max-w-sm'>
-              <div className='p-4'>
-                <div className='h-36 w-full bg-base-200 rounded-md'></div>
-                <Divider />
-                <div className='h-12 w-full bg-base-200 rounded-md mb-4'></div>
-                <div className='h-12 w-full bg-base-200 rounded-md'></div>
-              </div>
-            </Card>
-          </div>
-          <div className='col-span-12 md:col-span-3'>
-            <ReviewStatsAndFilter isLoading={true} />
-          </div>
-          <div className='col-span-12 md:col-span-6'>
-            <Reviews isLoading={true} />
-            <Reviews isLoading={true} />
-            <Reviews isLoading={true} />
           </div>
         </div>
       </div>
@@ -598,7 +520,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                   selectedVariantImage={selectedVariantImage}
                   handleClickFavoriteProduct={handleClickFavoriteProduct}
                   favoriteProductValue={Boolean(
-                    getFavoriteProduct?.data?.is_favorite
+                    getFavoriteProductData?.data?.is_favorite
                   )}
                   productLikeCount={productLikeCount}
                 />

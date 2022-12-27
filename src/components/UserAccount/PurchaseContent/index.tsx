@@ -154,6 +154,10 @@ const PurchaseContent = () => {
   const [openStatusModal, setOpenStatusModal] = useState<boolean>(false);
   const [openOrderTracking, setOpenOrderTracking] = useState<boolean>(false);
 
+  const handleRefundClick = (id: string) => {
+    navigate(`/user/refund/create/${id}`);
+  };
+
   const handleCompleteOrderClick = (id: string) => {
     setOrderID(id);
 
@@ -862,7 +866,15 @@ const PurchaseContent = () => {
                                 <HiOutlineDotsVertical></HiOutlineDotsVertical>
                               </Dropdown.Toggle>
                               <Dropdown.Menu className='w-52'>
-                                <Dropdown.Item>Refund</Dropdown.Item>
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    handleRefundClick(
+                                      transactionHistory?.order_id
+                                    )
+                                  }
+                                >
+                                  Refund
+                                </Dropdown.Item>
                               </Dropdown.Menu>
                             </Dropdown>
                           </div>

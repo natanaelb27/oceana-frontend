@@ -4,6 +4,8 @@ export enum UserAccountContent {
   Wallet,
   SealabsPay,
   Purchase,
+  Refunds,
+  RefundCreate,
   Review,
   ReviewDetail,
   Refund,
@@ -14,6 +16,7 @@ export enum SellerAccountContent {
   Profile = 0,
   Address,
   Product,
+  ProductAdd,
   Voucher,
   VoucherDetail,
   VoucherAdd,
@@ -28,6 +31,11 @@ export enum SellerAccountContent {
 }
 
 export enum SellerAccountVoucherFormContent {
+  Add = 0,
+  Edit,
+}
+
+export enum SellerAccountPromotionFormContent {
   Add = 0,
   Edit,
 }

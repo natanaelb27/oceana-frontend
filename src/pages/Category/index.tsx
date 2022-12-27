@@ -32,11 +32,13 @@ const Category = () => {
   const [getAllCategory] = useLazyGetAllCategoryQuery();
 
   useEffect(() => {
-    if (
-      !('value' in categoriesStorage && 'timestamp' in categoriesStorage) ||
-      categoriesStorage.value.length === 0 ||
-      moment(categoriesStorage.timestamp).isBefore(moment())
-    ) {
+    try {
+      if (categoriesStorage.value.length === 0) {
+        throw new Error('empty storage value');
+      }
+
+      setCategories(categoriesStorage.value);
+    } catch (e) {
       getAllCategory(toCategoryQuery(categoryQuery))
         .unwrap()
         .then((res) => {
@@ -46,8 +48,6 @@ const Category = () => {
             timestamp: moment().add(1, 'day').toDate(),
           });
         });
-    } else {
-      setCategories(categoriesStorage.value);
     }
   }, []);
 
@@ -201,6 +201,7 @@ const Category = () => {
                 <div className='flex gap-5 items-center justify-center p-5 rounded-xl'>
                   <Image
                     src={category.image}
+                    alt={category.name}
                     className='w-10 h-10 md:w-20 md:h-20'
                   ></Image>
                   <Link

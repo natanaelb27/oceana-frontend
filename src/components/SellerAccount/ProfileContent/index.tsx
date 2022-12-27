@@ -107,21 +107,27 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
       <div className='grid grid-cols-12 gap-4 md:gap-10'>
         <div className='col-span-12 md:col-span-4'>
           <Card className='shadow max-w-xs'>
-            <Card.Image
-              src={
-                photo
-                  ? photo
-                  : 'https://i.pinimg.com/736x/2a/4d/11/2a4d11d5d32c83812d2e07742578835c.jpg'
-              }
-              className='object-cover w-full'
-            />
+            <figure>
+              <img
+                src={
+                  photo
+                    ? photo
+                    : 'https://i.pinimg.com/736x/2a/4d/11/2a4d11d5d32c83812d2e07742578835c.jpg'
+                }
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null;
+                  currentTarget.src = require('./../../../assets/images/no-image.webp');
+                }}
+                alt='Profile Photo'
+              />
+            </figure>
             <div className='p-4'>
               <Button
                 className='w-full normal-case font-medium mb-2.5'
                 color='primary'
                 loading={updateMyShopPhotoIsLoading}
                 onClick={handleUploadImageClick}
-                startIcon={<HiOutlinePhotograph className='text-xl' />}
+                startIcon={<HiOutlinePhotograph className='text-xl truncate' />}
               >
                 Choose Image
               </Button>
@@ -158,9 +164,9 @@ const ProfileContent = ({ profile }: ProfileContentProps) => {
             <span className='col-span-9 flex flex-row'>
               {[1, 2, 3, 4, 5].map((row: number) =>
                 row <= rating_star ? (
-                  <HiStar className='text-warning text-xl' />
+                  <HiStar key={row} className='text-warning text-xl' />
                 ) : (
-                  <HiStar className='text-lg' />
+                  <HiStar key={row} className='text-lg' />
                 )
               )}
             </span>
