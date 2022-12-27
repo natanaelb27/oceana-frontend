@@ -12,7 +12,7 @@ import {
 } from 'react-icons/io5';
 import { MdNavigateNext, MdOutlineAddLocationAlt } from 'react-icons/md';
 import { TbDiscount2 } from 'react-icons/tb';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   NoData,
   SealabsPayImg,
@@ -24,7 +24,10 @@ import {
   VOUCHER_AVAILABILITY,
   VOUCHER_STATUS,
 } from '../../../constants';
-import { STATUS_INTERNAL_SERVER_ERROR } from '../../../constants/statusCodes';
+import {
+  STATUS_INTERNAL_SERVER_ERROR,
+  STATUS_UNPROCESSABLE_ENTITY,
+} from '../../../constants/statusCodes';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
 import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
 import { useGetActiveMarketplaceVoucherQuery } from '../../../store/services/marketplaceService';
@@ -87,6 +90,7 @@ type OpenCheckoutModal = {
 };
 
 const BuyerCheckout = () => {
+  const navigate = useNavigate();
   const { data: getAddressesData } = useGetAddressesQuery();
   const { data: getWalletDetailsData, refetch: refetchGetWalletDetails } =
     useGetWalletDetailsQuery();
@@ -331,45 +335,45 @@ const BuyerCheckout = () => {
             ? additionalNotes[product.product_item_id]
             : '';
 
-          // check if product available for delivery
+          // only add to checkout request if product available for delivery
           if (
-            !availableProductsForDelivery[
+            availableProductsForDelivery[
               cartGroupedByMerchant.merchant_id
             ].includes(product.product_id)
           ) {
-            // do nothing, don't add to checkout request
-          } else if (productIndex < 0) {
-            const checkoutCartProductItems: CheckoutCartProductItem[] = [];
+            if (productIndex < 0) {
+              const checkoutCartProductItems: CheckoutCartProductItem[] = [];
 
-            checkoutCartProductItems.push({
-              product_item_id: product.product_item_id,
-              quantity: product.quantity,
-              message,
-            });
-            // add to array of cart IDs for BE request
-            cartIDs.push(product.carts_id);
+              checkoutCartProductItems.push({
+                product_item_id: product.product_item_id,
+                quantity: product.quantity,
+                message,
+              });
+              // add to array of cart IDs for BE request
+              cartIDs.push(product.carts_id);
 
-            const pmpID =
-              product.product_merchant_promotion_id !== 0
-                ? product.product_merchant_promotion_id
-                : null;
+              const pmpID =
+                product.product_merchant_promotion_id !== 0
+                  ? product.product_merchant_promotion_id
+                  : null;
 
-            const checkoutCartProduct: CheckoutCartProduct = {
-              product_id: product.product_id,
-              product_merchant_promotion_id: pmpID,
-              product_items: checkoutCartProductItems,
-            };
-            checkoutCartProducts.push(checkoutCartProduct);
-          } else {
-            const checkoutCartProductItem: CheckoutCartProductItem = {
-              product_item_id: product.product_item_id,
-              quantity: product.quantity,
-              message,
-            };
+              const checkoutCartProduct: CheckoutCartProduct = {
+                product_id: product.product_id,
+                product_merchant_promotion_id: pmpID,
+                product_items: checkoutCartProductItems,
+              };
+              checkoutCartProducts.push(checkoutCartProduct);
+            } else {
+              const checkoutCartProductItem: CheckoutCartProductItem = {
+                product_item_id: product.product_item_id,
+                quantity: product.quantity,
+                message,
+              };
 
-            checkoutCartProducts
-              .at(productIndex)
-              ?.product_items.push(checkoutCartProductItem);
+              checkoutCartProducts
+                .at(productIndex)
+                ?.product_items.push(checkoutCartProductItem);
+            }
           }
         });
 
@@ -419,12 +423,20 @@ const BuyerCheckout = () => {
       .then(() => notifySuccessToast('Payment success!'))
       .catch((err) => {
         const { data } = err;
+        const { message } = data;
+        const messageCapitalized = capitalizeFirstLetter(message);
         if (data.code === STATUS_INTERNAL_SERVER_ERROR) {
           notifyErrorToast('Payment failed, please try again');
           return;
         }
-        const { message } = data;
-        const messageCapitalized = capitalizeFirstLetter(message);
+        if (data.code === STATUS_UNPROCESSABLE_ENTITY) {
+          notifyErrorToast(messageCapitalized);
+          notifyInfoToast(
+            'We apologize for the inconvenience. Please try again.'
+          );
+          navigate('/cart');
+          return;
+        }
         notifyErrorToast(messageCapitalized);
       });
   };
@@ -735,7 +747,7 @@ const BuyerCheckout = () => {
                           {!availableProductsForDelivery[merchant_id].includes(
                             product.product_id
                           ) ? (
-                            <div className='py-2 flex justify-center text-sm text-error bg-base-300 rounded-3xl animate-pulse'>
+                            <div className='p-3 flex justify-center text-sm text-center text-error bg-base-300 rounded-xl animate-pulse'>
                               Delivery service does not support this product
                             </div>
                           ) : (
