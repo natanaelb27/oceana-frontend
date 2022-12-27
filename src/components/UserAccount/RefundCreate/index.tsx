@@ -66,7 +66,9 @@ const RefundCreate = () => {
 
   if (
     !orderDetailsIsLoading &&
-    orderDetailsData?.data?.order_status != DELIVERY_STATUS.COMPLAINED
+    ((orderDetailsData?.data?.order_status != DELIVERY_STATUS.COMPLAINED &&
+      orderDetailsData?.data?.order_status != DELIVERY_STATUS.DELIVERED) ||
+      orderDetailsData?.data?.approved_refund_id || orderDetailsData?.data?.ongoing_refund_id)
   ) {
     navigate('/user/refund');
   }
@@ -256,7 +258,7 @@ const RefundCreate = () => {
       </div>
       <div className='flex justify-end'>
         <Button
-          className='w-full md:w-48 mt-3 bg-primary hover:bg-secondary border-none transition-all duration-300'
+          className='normal-case w-full md:w-48 mt-3 bg-primary hover:bg-secondary border-none transition-all duration-300'
           onClick={handleSubmitRefundClick}
           loading={createRefundOrderIsLoading}
         >
