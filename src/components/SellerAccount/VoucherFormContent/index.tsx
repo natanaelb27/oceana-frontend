@@ -638,35 +638,6 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
       endDate: dateInput.endDate,
     };
 
-    // if (!update) {
-    //   setDateInput(newDateInput);
-    //   setStartDateLimit({
-    //     min: moment().add(1, 'd').toDate(),
-    //     max: moment().add(1, 'M').toDate(),
-    //   });
-    //   setEndDateLimit({
-    //     min: moment().add(1, 'd').toDate(),
-    //     max: moment().add(3, 'M').toDate(),
-    //   });
-
-    //   return;
-    // }
-
-    // const newEndDateLimit = {
-    //   min: moment(update).add(1, 'h').toDate(),
-    //   max: moment(update).add(3, 'M').toDate(),
-    // };
-
-    // setEndDateLimit(newEndDateLimit);
-
-    // if (moment(newEndDateLimit.min).isAfter(moment(dateInput.endDate))) {
-    //   newDateInput.endDate = newEndDateLimit.min;
-    // } else if (
-    //   moment(newEndDateLimit.max).isBefore(moment(dateInput.endDate))
-    // ) {
-    //   newDateInput.endDate = newEndDateLimit.max;
-    // }
-
     setDateInput(newDateInput);
   };
 
@@ -911,7 +882,6 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
                 )}
               </div>
             </div>
-            {/* EDIT START DATEPICKER */}
             <div className='grid grid-cols-7 items-start gap-4'>
               <Form.Label
                 title='Voucher Usage Period'

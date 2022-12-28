@@ -288,7 +288,7 @@ const PromotionFormContent = ({
     if (content === SellerAccountPromotionFormContent.Add) {
       const newEndDateLimit = {
         min: moment(date).add(1, 'h'),
-        max: moment(date).add(6, 'M'),
+        max: moment(date).add(3, 'M'),
       };
 
       setEndDateLimit(newEndDateLimit);

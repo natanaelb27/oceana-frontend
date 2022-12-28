@@ -81,7 +81,7 @@ const PromotionFormContent = ({
   });
   const [endDateLimit, setEndDateLimit] = useState<DateLimit>({
     min: moment().add(1, 'd').add('1', 'h'),
-    max: moment().add(6, 'M'),
+    max: moment().add(3, 'M'),
   });
   const [products, setProducts] = useState<SelectedProductMerchantPromotion>(
     []
