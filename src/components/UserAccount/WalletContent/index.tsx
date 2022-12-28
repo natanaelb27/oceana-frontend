@@ -32,6 +32,8 @@ import StepUpPasswordModal from './StepUpPasswordModal';
 import { WalletHistoryQuery } from '../../../types/query';
 import { toWalletHistoryQuery } from '../../../utils/mapperDTO';
 import { useOutsideAlerter } from '../../../hooks';
+import SelectSealabsPayModal from './SelectSealabsPayModal';
+import InputTopupAmountModal from './InputTopupAmountModal';
 
 type DateContainerProps = {
   className: string;
@@ -41,6 +43,11 @@ type DateContainerProps = {
 type DateCustomInputProps = {
   onClick: () => void;
   value: string;
+};
+
+type SealabsPayDetails = {
+  nameOnCard: string;
+  cardNumber: string;
 };
 
 const WalletContent = () => {
@@ -196,6 +203,18 @@ const WalletContent = () => {
   // change wallet pin
   const [openChangeWalletPinModal, setOpenChangeWalletPinModal] =
     useState<boolean>(false);
+  // select sealabs pay account to top up wallet
+  const [openSelectSealabsPayModal, setOpenSelectSealabsPayModal] =
+    useState<boolean>(false);
+  // input amount for wallet topup
+  const [openInputTopupAmountModal, setOpenInputTopupAmountModal] =
+    useState<boolean>(false);
+  const [sealabsPayDetails, setSealabsPayDetails] = useState<SealabsPayDetails>(
+    {
+      nameOnCard: '',
+      cardNumber: '',
+    }
+  );
 
   const handlehangePINClick = () => {
     const upgradeTokenPasswordVerifier: string | undefined = Cookies.get(
@@ -217,6 +236,14 @@ const WalletContent = () => {
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
     });
+
+  const handleTopUpWalletClick = () => {
+    setOpenSelectSealabsPayModal(true);
+  };
+
+  const handleTopUpWalletClose = () => {
+    setOpenSelectSealabsPayModal(false);
+  };
 
   const { data: getWalletDetailsData } = useGetWalletDetailsQuery(
     toWalletHistoryQuery(walletHistoryQuery)
@@ -325,6 +352,7 @@ const WalletContent = () => {
                 className='font-medium normal-case'
                 startIcon={<FaMoneyBillWaveAlt className='text-xl' />}
                 color='primary'
+                onClick={handleTopUpWalletClick}
               >
                 Top Up
               </Button>
@@ -508,6 +536,17 @@ const WalletContent = () => {
       <ChangeWalletPinModal
         open={openChangeWalletPinModal}
         setOpen={setOpenChangeWalletPinModal}
+      />
+      <SelectSealabsPayModal
+        open={openSelectSealabsPayModal}
+        handleClose={handleTopUpWalletClose}
+        nextSetOpen={setOpenInputTopupAmountModal}
+        setSealabsPayDetails={setSealabsPayDetails}
+      />
+      <InputTopupAmountModal
+        open={openInputTopupAmountModal}
+        setOpen={setOpenInputTopupAmountModal}
+        sealabsPayDetails={sealabsPayDetails}
       />
     </div>
   );
