@@ -13,9 +13,13 @@ export const FormTitle = tw(NavLink)<any>`
   rounded-xl
   p-4
   text-center
-  text-6xl
+  text-5xl
   text-primary-content
+  font-main
   font-bold
+  italic
+
+  md:text-6xl
 
   transition
   transform
@@ -26,8 +30,10 @@ export const FormTitle = tw(NavLink)<any>`
 
 export const FormErrorText = tw.p<any>`
   ml-3
-  text-lg
+  text-sm
   text-error
+
+  md:text-lg
 `;
 
 export const InputGroup = tw.div<any>`
@@ -36,8 +42,9 @@ export const InputGroup = tw.div<any>`
   mb-4
 `;
 
-export const FormCTA = tw.p<any>`
+export const FormCTA = tw.small<any>`
   mt-2
+  text-sm
   text-primary-content
 `;
 

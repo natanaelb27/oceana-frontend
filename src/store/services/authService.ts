@@ -4,8 +4,15 @@ import {
   LoginWithGoogleRequest,
   RegisterRequest,
   RegisterWithGoogleRequest,
+  ResetPasswordRequest,
+  VerifyResetPasswordRequest,
 } from '../../types/request';
-import { LoginResponse, RegisterResponse } from '../../types/response';
+import {
+  LoginResponse,
+  RegisterResponse,
+  ResetPasswordResponse,
+  VerifyResetPasswordResponse,
+} from '../../types/response';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
@@ -45,6 +52,32 @@ export const authApi = createApi({
         body: request,
       }),
     }),
+    refreshAccessToken: builder.mutation<void, void>({
+      query: () => ({
+        url: '/auth/refresh',
+        method: 'POST',
+      }),
+    }),
+    verifyResetPassword: builder.mutation<
+      VerifyResetPasswordResponse,
+      VerifyResetPasswordRequest
+    >({
+      query: (request) => ({
+        url: '/auth/reset-password/verify',
+        method: 'POST',
+        body: request,
+      }),
+    }),
+    resetPassword: builder.mutation<
+      ResetPasswordResponse,
+      { id: string; request: ResetPasswordRequest }
+    >({
+      query: ({ id, request }) => ({
+        url: `/auth/reset-password/${id}`,
+        method: 'POST',
+        body: request,
+      }),
+    }),
   }),
 });
 
@@ -53,4 +86,7 @@ export const {
   useLoginWithGoogleMutation,
   useRegisterMutation,
   useRegisterWithGoogleMutation,
+  useRefreshAccessTokenMutation,
+  useVerifyResetPasswordMutation,
+  useResetPasswordMutation,
 } = authApi;

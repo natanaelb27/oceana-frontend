@@ -1,45 +1,106 @@
 import Cookies from 'js-cookie';
+import React from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
 import { Layout } from '../components';
 import {
-  AdminAddPromotion,
-  AdminEditPromotion,
-  AdminHome,
-  AdminPromotionList,
-  AdminRefund,
-  BuyerAddress,
-  BuyerCart,
-  BuyerCheckout,
-  BuyerPassword,
-  BuyerProfile,
-  BuyerPurchaseHistory,
-  BuyerRefund,
-  BuyerWallet,
-  Category,
-  Home,
+  BuyerRefundCreate,
   Login,
   NotFound,
-  Product,
   Register,
-  Search,
-  SellerRegistration,
-  Shop,
-  ShopAddProduct,
-  ShopAddPromotion,
-  ShopAddress,
-  ShopAddVoucher,
-  ShopEditProduct,
-  ShopEditPromotion,
-  ShopEditVoucher,
-  ShopOrder,
-  ShopProductList,
-  ShopProfile,
-  ShopPromotionList,
-  ShopShipmentSetting,
-  ShopVoucherList,
-  ShopVoucherDetail,
+  ResetPassword,
+  SealabsPayPaymentRedirect,
+  SealabsPayRegisterRedirect,
+  SealabsPayTopup,
+  SealabsPayTopupRedirect,
+  ShopRefund,
 } from '../pages';
+
+const Home = React.lazy(() => import('../pages/Home'));
+const Product = React.lazy(() => import('../pages/Product'));
+const Search = React.lazy(() => import('../pages/Search'));
+const Shop = React.lazy(() => import('../pages/Shop'));
+const Category = React.lazy(() => import('../pages/Category'));
+const CategorySearch = React.lazy(
+  () => import('../pages/Category/CategorySearch')
+);
+
+const BuyerAddress = React.lazy(() => import('../pages/buyer/BuyerAddress'));
+const BuyerCart = React.lazy(() => import('../pages/buyer/BuyerCart'));
+const BuyerCheckout = React.lazy(() => import('../pages/buyer/BuyerCheckout'));
+const BuyerPassword = React.lazy(() => import('../pages/buyer/BuyerPassword'));
+const BuyerProfile = React.lazy(() => import('../pages/buyer/BuyerProfile'));
+const BuyerPurchaseHistory = React.lazy(
+  () => import('../pages/buyer/BuyerPurchaseHistory')
+);
+const BuyerRefund = React.lazy(() => import('../pages/buyer/BuyerRefund'));
+const BuyerSealabsPay = React.lazy(
+  () => import('../pages/buyer/BuyerSealabsPay')
+);
+const BuyerWallet = React.lazy(() => import('../pages/buyer/BuyerWallet'));
+const BuyerPendingPayment = React.lazy(
+  () => import('../pages/buyer/BuyerPendingPayment')
+);
+const BuyerReview = React.lazy(() => import('../pages/buyer/BuyerReview'));
+const BuyerReviewDetail = React.lazy(
+  () => import('../pages/buyer/BuyerReviewDetail')
+);
+
+const SellerRegistration = React.lazy(
+  () => import('../pages/buyer/SellerRegistration')
+);
+
+const ShopAddProduct = React.lazy(
+  () => import('../pages/seller/ShopAddProduct')
+);
+const ShopAddPromotion = React.lazy(
+  () => import('../pages/seller/ShopAddPromotion')
+);
+const ShopAddress = React.lazy(() => import('../pages/seller/ShopAddress'));
+const ShopAddVoucher = React.lazy(
+  () => import('../pages/seller/ShopAddVoucher')
+);
+const ShopEditProduct = React.lazy(
+  () => import('../pages/seller/ShopEditProduct')
+);
+const ShopEditPromotion = React.lazy(
+  () => import('../pages/seller/ShopEditPromotion')
+);
+const ShopEditVoucher = React.lazy(
+  () => import('../pages/seller/ShopEditVoucher')
+);
+const ShopOrder = React.lazy(() => import('../pages/seller/ShopOrder'));
+const ShopProductList = React.lazy(
+  () => import('../pages/seller/ShopProductList')
+);
+const ShopProfile = React.lazy(() => import('../pages/seller/ShopProfile'));
+const ShopPromotionDetail = React.lazy(
+  () => import('../pages/seller/ShopPromotionDetail')
+);
+const ShopPromotionList = React.lazy(
+  () => import('../pages/seller/ShopPromotionList')
+);
+const ShopShipmentSetting = React.lazy(
+  () => import('../pages/seller/ShopShipmentSetting')
+);
+const ShopVoucherDetail = React.lazy(
+  () => import('../pages/seller/ShopVoucherDetail')
+);
+const ShopVoucherList = React.lazy(
+  () => import('../pages/seller/ShopVoucherList')
+);
+
+const AdminAddVoucher = React.lazy(
+  () => import('../pages/admin/AdminAddVoucher')
+);
+const AdminDetailVoucher = React.lazy(
+  () => import('../pages/admin/AdminDetailVoucher')
+);
+const AdminEditVoucher = React.lazy(
+  () => import('../pages/admin/AdminEditVoucher')
+);
+const AdminHome = React.lazy(() => import('../pages/admin/AdminHome'));
+
 import { selectRole } from '../store/slices/authSlice';
 import { useAppSelector } from '../store/store';
 import { Role } from '../types/role';
@@ -68,8 +129,16 @@ const Routes = () => {
           element: <Home />,
         },
         {
+          path: '/sealabs-pay',
+          element: <SealabsPayTopup />,
+        },
+        {
           path: '/category',
           element: <Category />,
+        },
+        {
+          path: '/category/:categoryPath',
+          element: <CategorySearch />,
         },
         {
           path: '/search',
@@ -80,7 +149,7 @@ const Routes = () => {
           element: <Navigate to='/' />,
         },
         {
-          path: '/products/:productID',
+          path: '/products/:productPath',
           element: <Product />,
         },
         {
@@ -121,6 +190,10 @@ const Routes = () => {
               element: <BuyerWallet />,
             },
             {
+              path: '/user/account/sealabs-pay',
+              element: <BuyerSealabsPay />,
+            },
+            {
               path: '/user/account/address',
               element: <BuyerAddress />,
             },
@@ -133,8 +206,24 @@ const Routes = () => {
               element: <BuyerPurchaseHistory />,
             },
             {
+              path: '/user/pending-payment',
+              element: <BuyerPendingPayment />,
+            },
+            {
               path: '/user/refund',
               element: <BuyerRefund />,
+            },
+            {
+              path: '/user/refund/create/:orderID',
+              element: <BuyerRefundCreate />,
+            },
+            {
+              path: '/user/review',
+              element: <BuyerReview />,
+            },
+            {
+              path: '/user/review/detail/:orderID',
+              element: <BuyerReviewDetail />,
             },
             {
               path: '/cart',
@@ -249,16 +338,32 @@ const Routes = () => {
                   element: <ShopPromotionList />,
                 },
                 {
+                  path: '/seller/marketing/promotions/detail',
+                  element: <Navigate to='/seller/marketing/promotions/list' />,
+                },
+                {
+                  path: '/seller/marketing/promotions/detail/:promotionID',
+                  element: <ShopPromotionDetail />,
+                },
+                {
                   path: '/seller/marketing/promotions/add',
                   element: <ShopAddPromotion />,
                 },
                 {
-                  path: '/seller/marketing/promotions/edit',
+                  path: '/seller/marketing/promotions/edit/:promotionID',
                   element: <ShopEditPromotion />,
                 },
                 {
-                  path: '/seller/orders/',
+                  path: '/seller/marketing/promotions/duplicate/:promotionID',
+                  element: <ShopAddPromotion />,
+                },
+                {
+                  path: '/seller/order/',
                   element: <ShopOrder />,
+                },
+                {
+                  path: '/seller/refund/',
+                  element: <ShopRefund />,
                 },
                 {
                   path: '/seller/settings/shipment/',
@@ -288,24 +393,36 @@ const Routes = () => {
           element: <AdminHome />,
         },
         {
-          path: '/admin/promotions',
-          element: <Navigate to='/admin/promotions/list' />,
+          path: '/admin/vouchers',
+          element: <Navigate to='/admin/vouchers/list' />,
         },
         {
-          path: '/admin/promotions/list',
-          element: <AdminPromotionList />,
+          path: '/admin/vouchers/list',
+          element: <Navigate to='/admin' />,
         },
         {
-          path: '/admin/promotions/add',
-          element: <AdminAddPromotion />,
+          path: '/admin/vouchers/add',
+          element: <AdminAddVoucher />,
         },
         {
-          path: '/admin/promotions/edit',
-          element: <AdminEditPromotion />,
+          path: '/admin/vouchers/detail',
+          element: <Navigate to='/admin/vouchers/list' />,
+        },
+        {
+          path: '/admin/vouchers/detail/:voucherID',
+          element: <AdminDetailVoucher />,
+        },
+        {
+          path: '/admin/vouchers/duplicate/:voucherID',
+          element: <AdminAddVoucher />,
+        },
+        {
+          path: '/admin/vouchers/edit/:voucherID',
+          element: <AdminEditVoucher />,
         },
         {
           path: '/admin/refunds',
-          element: <AdminRefund />,
+          element: <Navigate to='/admin' />,
         },
       ],
     },
@@ -332,6 +449,58 @@ const Routes = () => {
           redirectTo='/'
         >
           <Register />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/reset-password/:resetPasswordID',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Guest]}
+          redirectTo='/'
+        >
+          <ResetPassword />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/register',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayRegisterRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/topup',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayTopupRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/sealabs-pay/redirect/payment',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayPaymentRedirect />
         </ProtectedRoute>
       ),
     },

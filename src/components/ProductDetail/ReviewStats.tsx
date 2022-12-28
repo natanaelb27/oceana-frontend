@@ -1,11 +1,13 @@
 import { HiStar } from 'react-icons/hi';
+import { ProductReviewDetails } from '../../types/component';
 import { toCompact } from '../../utils/convert';
 
 type ReviewStatsProps = {
+  productReviewDetails?: ProductReviewDetails;
   isLoading?: boolean;
 };
 
-const ReviewStats = ({ isLoading }: ReviewStatsProps) => {
+const ReviewStats = ({ productReviewDetails, isLoading }: ReviewStatsProps) => {
   if (isLoading) {
     return (
       <div className='animate-pulse mb-4'>
@@ -65,19 +67,40 @@ const ReviewStats = ({ isLoading }: ReviewStatsProps) => {
     );
   }
 
+  if (!productReviewDetails) {
+    return null;
+  }
+
+  const fiveStarValue =
+    (productReviewDetails.star_5 / productReviewDetails.rating_count) * 100;
+  const fourStarValue =
+    (productReviewDetails.star_4 / productReviewDetails.rating_count) * 100;
+  const threeStarValue =
+    (productReviewDetails.star_3 / productReviewDetails.rating_count) * 100;
+  const twoStarValue =
+    (productReviewDetails.star_2 / productReviewDetails.rating_count) * 100;
+  const oneStarValue =
+    (productReviewDetails.star_1 / productReviewDetails.rating_count) * 100;
+
   return (
     <div className='mb-4'>
       <div className='flex items-center justify-center mb-4'>
         <HiStar className='text-4xl text-warning' />
         <div className='flex items-end'>
-          <h2 className='text-6xl'>4.4</h2>
+          <h2 className='text-6xl'>
+            {productReviewDetails.rating_star.toFixed(1)}
+          </h2>
           <p>/5.0</p>
         </div>
       </div>
       <p className='font-bold text-sm text-center mb-2'>
-        82% buyers were satisfied
+        {productReviewDetails.satisfied_percentage.toFixed(1)} % of buyers were
+        satisfied
       </p>
-      <p className='text-sm text-center mb-4'>17 ratings | 15 reviews</p>
+      <p className='text-sm text-center mb-4'>
+        {productReviewDetails.rating_count} ratings |{' '}
+        {productReviewDetails.review_count} reviews
+      </p>
       <div className='flex flex-col gap-y-1'>
         <div className='flex items-center'>
           <div className='flex items-center mr-2'>
@@ -86,11 +109,11 @@ const ReviewStats = ({ isLoading }: ReviewStatsProps) => {
           </div>
           <progress
             className='progress progress-secondary'
-            value={75}
+            value={isNaN(fiveStarValue) ? 0 : fiveStarValue}
             max={100}
           ></progress>
-          <div className='ml-2 w-16 text-left'>
-            <span>{toCompact(13)}</span>
+          <div className='ml-2 w-5 text-center'>
+            <span>{toCompact(productReviewDetails.star_5)}</span>
           </div>
         </div>
         <div className='flex items-center'>
@@ -100,11 +123,11 @@ const ReviewStats = ({ isLoading }: ReviewStatsProps) => {
           </div>
           <progress
             className='progress progress-secondary'
-            value={5}
+            value={isNaN(fourStarValue) ? 0 : fourStarValue}
             max={100}
           ></progress>
-          <div className='ml-2 w-16 text-left'>
-            <span>{toCompact(1)}</span>
+          <div className='ml-2 w-5 text-center'>
+            <span>{toCompact(productReviewDetails.star_4)}</span>
           </div>
         </div>
         <div className='flex items-center'>
@@ -114,11 +137,11 @@ const ReviewStats = ({ isLoading }: ReviewStatsProps) => {
           </div>
           <progress
             className='progress progress-secondary'
-            value={5}
+            value={isNaN(threeStarValue) ? 0 : threeStarValue}
             max={100}
           ></progress>
-          <div className='ml-2 w-16 text-left'>
-            <span>{toCompact(1)}</span>
+          <div className='ml-2 w-5 text-center'>
+            <span>{toCompact(productReviewDetails.star_3)}</span>
           </div>
         </div>
         <div className='flex items-center'>
@@ -128,11 +151,11 @@ const ReviewStats = ({ isLoading }: ReviewStatsProps) => {
           </div>
           <progress
             className='progress progress-secondary'
-            value={5}
+            value={isNaN(twoStarValue) ? 0 : twoStarValue}
             max={100}
           ></progress>
-          <div className='ml-2 w-16 text-left'>
-            <span>{toCompact(1)}</span>
+          <div className='ml-2 w-5 text-center'>
+            <span>{toCompact(productReviewDetails.star_2)}</span>
           </div>
         </div>
         <div className='flex items-center'>
@@ -142,11 +165,11 @@ const ReviewStats = ({ isLoading }: ReviewStatsProps) => {
           </div>
           <progress
             className='progress progress-secondary'
-            value={5}
+            value={isNaN(oneStarValue) ? 0 : oneStarValue}
             max={100}
           ></progress>
-          <div className='ml-2 w-16 text-left'>
-            <span>{toCompact(1)}</span>
+          <div className='ml-2 w-5 text-center'>
+            <span>{toCompact(productReviewDetails.star_1)}</span>
           </div>
         </div>
       </div>

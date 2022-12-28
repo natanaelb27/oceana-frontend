@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
+import { Button } from 'react-daisyui';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { TbError404 } from 'react-icons/tb';
+import { CgClose } from 'react-icons/cg';
 import { useSearchParams } from 'react-router-dom';
 import { Pager, ProductCard, SortBar } from '../../components/common';
+import NoData from '../../components/common/NoData';
 import { FilterSidebar } from '../../components/Search';
-import { LIMIT_SEARCH_PRODUCTS_LIST } from '../../constants';
+import { LIMIT_SEARCH_PRODUCTS_LIST, PRODUCT_STATUS } from '../../constants';
+import { useGetAllCityQuery } from '../../store/services/cityService';
 import { useGetAllProductsQuery } from '../../store/services/productService';
 import { ProductQuery } from '../../types/query';
 import {
@@ -12,7 +15,13 @@ import {
   ProductsSortBy,
   ProductsSortByString,
 } from '../../types/sort';
+import { toRupiah } from '../../utils/convert';
 import { toProductQuery } from '../../utils/mapperDTO';
+
+type CategoryFilter = {
+  id: number;
+  name: string;
+};
 
 const Search = () => {
   const [sort, setSort] = useState(ProductsSortBy.Default);
@@ -26,8 +35,10 @@ const Search = () => {
     categoryID: 0,
     priceMinimum: 0,
     priceMaximum: 0,
+    rating: 0,
     merchantCities: [],
     courierServices: [],
+    status: PRODUCT_STATUS.ACTIVE,
   });
   const [searchParams] = useSearchParams();
   const { data: resGetAllProducts } = useGetAllProductsQuery(
@@ -81,8 +92,69 @@ const Search = () => {
     });
   };
 
-  // render product not found
-  if (resGetAllProducts?.data?.length === 0) {
+  const { data: resGetAllCity } = useGetAllCityQuery('');
+
+  const handleClearLocationFilter = (id: number) => {
+    const updatedList: string[] = [...productQuery.merchantCities];
+
+    updatedList.splice(productQuery.merchantCities.indexOf(id.toString()), 1);
+
+    setProductQuery({
+      ...productQuery,
+      merchantCities: updatedList,
+    });
+  };
+
+  const handleClearRatingFilter = () => {
+    setProductQuery({
+      ...productQuery,
+      rating: 0,
+    });
+  };
+
+  const handleClickResetFilter = () => {
+    setProductQuery({
+      ...productQuery,
+      merchantCities: [],
+      priceMinimum: 0,
+      priceMaximum: 0,
+      rating: 0,
+      categoryID: 0,
+    });
+  };
+
+  const handleClearPriceMinimumFilter = () => {
+    setProductQuery({
+      ...productQuery,
+      priceMinimum: 0,
+    });
+  };
+
+  const handleClearPriceMaximumFilter = () => {
+    setProductQuery({
+      ...productQuery,
+      priceMaximum: 0,
+    });
+  };
+
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>({
+    id: 0,
+    name: '',
+  });
+
+  const handleClearCategoryFilter = () => {
+    setProductQuery({
+      ...productQuery,
+      categoryID: 0,
+    });
+
+    setCategoryFilter({
+      id: 0,
+      name: '',
+    });
+  };
+
+  if (!resGetAllProducts?.data) {
     return (
       <div className='mx-auto container'>
         <div className='p-4 grid grid-cols-1 md:grid-cols-5 gap-4 md:py-10 md:gap-10'>
@@ -90,6 +162,7 @@ const Search = () => {
             <FilterSidebar
               productQuery={productQuery}
               setProductQuery={setProductQuery}
+              setCategoryFilter={setCategoryFilter}
             />
           </div>
           <div
@@ -108,11 +181,25 @@ const Search = () => {
                 <SortBar sort={sort} onSortChange={handleSortChange} />
               </div>
             </div>
-            <div className='mt-6 flex flex-col items-center text-center text-error animate-pulse'>
-              <TbError404 className='text-9xl' />
-              <h3 className='text-3xl font-bold'>
-                Oof, product not found... Please try again!
-              </h3>
+            {
+              <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
+                {Array.from({ length: 25 }, (_, index) => index + 1).map(
+                  (n) => (
+                    <ProductCard key={n} />
+                  )
+                )}
+              </div>
+            }
+            <div className='mt-6 flex justify-center'>
+              <Pager
+                page={productQuery.page}
+                totalPage={
+                  resGetAllProducts?.metadata?.total_pages
+                    ? resGetAllProducts.metadata.total_pages
+                    : 0
+                }
+                onPageChange={handlePageChange}
+              />
             </div>
           </div>
         </div>
@@ -127,6 +214,7 @@ const Search = () => {
           <FilterSidebar
             productQuery={productQuery}
             setProductQuery={setProductQuery}
+            setCategoryFilter={setCategoryFilter}
           />
         </div>
         <div id='product-list-search-page' className='col-span-4 flex flex-col'>
@@ -141,23 +229,149 @@ const Search = () => {
             <div className='mt-6'>
               <SortBar sort={sort} onSortChange={handleSortChange} />
             </div>
-            <div className='mt-6 flex justify-center'>
-              <Pager
-                page={productQuery.page}
-                totalPage={
-                  resGetAllProducts?.metadata?.total_pages
-                    ? resGetAllProducts.metadata.total_pages
-                    : 0
-                }
-                onPageChange={handlePageChange}
-              />
-            </div>
+            {productQuery.merchantCities.length > 0 ||
+            productQuery.priceMinimum ||
+            productQuery.priceMaximum ||
+            productQuery.rating ||
+            productQuery.categoryID ? (
+              <div className='flex gap-3 items-center mt-3'>
+                <div className='flex gap-3 p-1 w-full items-center overflow-x-auto overflow-y-hidden'>
+                  {productQuery.merchantCities.length > 0
+                    ? resGetAllCity?.data
+                        ?.filter(({ id }) =>
+                          productQuery.merchantCities.includes(id.toString())
+                        )
+                        .map((city, i) => {
+                          return (
+                            <div
+                              key={i}
+                              className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'
+                            >
+                              <span className='whitespace-nowrap'>
+                                {city.name}
+                              </span>
+                              <Button
+                                size='xs'
+                                shape='circle'
+                                color='ghost'
+                                className=''
+                                onClick={() => {
+                                  handleClearLocationFilter(city.id);
+                                }}
+                              >
+                                <CgClose className='text-xs' />
+                              </Button>
+                            </div>
+                          );
+                        })
+                    : null}
+                  {productQuery.priceMinimum ? (
+                    <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
+                      <span className='whitespace-nowrap'>
+                        Min: {toRupiah(productQuery.priceMinimum)}
+                      </span>
+                      <Button
+                        size='xs'
+                        shape='circle'
+                        color='ghost'
+                        className=''
+                        onClick={() => {
+                          handleClearPriceMinimumFilter();
+                        }}
+                      >
+                        <CgClose className='text-xs' />
+                      </Button>
+                    </div>
+                  ) : null}
+                  {productQuery.priceMaximum ? (
+                    <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
+                      <span className='whitespace-nowrap'>
+                        Max: {toRupiah(productQuery.priceMaximum)}
+                      </span>
+                      <Button
+                        size='xs'
+                        shape='circle'
+                        color='ghost'
+                        className=''
+                        onClick={() => {
+                          handleClearPriceMaximumFilter();
+                        }}
+                      >
+                        <CgClose className='text-xs' />
+                      </Button>
+                    </div>
+                  ) : null}
+                  {productQuery.categoryID ? (
+                    <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
+                      <span className='whitespace-nowrap'>
+                        {categoryFilter.name}
+                      </span>
+                      <Button
+                        size='xs'
+                        shape='circle'
+                        color='ghost'
+                        className=''
+                        onClick={() => {
+                          handleClearCategoryFilter();
+                        }}
+                      >
+                        <CgClose className='text-xs' />
+                      </Button>
+                    </div>
+                  ) : null}
+                  {productQuery.rating ? (
+                    <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
+                      <span className='whitespace-nowrap'>
+                        ⭐ {productQuery.rating} and above
+                      </span>
+                      <Button
+                        size='xs'
+                        shape='circle'
+                        color='ghost'
+                        className=''
+                        onClick={() => {
+                          handleClearRatingFilter();
+                        }}
+                      >
+                        <CgClose className='text-xs' />
+                      </Button>
+                    </div>
+                  ) : null}
+                </div>
+                <Button
+                  className='normal-case text-sm btn-outline btn-primary'
+                  onClick={handleClickResetFilter}
+                >
+                  Reset Filter
+                </Button>
+              </div>
+            ) : null}
           </div>
-          <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
-            {resGetAllProducts?.data?.map((product, n) => (
-              <ProductCard key={n} product={product} />
+          {resGetAllProducts?.data &&
+            (resGetAllProducts.data.length > 0 ? (
+              <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
+                {resGetAllProducts?.data?.map((product, n) => (
+                  <ProductCard key={n} product={product} />
+                ))}
+              </div>
+            ) : productQuery.merchantCities.length > 0 ||
+              productQuery.priceMinimum ||
+              productQuery.priceMaximum ||
+              productQuery.rating ||
+              productQuery.categoryID ? (
+              <div className='mt-4'>
+                <NoData
+                  title='Oops, there are no products that match the filter...'
+                  message='Try to reset or change your filter'
+                  buttonMessage='Reset Filter'
+                  buttonHandleClick={handleClickResetFilter}
+                ></NoData>
+              </div>
+            ) : (
+              <div className='mt-4'>
+                <NoData title='Oops, it seems that there are no products that match the keyword...'></NoData>
+              </div>
             ))}
-          </div>
           <div className='mt-6 flex justify-center'>
             <Pager
               page={productQuery.page}

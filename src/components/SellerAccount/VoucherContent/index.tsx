@@ -50,9 +50,7 @@ type OpenMerchantVoucherModal = {
 const VoucherContent = ({ profile }: ContentProps) => {
   const navigate = useNavigate();
   const [filterStatus, setFilterStatus] = useState<string>(VOUCHER_STATUS.ALL);
-
   const [search, setSearch] = useState<string>('');
-
   const [voucherQuery, setVoucherQuery] = useState<MerchantVoucherQuery>({
     limit: LIMIT_SELLER_VOUCHER_LIST,
     page: 1,
@@ -63,10 +61,9 @@ const VoucherContent = ({ profile }: ContentProps) => {
     merchantID: profile?.id,
   });
 
-  const {
-    data: getAllMerchantVoucherData,
-    isLoading: getAllMerchantVoucherIsLoading,
-  } = useGetAllMerchantVoucherQuery(toMerchantVoucherQuery(voucherQuery));
+  const { data: getAllMerchantVoucherData } = useGetAllMerchantVoucherQuery(
+    toMerchantVoucherQuery(voucherQuery)
+  );
 
   const handlePageChange = (n: number) => {
     setVoucherQuery({
@@ -79,13 +76,8 @@ const VoucherContent = ({ profile }: ContentProps) => {
     null
   );
 
-  const [
-    deleteMerchantVoucher,
-    {
-      isLoading: deleteMerchantVoucherIsLoading,
-      error: deleteMerchantVoucherError,
-    },
-  ] = useDeleteMerchantVoucherMutation();
+  const [deleteMerchantVoucher, { error: deleteMerchantVoucherError }] =
+    useDeleteMerchantVoucherMutation();
 
   const [openModal, setOpenModal] = useState<OpenMerchantVoucherModal>({
     delete: false,
@@ -167,9 +159,6 @@ const VoucherContent = ({ profile }: ContentProps) => {
       .then(() => {
         notifySuccessToast('Voucher has been deleted!');
       })
-      .catch((err) => {
-        console.error(err);
-      })
       .finally(() => {
         setMerchantVoucherID(null);
 
@@ -184,6 +173,28 @@ const VoucherContent = ({ profile }: ContentProps) => {
         }
       });
   };
+
+  if (!getAllMerchantVoucherData?.data) {
+    return (
+      <div className='p-4 md:p-10'>
+        <div className='flex flex-row gap-y-3 justify-between items-center'>
+          <div className='h-8 bg-base-200 w-full md:w-1/5 rounded-full'></div>
+        </div>
+        <Divider />
+        <div className='flex flex-col'>
+          <div className='h-10 bg-base-200 w-2/5 rounded-full mb-8'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='p-4 md:p-10'>
@@ -318,7 +329,7 @@ const VoucherContent = ({ profile }: ContentProps) => {
                           className='font-bold p-2'
                           color={getBadgeColor(voucher_status)}
                         >
-                          {capitalizeFirstLetter(voucher_status)}
+                          {voucher_status}
                         </Badge>
                       </div>
                       <div className='flex gap-1 justify-left'>

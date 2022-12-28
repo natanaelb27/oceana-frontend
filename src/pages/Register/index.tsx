@@ -10,11 +10,12 @@ import {
   AuthContainer,
   FormContainer,
 } from '../../components/common/Container';
-import { STATUS_SEE_OTHER } from '../../constants';
+import { STATUS_SEE_OTHER } from '../../constants/statusCodes';
+import { TAG_TYPES } from '../../constants/tags';
 import { useLoginWithGoogleMutation } from '../../store/services/authService';
 import { setCredentials } from '../../store/slices/authSlice';
 import { setRegisterGoogleState } from '../../store/slices/registerGoogleSlice';
-import { useAppDispatch } from '../../store/store';
+import { baseApi, useAppDispatch } from '../../store/store';
 import { Role } from '../../types/component';
 import { toLoginWithGoogleRequest } from '../../utils/mapperDTO';
 import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
@@ -49,10 +50,10 @@ const Register = () => {
     )
       .unwrap()
       .then((response) => {
-        console.log(response);
         const { data: loginResponseData } = response;
         const { role } = loginResponseData as Role;
         dispatch(setCredentials({ role }));
+        dispatch(baseApi.util.invalidateTags(TAG_TYPES));
         navigate('/');
       })
       .catch((err) => {

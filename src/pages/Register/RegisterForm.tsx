@@ -1,9 +1,10 @@
 import { useFormik } from 'formik';
-import { Button, Form, Input, Link } from 'react-daisyui';
+import { Button, Form, Input } from 'react-daisyui';
 import GoogleLogin, {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
+import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
 import {
   FormCTA,
@@ -14,7 +15,7 @@ import {
   InputGroup,
   StyledDivider,
 } from '../../components/common/Form';
-import { PHONE_REGEX } from '../../constants';
+import { LETTERS_ONLY_REGEX, PHONE_REGEX } from '../../constants/regex';
 import { useRegisterMutation } from '../../store/services/authService';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { toRegisterRequest } from '../../utils/mapperDTO';
@@ -56,8 +57,12 @@ const RegisterForm = ({
       confirm: '',
     },
     validationSchema: Yup.object({
-      firstName: Yup.string().required('Please enter your first name'),
-      lastName: Yup.string().required('Please enter your last name'),
+      firstName: Yup.string()
+        .required('Please enter your first name')
+        .matches(LETTERS_ONLY_REGEX, 'Name must be in letters'),
+      lastName: Yup.string()
+        .required('Please enter your last name')
+        .matches(LETTERS_ONLY_REGEX, 'Name must be in letters'),
       username: Yup.string().required('Please enter a username'),
       email: Yup.string()
         .email('Invalid email address')
@@ -106,7 +111,7 @@ const RegisterForm = ({
         <div className='md:flex md:justify-between'>
           <InputGroup className='md:inline'>
             <Input
-              className='input-sm md:input-md'
+              className='input-sm md:input-md max-w-[240px]'
               color='primary'
               name='firstName'
               onChange={formik.handleChange}
@@ -121,7 +126,7 @@ const RegisterForm = ({
           </InputGroup>
           <InputGroup className='md:inline'>
             <Input
-              className='input-sm md:input-md'
+              className='input-sm md:input-md max-w-[240px]'
               color='primary'
               name='lastName'
               onChange={formik.handleChange}
@@ -221,7 +226,7 @@ const RegisterForm = ({
       </Form>
       <FormCTA>
         Already have an account?{' '}
-        <Link color='secondary' href='/login'>
+        <Link to='/login' className='link link-accent no-underline font-medium'>
           Login
         </Link>
       </FormCTA>

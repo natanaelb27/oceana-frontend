@@ -5,6 +5,7 @@ import {
   HiOutlineChevronDown,
   HiOutlineChevronUp,
   HiOutlineClipboardList,
+  HiOutlineReceiptRefund,
   HiOutlineShoppingBag,
   HiOutlineTag,
   HiOutlineTruck,
@@ -18,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '../../store/store';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import { Merchant } from '../../types/component';
+import { Image } from '../common';
 
 type SidebarProps = {
   profile: Merchant;
@@ -62,7 +64,11 @@ const Sidebar = ({ profile }: SidebarProps) => {
       <div className='p-4'>
         <div className='flex items-center gap-4'>
           {profile.photo ? (
-            <Avatar src={profile.photo} size='sm' shape='circle' />
+            <div className='avatar'>
+              <div className='w-14 rounded-full'>
+                <Image src={profile.photo} alt='Profile Photo' />
+              </div>
+            </div>
           ) : (
             <Avatar size='sm' shape='circle' letters={profile.name.charAt(0)} />
           )}
@@ -85,7 +91,15 @@ const Sidebar = ({ profile }: SidebarProps) => {
             </NavLink>
           </Menu.Item>
           <Menu.Item>
-            <NavLink to='/seller/marketing/products/list'>
+            <NavLink
+              to='/seller/marketing/products/list'
+              className={
+                splitLocation.slice(0, 4).join('/') ===
+                '/seller/marketing/products'
+                  ? 'active'
+                  : ''
+              }
+            >
               <HiOutlineShoppingBag />
               Product
             </NavLink>
@@ -127,9 +141,15 @@ const Sidebar = ({ profile }: SidebarProps) => {
             </Menu.Item>
           </div>
           <Menu.Item>
-            <NavLink to='/seller/orders'>
+            <NavLink to='/seller/order'>
               <HiOutlineClipboardList />
               Order
+            </NavLink>
+          </Menu.Item>
+          <Menu.Item>
+            <NavLink to='/seller/refund'>
+              <HiOutlineReceiptRefund />
+              Refund
             </NavLink>
           </Menu.Item>
           <Menu.Item>

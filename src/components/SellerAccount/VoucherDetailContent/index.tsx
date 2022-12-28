@@ -1,21 +1,15 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Badge,
-  Breadcrumbs,
-  Card,
-  Countdown,
-  Divider,
-  Progress,
-} from 'react-daisyui';
+import { Badge, Breadcrumbs, Card, Divider, Progress } from 'react-daisyui';
 import { CgMathPercent } from 'react-icons/cg';
-import { HiOutlineCurrencyDollar, HiOutlineClock } from 'react-icons/hi';
+import { HiOutlineCurrencyDollar } from 'react-icons/hi';
 import { DISCOUNT_TYPE, VOUCHER_STATUS } from '../../../constants';
 import { Merchant } from '../../../types/component';
 import { useGetMerchantVoucherDetailsQuery } from '../../../store/services/shopService';
 import { stringCompare } from '../../../utils/validation';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import { toRupiah, toStringDate, toStringTime } from '../../../utils/convert';
-import { computeDatetime, getDateDiffNow } from '../../../utils/date';
+import DateCountdown from '../../common/DateCountdown';
+import moment from 'moment';
 
 type ContentProps = {
   profile: Merchant;
@@ -133,63 +127,45 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
                     getMerchantVoucherDetailsData?.data.voucher_status,
                     VOUCHER_STATUS.ONGOING
                   ) ? (
-                    <Badge color='warning' className='flex gap-1 bg-opacity-50'>
-                      <HiOutlineClock />
-                      {computeDatetime(
-                        getDateDiffNow(
-                          getMerchantVoucherDetailsData?.data.end_datetime
-                        )
-                      ).days > 0 ? (
-                        <div className='font-bold'>
-                          <Countdown
-                            value={
-                              computeDatetime(
-                                getDateDiffNow(
-                                  getMerchantVoucherDetailsData?.data
-                                    .end_datetime
-                                )
-                              ).days
-                            }
-                          ></Countdown>{' '}
-                          days
-                        </div>
-                      ) : (
-                        <div className='font-bold'>
-                          <Countdown
-                            value={
-                              computeDatetime(
-                                getDateDiffNow(
-                                  getMerchantVoucherDetailsData?.data
-                                    .end_datetime
-                                )
-                              ).hours
-                            }
-                          ></Countdown>
-                          {':'}
-                          <Countdown
-                            value={
-                              computeDatetime(
-                                getDateDiffNow(
-                                  getMerchantVoucherDetailsData?.data
-                                    .end_datetime
-                                )
-                              ).minutes
-                            }
-                          ></Countdown>
-                          {':'}
-                          <Countdown
-                            value={
-                              computeDatetime(
-                                getDateDiffNow(
-                                  getMerchantVoucherDetailsData?.data
-                                    .end_datetime
-                                )
-                              ).seconds
-                            }
-                          ></Countdown>
-                        </div>
-                      )}
-                    </Badge>
+                    // <div className='font-bold'>
+                    //   <Countdown
+                    //     value={
+                    //       computeDatetime(
+                    //         getDateDiffNow(
+                    //           getMerchantVoucherDetailsData?.data
+                    //             .end_datetime
+                    //         )
+                    //       ).hours
+                    //     }
+                    //   ></Countdown>
+                    //   {':'}
+                    //   <Countdown
+                    //     value={
+                    //       computeDatetime(
+                    //         getDateDiffNow(
+                    //           getMerchantVoucherDetailsData?.data
+                    //             .end_datetime
+                    //         )
+                    //       ).minutes
+                    //     }
+                    //   ></Countdown>
+                    //   {':'}
+                    //   <Countdown
+                    //     value={
+                    //       computeDatetime(
+                    //         getDateDiffNow(
+                    //           getMerchantVoucherDetailsData?.data
+                    //             .end_datetime
+                    //         )
+                    //       ).seconds
+                    //     }
+                    //   ></Countdown>
+                    // </div>
+                    <DateCountdown
+                      date={moment(
+                        getMerchantVoucherDetailsData?.data.end_datetime
+                      ).toDate()}
+                    ></DateCountdown>
                   ) : null}
                 </div>
                 <div className='flex flex-col text-sm'>
@@ -319,10 +295,17 @@ const VoucherDetailContent = ({ profile }: ContentProps) => {
                 </span>
               </div>
               <span className='font-bold'>
-                {toRupiah(
-                  getMerchantVoucherDetailsData?.data.maximum_discount_amount *
-                    getMerchantVoucherDetailsData?.data.maximum_quota
-                )}
+                {getMerchantVoucherDetailsData.data.discount_type ===
+                DISCOUNT_TYPE.NOMINAL
+                  ? toRupiah(
+                      getMerchantVoucherDetailsData?.data.discount *
+                        getMerchantVoucherDetailsData?.data.maximum_quota
+                    )
+                  : toRupiah(
+                      getMerchantVoucherDetailsData?.data
+                        .maximum_discount_amount *
+                        getMerchantVoucherDetailsData?.data.maximum_quota
+                    )}
               </span>
             </div>
           </div>

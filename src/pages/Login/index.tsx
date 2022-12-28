@@ -7,7 +7,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useLoginWithGoogleMutation } from '../../store/services/authService';
 import { setCredentials } from '../../store/slices/authSlice';
-import { useAppDispatch } from '../../store/store';
+import { baseApi, useAppDispatch } from '../../store/store';
 import { Role } from '../../types/component';
 import { toLoginWithGoogleRequest } from '../../utils/mapperDTO';
 import {
@@ -16,10 +16,11 @@ import {
 } from '../../components/common/Container';
 import { notifyErrorToast } from '../../utils/toast';
 import { Tiles } from '../../components/common';
-import { STATUS_SEE_OTHER } from '../../constants';
+import { STATUS_SEE_OTHER } from '../../constants/statusCodes';
 import { setRegisterGoogleState } from '../../store/slices/registerGoogleSlice';
 import RegisterGoogle from '../Register/RegisterGoogle';
 import LoginForm from './LoginForm';
+import { TAG_TYPES } from '../../constants/tags';
 
 const Login = () => {
   const clientId = process.env.REACT_APP_G_API_CLIENT_ID;
@@ -56,10 +57,10 @@ const Login = () => {
     )
       .unwrap()
       .then((response) => {
-        console.log(response);
         const { data: loginResponseData } = response;
         const { role } = loginResponseData as Role;
         dispatch(setCredentials({ role }));
+        dispatch(baseApi.util.invalidateTags(TAG_TYPES));
         navigate('/');
       })
       .catch((err) => {

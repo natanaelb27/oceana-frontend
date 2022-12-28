@@ -1,17 +1,27 @@
 import { Avatar, Card, Divider, Menu } from 'react-daisyui';
+import { BsCreditCard2Back } from 'react-icons/bs';
 import { CgProfile } from 'react-icons/cg';
+import { GoHistory, GoHome } from 'react-icons/go';
+import {
+  HiOutlineClipboardList,
+  HiOutlineCurrencyDollar,
+  HiOutlineReceiptRefund,
+} from 'react-icons/hi';
 import { IoWalletOutline } from 'react-icons/io5';
-import { GoHome, GoHistory } from 'react-icons/go';
-import { HiOutlineReceiptRefund } from 'react-icons/hi';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 import { Profile } from '../../types/component';
+import { Image } from '../common';
 
 type SidebarProps = {
   profile: Profile | null | undefined;
 };
 
 const Sidebar = ({ profile }: SidebarProps) => {
+  const location = useLocation();
+  const { pathname } = location;
+  const splitLocation = pathname.split('/');
+
   if (!profile) {
     return (
       <Card className='shadow animate-pulse'>
@@ -39,7 +49,11 @@ const Sidebar = ({ profile }: SidebarProps) => {
       <div className='p-4'>
         <div className='flex items-center gap-4'>
           {profile.photo ? (
-            <Avatar src={profile.photo} size='sm' shape='circle' />
+            <div className='avatar'>
+              <div className='w-14 rounded-full'>
+                <Image src={profile.photo} alt='Profile Photo' />
+              </div>
+            </div>
           ) : (
             <Avatar
               size='sm'
@@ -75,13 +89,39 @@ const Sidebar = ({ profile }: SidebarProps) => {
             </NavLink>
           </Menu.Item>
           <Menu.Item>
+            <NavLink to='/user/account/sealabs-pay'>
+              <BsCreditCard2Back />
+              Sealabs Pay
+            </NavLink>
+          </Menu.Item>
+          <Menu.Item>
             <NavLink to='/user/purchase'>
               <GoHistory />
               Purchase
             </NavLink>
           </Menu.Item>
           <Menu.Item>
-            <NavLink to='/user/refund'>
+            <NavLink to='/user/review'>
+              <HiOutlineClipboardList />
+              Review
+            </NavLink>
+          </Menu.Item>
+          <Menu.Item>
+            <NavLink to='/user/pending-payment'>
+              <HiOutlineCurrencyDollar />
+              Pending Payment
+            </NavLink>
+          </Menu.Item>
+          <Menu.Item>
+            <NavLink
+              end
+              to='/user/refund'
+              className={
+                splitLocation.slice(0, 3).join('/') === '/user/refund'
+                  ? 'active'
+                  : ''
+              }
+            >
               <HiOutlineReceiptRefund />
               Refunds
             </NavLink>
