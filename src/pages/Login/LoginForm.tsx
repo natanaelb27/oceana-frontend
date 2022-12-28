@@ -211,6 +211,7 @@ const LoginForm = ({
         >
           <Button
             size='sm'
+            type='button'
             shape='circle'
             color='ghost'
             className='absolute right-2 top-2'

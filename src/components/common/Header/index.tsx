@@ -32,6 +32,8 @@ import { useLazyGetWalletDetailsQuery } from '../../../store/services/walletServ
 import { roleCodeToText } from '../../../utils/roleCodeToText';
 import { useLazyGetMyShopProfileQuery } from '../../../store/services/myShopService';
 import NoData from '../NoData';
+import { Role } from '../../../types/role';
+import { validateUserRole } from '../../../utils/auth';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -57,7 +59,11 @@ const Header = () => {
   const [search, setSearch] = useState<string>('');
 
   useEffect(() => {
-    if (role !== null) {
+    if (
+      role &&
+      validateUserRole(role) !== Role.Guest &&
+      validateUserRole(role) !== Role.Admin
+    ) {
       getUserCart();
       getUserProfile();
       getUserWallet();
@@ -191,13 +197,14 @@ const Header = () => {
     }
 
     if (hoverProfile) {
+      console.log('first');
       return (
         <div
           className='absolute bg-base-100 rounded-xl border-none shadow-lg top-8 right-0 z-50 transition-all duration-300'
           onMouseOver={handleHoverProfile}
           onMouseOut={handleUnhoverProfile}
         >
-          <Card className=' text-base-content w-96 p-5 normal-case font-normal gap-1'>
+          <Card className='text-base-content w-96 p-5 normal-case font-normal gap-1'>
             <div
               className='text-lg p-2 rounded-lg shadow-md mb-1 hover:bg-base-200 hover:cursor-pointer border-r-4 border-r-secondary transition-all duration-200'
               onClick={handleProfileClick}
@@ -453,7 +460,8 @@ const Header = () => {
                     <Button color='ghost'>Register</Button>
                   </NavLink>
                 </>
-              ) : (
+              ) : validateUserRole(role) === Role.Buyer ||
+                validateUserRole(role) === Role.Seller ? (
                 <div className='relative'>
                   <div onClick={handleProfileClick}>
                     <Button
@@ -467,6 +475,14 @@ const Header = () => {
                   </div>
                   {renderHoverProfile()}
                 </div>
+              ) : (
+                <Button
+                  color='ghost'
+                  startIcon={<CgLogOut className='text-xl' />}
+                  onClick={handleLogoutClick}
+                >
+                  Logout
+                </Button>
               )}
             </div>
           </Navbar>
@@ -527,14 +543,19 @@ const Header = () => {
                     <GoPerson className='text-lg' />
                   </Dropdown.Toggle>
                   <Dropdown.Menu className='w-52 text-base-content'>
-                    <Dropdown.Item onClick={handleProfileClick}>
-                      <CgProfile className='text-xl' />
-                      <span>Profile</span>
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={handleShopClick}>
-                      <BsShop className='text-xl' />
-                      <span>My Shop</span>
-                    </Dropdown.Item>
+                    {(validateUserRole(role) === Role.Buyer ||
+                      validateUserRole(role) === Role.Seller) && (
+                      <>
+                        <Dropdown.Item onClick={handleProfileClick}>
+                          <CgProfile className='text-xl' />
+                          <span>Profile</span>
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={handleShopClick}>
+                          <BsShop className='text-xl' />
+                          <span>My Shop</span>
+                        </Dropdown.Item>
+                      </>
+                    )}
                     <Dropdown.Item onClick={handleLogoutClick}>
                       <CgLogOut className='text-xl' />
                       <span>Logout</span>

@@ -6,7 +6,6 @@ export const TAG_TYPES = [
   'Order',
   'Refund',
   'Product',
-  'FavoriteProduct',
   'Profile',
   'Cart',
   'City',

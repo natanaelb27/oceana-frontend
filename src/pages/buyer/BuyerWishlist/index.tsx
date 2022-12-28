@@ -1,22 +1,31 @@
 import { useEffect, useState } from 'react';
-import { Button } from 'react-daisyui';
-import { HiHeart } from 'react-icons/hi';
+import { Button, Checkbox } from 'react-daisyui';
+import { HiHeart, HiMenuAlt2, HiOutlineTrash } from 'react-icons/hi';
 import { CgClose } from 'react-icons/cg';
 import { useSearchParams } from 'react-router-dom';
-import { Pager, ProductCard, SortBar } from '../../../components/common';
+import {
+  FavoriteSortBar,
+  Pager,
+  ProductCard,
+} from '../../../components/common';
 import NoData from '../../../components/common/NoData';
 import { FilterSidebar } from '../../../components/Search';
 import { LIMIT_SEARCH_PRODUCTS_LIST, PRODUCT_STATUS } from '../../../constants';
-import { useGetAllUserFavoriteProductsQuery } from '../../../store/services/profileService';
+import {
+  useDeleteBatchFavoriteProductsMutation,
+  useGetAllUserFavoriteProductsQuery,
+} from '../../../store/services/profileService';
 import { useGetAllCityQuery } from '../../../store/services/cityService';
 import { ProductQuery } from '../../../types/query';
 import {
-  ProductsSortString,
-  ProductsSortBy,
-  ProductsSortByString,
+  FavoriteProductsSortBy,
+  FavoriteProductsSortByString,
+  FavoriteProductsSortString,
 } from '../../../types/sort';
 import { toRupiah } from '../../../utils/convert';
 import { toProductQuery } from '../../../utils/mapperDTO';
+import { SelectedProduct } from '../../../types/component';
+import { notifySuccessToast } from '../../../utils/toast';
 
 type CategoryFilter = {
   id: number;
@@ -24,11 +33,11 @@ type CategoryFilter = {
 };
 
 const Search = () => {
-  const [sort, setSort] = useState(ProductsSortBy.Default);
+  const [sort, setSort] = useState(FavoriteProductsSortBy.RecentlySaved);
   const [productQuery, setProductQuery] = useState<ProductQuery>({
     search: '',
-    sort: '',
-    sortBy: '',
+    sort: FavoriteProductsSortString.RecentlySaved,
+    sortBy: FavoriteProductsSortByString.Saved,
     limit: LIMIT_SEARCH_PRODUCTS_LIST,
     page: 1,
     merchantID: 0,
@@ -44,13 +53,19 @@ const Search = () => {
   const { data: resGetAllProducts } = useGetAllUserFavoriteProductsQuery(
     toProductQuery(productQuery)
   );
+  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct>({});
+  const [isDeleteMode, setIsDeleteMode] = useState<boolean>(false);
+  const [
+    deleteBatchFavoriteProduct,
+    { isLoading: deleteBatchFavoriteProductIsLoading },
+  ] = useDeleteBatchFavoriteProductsMutation();
 
   const q = searchParams.get('q') || '';
   const sortBy = searchParams.get('sort-by') || '';
 
   useEffect(() => {
-    if (sortBy === ProductsSortByString.Recommended) {
-      handleSortChange(ProductsSortBy.Recommended);
+    if (sortBy === FavoriteProductsSortByString.Recommended) {
+      handleSortChange(FavoriteProductsSortBy.Recommended);
     }
 
     setProductQuery({
@@ -60,21 +75,41 @@ const Search = () => {
     });
   }, [q, sortBy]);
 
-  const handleSortChange = (productSort: ProductsSortBy) => {
+  const handleCheckboxClick = (id: number) => {
+    const newSelectedProducts = { ...selectedProducts };
+
+    try {
+      if (!newSelectedProducts?.[id]) {
+        newSelectedProducts[id] = true;
+      } else {
+        delete newSelectedProducts?.[id];
+      }
+    } finally {
+      setSelectedProducts(newSelectedProducts);
+    }
+  };
+
+  const handleSortChange = (productSort: FavoriteProductsSortBy) => {
     let sortBy = '';
     let sort = '';
-    if (productSort === ProductsSortBy.BestSeller) {
-      sortBy = ProductsSortByString.BestSeller;
-      sort = ProductsSortByString.Default;
-    } else if (productSort === ProductsSortBy.Recommended) {
-      sortBy = ProductsSortByString.Recommended;
-      sort = ProductsSortByString.Default;
-    } else if (productSort === ProductsSortBy.HighestPrice) {
-      sortBy = ProductsSortByString.Price;
-      sort = ProductsSortString.HighestPrice;
-    } else if (productSort === ProductsSortBy.LowestPrice) {
-      sortBy = ProductsSortByString.Price;
-      sort = ProductsSortString.LowestPrice;
+    if (productSort === FavoriteProductsSortBy.BestSeller) {
+      sortBy = FavoriteProductsSortByString.BestSeller;
+      sort = FavoriteProductsSortByString.Default;
+    } else if (productSort === FavoriteProductsSortBy.Recommended) {
+      sortBy = FavoriteProductsSortByString.Recommended;
+      sort = FavoriteProductsSortByString.Default;
+    } else if (productSort === FavoriteProductsSortBy.RecentlySaved) {
+      sortBy = FavoriteProductsSortByString.Saved;
+      sort = FavoriteProductsSortString.RecentlySaved;
+    } else if (productSort === FavoriteProductsSortBy.OldestSaved) {
+      sortBy = FavoriteProductsSortByString.Saved;
+      sort = FavoriteProductsSortString.OldestSaved;
+    } else if (productSort === FavoriteProductsSortBy.HighestPrice) {
+      sortBy = FavoriteProductsSortByString.Price;
+      sort = FavoriteProductsSortString.HighestPrice;
+    } else if (productSort === FavoriteProductsSortBy.LowestPrice) {
+      sortBy = FavoriteProductsSortByString.Price;
+      sort = FavoriteProductsSortString.LowestPrice;
     }
 
     setSort(productSort);
@@ -154,6 +189,26 @@ const Search = () => {
     });
   };
 
+  const handleManageClick = () => {
+    setIsDeleteMode(!isDeleteMode);
+  };
+
+  const handleDeleteClick = () => {
+    deleteBatchFavoriteProduct({
+      product_ids: Object.entries(selectedProducts).map(([key]) => Number(key)),
+    })
+      .unwrap()
+      .then(() => {
+        notifySuccessToast(
+          'You have successfully deleted products from your wishlist'
+        );
+      })
+      .finally(() => {
+        setIsDeleteMode(false);
+        setSelectedProducts({});
+      });
+  };
+
   if (!resGetAllProducts?.data) {
     return (
       <div className='mx-auto container'>
@@ -170,12 +225,34 @@ const Search = () => {
             className='col-span-4 flex flex-col'
           >
             <div className='product-list-header'>
-              <div className='ml-2 flex items-center gap-2 text-lg'>
-                <HiHeart className='text-3xl text-secondary' />
-                <span className='font-bold text-2xl'>Wishlist</span>
+              <div className='flex justify-between'>
+                <div className='ml-2 flex items-center gap-2 text-lg'>
+                  <HiHeart className='text-3xl text-secondary' />
+                  <span className='font-bold text-2xl'>Wishlist</span>
+                </div>
+                {isDeleteMode ? (
+                  <div className='flex gap-1'>
+                    <Button
+                      onClick={handleDeleteClick}
+                      color='error'
+                      loading={deleteBatchFavoriteProductIsLoading}
+                    >
+                      Delete
+                    </Button>
+                    <Button onClick={handleManageClick}>Cancel</Button>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={handleManageClick}
+                    color='info'
+                    startIcon={<HiMenuAlt2 className='text-lg' />}
+                  >
+                    Manage
+                  </Button>
+                )}
               </div>
               <div className='mt-6'>
-                <SortBar sort={sort} onSortChange={handleSortChange} />
+                <FavoriteSortBar sort={sort} onSortChange={handleSortChange} />
               </div>
             </div>
             {
@@ -216,12 +293,35 @@ const Search = () => {
         </div>
         <div id='product-list-search-page' className='col-span-4 flex flex-col'>
           <div className='product-list-header'>
-            <div className='ml-2 flex items-center gap-2 text-lg'>
-              <HiHeart className='text-3xl text-secondary' />
-              <span className='font-bold text-2xl'>Wishlist</span>
+            <div className='flex justify-between'>
+              <div className='ml-2 flex items-center gap-2 text-lg'>
+                <HiHeart className='text-3xl text-secondary' />
+                <span className='font-bold text-2xl'>Wishlist</span>
+              </div>
+              {isDeleteMode ? (
+                <div className='flex gap-1'>
+                  <Button
+                    onClick={handleDeleteClick}
+                    color='error'
+                    startIcon={<HiOutlineTrash className='text-lg' />}
+                    loading={deleteBatchFavoriteProductIsLoading}
+                  >
+                    Delete
+                  </Button>
+                  <Button onClick={handleManageClick}>Cancel</Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleManageClick}
+                  color='info'
+                  startIcon={<HiMenuAlt2 className='text-lg' />}
+                >
+                  Manage
+                </Button>
+              )}
             </div>
             <div className='mt-6'>
-              <SortBar sort={sort} onSortChange={handleSortChange} />
+              <FavoriteSortBar sort={sort} onSortChange={handleSortChange} />
             </div>
             {productQuery.merchantCities.length > 0 ||
             productQuery.priceMinimum ||
@@ -345,7 +445,19 @@ const Search = () => {
             (resGetAllProducts.data.length > 0 ? (
               <div className='mt-4 grid grid-cols-2 md:grid-cols-5 gap-4'>
                 {resGetAllProducts?.data?.map((product, n) => (
-                  <ProductCard key={n} product={product} />
+                  <div key={n} className='relative'>
+                    {isDeleteMode && (
+                      <div className='absolute w-full bg-gradient-to-b from-base-300 to-transparent h-14 z-10'>
+                        <Checkbox
+                          color='secondary'
+                          className='absolute right-2 top-2'
+                          checked={Boolean(selectedProducts?.[product.id])}
+                          onChange={() => handleCheckboxClick(product.id)}
+                        />
+                      </div>
+                    )}
+                    <ProductCard product={product} />
+                  </div>
                 ))}
               </div>
             ) : productQuery.merchantCities.length > 0 ||

@@ -17,6 +17,10 @@ export type ProductQuery = {
   status: string;
 } & Query;
 
+export type FavoriteProductQuery = {
+  saved: string;
+} & ProductQuery;
+
 export type MerchantVoucherQuery = {
   limit: number;
   page: number;
