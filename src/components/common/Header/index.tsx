@@ -60,7 +60,7 @@ const Header = () => {
     if (role !== null) {
       getUserCart();
       getUserProfile();
-      getUserWallet();
+      getUserWallet('');
       if (role.charAt(1) === '1') {
         getMyShopProfile();
       }

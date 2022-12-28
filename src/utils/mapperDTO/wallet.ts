@@ -1,3 +1,4 @@
+import { WalletHistoryQuery } from '../../types/query';
 import { WalletTopUpRequest } from '../../types/request';
 
 export const toWalletTopUpRequest = (
@@ -17,3 +18,16 @@ export const toWalletTopUpRequest = (
   message,
   signature,
 });
+
+export const toWalletHistoryQuery = (query: WalletHistoryQuery) => {
+  let result = '';
+
+  result += 'limit=' + query.limit;
+  result += '&page=' + query.page;
+  result += '&filter-type=' + query.filterType;
+  result +=
+    '&filter-start-transaction-date=' + query.filterStartTransactionDate;
+  result += '&filter-end-transaction-date=' + query.filterEndTransactionDate;
+
+  return result;
+};

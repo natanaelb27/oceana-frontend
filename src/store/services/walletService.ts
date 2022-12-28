@@ -11,9 +11,9 @@ export const walletApi = baseApi.injectEndpoints({
         body: request,
       }),
     }),
-    getWalletDetails: builder.query<GetWalletDetailsResponse, void>({
-      query: () => ({
-        url: '/profile/wallet',
+    getWalletDetails: builder.query<GetWalletDetailsResponse, string>({
+      query: (query) => ({
+        url: `/profile/wallet?${query}`,
         method: 'GET',
       }),
       providesTags: ['Profile'],
