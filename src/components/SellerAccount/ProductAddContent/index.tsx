@@ -53,9 +53,13 @@ import UploadFileCardPerFile from '../../common/UploadFileCardPerFile';
 import { useUploadMediaMutation } from '../../../store/services/mediaService';
 import { toUploadMediaRequest } from '../../../utils/mapperDTO';
 import { UploadMediaResponse } from '../../../types/response/media';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ConfirmationModal } from '../../common';
 
 const ProductAddContent = () => {
+  const navigate = useNavigate();
+  const { productID } = useParams();
+
   const [createProduct, { isLoading: createProductIsLoading }] =
     useCreateProductUpsertModelMutation();
   const [updateProduct, { isLoading: updateProductIsLoading }] =
@@ -78,6 +82,14 @@ const ProductAddContent = () => {
     useGetSelectedShipmentQuery();
   const [uploadMedia, { isLoading: uploadMediaIsLoading }] =
     useUploadMediaMutation();
+
+  type OpenModal = {
+    cancel: boolean;
+  };
+
+  const [openModal, setOpenModal] = useState<OpenModal>({
+    cancel: false,
+  });
 
   const singleProductItem: PUMProductItem = {
     id: 0,
@@ -269,9 +281,17 @@ const ProductAddContent = () => {
     },
   });
 
-  const { productID } = useParams();
-
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
+
+  const handleModalClose = () => {
+    setOpenModal({
+      cancel: false,
+    });
+  };
+
+  const handleGoBack = () => {
+    navigate('/seller/marketing/products/list');
+  };
 
   const handleSetFileImage = (newFilesView: string[]) => {
     productFormik.setFieldValue('images', newFilesView);
@@ -1742,25 +1762,44 @@ const ProductAddContent = () => {
             </FormLayout.LabelInputErrorContainer>
           </div>
         </Card>
-        <Button
-          color='primary'
-          type='submit'
-          form='addProductForm'
-          loading={
-            getShipmentIsLoading ||
-            createProductIsLoading ||
-            updateProductIsLoading ||
-            uploadMediaIsLoading ||
-            getAncestorsCategoryIsLoading
-          }
-        >
-          Save
-        </Button>
+        <div className='w-full md:w-sm flex flex-col md:flex-row md:justify-end gap-2'>
+          <Button
+            type='button'
+            color='ghost'
+            variant='outline'
+            onClick={() => {
+              setOpenModal({ ...openModal, cancel: true });
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            type='submit'
+            color='primary'
+            form='addProductForm'
+            loading={
+              getShipmentIsLoading ||
+              createProductIsLoading ||
+              updateProductIsLoading ||
+              uploadMediaIsLoading ||
+              getAncestorsCategoryIsLoading
+            }
+          >
+            {productFormik.values.id === 0 ? 'Edit Product' : 'Add Product'}
+          </Button>
+        </div>
       </Form>
       <CategoryModal
         open={openCategoryModal}
         setOpen={setOpenCategoryModal}
         handleCategoryOnClick={handleCategoryOnClick}
+      />
+      <ConfirmationModal
+        open={openModal.cancel}
+        title='Are you sure?'
+        message='You will lose your changes.'
+        onClose={handleModalClose}
+        onAccepted={handleGoBack}
       />
     </>
   );
