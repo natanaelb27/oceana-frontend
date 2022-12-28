@@ -1132,7 +1132,9 @@ const ProductAddContent = () => {
         onSubmit={(e) => {
           e.preventDefault();
           const count = getCount(productFormik.errors, 0);
-          notifyErrorToast(`There is ${count} mistakes`);
+          if (count > 0) {
+            notifyErrorToast(`There is ${count} mistakes`);
+          }
           productFormik.handleSubmit();
         }}
       >
