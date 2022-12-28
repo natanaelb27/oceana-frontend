@@ -1,8 +1,7 @@
+import React from 'react';
 import { Button, Modal } from 'react-daisyui';
 import { useGetAllSealabsPayQuery } from '../../../store/services/sealabsPayService';
 import { toCardNumber } from '../../../utils/convert';
-import { RiSecurePaymentLine } from 'react-icons/ri';
-import React from 'react';
 import { SealabsPayCardImg, SealabsPayImg } from '../../common';
 
 type SealabsPayDetails = {
@@ -49,13 +48,13 @@ const SelectSealabsPayModal = ({
         Select Sealabs Pay Account
       </Modal.Header>
       <Modal.Body>
-        <div className='w-full flex justify-center mb-4'>
+        <div className='w-full flex justify-center mb-2'>
           <SealabsPayImg className='w-24' />
         </div>
         <div className='overflow-y-scroll h-72'>
           {sealabsPayData?.data?.map((sealabsPay, i) => (
             <Button
-              className='w-full glass bg-primary text-white font-mono normal-case border-2 rounded-lg my-1 hover:cursor-pointer hover:bg-primary shadow-md text-lg'
+              className='w-full glass bg-primary/80 text-white font-mono normal-case border-2 rounded-lg my-1 hover:cursor-pointer hover:bg-primary shadow-md text-lg'
               size='lg'
               key={i}
               onClick={() =>

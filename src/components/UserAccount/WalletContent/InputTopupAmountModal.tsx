@@ -66,14 +66,21 @@ const InputTopupAmountModal = ({
         Top Up Wallet
       </Modal.Header>
       <Modal.Body>
-        <Card className='bg-primary hover:bg-primary glass'>
-          <Card.Body>
-            <SealabsPayCardImg />
-            <div className='text-white font-mono font-semibold text-lg'>
-              {toCardNumber(sealabsPayDetails.cardNumber)}
-            </div>
-          </Card.Body>
-        </Card>
+        <div className='flex justify-center'>
+          <Card className='p-6 mb-3 w-[320px] h-[200px] glass text-base-100 rounded-3xl shadow-lg md:w-[420px] md:h-[240px] bg-primary/80 hover:bg-primary/80 hover:shadow-lg'>
+            <Card.Title className='flex justify-between text-4xl'>
+              <h1 className='text-2xl md:text-3xl'>
+                {sealabsPayDetails.nameOnCard}
+              </h1>
+              <SealabsPayCardImg className='w-14' />
+            </Card.Title>
+            <Card.Body className='p-0 pt-6 md:pt-10'>
+              <h2 className='text-xl font-mono md:text-3xl'>
+                {toCardNumber(sealabsPayDetails.cardNumber, false)}
+              </h2>
+            </Card.Body>
+          </Card>
+        </div>
         <Form
           id='inputTopupAmountForm'
           onSubmit={(e) => {
