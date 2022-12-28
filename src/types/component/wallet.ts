@@ -2,7 +2,7 @@ export type WalletTransactionHistory = {
   id: string;
   wallet_id: string;
   amount: number;
-  transaction_date: string;
+  transaction_datetime: string;
   transaction_type: string;
   type: string;
 };

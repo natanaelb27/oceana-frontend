@@ -104,3 +104,11 @@ export type RefundQuery = {
   filterStartDate: string;
   filterEndDate: string;
 };
+
+export type WalletHistoryQuery = {
+  filterType: string;
+  filterStartTransactionDate: string;
+  filterEndTransactionDate: string;
+  limit: number;
+  page: number;
+};

@@ -1,12 +1,26 @@
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import {
+  createElement,
+  forwardRef,
+  ReactNode,
+  Ref,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Button, Card, Divider } from 'react-daisyui';
-import DatePicker from 'react-datepicker';
+import DatePicker, { CalendarContainer } from 'react-datepicker';
 import { FaMoneyBillWaveAlt } from 'react-icons/fa';
-import { HiLockOpen, HiOutlineCalendar } from 'react-icons/hi';
+import { HiLockOpen, HiOutlineCalendar, HiOutlineClock } from 'react-icons/hi';
 import { IoWalletOutline } from 'react-icons/io5';
-import { WALLET_TRANSACTION_HISTORY_TYPE } from '../../../constants';
-import { useLazyGetWalletDetailsQuery } from '../../../store/services/walletService';
+import {
+  LIMIT_WALLET_HISTORY,
+  WALLET_TRANSACTION_HISTORY_TYPE,
+} from '../../../constants';
+import {
+  useGetWalletDetailsQuery,
+  useLazyGetWalletDetailsQuery,
+} from '../../../store/services/walletService';
 
 import Cookies from 'js-cookie';
 import { toRupiah } from '../../../utils/convert';
@@ -15,8 +29,21 @@ import NoData from '../../common/NoData';
 import ActivateWalletModal from './ActivateWalletModal';
 import ChangeWalletPinModal from './ChangeWalletPinModal';
 import StepUpPasswordModal from './StepUpPasswordModal';
+import { WalletHistoryQuery } from '../../../types/query';
+import { toWalletHistoryQuery } from '../../../utils/mapperDTO';
+import { useOutsideAlerter } from '../../../hooks';
 import SelectSealabsPayModal from './SelectSealabsPayModal';
 import InputTopupAmountModal from './InputTopupAmountModal';
+
+type DateContainerProps = {
+  className: string;
+  children: ReactNode;
+};
+
+type DateCustomInputProps = {
+  onClick: () => void;
+  value: string;
+};
 
 type SealabsPayDetails = {
   nameOnCard: string;
@@ -24,12 +51,150 @@ type SealabsPayDetails = {
 };
 
 const WalletContent = () => {
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
     null,
     null,
   ]);
+
   const [startDate, endDate] = dateRange;
-  const [type, setType] = useState<string | null>(null);
+
+  const handlePriorDateClick = (days: number) => {
+    const today = new Date();
+    const lastNDays = new Date(new Date().setDate(today.getDate() - days));
+    setDateRange([lastNDays, today]);
+  };
+
+  const handleResetFilterDate = () => {
+    setDateRange([null, null]);
+    setWalletHistoryQuery({
+      ...walletHistoryQuery,
+      page: 1,
+      filterStartTransactionDate: '',
+      filterEndTransactionDate: '',
+    });
+    setIsDateOpen(false);
+  };
+
+  const handleApplyFilterDate = () => {
+    if (startDate && endDate) {
+      setWalletHistoryQuery({
+        ...walletHistoryQuery,
+        page: 1,
+        filterStartTransactionDate: moment(startDate).format('YYYY-MM-DD'),
+        filterEndTransactionDate: moment(endDate).format('YYYY-MM-DD'),
+      });
+      setIsDateOpen(false);
+    }
+  };
+
+  const DateContainer = ({ className, children }: DateContainerProps) => {
+    return (
+      <div className='p-3 bg-base-100 border-2 shadow-lg'>
+        <div className='flex gap-3'>
+          <div className='hidden md:flex flex-col gap-3'>
+            <Button
+              className='normal-case flex gap-2 md:w-auto md:px-5 md:py-0 btn-outline'
+              onClick={() => handlePriorDateClick(7)}
+            >
+              <HiOutlineClock className='text-lg' />
+              Last 7 Days
+            </Button>
+            <Button
+              className='normal-case flex gap-2 md:w-auto md:px-5 md:py-0 btn-outline'
+              onClick={() => handlePriorDateClick(30)}
+            >
+              <HiOutlineClock className='text-lg' />
+              Last 30 Days
+            </Button>
+            <Button
+              className='normal-case flex gap-2 md:w-auto md:px-5 md:py-0 btn-outline'
+              onClick={() => handlePriorDateClick(60)}
+            >
+              <HiOutlineClock className='text-lg' />
+              Last 60 Days
+            </Button>
+          </div>
+          <div className='divider divider-horizontal hidden md:flex'></div>
+          <CalendarContainer className={className}>
+            <div className='relative'>{children}</div>
+          </CalendarContainer>
+        </div>
+        <Divider className='m-0'></Divider>
+        <div className='flex gap-3 justify-end'>
+          <Button
+            className='normal-case md:w-auto md:px-5 md:py-0'
+            color='secondary'
+            onClick={handleResetFilterDate}
+          >
+            Reset
+          </Button>
+          <Button
+            className='normal-case md:w-auto md:px-5 md:py-0'
+            color='primary'
+            onClick={handleApplyFilterDate}
+          >
+            Apply
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  const dateWrapperRef = useRef<HTMLDivElement>(null);
+
+  const handleDateOutsideClick = () => {
+    if (
+      walletHistoryQuery.filterStartTransactionDate === '' &&
+      walletHistoryQuery.filterEndTransactionDate === ''
+    ) {
+      setDateRange([null, null]);
+      setWalletHistoryQuery({
+        ...walletHistoryQuery,
+        filterStartTransactionDate: '',
+        filterEndTransactionDate: '',
+      });
+    } else {
+      setDateRange([
+        moment(
+          walletHistoryQuery.filterStartTransactionDate,
+          'YYYY-MM-DD'
+        ).toDate(),
+        moment(
+          walletHistoryQuery.filterEndTransactionDate,
+          'YYYY-MM-DD'
+        ).toDate(),
+      ]);
+    }
+    setIsDateOpen(false);
+  };
+
+  useOutsideAlerter(dateWrapperRef, handleDateOutsideClick);
+
+  const DateCustomInput = (
+    { onClick, value }: DateCustomInputProps,
+    ref: Ref<HTMLButtonElement>
+  ) => {
+    return (
+      <Button
+        className='normal-case flex gap-2 w-[100%] md:w-auto md:pl-7 md:pr-7 btn-outline no-animation'
+        onClick={() => {
+          onClick;
+          setIsDateOpen(!isDateOpen);
+        }}
+        ref={ref}
+      >
+        <HiOutlineCalendar className='text-lg' />
+        {value ? value : 'Choose Date'}
+      </Button>
+    );
+  };
+
+  const handleFilterDateChange = (update: [Date | null, Date | null]) => {
+    setDateRange(update);
+  };
+
+  const [type, setType] = useState<string>('');
 
   // step up password
   const [openStepUpPasswordModal, setOpenStepUpPasswordModal] =
@@ -63,6 +228,15 @@ const WalletContent = () => {
     setOpenStepUpPasswordModal(true);
   };
 
+  const [walletHistoryQuery, setWalletHistoryQuery] =
+    useState<WalletHistoryQuery>({
+      limit: LIMIT_WALLET_HISTORY,
+      page: 1,
+      filterType: '',
+      filterStartTransactionDate: '',
+      filterEndTransactionDate: '',
+    });
+
   const handleTopUpWalletClick = () => {
     setOpenSelectSealabsPayModal(true);
   };
@@ -71,19 +245,23 @@ const WalletContent = () => {
     setOpenSelectSealabsPayModal(false);
   };
 
-  const [getWalletDetails, { data: getWalletDetailsData }] =
-    useLazyGetWalletDetailsQuery();
+  const { data: getWalletDetailsData } = useGetWalletDetailsQuery(
+    toWalletHistoryQuery(walletHistoryQuery)
+  );
 
-  useEffect(() => {
-    getWalletDetails();
-  }, []);
-
-  const handleTypeChange = (type: string | null) => {
+  const handleTypeChange = (type: string) => {
     setType(type);
+    setWalletHistoryQuery({
+      ...walletHistoryQuery,
+      filterType: type,
+    });
   };
 
-  const handlePageChange = () => {
-    console.log('');
+  const handlePageChange = (n: number) => {
+    setWalletHistoryQuery({
+      ...walletHistoryQuery,
+      page: n,
+    });
   };
 
   if (!getWalletDetailsData?.data) {
@@ -193,28 +371,35 @@ const WalletContent = () => {
             <Card.Body>
               <div className='flex flex-col md:flex-row items-center md:justify-between w-full gap-2'>
                 <h5 className='text-2xl font-bold'>History</h5>
-                <div className='w-full md:w-auto'>
+                <div ref={dateWrapperRef} className='w-full md:w-auto'>
                   <DatePicker
                     selectsRange={true}
-                    startDate={startDate}
-                    endDate={endDate}
-                    onChange={(update) => {
-                      setDateRange(update);
-                    }}
-                    maxDate={moment().toDate()}
-                    customInput={
-                      <Button
-                        startIcon={<HiOutlineCalendar className='text-xl' />}
-                        className='normal-case font-medium w-full'
-                        color={startDate && endDate ? 'secondary' : 'ghost'}
-                      >
-                        {startDate && endDate
-                          ? `${moment(startDate).format(
-                              'DD MMM YYYY'
-                            )} - ${moment(endDate).format('DD MMM YYYY')}`
-                          : 'Choose Date'}
-                      </Button>
+                    startDate={
+                      isDateOpen
+                        ? startDate
+                        : walletHistoryQuery.filterStartTransactionDate === ''
+                        ? null
+                        : moment(
+                            walletHistoryQuery.filterStartTransactionDate
+                          ).toDate()
                     }
+                    endDate={
+                      isDateOpen
+                        ? endDate
+                        : walletHistoryQuery.filterEndTransactionDate === ''
+                        ? null
+                        : moment(
+                            walletHistoryQuery.filterEndTransactionDate
+                          ).toDate()
+                    }
+                    dateFormat='dd MMM yyyy'
+                    maxDate={new Date()}
+                    calendarContainer={DateContainer}
+                    open={isDateOpen}
+                    shouldCloseOnSelect={false}
+                    className='border-2 rounded-lg p-2 text-center'
+                    onChange={(update) => handleFilterDateChange(update)}
+                    customInput={createElement(forwardRef(DateCustomInput))}
                   />
                 </div>
               </div>
@@ -223,9 +408,9 @@ const WalletContent = () => {
                 <Button
                   size='sm'
                   className='font-normal normal-case'
-                  variant={type === null ? undefined : 'outline'}
-                  color={type === null ? 'secondary' : undefined}
-                  onClick={() => handleTypeChange(null)}
+                  variant={type === '' ? undefined : 'outline'}
+                  color={type === '' ? 'secondary' : undefined}
+                  onClick={() => handleTypeChange('')}
                 >
                   All
                 </Button>
@@ -272,75 +457,64 @@ const WalletContent = () => {
               0 ? (
                 <>
                   <div className='grid grid-cols-12 gap-4 mb-4'>
-                    {getWalletDetailsData.data.wallet_transaction_history
-
-                      .filter((row) => (type ? row.type === type : true))
-                      .filter((row) =>
-                        startDate && endDate
-                          ? moment(row.transaction_date).isBetween(
-                              moment(startDate),
-                              moment(endDate)
-                            )
-                          : true
-                      )
-                      .map((row) =>
-                        row.type === WALLET_TRANSACTION_HISTORY_TYPE.DEBIT ? (
-                          <Card
-                            key={row.id}
-                            className='col-span-12 shadow border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-error border-b-error transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
-                          >
-                            <div className='p-4'>
-                              <div className='flex flex-col md:flex-row justify-between md:items-center gap-4'>
-                                <div className='flex flex-col'>
-                                  <span className='font-medium mb-2'>
-                                    {row.transaction_type}
-                                  </span>
-                                  <span className='text-sm'>
-                                    {moment(row.transaction_date).format(
-                                      'DD MMM YYYY HH:mm'
-                                    )}
-                                  </span>
-                                </div>
+                    {getWalletDetailsData.data.wallet_transaction_history.map(
+                      (row) => (
+                        <Card
+                          key={row.id}
+                          className={`col-span-12 shadow border-r-0 border-b-4 md:border-r-8 md:border-b-0 transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200 ${
+                            row.type === WALLET_TRANSACTION_HISTORY_TYPE.DEBIT
+                              ? 'border-r-error border-b-error'
+                              : 'border-r-success border-b-success'
+                          }`}
+                        >
+                          <div className='p-4'>
+                            <div className='flex flex-col md:flex-row justify-between md:items-center gap-4'>
+                              <div className='flex flex-col'>
+                                <span className='font-medium mb-2'>
+                                  {row.transaction_type}
+                                </span>
+                                <span className='text-sm'>
+                                  {moment(row.transaction_datetime).format(
+                                    'DD MMM YYYY HH:mm'
+                                  )}
+                                </span>
+                              </div>
+                              {row.type ===
+                              WALLET_TRANSACTION_HISTORY_TYPE.DEBIT ? (
                                 <h5 className='font-bold text-xl text-error'>
                                   -{toRupiah(row.amount)}
                                 </h5>
-                              </div>
-                            </div>
-                          </Card>
-                        ) : (
-                          <Card
-                            key={row.id}
-                            className='col-span-12 shadow border-r-0 border-b-4 md:border-r-8 md:border-b-0 border-r-success border-b-success transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-base-200'
-                          >
-                            <div className='p-4'>
-                              <div className='flex flex-col md:flex-row justify-between md:items-center gap-4'>
-                                <div className='flex flex-col'>
-                                  <span className='font-medium mb-2'>
-                                    {row.transaction_type}
-                                  </span>
-                                  <span className='text-sm'>
-                                    {moment(row.transaction_date).format(
-                                      'DD MMM YYYY HH:mm'
-                                    )}
-                                  </span>
-                                </div>
+                              ) : (
                                 <h5 className='font-bold text-xl text-success'>
                                   +{toRupiah(row.amount)}
                                 </h5>
-                              </div>
+                              )}
                             </div>
-                          </Card>
-                        )
-                      )}
+                          </div>
+                        </Card>
+                      )
+                    )}
                   </div>
                   <div className='mx-auto'>
                     <Pager
-                      page={1}
-                      totalPage={1}
+                      page={walletHistoryQuery.page}
+                      totalPage={
+                        getWalletDetailsData?.metadata?.total_pages
+                          ? getWalletDetailsData.metadata.total_pages
+                          : 0
+                      }
                       onPageChange={handlePageChange}
                     />
                   </div>
                 </>
+              ) : walletHistoryQuery.filterEndTransactionDate !== '' ||
+                walletHistoryQuery.filterStartTransactionDate !== '' ? (
+                <NoData
+                  title='Oops, there are no transactions that match the filter'
+                  message='Try to reset or change your filter'
+                  buttonMessage='Reset Filter'
+                  buttonHandleClick={handleResetFilterDate}
+                />
               ) : (
                 <NoData
                   title='No transactions?'
