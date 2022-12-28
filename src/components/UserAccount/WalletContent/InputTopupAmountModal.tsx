@@ -85,6 +85,7 @@ const InputTopupAmountModal = ({
           <Input
             placeholder='Amount'
             name='amount'
+            type='number'
             onChange={inputTopUpAmountFormik.handleChange}
             value={inputTopUpAmountFormik.values.amount}
           />
