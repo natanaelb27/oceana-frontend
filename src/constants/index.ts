@@ -85,6 +85,7 @@ export const MEDIA_TYPE = {
 
 export const REFUND_GROUPED_STATUS = {
   ALL: 'all',
+  APPROVED: 'approved',
   PROCESSED: 'processed',
 };
 
