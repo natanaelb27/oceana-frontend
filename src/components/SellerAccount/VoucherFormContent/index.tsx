@@ -23,7 +23,7 @@ import { HiOutlineCalendar } from 'react-icons/hi';
 import { DISCOUNT_TYPE, VOUCHER_STATUS } from '../../../constants';
 import { Merchant } from '../../../types/component';
 import { toRupiah } from '../../../utils/convert';
-import { roundTimeToNearest30 } from '../../../utils/date';
+import { roundTimeToFloor, roundTimeToNearest30 } from '../../../utils/date';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';
@@ -94,23 +94,28 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
     cancel: false,
   });
   const [minimumMaximumQuota, setMinimumMaximumQuota] = useState<number>(0);
-  const [startDateLimit, setStartDateLimit] = useState<DateLimit>({
-    min: moment().add(1, 'd').toDate(),
-    max: moment().add(1, 'M').toDate(),
-  });
-  const [endDateLimit, setEndDateLimit] = useState<DateLimit>({
-    min: moment().add(1, 'd').toDate(),
-    max: moment().add(4, 'M').toDate(),
-  });
+
   const [disableDatePickers, setDisableDatePickers] =
     useState<DisableDatePickers>({
       start: false,
       end: false,
     });
+
   const [dateInput, setDateInput] = useState<InputDatePicker>({
     startDate: roundTimeToNearest30(moment().add(1, 'd').toDate()),
     endDate: roundTimeToNearest30(moment().add(7, 'd').toDate()),
   });
+
+  const [startDateLimit, setStartDateLimit] = useState<DateLimit>({
+    min: moment().add(1, 'd').toDate(),
+    max: moment().add(1, 'M').toDate(),
+  });
+
+  const [endDateLimit, setEndDateLimit] = useState<DateLimit>({
+    min: moment(dateInput.startDate).add(1, 'h').toDate(),
+    max: moment(dateInput.startDate).add(3, 'M').toDate(),
+  });
+
   const [isDateOpen, setIsDateOpen] = useState<OpenVoucherDatePicker>({
     startDate: false,
     endDate: false,
@@ -381,6 +386,11 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
             maximumQuota: data.maximum_quota,
           });
 
+          setDateInput({
+            startDate: moment(data.start_datetime).toDate(),
+            endDate: moment(data.end_datetime).toDate(),
+          });
+
           setMinimumMaximumQuota(data.current_quota);
 
           if (stringCompare(data.voucher_status, VOUCHER_STATUS.UPCOMING)) {
@@ -436,8 +446,60 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
       });
   }, [voucherID]);
 
-  const voucherCodeLength = voucherFormik.values.code.length;
+  useEffect(() => {
+    setEndDateLimit({
+      min: moment(dateInput.startDate).add(1, 'h').toDate(),
+      max: moment(dateInput.startDate).add(3, 'M').toDate(),
+    });
 
+    if (moment(dateInput.endDate).diff(moment(dateInput.startDate), 'h') < 1) {
+      voucherFormik.setFieldValue(
+        'endDatetime',
+        moment(dateInput.startDate).add(1, 'h').toDate()
+      );
+
+      setDateInput({
+        ...dateInput,
+        endDate: moment(dateInput.startDate).add(1, 'h').toDate(),
+      });
+    }
+
+    if (moment(startDateLimit.min).isAfter(moment(dateInput.startDate))) {
+      voucherFormik.setFieldValue(
+        'startDatetime',
+        roundTimeToNearest30(startDateLimit.min)
+      );
+
+      setDateInput({
+        ...dateInput,
+        startDate: roundTimeToNearest30(startDateLimit.min),
+      });
+    }
+
+    if (moment(startDateLimit.max).isBefore(moment(dateInput.startDate))) {
+      voucherFormik.setFieldValue(
+        'startDatetime',
+        roundTimeToFloor(startDateLimit.max)
+      );
+
+      setDateInput({
+        ...dateInput,
+        startDate: roundTimeToFloor(startDateLimit.max),
+      });
+    }
+
+    if (moment(endDateLimit.max).isBefore(moment(dateInput.endDate))) {
+      voucherFormik.setFieldValue('endDatetime', endDateLimit.max);
+
+      setDateInput({
+        ...dateInput,
+        endDate: endDateLimit.max,
+      });
+    }
+  }, [dateInput.startDate, dateInput.endDate]);
+
+  const voucherCodeLength = voucherFormik.values.code.length;
+  setDateInput;
   const handleGoBack = () => {
     navigate('/seller/marketing/vouchers/list');
   };
@@ -576,34 +638,34 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
       endDate: dateInput.endDate,
     };
 
-    if (!update) {
-      setDateInput(newDateInput);
-      setStartDateLimit({
-        min: moment().add(1, 'd').toDate(),
-        max: moment().add(1, 'M').toDate(),
-      });
-      setEndDateLimit({
-        min: moment().add(1, 'd').toDate(),
-        max: moment().add(4, 'M').toDate(),
-      });
+    // if (!update) {
+    //   setDateInput(newDateInput);
+    //   setStartDateLimit({
+    //     min: moment().add(1, 'd').toDate(),
+    //     max: moment().add(1, 'M').toDate(),
+    //   });
+    //   setEndDateLimit({
+    //     min: moment().add(1, 'd').toDate(),
+    //     max: moment().add(3, 'M').toDate(),
+    //   });
 
-      return;
-    }
+    //   return;
+    // }
 
-    const newEndDateLimit = {
-      min: moment(update).add(1, 'h').toDate(),
-      max: moment(update).add(3, 'M').toDate(),
-    };
+    // const newEndDateLimit = {
+    //   min: moment(update).add(1, 'h').toDate(),
+    //   max: moment(update).add(3, 'M').toDate(),
+    // };
 
-    setEndDateLimit(newEndDateLimit);
+    // setEndDateLimit(newEndDateLimit);
 
-    if (moment(newEndDateLimit.min).isAfter(moment(dateInput.endDate))) {
-      newDateInput.endDate = newEndDateLimit.min;
-    } else if (
-      moment(newEndDateLimit.max).isBefore(moment(dateInput.endDate))
-    ) {
-      newDateInput.endDate = newEndDateLimit.max;
-    }
+    // if (moment(newEndDateLimit.min).isAfter(moment(dateInput.endDate))) {
+    //   newDateInput.endDate = newEndDateLimit.min;
+    // } else if (
+    //   moment(newEndDateLimit.max).isBefore(moment(dateInput.endDate))
+    // ) {
+    //   newDateInput.endDate = newEndDateLimit.max;
+    // }
 
     setDateInput(newDateInput);
   };
@@ -724,6 +786,14 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
             startDate: !isDateOpen.startDate,
             endDate: false,
           });
+
+          setDateInput({
+            ...dateInput,
+            startDate: moment(
+              voucherFormik.values.startDatetime,
+              'YYYY-MM-DD HH:mm'
+            ).toDate(),
+          });
         }}
         ref={ref}
       >
@@ -746,6 +816,14 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
             ...isDateOpen,
             startDate: false,
             endDate: !isDateOpen.endDate,
+          });
+
+          setDateInput({
+            ...dateInput,
+            endDate: moment(
+              voucherFormik.values.endDatetime,
+              'YYYY-MM-DD HH:mm'
+            ).toDate(),
           });
         }}
         ref={ref}
@@ -833,6 +911,7 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
                 )}
               </div>
             </div>
+            {/* EDIT START DATEPICKER */}
             <div className='grid grid-cols-7 items-start gap-4'>
               <Form.Label
                 title='Voucher Usage Period'
@@ -850,8 +929,40 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
                     disabled={disableDatePickers.start}
                     showTimeSelect
                     dateFormat='dd MMM yyyy h:mm aa'
-                    minDate={startDateLimit.min}
-                    maxDate={startDateLimit.max}
+                    minDate={moment
+                      .max(
+                        moment(startDateLimit.min),
+                        moment(dateInput.endDate).subtract(3, 'M')
+                      )
+                      .toDate()}
+                    maxDate={
+                      moment(dateInput.endDate).isBefore(
+                        moment(startDateLimit.max)
+                      )
+                        ? dateInput.endDate
+                        : startDateLimit.max
+                    }
+                    minTime={
+                      moment(dateInput.startDate).isSame(
+                        moment().add(1, 'd'),
+                        'date'
+                      )
+                        ? startDateLimit.min
+                        : moment().startOf('d').toDate()
+                    }
+                    maxTime={
+                      moment(dateInput.startDate).isSame(
+                        moment(startDateLimit.max),
+                        'date'
+                      )
+                        ? startDateLimit.max
+                        : moment(dateInput.startDate).isSame(
+                            moment(dateInput.endDate),
+                            'date'
+                          )
+                        ? moment(dateInput.endDate).add(-1, 'h').toDate()
+                        : moment().endOf('d').toDate()
+                    }
                     calendarContainer={startDateContainer}
                     open={isDateOpen.startDate}
                     shouldCloseOnSelect={false}
@@ -883,16 +994,21 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
                     minDate={endDateLimit.min}
                     maxDate={endDateLimit.max}
                     minTime={
-                      moment(dateInput.startDate)
-                        .add(1, 'd')
-                        .diff(moment(dateInput.endDate), 'd') >= 0 &&
-                      moment(dateInput.startDate)
-                        .add(1, 'd')
-                        .diff(moment(dateInput.endDate), 'h') > 0
+                      moment(dateInput.endDate).isSame(
+                        moment(dateInput.startDate),
+                        'date'
+                      )
                         ? moment(dateInput.startDate).add(1, 'h').toDate()
                         : moment().startOf('d').toDate()
                     }
-                    maxTime={moment().endOf('d').toDate()}
+                    maxTime={
+                      moment(dateInput.endDate).isSame(
+                        moment(endDateLimit.max),
+                        'date'
+                      )
+                        ? endDateLimit.max
+                        : moment().endOf('d').toDate()
+                    }
                     calendarContainer={endDateContainer}
                     open={isDateOpen.endDate}
                     shouldCloseOnSelect={false}
