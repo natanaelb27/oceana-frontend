@@ -24,7 +24,7 @@ const InputTopupAmountModal = ({
   sealabsPayDetails,
 }: InputTopupAmountModalProps) => {
   useSealabsPayTopupOTPMutation();
-  const [sealabsPayPayment, { isLoading }] = useSealabsPayTopupOTPMutation();
+  const [sealabsPayTopup, { isLoading }] = useSealabsPayTopupOTPMutation();
   const inputTopUpAmountFormik = useFormik({
     initialValues: {
       amount: '',
@@ -33,7 +33,7 @@ const InputTopupAmountModal = ({
       amount: Yup.number().required('Please enter amount'),
     }),
     onSubmit: (values) => {
-      sealabsPayPayment(
+      sealabsPayTopup(
         toSealabsPayPaymentRequest(
           sealabsPayDetails.nameOnCard,
           sealabsPayDetails.cardNumber,
