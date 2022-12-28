@@ -22,9 +22,6 @@ export enum ProductsSortString {
 
 export enum FavoriteProductsSortBy {
   Default = 0,
-  Recommended,
-  Newest,
-  BestSeller,
   RecentlySaved,
   OldestSaved,
   HighestPrice,
@@ -33,9 +30,6 @@ export enum FavoriteProductsSortBy {
 
 export enum FavoriteProductsSortByString {
   Default = '',
-  Recommended = 'recommended',
-  Newest = 'newest',
-  BestSeller = 'most-buy',
   Saved = 'saved',
   Price = 'price',
 }

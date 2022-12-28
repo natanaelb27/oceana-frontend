@@ -64,10 +64,6 @@ const Search = () => {
   const sortBy = searchParams.get('sort-by') || '';
 
   useEffect(() => {
-    if (sortBy === FavoriteProductsSortByString.Recommended) {
-      handleSortChange(FavoriteProductsSortBy.Recommended);
-    }
-
     setProductQuery({
       ...productQuery,
       search: q,
@@ -92,13 +88,8 @@ const Search = () => {
   const handleSortChange = (productSort: FavoriteProductsSortBy) => {
     let sortBy = '';
     let sort = '';
-    if (productSort === FavoriteProductsSortBy.BestSeller) {
-      sortBy = FavoriteProductsSortByString.BestSeller;
-      sort = FavoriteProductsSortByString.Default;
-    } else if (productSort === FavoriteProductsSortBy.Recommended) {
-      sortBy = FavoriteProductsSortByString.Recommended;
-      sort = FavoriteProductsSortByString.Default;
-    } else if (productSort === FavoriteProductsSortBy.RecentlySaved) {
+
+    if (productSort === FavoriteProductsSortBy.RecentlySaved) {
       sortBy = FavoriteProductsSortByString.Saved;
       sort = FavoriteProductsSortString.RecentlySaved;
     } else if (productSort === FavoriteProductsSortBy.OldestSaved) {

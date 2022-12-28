@@ -1,21 +1,8 @@
-import { Button, Dropdown, Tooltip } from 'react-daisyui';
-import {
-  AiOutlineDown,
-  AiOutlineStock,
-  AiOutlineOrderedList,
-} from 'react-icons/ai';
-import { BsExclamationLg } from 'react-icons/bs';
-import { FaCrown } from 'react-icons/fa';
+import { Button, Dropdown } from 'react-daisyui';
+import { AiOutlineDown, AiOutlineOrderedList } from 'react-icons/ai';
 import { FavoriteProductsSortBy } from '../../../types/sort';
 
-import {
-  SortBarContainer,
-  SortContainer,
-  SortLabel,
-  SortBtn,
-  SortBtnText,
-  SortBtnContainer,
-} from './style';
+import { SortBarContainer, SortLabel } from './style';
 
 type FavoriteSortBarProps = {
   sort: FavoriteProductsSortBy;
@@ -29,39 +16,8 @@ const FavoriteSortBar = ({ sort, onSortChange }: FavoriteSortBarProps) => {
 
   return (
     <SortBarContainer>
-      <SortContainer>
+      <div className='grid grid-cols-2 gap-2 md:flex md:flex-row md:items-center justify-between w-full'>
         <SortLabel>Sort By</SortLabel>
-        <SortBtnContainer>
-          <Tooltip message='Recommended'>
-            <SortBtn
-              color={sort === FavoriteProductsSortBy.Recommended && 'secondary'}
-              onClick={() =>
-                handleSortClick(FavoriteProductsSortBy.Recommended)
-              }
-            >
-              <FaCrown />
-              <SortBtnText>Recommended</SortBtnText>
-            </SortBtn>
-          </Tooltip>
-          <Tooltip message='Newest'>
-            <SortBtn
-              color={sort === FavoriteProductsSortBy.Newest && 'secondary'}
-              onClick={() => handleSortClick(FavoriteProductsSortBy.Newest)}
-            >
-              <BsExclamationLg />
-              <SortBtnText>Newest</SortBtnText>
-            </SortBtn>
-          </Tooltip>
-          <Tooltip message='Best Seller'>
-            <SortBtn
-              color={sort === FavoriteProductsSortBy.BestSeller && 'secondary'}
-              onClick={() => handleSortClick(FavoriteProductsSortBy.BestSeller)}
-            >
-              <AiOutlineStock />
-              <SortBtnText>Best Seller</SortBtnText>
-            </SortBtn>
-          </Tooltip>
-        </SortBtnContainer>
         <Dropdown className='col-span-2'>
           <Button
             endIcon={<AiOutlineDown />}
@@ -118,7 +74,7 @@ const FavoriteSortBar = ({ sort, onSortChange }: FavoriteSortBarProps) => {
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
-      </SortContainer>
+      </div>
     </SortBarContainer>
   );
 };

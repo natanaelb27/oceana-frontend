@@ -11,7 +11,7 @@ import {
   InputGroup,
   Navbar,
 } from 'react-daisyui';
-import { FaSearch, FaShoppingCart } from 'react-icons/fa';
+import { FaPalette, FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { GoPerson } from 'react-icons/go';
 import { HiHeart, HiMoon, HiSun } from 'react-icons/hi';
 import { CgLogOut, CgProfile } from 'react-icons/cg';
@@ -41,6 +41,7 @@ const Header = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [logout] = useLogoutMutation();
+  const [hoverTheme, setHoverTheme] = useState(false);
   const [hoverCart, setHoverCart] = useState(false);
   const [hoverProfile, setHoverProfile] = useState(false);
   const [getUserCart, { data: userCartData }] = useLazyGetUserCartQuery();
@@ -77,6 +78,14 @@ const Header = () => {
     setSearch(e.target.value);
   };
 
+  const handleHoverTheme = () => {
+    setHoverTheme(true);
+  };
+
+  const handleUnhoverTheme = () => {
+    setHoverTheme(false);
+  };
+
   const handleHoverCart = () => {
     if (role !== null) {
       setHoverCart(true);
@@ -93,6 +102,596 @@ const Header = () => {
 
   const handleUnhoverProfile = () => {
     setHoverProfile(false);
+  };
+
+  const renderHoverTheme = () => {
+    if (!hoverTheme) {
+      return null;
+    }
+
+    return (
+      <div
+        className='absolute bg-base-100 rounded-xl border-none shadow-lg top-8 right-0 z-50 transition-all duration-300'
+        onMouseOver={handleHoverTheme}
+        onMouseOut={handleUnhoverTheme}
+      >
+        <Card className='text-base-content w-64'>
+          <Card.Body className='p-5 normal-case font-normal overflow-y-auto h-64'>
+            <div className='grid grid-cols-1 gap-3'>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='light'
+                  onClick={() => handleThemeClick('light')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>light</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='dark'
+                  onClick={() => handleThemeClick('dark')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>dark</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='cupcake'
+                  onClick={() => handleThemeClick('cupcake')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>cupcake</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='bumblebee'
+                  onClick={() => handleThemeClick('bumblebee')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        bumblebee
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='emerald'
+                  onClick={() => handleThemeClick('emerald')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>emerald</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='corporate'
+                  onClick={() => handleThemeClick('corporate')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        corporate
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='synthwave'
+                  onClick={() => handleThemeClick('synthwave')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        synthwave
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='retro'
+                  onClick={() => handleThemeClick('retro')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>retro</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='cyberpunk'
+                  onClick={() => handleThemeClick('cyberpunk')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        cyberpunk
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='valentine'
+                  onClick={() => handleThemeClick('valentine')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        valentine
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='halloween'
+                  onClick={() => handleThemeClick('halloween')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        halloween
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='garden'
+                  onClick={() => handleThemeClick('garden')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>garden</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='forest'
+                  onClick={() => handleThemeClick('forest')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>forest</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='aqua'
+                  onClick={() => handleThemeClick('aqua')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>aqua</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='lofi'
+                  onClick={() => handleThemeClick('lofi')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>lofi</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='pastel'
+                  onClick={() => handleThemeClick('pastel')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>pastel</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='fantasy'
+                  onClick={() => handleThemeClick('fantasy')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>fantasy</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='wireframe'
+                  onClick={() => handleThemeClick('wireframe')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        wireframe
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='black'
+                  onClick={() => handleThemeClick('black')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>black</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='luxury'
+                  onClick={() => handleThemeClick('luxury')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>luxury</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='dracula'
+                  onClick={() => handleThemeClick('dracula')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>dracula</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='cmyk'
+                  onClick={() => handleThemeClick('cmyk')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>cmyk</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='autumn'
+                  onClick={() => handleThemeClick('autumn')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>autumn</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='business'
+                  onClick={() => handleThemeClick('business')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        business
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='acid'
+                  onClick={() => handleThemeClick('acid')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>acid</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='lemonade'
+                  onClick={() => handleThemeClick('lemonade')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        lemonade
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='night'
+                  onClick={() => handleThemeClick('night')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>night</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='coffee'
+                  onClick={() => handleThemeClick('coffee')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>coffee</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='winter'
+                  onClick={() => handleThemeClick('winter')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>winter</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
+      </div>
+    );
   };
 
   const renderHoverCart = () => {
@@ -419,25 +1018,17 @@ const Header = () => {
               </Form>
             </div>
             <div className='flex-none ml-4 gap-2'>
-              {theme === 'light' ? (
+              <div className='relative'>
                 <Button
-                  shape='circle'
                   color='ghost'
                   size='sm'
-                  onClick={() => handleThemeClick('dark')}
+                  onMouseOver={handleHoverTheme}
+                  onMouseOut={handleUnhoverTheme}
                 >
-                  <HiSun className='text-lg' />
+                  <FaPalette className='text-lg' />
                 </Button>
-              ) : (
-                <Button
-                  shape='circle'
-                  color='ghost'
-                  size='sm'
-                  onClick={() => handleThemeClick('light')}
-                >
-                  <HiMoon className='text-lg' />
-                </Button>
-              )}
+                {renderHoverTheme()}
+              </div>
               <div className='relative'>
                 <NavLink to='/cart' className=''>
                   <Button
