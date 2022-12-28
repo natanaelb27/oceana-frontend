@@ -49,7 +49,7 @@ const SelectSealabsPayModal = ({
         Select Sealabs Pay Account
       </Modal.Header>
       <Modal.Body>
-        <div className='w-full flex justify-center mb-2'>
+        <div className='w-full flex justify-center mb-4'>
           <SealabsPayImg className='w-24' />
         </div>
         <div className='overflow-y-scroll h-72'>
