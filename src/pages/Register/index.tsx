@@ -77,16 +77,18 @@ const Register = () => {
       });
   };
   const handleFailedRegister = (
-    message: string,
     setFieldValue: (
       field: string,
       value: string,
       shouldValidate?: boolean | undefined
-    ) => void
+    ) => void,
+    message?: string
   ) => {
     setFieldValue('password', '');
     setFieldValue('confirm', '');
-    notifyFailedRegister(message);
+    if (message) {
+      notifyFailedRegister(message);
+    }
   };
   const handleRegisterStep = (step: number) => {
     switch (step) {

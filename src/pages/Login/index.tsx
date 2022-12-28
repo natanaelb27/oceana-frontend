@@ -32,16 +32,17 @@ const Login = () => {
 
   const handleSuccessLogin = () => navigate('/');
   const handleFailedLogin = (
-    message: string,
     setFieldValue: (
       field: string,
       value: string,
       shouldValidate?: boolean | undefined
-    ) => void
+    ) => void,
+    message?: string
   ) => {
-    setFieldValue('loginCredentials', '');
     setFieldValue('password', '');
-    notifyErrorToast(message, true);
+    if (message) {
+      notifyErrorToast(message, true);
+    }
   };
   const handleSuccessGoogleLogin = (
     response: GoogleLoginResponse | GoogleLoginResponseOffline

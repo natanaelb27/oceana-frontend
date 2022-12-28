@@ -1,13 +1,13 @@
-import { useState } from 'react';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { useState } from 'react';
 import { Button, Form, Input, Modal } from 'react-daisyui';
-import { Link } from 'react-router-dom';
-import { CgClose } from 'react-icons/cg';
 import GoogleLogin, {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
+import { CgClose } from 'react-icons/cg';
+import { Link } from 'react-router-dom';
+import * as Yup from 'yup';
 import {
   FormCTA,
   FormErrorText,
@@ -17,18 +17,18 @@ import {
   InputGroup,
   StyledDivider,
 } from '../../components/common/Form';
+import { TAG_TYPES } from '../../constants/tags';
 import {
   useLoginMutation,
   useVerifyResetPasswordMutation,
 } from '../../store/services/authService';
-import { toLoginRequest } from '../../utils/mapperDTO';
-import { Role } from '../../types/component';
 import { setCredentials } from '../../store/slices/authSlice';
 import { baseApi, useAppDispatch } from '../../store/store';
-import { TAG_TYPES } from '../../constants/tags';
-import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
-import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
+import { Role } from '../../types/component';
 import { VerifyResetPasswordResponse } from '../../types/response';
+import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import { toLoginRequest } from '../../utils/mapperDTO';
+import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
 
 type LoginFormProps = {
   clientId: string | undefined;
@@ -37,12 +37,12 @@ type LoginFormProps = {
     response: GoogleLoginResponse | GoogleLoginResponseOffline
   ) => void;
   handleFailedLogin: (
-    message: string,
     setFieldValue: (
       field: string,
       value: string,
       shouldValidate?: boolean | undefined
-    ) => void
+    ) => void,
+    message?: string
   ) => void;
 };
 
@@ -82,7 +82,7 @@ const LoginForm = ({
           const { data: errorResponse } = err;
           const { message } = errorResponse;
           const messageCapitalized = capitalizeFirstLetter(message);
-          handleFailedLogin(messageCapitalized, setFieldValue);
+          handleFailedLogin(setFieldValue, messageCapitalized);
         });
     },
   });
@@ -189,12 +189,7 @@ const LoginForm = ({
         clientId={String(clientId)}
         buttonText='Sign in with Google'
         onSuccess={handleSuccessGoogleLogin}
-        onFailure={() =>
-          handleFailedLogin(
-            'Sign in with Google failed',
-            loginFormik.setFieldValue
-          )
-        }
+        onFailure={() => handleFailedLogin(loginFormik.setFieldValue)}
         cookiePolicy='single_host_origin'
       />
       <FormFooter />
