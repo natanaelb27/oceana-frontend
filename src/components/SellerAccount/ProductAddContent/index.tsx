@@ -1785,7 +1785,7 @@ const ProductAddContent = () => {
               getAncestorsCategoryIsLoading
             }
           >
-            {productFormik.values.id === 0 ? 'Edit Product' : 'Add Product'}
+            {productFormik.values.id === 0 ? 'Add Product' : 'Edit Product'}
           </Button>
         </div>
       </Form>
