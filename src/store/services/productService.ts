@@ -86,13 +86,15 @@ export const productApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Product'],
     }),
-    getProductUpsertModel: builder.query<GetProductUpsertModelResponse, void>({
-      query: (id) => ({
-        url: `/products/${id}/model`,
-        method: 'GET',
-      }),
-      providesTags: ['ProductUpsertModel'],
-    }),
+    getProductUpsertModel: builder.query<GetProductUpsertModelResponse, string>(
+      {
+        query: (id) => ({
+          url: `/products/${id}/model`,
+          method: 'GET',
+        }),
+        providesTags: ['ProductUpsertModel'],
+      }
+    ),
     createProductUpsertModel: builder.mutation<
       GetProductUpsertModelResponse,
       { request: UpsertProductRequest }
@@ -102,7 +104,7 @@ export const productApi = baseApi.injectEndpoints({
         method: 'POST',
         body: request,
       }),
-      invalidatesTags: ['ProductUpsertModel'],
+      invalidatesTags: ['ProductUpsertModel', 'Product', 'Category'],
     }),
     updateProductUpsertModel: builder.mutation<
       GetProductUpsertModelResponse,
@@ -113,7 +115,7 @@ export const productApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: request,
       }),
-      invalidatesTags: ['ProductUpsertModel'],
+      invalidatesTags: ['ProductUpsertModel', 'Product', 'Category'],
     }),
   }),
 });
@@ -133,7 +135,7 @@ export const {
   useFavoriteProductMutation,
   useGetFavoriteProductQuery,
   useLazyGetFavoriteProductQuery,
-  useGetProductUpsertModelQuery,
+  useLazyGetProductUpsertModelQuery,
   useCreateProductUpsertModelMutation,
   useUpdateProductUpsertModelMutation,
 } = productApi;
