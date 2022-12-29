@@ -796,7 +796,6 @@ const Header = () => {
     }
 
     if (hoverProfile) {
-      console.log('first');
       return (
         <div
           className='absolute bg-base-100 rounded-xl border-none shadow-lg top-8 right-0 z-50 transition-all duration-300'
