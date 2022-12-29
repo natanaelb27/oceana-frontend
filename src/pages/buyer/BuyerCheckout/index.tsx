@@ -721,7 +721,7 @@ const BuyerCheckout = () => {
 
           <div className='col-span-1' />
           {/* Total and make order button sticky bottom */}
-          <Card className='container p-6 fixed -bottom-1 left-0 z-[100] rounded-b-none rounded-t-3xl bg-neutral shadow-2xl md:col-span-4 md:sticky md:w-full md:z-0'>
+          <Card className='container p-6 fixed -bottom-1 left-0 z-30 rounded-b-none rounded-t-3xl bg-neutral shadow-2xl md:col-span-4 md:sticky md:w-full md:z-0'>
             <Card.Body className='hidden p-0 text-neutral-content md:flex md:flex-col md:mb-2'>
               <Skeleton className='w-20 h-5' />
               <Skeleton className='w-20 h-5' />
