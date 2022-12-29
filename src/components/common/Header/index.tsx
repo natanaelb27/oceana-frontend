@@ -11,9 +11,9 @@ import {
   InputGroup,
   Navbar,
 } from 'react-daisyui';
-import { FaSearch, FaShoppingCart } from 'react-icons/fa';
+import { FaHome, FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { GoPerson } from 'react-icons/go';
-import { HiMoon, HiSun } from 'react-icons/hi';
+import { HiMoon, HiOutlineHome, HiSun } from 'react-icons/hi';
 import { CgLogOut, CgProfile } from 'react-icons/cg';
 import { BiLogOutCircle } from 'react-icons/bi';
 
@@ -32,6 +32,7 @@ import { useLazyGetWalletDetailsQuery } from '../../../store/services/walletServ
 import { roleCodeToText } from '../../../utils/roleCodeToText';
 import { useLazyGetMyShopProfileQuery } from '../../../store/services/myShopService';
 import NoData from '../NoData';
+import Image from '../Image';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -523,6 +524,16 @@ const Header = () => {
                   </Dropdown.Menu>
                 </Dropdown>
               )}
+
+              <NavLink to='/'>
+                {/* <Image
+                    className='w-16'
+                    src={require('../../../assets/images/oceana-logo.png')}
+                  /> */}
+                <Button shape='circle' color='ghost' size='sm'>
+                  <FaHome className='text-xl' />
+                </Button>
+              </NavLink>
             </div>
           </Navbar>
         </div>

@@ -33,9 +33,15 @@ import {
   STATUS_UNPROCESSABLE_ENTITY,
 } from '../../../constants/statusCodes';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
-import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
+import {
+  usePayCartWithSealabsPayMutation,
+  usePayCartWithWalletMutation,
+} from '../../../store/services/cartService';
 import { useGetActiveMarketplaceVoucherQuery } from '../../../store/services/marketplaceService';
-import { useGetAllSealabsPayQuery } from '../../../store/services/sealabsPayService';
+import {
+  useGetAllSealabsPayQuery,
+  useSealabsPayPaymentOTPMutation,
+} from '../../../store/services/sealabsPayService';
 import { useGetWalletDetailsQuery } from '../../../store/services/walletService';
 import { selectCheckout } from '../../../store/slices/checkoutSlice';
 import { useAppSelector } from '../../../store/store';
@@ -70,7 +76,11 @@ import {
   toPhoneNumber,
   toRupiah,
 } from '../../../utils/convert';
-import { toPayCartWithWalletRequest } from '../../../utils/mapperDTO';
+import {
+  toPayCartWithSealabsPayRequest,
+  toPayCartWithWalletRequest,
+  toSealabsPayPaymentRequest,
+} from '../../../utils/mapperDTO';
 import { titleCase } from '../../../utils/titleCase';
 import {
   notifyErrorToast,
@@ -108,6 +118,9 @@ const BuyerCheckout = () => {
   const { data: getAllSealabsPayData } = useGetAllSealabsPayQuery();
   const [payCartWithWallet, { isLoading: payCartWithWalletLoading }] =
     usePayCartWithWalletMutation();
+  const [payCartWithSealabsPay, { isLoading: payCartWithSealabsPayLoading }] =
+    usePayCartWithSealabsPayMutation();
+  const [sealabsPayPaymentOTP] = useSealabsPayPaymentOTPMutation();
   const checkout = useAppSelector(selectCheckout);
   const [openModal, setOpenModal] = useState<OpenCheckoutModal>({
     shippingAddress: {
@@ -352,11 +365,87 @@ const BuyerCheckout = () => {
       return;
     }
     // validate payment method (sealabs pay, pick a card)
+    if (
+      paymentMethod === PaymentMethod.SealabsPay &&
+      !currentSealabsPayAccount
+    ) {
+      notifyInfoToast('Please pick a Sealabs Pay Account');
+      return;
+    }
 
-    handlePaymentWalletPinClick();
+    const createdOrder = createCheckoutOrder();
+    const shippingAddressID = shippingAddress ? shippingAddress.id : '';
+    const currentCardNumber = currentSealabsPayAccount
+      ? currentSealabsPayAccount.card_number
+      : '';
+    if (currentCardNumber === '') {
+      notifyInfoToast('No card selected, please select a SealabsPay Account');
+      return;
+    }
+    const currentNameOnCard = currentSealabsPayAccount
+      ? currentSealabsPayAccount.name_on_card
+      : '';
+
+    const marketplaceVoucherID = marketplaceVoucher
+      ? marketplaceVoucher.id
+      : null;
+    switch (paymentMethod) {
+      case PaymentMethod.SealabsPay:
+        payCartWithSealabsPay(
+          toPayCartWithSealabsPayRequest(
+            createdOrder[0] as CheckoutCartOrderItem[],
+            createdOrder[1] as number[],
+            marketplaceVoucherID,
+            shippingAddressID,
+            currentCardNumber,
+            totalPayment
+          )
+        )
+          .unwrap()
+          .then(() => {
+            sealabsPayPaymentOTP(
+              toSealabsPayPaymentRequest(
+                currentNameOnCard,
+                currentCardNumber,
+                String(totalPayment)
+              )
+            )
+              .unwrap()
+              .then((res) => {
+                if (!res?.data) return;
+                const { data: otpURLData } = res;
+                window.location.replace(otpURLData);
+              })
+              .catch((err) => console.error(err));
+          })
+          .catch((err) => {
+            const { data } = err;
+            const { message } = data;
+            const messageCapitalized = capitalizeFirstLetter(message);
+            if (data.code === STATUS_INTERNAL_SERVER_ERROR) {
+              notifyErrorToast('Payment failed, our fault. Please try again.');
+              return;
+            }
+            if (data.code === STATUS_UNPROCESSABLE_ENTITY) {
+              notifyErrorToast(messageCapitalized);
+              notifyInfoToast(
+                'We apologize for the inconvenience. Please try again.'
+              );
+              navigate('/cart');
+              return;
+            }
+            notifyErrorToast(messageCapitalized);
+          });
+        break;
+
+      default:
+        handlePaymentWalletPinClick();
+        break;
+    }
   };
 
-  const handleSuccessPaymentWalletPin = (pin: string) => {
+  // index-0: checkoutCartOrderItems, index-1: cartIDs
+  const createCheckoutOrder = () => {
     const cartIDs: number[] = [];
     const checkoutCartOrderItems = checkout.map(
       (cartGroupedByMerchant): CheckoutCartOrderItem => {
@@ -438,23 +527,24 @@ const BuyerCheckout = () => {
         return checkoutCartOrderItem;
       }
     );
-
+    return [checkoutCartOrderItems, cartIDs];
+  };
+  const handleSuccessPaymentWalletPin = (pin: string) => {
+    const createdOrder = createCheckoutOrder();
     const marketplaceVoucherID = marketplaceVoucher
       ? marketplaceVoucher.id
       : null;
 
-    // debugging
-    const dbgReq = toPayCartWithWalletRequest(
-      checkoutCartOrderItems,
-      cartIDs,
-      marketplaceVoucherID,
-      shippingAddress?.id as string,
-      pin,
-      totalPayment
-    );
-    console.log(dbgReq);
-
-    payCartWithWallet(dbgReq)
+    payCartWithWallet(
+      toPayCartWithWalletRequest(
+        createdOrder[0] as CheckoutCartOrderItem[],
+        createdOrder[1] as number[],
+        marketplaceVoucherID,
+        shippingAddress?.id as string,
+        pin,
+        totalPayment
+      )
+    )
       .unwrap()
       .then(() => notifySuccessToast('Payment success!'))
       .catch((err) => {
@@ -462,7 +552,7 @@ const BuyerCheckout = () => {
         const { message } = data;
         const messageCapitalized = capitalizeFirstLetter(message);
         if (data.code === STATUS_INTERNAL_SERVER_ERROR) {
-          notifyErrorToast('Payment failed, please try again');
+          notifyErrorToast('Payment failed, our fault. Please try again.');
           return;
         }
         if (data.code === STATUS_UNPROCESSABLE_ENTITY) {
@@ -1133,11 +1223,14 @@ const BuyerCheckout = () => {
             </div>
             <Button
               className='flex items-center gap-2 rounded-full shadow-md'
-              color='primary'
+              color={!payCartWithSealabsPayLoading ? 'primary' : 'accent'}
               size='md'
               onClick={handleOrderClick}
+              loading={payCartWithSealabsPayLoading}
             >
-              <IoBagCheckOutline className='text-2xl' />
+              {!payCartWithSealabsPayLoading && (
+                <IoBagCheckOutline className='text-2xl' />
+              )}
               <h2 className='inline'>Order</h2>
             </Button>
           </Card.Title>
