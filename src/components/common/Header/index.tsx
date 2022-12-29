@@ -409,7 +409,7 @@ const Header = () => {
                 </InputGroup>
               </Form>
             </div>
-            <div className='flex-none ml-4 gap-3'>
+            <div className='flex-none ml-4 gap-2'>
               {theme === 'light' ? (
                 <Button
                   shape='circle'
