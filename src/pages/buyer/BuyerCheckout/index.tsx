@@ -37,7 +37,6 @@ import {
   usePayCartWithSealabsPayMutation,
   usePayCartWithWalletMutation,
 } from '../../../store/services/cartService';
-import { useGetActiveMarketplaceVoucherQuery } from '../../../store/services/marketplaceService';
 import {
   useGetAllSealabsPayQuery,
   useSealabsPayPaymentOTPMutation,
@@ -117,8 +116,6 @@ const BuyerCheckout = () => {
   const { data: getAddressesData } = useGetAddressesQuery();
   const { data: getWalletDetailsData, refetch: refetchGetWalletDetails } =
     useGetWalletDetailsQuery('');
-  const { data: getActiveMarketplaceVoucherData } =
-    useGetActiveMarketplaceVoucherQuery();
   const { data: getAllSealabsPayData } = useGetAllSealabsPayQuery();
   const [payCartWithWallet, { isLoading: payCartWithWalletLoading }] =
     usePayCartWithWalletMutation();
@@ -692,7 +689,6 @@ const BuyerCheckout = () => {
   if (
     !getAddressesData?.data ||
     !shippingAddress ||
-    !getActiveMarketplaceVoucherData?.data ||
     !getAllSealabsPayData?.data
   ) {
     return (
@@ -1292,7 +1288,6 @@ const BuyerCheckout = () => {
       />
       {/* Marketplace Voucher Modal */}
       <MarketplaceVoucherModal
-        activeMarketplaceVouchers={getActiveMarketplaceVoucherData.data}
         currentMarketplaceVoucher={marketplaceVoucher}
         totalPayment={calculateTotal(checkout, null, null, null)}
         open={openModal.marketplaceVoucher}

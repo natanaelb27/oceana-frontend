@@ -42,6 +42,7 @@ export type MarketplaceVoucherQuery = {
   sort: string;
   searchVoucherName: string;
   filterVoucherStatus: string;
+  filterVoucherAvailability: string;
 };
 
 export type TransactionHistoryQuery = {
