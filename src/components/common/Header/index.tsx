@@ -438,9 +438,14 @@ const Header = () => {
                     onMouseOut={handleUnhoverCart}
                   >
                     <FaShoppingCart className='text-lg' />
-                    <Badge className='absolute ml-8 mb-3 bg-red-600 border-none text-white' size='sm'>
-                      {totalCartItems}
-                    </Badge>
+                    {totalCartItems > 0 && (
+                      <Badge
+                        className='absolute ml-6 mb-4 bg-red-600 border-none text-white text-xs p-2'
+                        size='xs'
+                      >
+                        {totalCartItems}
+                      </Badge>
+                    )}
                   </Button>
                 </NavLink>
                 {renderHoverCart()}
@@ -546,12 +551,14 @@ const Header = () => {
                 <NavLink to='/cart'>
                   <Button color='ghost' size='sm'>
                     <FaShoppingCart className='text-lg' />
-                    <Badge
-                      className='absolute ml-6 mb-4 bg-red-600 border-none text-white text-xs p-2'
-                      size='xs'
-                    >
-                      {totalCartItems}
-                    </Badge>
+                    {totalCartItems > 0 && (
+                      <Badge
+                        className='absolute ml-6 mb-4 bg-red-600 border-none text-white text-xs p-2'
+                        size='xs'
+                      >
+                        {totalCartItems}
+                      </Badge>
+                    )}
                   </Button>
                 </NavLink>
                 {!role ? (
