@@ -43,6 +43,7 @@ import { ReviewsSort } from '../../types/sort';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { useNavigate } from 'react-router-dom';
 import { PRODUCT_STATUS } from '../../constants/index';
+import { useLazyGetMyShopProfileQuery } from '../../store/services/myShopService';
 
 type ProductDetailProps = {
   merchantID?: string;
@@ -81,6 +82,10 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   ] = useLazyGetProductDetailQuery();
   const [getPurchasedQuantities, { data: getPurchasedQuantitiesData }] =
     useLazyGetPurchasedQuantitiesQuery();
+  const [
+    getMyShopProfile,
+    { data: myShopProfileData, isLoading: myShopProfileIsLoading },
+  ] = useLazyGetMyShopProfileQuery();
   const [getReviews, { data: getReviewsData }] = useLazyGetAllReviewsQuery();
   const [updateUserCart] = useUpdateUserCartMutation();
   const [incrementUserCart] = useIncrementUserCartMutation();
@@ -106,6 +111,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   ] = useLazyGetAllProductsQuery();
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
   const [selectedVariantImage, setSelectedVariantImage] = useState<string>('');
+  const [disablePurchase, setDisablePurchase] = useState<boolean>(false);
   const [productItemName, setProductItemName] = useState<string>('');
   const [productItemPrice, setProductItemPrice] = useState<number>(0);
   const [productLikeCount, setProductLikeCount] = useState(0);
@@ -254,6 +260,13 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
           notifyErrorToast(capitalizeFirstLetter(data.message));
         }
       });
+    getPurchasedQuantities(
+      toPurchasedQuantitiesQuery({
+        product_item_id: productItemID,
+        product_id: Number(productID),
+        quantity: purchasedQuantitiesQuery.quantity,
+      })
+    );
   };
 
   const handleClickFavoriteProduct = () => {
@@ -283,10 +296,14 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       product_item_id: 0,
       quantity: 1,
     });
+    setDisablePurchase(false);
     const fetchData = () => {
       if (role === Role.Buyer || role === Role.Seller) {
         viewPost(productID);
         getFavoriteData(productID);
+      }
+      if (role === Role.Seller) {
+        getMyShopProfile();
       }
       getProductDetail(productID).then(({ data }) => {
         if (!data?.data) {
@@ -347,6 +364,18 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
 
     fetchData();
   }, [productID, merchantID]);
+
+  useEffect(() => {
+    if (
+      myShopProfileData &&
+      getShopInformationData &&
+      getShopInformationData.data
+    ) {
+      if (myShopProfileData.data.name === getShopInformationData.data.name) {
+        setDisablePurchase(true);
+      }
+    }
+  }, [myShopProfileData, getShopInformationData]);
 
   useEffect(() => {
     if (purchasedQuantitiesQuery.product_item_id === 0) {
@@ -573,6 +602,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                   handleClickBuyNow={handleClickBuyNow}
                   defaultImage={getProductDetailData.data.images[0]}
                   selectedVariantImage={selectedVariantImage}
+                  disablePurchase={disablePurchase}
                 />
               </div>
               <div className='col-span-12 md:col-span-4'>
@@ -628,6 +658,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               handleClickBuyNow={handleClickBuyNow}
               defaultImage={getProductDetailData.data.images[0]}
               selectedVariantImage={selectedVariantImage}
+              disablePurchase={disablePurchase}
             />
           </div>
         </div>

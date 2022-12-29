@@ -2,6 +2,7 @@ import React, { ChangeEvent, FormEvent, useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Avatar,
+  Badge,
   Button,
   Card,
   Divider,
@@ -32,6 +33,7 @@ import { useLazyGetWalletDetailsQuery } from '../../../store/services/walletServ
 import { roleCodeToText } from '../../../utils/roleCodeToText';
 import { useLazyGetMyShopProfileQuery } from '../../../store/services/myShopService';
 import NoData from '../NoData';
+import Image from '../Image';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -148,8 +150,8 @@ const Header = () => {
                           >
                             <div className='flex items-center justify-between text-sm mb-2'>
                               <div className='flex mr-5'>
-                                <img
-                                  src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
+                                <Image
+                                  src={product.product_media_url}
                                   className=' rounded-xl w-16 h-16'
                                 />
                                 <div className='ml-2 w-44'>
@@ -164,7 +166,7 @@ const Header = () => {
                                 </div>
                               </div>
                               <div className='font-bold'>
-                                {toRupiah(product.price)}
+                                {toRupiah(product.price_after_discount)}
                               </div>
                             </div>
                           </NavLink>
@@ -421,6 +423,7 @@ const Header = () => {
                     onMouseOut={handleUnhoverCart}
                   >
                     <FaShoppingCart className='text-lg' />
+                    <Badge className='absolute ml-11 mb-3 bg-red-600 border-none text-white'>{userCartData?.data?.length}</Badge>
                   </Button>
                 </NavLink>
                 {renderHoverCart()}
