@@ -483,7 +483,7 @@ const Header = () => {
                     <Button className='text-xl normal-case p-0' color='ghost'>
                       <span
                         className={
-                          'font-main font-bold italic transition-all pl-4' +
+                          'font-main font-bold italic transition-all px-2' +
                           ClassNames([
                             displaySearchBar
                               ? 'text-[0px] opacity-30'
