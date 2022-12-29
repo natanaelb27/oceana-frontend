@@ -17,6 +17,7 @@ import {
   MEDIA_TYPE,
   PRODCUT_CONDITION_TYPE,
   PRODCUT_IS_HAZARDOUS_STATUS,
+  PRODUCT_STATUS,
 } from '../../../constants';
 import { useLazyGetAncestorsCategoryQuery } from '../../../store/services/categoryService';
 import {
@@ -1420,6 +1421,56 @@ const ProductAddContent = () => {
               title='Product Management'
               description='Manage the product.'
             />
+
+            {/* input: Status */}
+            <FormLayout.LabelInputErrorContainer>
+              <FormLayout.LabelInputContainer>
+                <FormLayout.LabelContainer justify='justify-start'>
+                  <Label required={true}>Status</Label>
+                </FormLayout.LabelContainer>
+                <FormLayout.InputContainer>
+                  <div className='flex items-center gap-2'>
+                    <label className='flex flex-row gap-2 items-center cursor-pointer'>
+                      <Radio
+                        size='sm'
+                        color='primary'
+                        name='status'
+                        value={PRODUCT_STATUS.ACTIVE}
+                        checked={
+                          productFormik.values.status === PRODUCT_STATUS.ACTIVE
+                        }
+                        onChange={productFormik.handleChange}
+                      />
+                      <span className='text-sm'>Active</span>
+                    </label>
+                    <label className='flex flex-row gap-2 items-center cursor-pointer'>
+                      <Radio
+                        size='sm'
+                        color='primary'
+                        name='status'
+                        value={PRODUCT_STATUS.INACTIVE}
+                        checked={
+                          productFormik.values.status ===
+                          PRODUCT_STATUS.INACTIVE
+                        }
+                        onChange={productFormik.handleChange}
+                      />
+                      <span className='text-sm'>
+                        Inactive (Cannot be seen by buyer)
+                      </span>
+                    </label>
+                  </div>
+                </FormLayout.InputContainer>
+              </FormLayout.LabelInputContainer>
+              <FormLayout.InputError>
+                {productFormik.touched.status &&
+                  productFormik.errors.status && (
+                    <label className='label-text-alt text-error'>
+                      {productFormik.errors.status}
+                    </label>
+                  )}
+              </FormLayout.InputError>
+            </FormLayout.LabelInputErrorContainer>
             {/* input: product variant */}
             <FormLayout.LabelInputErrorContainer>
               <FormLayout.LabelInputContainer>
