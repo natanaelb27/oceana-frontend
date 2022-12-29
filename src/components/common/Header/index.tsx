@@ -113,11 +113,16 @@ const Header = () => {
 
     let totalItems = 0;
 
-    if (hoverCart) {
-      if (userCartData.data.length === 0) {
-        return (
+    return (
+      <div
+        className={ClassNames([
+          'transition-500',
+          hoverCart ? 'opacity-100 scale-100 top-8' : 'opacity-0 scale-0',
+        ])}
+      >
+        {userCartData.data.length === 0 ? (
           <div
-            className='absolute bg-base-100 rounded-xl border-none shadow-lg top-8 right-0 z-50 transition-all duration-300'
+            className='absolute bg-base-100 rounded-xl border-none shadow-lg top-0 right-0 z-50 transition-all duration-300'
             onMouseOver={handleHoverCart}
             onMouseOut={handleUnhoverCart}
           >
@@ -130,72 +135,71 @@ const Header = () => {
               </Card.Body>
             </Card>
           </div>
-        );
-      }
-      return (
-        <div
-          className='absolute bg-base-100 rounded-xl border-none shadow-lg top-8 right-0 z-50 transition-all duration-300'
-          onMouseOver={handleHoverCart}
-          onMouseOut={handleUnhoverCart}
-        >
-          <Card className=' text-base-content w-96'>
-            <Card.Body className='p-5 normal-case font-normal'>
-              <div className='flex justify-between'>
-                <div className='font-bold'>Cart</div>
-                <NavLink
-                  to='/cart'
-                  className=' hover:text-primary transition-all duration-200'
-                  onClick={() => handleUnhoverCart()}
-                >
-                  <div className='font-bold'>View Cart</div>
-                </NavLink>
-              </div>
-              <div>
-                {userCartData.data.map((merchant) => {
-                  return merchant.products.map((product, i) => {
-                    totalItems += 1;
-                    if (totalItems <= 4) {
-                      return (
-                        <React.Fragment key={i}>
-                          <Divider className='m-0' />
-                          <NavLink
-                            to='/cart'
-                            className='hover:text-primary transition-all duration-200'
-                            onClick={() => handleUnhoverCart()}
-                          >
-                            <div className='flex items-center justify-between text-sm mb-2'>
-                              <div className='flex mr-5'>
-                                <Image
-                                  src={product.product_media_url}
-                                  className=' rounded-xl w-16 h-16'
-                                />
-                                <div className='ml-2 w-44'>
-                                  <div className='font-bold truncate'>
-                                    {product.product_name}
-                                  </div>
-                                  <div className='text-xs font-light'>
-                                    {product.quantity} items (
-                                    {product.product_weight}
-                                    gr) {product.product_variation}
+        ) : (
+          <div
+            className='absolute bg-base-100 rounded-xl border-none shadow-lg top-0 right-0 z-50 transition-all duration-300'
+            onMouseOver={handleHoverCart}
+            onMouseOut={handleUnhoverCart}
+          >
+            <Card className=' text-base-content w-96'>
+              <Card.Body className='p-5 normal-case font-normal'>
+                <div className='flex justify-between'>
+                  <div className='font-bold'>Cart</div>
+                  <NavLink
+                    to='/cart'
+                    className=' hover:text-primary transition-all duration-200'
+                    onClick={() => handleUnhoverCart()}
+                  >
+                    <div className='font-bold'>View Cart</div>
+                  </NavLink>
+                </div>
+                <div>
+                  {userCartData.data.map((merchant) => {
+                    return merchant.products.map((product, i) => {
+                      totalItems += 1;
+                      if (totalItems <= 4) {
+                        return (
+                          <React.Fragment key={i}>
+                            <Divider className='m-0' />
+                            <NavLink
+                              to='/cart'
+                              className='hover:text-primary transition-all duration-200'
+                              onClick={() => handleUnhoverCart()}
+                            >
+                              <div className='flex items-center justify-between text-sm mb-2'>
+                                <div className='flex mr-5'>
+                                  <Image
+                                    src={product.product_media_url}
+                                    className=' rounded-xl w-16 h-16'
+                                  />
+                                  <div className='ml-2 w-44'>
+                                    <div className='font-bold truncate'>
+                                      {product.product_name}
+                                    </div>
+                                    <div className='text-xs font-light'>
+                                      {product.quantity} items (
+                                      {product.product_weight}
+                                      gr) {product.product_variation}
+                                    </div>
                                   </div>
                                 </div>
+                                <div className='font-bold'>
+                                  {toRupiah(product.price_after_discount)}
+                                </div>
                               </div>
-                              <div className='font-bold'>
-                                {toRupiah(product.price_after_discount)}
-                              </div>
-                            </div>
-                          </NavLink>
-                        </React.Fragment>
-                      );
-                    }
-                  });
-                })}
-              </div>
-            </Card.Body>
-          </Card>
-        </div>
-      );
-    }
+                            </NavLink>
+                          </React.Fragment>
+                        );
+                      }
+                    });
+                  })}
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderHoverProfile = () => {
@@ -207,10 +211,15 @@ const Header = () => {
       return null;
     }
 
-    if (hoverProfile) {
-      return (
+    return (
+      <div
+        className={ClassNames([
+          'transition-500',
+          hoverProfile ? 'opacity-100 scale-100 top-8' : 'opacity-0 scale-0',
+        ])}
+      >
         <div
-          className='absolute bg-base-100 rounded-xl border-none shadow-lg top-8 right-0 z-50 transition-all duration-300'
+          className='absolute bg-base-100 rounded-xl border-none shadow-lg top-0 right-0 z-50 transition-all duration-300'
           onMouseOver={handleHoverProfile}
           onMouseOut={handleUnhoverProfile}
         >
@@ -321,8 +330,8 @@ const Header = () => {
             </div>
           </Card>
         </div>
-      );
-    }
+      </div>
+    );
   };
 
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -373,8 +382,10 @@ const Header = () => {
     <>
       <div
         className={`${
-          hoverCart || hoverProfile ? 'fixed' : 'hidden'
-        } mt-[4.5rem] overlay w-full h-full bg-black bg-opacity-40 backdrop-blur-sm z-30`}
+          hoverCart || hoverProfile
+            ? 'opacity-100 w-full h-full transition-bg-blur-hover-on'
+            : ' opacity-0 h-0 transition-bg-blur-hover-off'
+        } absolute w-full h-full overlay bg-black bg-opacity-40 backdrop-blur-sm z-30`}
       ></div>
       <header
         className={`sticky top-0 z-30 py-2 w-full component-preview items-center justify-center gap-2 font-sans transition-all duration-100 ${
