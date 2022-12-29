@@ -477,7 +477,7 @@ const BuyerCart = () => {
   }
 
   return (
-    <div className='px-8 md:px-2 container mx-auto flex flex-col'>
+    <div className='px-4 md:px-2 container mx-auto flex flex-col'>
       <h5 className='font-bold text-2xl text-primary my-4'>Cart</h5>
       <div className='flex'>
         <input
