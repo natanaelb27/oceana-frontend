@@ -185,22 +185,9 @@ const ProductAddContent = () => {
       category_id: Yup.number().min(1, 'Please enter category'),
       // merchant_id: Yup.number().required('Please enter merchant_id'),
       weight: Yup.number().required('Please enter weight').min(1),
-      package_size_length: Yup.number()
-        .min(1)
-        .max(1000)
-        .required()
-        .label('length'),
-      package_size_width: Yup.number()
-        .min(1)
-        .max(1000)
-        .required()
-        .label('width'),
-      package_size_height: Yup.number()
-        .min(1)
-        .max(1000)
-        .required()
-        .label('height'),
-      // status: Yup.string().required('Please enter status'),
+      package_size_length: Yup.number().min(1).max(1000).label('length'),
+      package_size_width: Yup.number().min(1).max(1000).label('width'),
+      package_size_height: Yup.number().min(1).max(1000).label('height'),
       process_day: Yup.number().required('Please enter process_day'),
       preorder_day: Yup.number().test('preorder_day', (value, ctx) =>
         formikPreorderDay(ctx, value)
@@ -252,6 +239,7 @@ const ProductAddContent = () => {
           .unwrap()
           .then(() => {
             notifySuccessToast('Product has been updated!');
+            navigate('/seller/marketing/products/list');
           })
           .catch((err) => {
             if ('data' in err) {
@@ -266,6 +254,7 @@ const ProductAddContent = () => {
           .unwrap()
           .then(() => {
             notifySuccessToast('Product has been created!');
+            navigate('/seller/marketing/products/list');
           })
           .catch((err) => {
             if ('data' in err) {
@@ -1197,7 +1186,7 @@ const ProductAddContent = () => {
             <FormLayout.LabelInputErrorContainer>
               <FormLayout.LabelInputContainer>
                 <FormLayout.LabelContainer justify='justify-start'>
-                  <Label required={true}>Videos</Label>
+                  <Label required={false}>Videos</Label>
                 </FormLayout.LabelContainer>
                 <FormLayout.InputContainer>
                   <div className='flex flex-col md:flex-row gap-2'>
