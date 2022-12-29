@@ -3,6 +3,7 @@ import {
   UpdateUserCartRequest,
   PayCartWithWalletRequest,
   PayCartWithSealabsPayRequest,
+  PayCartWithSealabsPaySuccessRequest,
 } from '../../types/request';
 import {
   GetUserCartResponse,
@@ -64,6 +65,16 @@ export const cartApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Cart'],
     }),
+    usePayCartWithSealabsPaySuccess: builder.mutation<
+      void,
+      PayCartWithSealabsPaySuccessRequest
+    >({
+      query: (request) => ({
+        url: '/carts/payment/sealabs-pay/success',
+        method: 'POST',
+        body: request,
+      }),
+    }),
   }),
 });
 
@@ -74,4 +85,5 @@ export const {
   usePayCartWithWalletMutation,
   useIncrementUserCartMutation,
   usePayCartWithSealabsPayMutation,
+  useUsePayCartWithSealabsPaySuccessMutation,
 } = cartApi;

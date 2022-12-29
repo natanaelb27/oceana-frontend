@@ -12,7 +12,7 @@ import {
 } from 'react-daisyui';
 import { BiLogOutCircle } from 'react-icons/bi';
 import { CgLogOut, CgProfile } from 'react-icons/cg';
-import { FaHome, FaSearch, FaShoppingCart } from 'react-icons/fa';
+import { FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { GoPerson } from 'react-icons/go';
 import { HiMoon, HiSun } from 'react-icons/hi';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -523,16 +523,6 @@ const Header = () => {
                   </Dropdown.Menu>
                 </Dropdown>
               )}
-
-              <NavLink to='/'>
-                {/* <Image
-                    className='w-16'
-                    src={require('../../../assets/images/oceana-logo.png')}
-                  /> */}
-                <Button shape='circle' color='ghost' size='sm'>
-                  <FaHome className='text-xl' />
-                </Button>
-              </NavLink>
             </div>
           </Navbar>
         </div>

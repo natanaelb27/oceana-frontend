@@ -43,8 +43,11 @@ import {
   useSealabsPayPaymentOTPMutation,
 } from '../../../store/services/sealabsPayService';
 import { useGetWalletDetailsQuery } from '../../../store/services/walletService';
-import { selectCheckout } from '../../../store/slices/checkoutSlice';
-import { useAppSelector } from '../../../store/store';
+import {
+  selectCheckout,
+  setTransactionID,
+} from '../../../store/slices/checkoutSlice';
+import { useAppDispatch, useAppSelector } from '../../../store/store';
 import {
   AdditionalNotes,
   Address,
@@ -110,6 +113,7 @@ type OpenCheckoutModal = {
 
 const BuyerCheckout = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { data: getAddressesData } = useGetAddressesQuery();
   const { data: getWalletDetailsData, refetch: refetchGetWalletDetails } =
     useGetWalletDetailsQuery('');
@@ -118,8 +122,13 @@ const BuyerCheckout = () => {
   const { data: getAllSealabsPayData } = useGetAllSealabsPayQuery();
   const [payCartWithWallet, { isLoading: payCartWithWalletLoading }] =
     usePayCartWithWalletMutation();
-  const [payCartWithSealabsPay, { isLoading: payCartWithSealabsPayLoading }] =
-    usePayCartWithSealabsPayMutation();
+  const [
+    payCartWithSealabsPay,
+    {
+      data: payCartWithSealabsPayData,
+      isLoading: payCartWithSealabsPayLoading,
+    },
+  ] = usePayCartWithSealabsPayMutation();
   const [sealabsPayPaymentOTP] = useSealabsPayPaymentOTPMutation();
   const checkout = useAppSelector(selectCheckout);
   const [openModal, setOpenModal] = useState<OpenCheckoutModal>({
@@ -402,7 +411,14 @@ const BuyerCheckout = () => {
           )
         )
           .unwrap()
-          .then(() => {
+          .then((res) => {
+            const { data: paymentResponseData } = res;
+            dispatch(
+              setTransactionID({
+                transactionID: paymentResponseData?.id as string,
+              })
+            );
+
             sealabsPayPaymentOTP(
               toSealabsPayPaymentRequest(
                 currentNameOnCard,
@@ -1223,12 +1239,19 @@ const BuyerCheckout = () => {
             </div>
             <Button
               className='flex items-center gap-2 rounded-full shadow-md'
-              color={!payCartWithSealabsPayLoading ? 'primary' : 'accent'}
+              color={
+                !payCartWithSealabsPayData && !payCartWithSealabsPayLoading
+                  ? 'primary'
+                  : 'accent'
+              }
               size='md'
               onClick={handleOrderClick}
-              loading={payCartWithSealabsPayLoading}
+              loading={
+                Boolean(payCartWithSealabsPayData) ||
+                payCartWithSealabsPayLoading
+              }
             >
-              {!payCartWithSealabsPayLoading && (
+              {!payCartWithSealabsPayData && !payCartWithSealabsPayLoading && (
                 <IoBagCheckOutline className='text-2xl' />
               )}
               <h2 className='inline'>Order</h2>

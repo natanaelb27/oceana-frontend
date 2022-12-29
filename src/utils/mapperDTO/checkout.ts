@@ -1,6 +1,7 @@
 import { CheckoutCartOrderItem } from '../../types/component';
 import {
   PayCartWithSealabsPayRequest,
+  PayCartWithSealabsPaySuccessRequest,
   PayCartWithWalletRequest,
   ProductCheckCourierServiceRequest,
 } from '../../types/request';
@@ -35,6 +36,18 @@ export const toPayCartWithSealabsPayRequest = (
   address_id: addressID,
   card_number: cardNumber,
   total_payment: totalPayment,
+});
+
+export const toPayCartWithSealabsPaySuccessRequest = (
+  transactionID: string,
+  sealabsPayTxnID: string,
+  cardNumber: string,
+  signature: string
+): PayCartWithSealabsPaySuccessRequest => ({
+  transaction_id: transactionID,
+  txn_id: sealabsPayTxnID,
+  card_number: cardNumber,
+  signature,
 });
 
 export const toProductCheckCourierService = (

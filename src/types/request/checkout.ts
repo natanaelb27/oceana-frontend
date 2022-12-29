@@ -18,6 +18,13 @@ export type PayCartWithSealabsPayRequest = {
   total_payment: number;
 };
 
+export type PayCartWithSealabsPaySuccessRequest = {
+  transaction_id: string;
+  txn_id: string;
+  card_number: string;
+  signature: string;
+};
+
 export type ProductCheckCourierServiceRequest = {
   courier_code: string;
   courier_service_code: string;
