@@ -24,11 +24,12 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Merchant,
+  ProductMerchantPromotionOption,
   SelectedProductMerchantPromotion,
 } from '../../../types/component';
 import { SellerAccountPromotionFormContent } from '../../../types/content';
 import ProductModal from './ProductModal';
-import { roundTimeToNearest30 } from '../../../utils/date';
+import { roundTimeToFloor, roundTimeToNearest30 } from '../../../utils/date';
 import { ConfirmationModal, Image, NoData } from '../../common';
 import { toRupiah } from '../../../utils/convert';
 import { stringCompare } from '../../../utils/validation';
@@ -39,9 +40,13 @@ import {
   useLazyGetMerchantPromotionDetailsQuery,
   useUpdateMerchantPromotionMutation,
 } from '../../../store/services/myShopService';
-import { toMerchantPromotionRequest } from '../../../utils/mapperDTO';
+import {
+  toAvailableProductQuery,
+  toMerchantPromotionRequest,
+} from '../../../utils/mapperDTO';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { MerchantPromotionResponse } from '../../../types/response';
+import { useLazyGetAvailableProductsQuery } from '../../../store/services/productService';
 
 type PromotionFormContentProps = {
   profile: Merchant;
@@ -57,6 +62,7 @@ type OpenModal = {
   add: boolean;
   edit: boolean;
   delete: boolean;
+  productWarning: boolean;
 };
 
 const PromotionFormContent = ({
@@ -70,24 +76,40 @@ const PromotionFormContent = ({
     add: false,
     edit: false,
     delete: false,
+    productWarning: false,
   });
   const [startDate, setStartDate] = useState<Date | null>(
     roundTimeToNearest30(moment().add(1, 'd').toDate())
   );
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(
+    roundTimeToNearest30(moment().add(7, 'd').toDate())
+  );
+  const [startDateTemp, setStartDateTemp] = useState<Date | null>(null);
+  const [endDateTemp, setEndDateTemp] = useState<Date | null>(null);
+
   const [startDateLimit, setStartDateLimit] = useState<DateLimit>({
     min: moment().add(1, 'd'),
-    max: moment().add(1, 'M'),
+    max: moment(endDate).isBefore(moment().add(1, 'M'))
+      ? moment(endDate)
+      : moment().add(1, 'M'),
   });
+
   const [endDateLimit, setEndDateLimit] = useState<DateLimit>({
-    min: moment().add(1, 'd').add('1', 'h'),
-    max: moment().add(6, 'M'),
+    min: moment(startDate).add(1, 'h'),
+    max: moment(startDate).add(3, 'M'),
   });
+
   const [products, setProducts] = useState<SelectedProductMerchantPromotion>(
     []
   );
+
+  const [remainingProducts, setRemainingProducts] =
+    useState<SelectedProductMerchantPromotion>([]);
+
   const [productID, setProductID] = useState<number | null>(null);
   const [promotionStatus, setPromotionStatus] = useState<string | null>(null);
+
+  const [getProducts] = useLazyGetAvailableProductsQuery();
 
   const filterStartDate = (date: Date) =>
     moment(date).isBetween(startDateLimit.min, startDateLimit.max, 'D', '[]');
@@ -284,29 +306,179 @@ const PromotionFormContent = ({
       });
   }, [params]);
 
-  const handleStartDateChange = (date: Date | null) => {
+  useEffect(() => {
     if (content === SellerAccountPromotionFormContent.Add) {
-      const newEndDateLimit = {
-        min: moment(date).add(1, 'h'),
-        max: moment(date).add(6, 'M'),
-      };
+      setStartDateLimit({
+        min: moment().add(1, 'd'),
+        max: moment(endDate).isBefore(moment().add(1, 'M'))
+          ? moment(endDate)
+          : moment().add(1, 'M'),
+      });
 
-      setEndDateLimit(newEndDateLimit);
-      setProducts({});
+      setEndDateLimit({
+        min: moment(startDate).add(1, 'h'),
+        max: moment(startDate).add(3, 'M'),
+      });
+    } else if (content === SellerAccountPromotionFormContent.Edit) {
+      setEndDateLimit({
+        ...endDateLimit,
+        min: moment(startDate).add(1, 'h'),
+      });
     }
 
-    setStartDate(date);
-    setEndDate(null);
+    if (moment(endDate).diff(moment(startDate), 'h') < 1) {
+      setEndDate(moment(startDate).add(1, 'h').toDate());
+    }
+
+    if (moment(startDateLimit.min).isAfter(moment(startDate))) {
+      setStartDate(roundTimeToNearest30(startDateLimit.min.toDate()));
+    }
+
+    if (moment(startDateLimit.max).isBefore(moment(startDate))) {
+      setStartDate(roundTimeToFloor(startDateLimit.max.toDate()));
+    }
+
+    if (moment(endDateLimit.max).isBefore(moment(endDate))) {
+      setEndDate(endDateLimit.max.toDate());
+    }
+  }, [startDate, endDate]);
+
+  const handleStartDateChange = (date: Date | null) => {
+    if (content === SellerAccountPromotionFormContent.Add) {
+      getProducts(
+        toAvailableProductQuery({
+          search: '',
+          filterCategory: 0,
+          filterStartDatetime: date,
+          filterEndDatetime: endDate,
+        })
+      )
+        .unwrap()
+        .then((data) => {
+          const availableProducts: SelectedProductMerchantPromotion = [];
+          const availableProductsArray: number[] = [];
+          data?.data?.map(
+            ({
+              product_id,
+              product_name,
+              product_image,
+              price_max,
+              price_min,
+              total_stock,
+            }) => {
+              const availableProductOptions: ProductMerchantPromotionOption = {
+                product_id: product_id,
+                product_name: product_name,
+                product_image: product_image,
+                price_max: Number(price_max),
+                price_min: Number(price_min),
+                total_stock: Number(total_stock),
+              };
+
+              availableProducts[product_id] = availableProductOptions;
+
+              availableProductsArray.push(product_id);
+            }
+          );
+
+          const remainingProductsTemp: SelectedProductMerchantPromotion = {};
+
+          Object.keys(products).map((id) => {
+            if (availableProductsArray.includes(Number(id))) {
+              remainingProductsTemp[Number(id)] = availableProducts[Number(id)];
+            }
+          });
+
+          if (
+            Object.keys(products).length !=
+            Object.keys(remainingProductsTemp).length
+          ) {
+            setRemainingProducts(remainingProductsTemp);
+            setStartDateTemp(date);
+            setEndDateTemp(endDate);
+            setOpenModal({
+              ...openModal,
+              productWarning: true,
+            });
+          } else {
+            // const newEndDateLimit = {
+            //   min: moment(date).add(1, 'h'),
+            //   max: moment(date).add(3, 'M'),
+            // };
+
+            // setEndDateLimit(newEndDateLimit);
+
+            setStartDate(date);
+          }
+        });
+    } else if (content === SellerAccountPromotionFormContent.Edit) {
+      setStartDate(date);
+    }
   };
 
   const handleEndDateChange = (date: Date | null) => {
-    setEndDate(date);
+    if (content === SellerAccountPromotionFormContent.Add) {
+      getProducts(
+        toAvailableProductQuery({
+          search: '',
+          filterCategory: 0,
+          filterStartDatetime: startDate,
+          filterEndDatetime: date,
+        })
+      )
+        .unwrap()
+        .then((data) => {
+          const availableProducts: SelectedProductMerchantPromotion = [];
+          const availableProductsArray: number[] = [];
+          data?.data?.map(
+            ({
+              product_id,
+              product_name,
+              product_image,
+              price_max,
+              price_min,
+              total_stock,
+            }) => {
+              const availableProductOptions: ProductMerchantPromotionOption = {
+                product_id: product_id,
+                product_name: product_name,
+                product_image: product_image,
+                price_max: Number(price_max),
+                price_min: Number(price_min),
+                total_stock: Number(total_stock),
+              };
 
-    if (
-      content === SellerAccountPromotionFormContent.Add &&
-      moment(date).isAfter(moment(endDate))
-    ) {
-      setProducts({});
+              availableProducts[product_id] = availableProductOptions;
+
+              availableProductsArray.push(product_id);
+            }
+          );
+
+          const remainingProductsTemp: SelectedProductMerchantPromotion = {};
+
+          Object.keys(products).map((id) => {
+            if (availableProductsArray.includes(Number(id))) {
+              remainingProductsTemp[Number(id)] = availableProducts[Number(id)];
+            }
+          });
+
+          if (
+            Object.keys(products).length !=
+            Object.keys(remainingProductsTemp).length
+          ) {
+            setRemainingProducts(remainingProductsTemp);
+            setStartDateTemp(startDate);
+            setEndDateTemp(date);
+            setOpenModal({
+              ...openModal,
+              productWarning: true,
+            });
+          } else {
+            setEndDate(date);
+          }
+        });
+    } else if (content === SellerAccountPromotionFormContent.Edit) {
+      setEndDate(date);
     }
   };
 
@@ -315,6 +487,7 @@ const PromotionFormContent = ({
       add: true,
       edit: false,
       delete: false,
+      productWarning: false,
     });
   };
 
@@ -324,6 +497,7 @@ const PromotionFormContent = ({
       add: false,
       edit: true,
       delete: false,
+      productWarning: false,
     });
   };
 
@@ -333,6 +507,7 @@ const PromotionFormContent = ({
       add: false,
       edit: false,
       delete: true,
+      productWarning: false,
     });
   };
 
@@ -352,6 +527,23 @@ const PromotionFormContent = ({
       add: false,
       edit: false,
       delete: false,
+      productWarning: false,
+    });
+  };
+
+  const handleConfirmDateChangesClick = () => {
+    handleCloseModal();
+    setProducts(remainingProducts);
+    setStartDate(startDateTemp);
+    setEndDate(endDateTemp);
+  };
+
+  const handleCancelDateChanges = () => {
+    setOpenModal({
+      add: false,
+      edit: false,
+      delete: false,
+      productWarning: false,
     });
   };
 
@@ -718,6 +910,13 @@ const PromotionFormContent = ({
         message='This action can not be undone'
         onClose={handleCloseModal}
         onAccepted={handleConfirmDeleteProductClick}
+      />
+      <ConfirmationModal
+        open={openModal.productWarning}
+        title='Are you sure?'
+        message='Some products will be removed due to conflicting dates'
+        onClose={handleCancelDateChanges}
+        onAccepted={handleConfirmDateChangesClick}
       />
     </div>
   );
