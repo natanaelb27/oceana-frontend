@@ -44,6 +44,8 @@ const Header = () => {
   const [logout] = useLogoutMutation();
   const [hoverCart, setHoverCart] = useState(false);
   const [hoverProfile, setHoverProfile] = useState(false);
+  const [hoverOverlay, setHoverOverlay] = useState(false);
+  const [enableHoverGap, setEnableHoverGap] = useState(false);
   const [totalCartItems, setTotalCartItems] = useState(0);
   const [displaySearchBar, setDisplaySearchBar] = useState(false);
   const [getUserCart, { data: userCartData }] = useLazyGetUserCartQuery();
@@ -91,19 +93,37 @@ const Header = () => {
   const handleHoverCart = () => {
     if (role !== null) {
       setHoverCart(true);
+      setHoverOverlay(true);
+      setEnableHoverGap(true);
     }
   };
 
   const handleUnhoverCart = () => {
     setHoverCart(false);
+    setHoverOverlay(false);
+    setEnableHoverGap(false);
   };
 
   const handleHoverProfile = () => {
     setHoverProfile(true);
+    setHoverOverlay(true);
+    setEnableHoverGap(true);
   };
 
   const handleUnhoverProfile = () => {
     setHoverProfile(false);
+    setHoverOverlay(false);
+    setEnableHoverGap(false);
+  };
+
+  const handleHoverGap = () => {
+    if (enableHoverGap === true) {
+      setHoverOverlay(true);
+    }
+  };
+
+  const handleUnhoverGap = () => {
+    setHoverOverlay(false);
   };
 
   const renderHoverCart = () => {
@@ -382,10 +402,9 @@ const Header = () => {
     <>
       <div
         className={`${
-          hoverCart || hoverProfile
-            ? 'opacity-100 w-full h-full transition-bg-blur-hover-on'
-            : ' opacity-0 h-0 transition-bg-blur-hover-off'
-        } absolute w-full h-full overlay bg-black bg-opacity-40 backdrop-blur-sm z-30`}
+          hoverOverlay ? 'fixed' : 'hidden'
+        } mt-[4.5rem] overlay w-full h-full bg-black bg-opacity-40 backdrop-blur-sm z-30`}
+
       ></div>
       <header
         className={`sticky top-0 z-30 py-2 w-full component-preview items-center justify-center gap-2 font-sans transition-all duration-100 ${
@@ -420,13 +439,14 @@ const Header = () => {
                 </InputGroup>
               </Form>
             </div>
-            <div className='flex-none ml-4 gap-2'>
+            <div className='flex-none ml-4'>
               {theme === 'light' ? (
                 <Button
                   shape='circle'
                   color='ghost'
                   size='sm'
                   onClick={() => handleThemeClick('dark')}
+                  className='mr-2'
                 >
                   <HiSun className='text-lg' />
                 </Button>
@@ -436,11 +456,16 @@ const Header = () => {
                   color='ghost'
                   size='sm'
                   onClick={() => handleThemeClick('light')}
+                  className='mr-2'
                 >
                   <HiMoon className='text-lg' />
                 </Button>
               )}
-              <div className='relative'>
+              <div
+                className='relative pr-2'
+                onMouseOver={handleHoverGap}
+                onMouseOut={handleUnhoverGap}
+              >
                 <NavLink to='/cart' className=''>
                   <Button
                     color='ghost'
@@ -471,14 +496,13 @@ const Header = () => {
                   </NavLink>
                 </>
               ) : (
-                <div className='relative'>
+                <div
+                  className='relative'
+                  onMouseOver={handleHoverProfile}
+                  onMouseOut={handleUnhoverProfile}
+                >
                   <div onClick={handleProfileClick}>
-                    <Button
-                      color='ghost'
-                      size='sm'
-                      onMouseOver={handleHoverProfile}
-                      onMouseOut={handleUnhoverProfile}
-                    >
+                    <Button color='ghost' size='sm'>
                       <GoPerson className='text-lg' />
                     </Button>
                   </div>
