@@ -5,6 +5,7 @@ type SuccessModalProps = {
   open?: boolean;
   title: string;
   message: string;
+  btnMessage?: string;
   loading?: boolean;
   onClose: () => void;
   onAccepted: () => void;
@@ -14,6 +15,7 @@ const SuccessModal = ({
   open,
   title,
   message,
+  btnMessage,
   loading,
   onClose,
   onAccepted,
@@ -39,7 +41,7 @@ const SuccessModal = ({
       </Modal.Body>
       <Modal.Actions className='justify-center'>
         <Button color='primary' onClick={onAccepted} loading={loading}>
-          Confirm
+          {btnMessage ? btnMessage : 'Confirm'}
         </Button>
       </Modal.Actions>
     </Modal>

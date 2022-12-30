@@ -4,7 +4,6 @@ import {
   forwardRef,
   ReactNode,
   Ref,
-  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -17,23 +16,20 @@ import {
   LIMIT_WALLET_HISTORY,
   WALLET_TRANSACTION_HISTORY_TYPE,
 } from '../../../constants';
-import {
-  useGetWalletDetailsQuery,
-  useLazyGetWalletDetailsQuery,
-} from '../../../store/services/walletService';
+import { useGetWalletDetailsQuery } from '../../../store/services/walletService';
 
 import Cookies from 'js-cookie';
+import { useOutsideAlerter } from '../../../hooks';
+import { WalletHistoryQuery } from '../../../types/query';
 import { toRupiah } from '../../../utils/convert';
+import { toWalletHistoryQuery } from '../../../utils/mapperDTO';
 import { Pager } from '../../common';
 import NoData from '../../common/NoData';
 import ActivateWalletModal from './ActivateWalletModal';
 import ChangeWalletPinModal from './ChangeWalletPinModal';
-import StepUpPasswordModal from './StepUpPasswordModal';
-import { WalletHistoryQuery } from '../../../types/query';
-import { toWalletHistoryQuery } from '../../../utils/mapperDTO';
-import { useOutsideAlerter } from '../../../hooks';
-import SelectSealabsPayModal from './SelectSealabsPayModal';
 import InputTopupAmountModal from './InputTopupAmountModal';
+import SelectSealabsPayModal from './SelectSealabsPayModal';
+import StepUpPasswordModal from './StepUpPasswordModal';
 
 type DateContainerProps = {
   className: string;
