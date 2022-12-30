@@ -28,6 +28,7 @@ type ProductDescriptionProps = {
   purchasedQuantitiesPrice?: number;
   purchasedQuantitiesProductMerchantPromotionID?: number;
   productItemPrice?: number;
+  disabledVariants?: number[][];
 };
 
 const ProductDescription = ({
@@ -41,6 +42,7 @@ const ProductDescription = ({
   purchasedQuantitiesPrice,
   purchasedQuantitiesProductMerchantPromotionID,
   productItemPrice,
+  disabledVariants,
 }: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
   const renderTabContent = (tab: ProductTab) => {
@@ -168,13 +170,17 @@ const ProductDescription = ({
                   id={`${variationIndex}-${optionIndex}`}
                   size='sm'
                   variant='outline'
-                  className={`font-normal normal-case btn-primary disabled:btn-outline ${
+                  className={`font-normal normal-case btn-primary ${
                     selectedVariations[variationIndex] === optionIndex
                       ? 'btn-active'
                       : ''
                   }`}
                   key={option}
                   onClick={handleClickVariation}
+                  disabled={
+                    variation.summed_stocks.at(optionIndex) === 0 ||
+                    disabledVariants?.at(variationIndex)?.includes(optionIndex)
+                  }
                 >
                   {titleCase(option)}
                 </Button>

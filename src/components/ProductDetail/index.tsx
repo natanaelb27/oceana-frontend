@@ -113,6 +113,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
   const [selectedVariantImage, setSelectedVariantImage] = useState<string>('');
   const [disablePurchase, setDisablePurchase] = useState<boolean>(false);
+  const [disabledVariants, setDisabledVariants] = useState<number[][]>([]);
   const [productSelected, setProductSelected] = useState<ProductModel | null>(
     null
   );
@@ -197,6 +198,12 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
 
     purchasedQuantitiesQueryCopy.quantity += 1;
+
+    if (getProductDetailData?.data?.product_model.length === 1) {
+      purchasedQuantitiesQueryCopy.product_item_id =
+        getProductDetailData?.data?.product_model.at(0)?.product_item_id || 0;
+    }
+
     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
   };
 
@@ -206,8 +213,47 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       return;
     }
     purchasedQuantitiesQueryCopy.quantity -= 1;
+
+    if (getProductDetailData?.data?.product_model.length === 1) {
+      purchasedQuantitiesQueryCopy.product_item_id =
+        getProductDetailData?.data?.product_model.at(0)?.product_item_id || 0;
+    }
+
     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
   };
+
+  // const handleChangeQuantity = (e: React.SyntheticEvent) => {
+  //   const target = e.target as HTMLInputElement;
+  //   if (isNaN(Number(target.value)) || Number(target.value) <= 0) {
+  //     return;
+  //   }
+
+  //   if (
+  //     Number(target.value) >=
+  //     (productSelected?.stock_quantity ||
+  //       getProductDetailData?.data?.total_stock ||
+  //       0)
+  //   ) {
+  //     setPurchasedQuantitiesQuery({
+  //       ...purchasedQuantitiesQuery,
+  //       quantity:
+  //         productSelected?.stock_quantity ||
+  //         getProductDetailData?.data?.total_stock ||
+  //         0,
+  //     });
+  //     return;
+  //   }
+
+  //   if (Number(target.value) > 999) {
+  //     const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
+  //     purchasedQuantitiesQueryCopy.quantity = 999;
+  //     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
+  //     return;
+  //   }
+  //   const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
+  //   purchasedQuantitiesQueryCopy.quantity = Number(target.value);
+  //   setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
+  // };
 
   const handleChangeQuantity = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLInputElement;
@@ -215,30 +261,29 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       return;
     }
 
+    const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
+
     if (
       Number(target.value) >=
       (productSelected?.stock_quantity ||
         getProductDetailData?.data?.total_stock ||
         0)
     ) {
-      setPurchasedQuantitiesQuery({
-        ...purchasedQuantitiesQuery,
-        quantity:
-          productSelected?.stock_quantity ||
-          getProductDetailData?.data?.total_stock ||
-          0,
-      });
-      return;
+      purchasedQuantitiesQueryCopy.quantity =
+        productSelected?.stock_quantity ||
+        getProductDetailData?.data?.total_stock ||
+        0;
+    } else if (Number(target.value) > 999) {
+      purchasedQuantitiesQueryCopy.quantity = 999;
+    } else {
+      purchasedQuantitiesQueryCopy.quantity = Number(target.value);
     }
 
-    if (Number(target.value) > 999) {
-      const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
-      purchasedQuantitiesQueryCopy.quantity = 999;
-      setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
-      return;
+    if (getProductDetailData?.data?.product_model.length === 1) {
+      purchasedQuantitiesQueryCopy.product_item_id =
+        getProductDetailData?.data?.product_model.at(0)?.product_item_id || 0;
     }
-    const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
-    purchasedQuantitiesQueryCopy.quantity = Number(target.value);
+
     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
   };
 
@@ -442,6 +487,27 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     getReviews({ id: Number(productID), query: toReviewQuery(reviewQuery) });
   }, [reviewQuery]);
 
+  useEffect(() => {
+    setDisabledVariants([]);
+    const finalArr: number[][] = [
+      ...Array(getProductDetailData?.data?.product_variation?.length),
+    ].map(() => [...Array(0)]);
+    getProductDetailData?.data?.product_model?.map((model) => {
+      model.variation_index.map((eModel, idx) => {
+        if (eModel === selectedVariations.at(idx)) {
+          if (model.stock_quantity === 0) {
+            model.variation_index.map((vi, viIdx) => {
+              if (viIdx !== idx) {
+                finalArr[viIdx]?.push(vi);
+              }
+            });
+          }
+        }
+      });
+    });
+    setDisabledVariants(finalArr);
+  }, [selectedVariations]);
+
   const handleChangeReviewPage = (n: number) => {
     setReviewQuery({
       ...reviewQuery,
@@ -617,6 +683,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                       ?.product_merchant_promotion_id
                   }
                   productItemPrice={productItemPrice}
+                  disabledVariants={disabledVariants}
                 />
               </div>
               <div className='col-span-12 md:hidden relative'>
