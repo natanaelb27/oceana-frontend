@@ -5,6 +5,7 @@ import { TXN_STATUS } from '../../constants/sealabsPay';
 import { useUsePayCartWithSealabsPaySuccessMutation } from '../../store/services/cartService';
 import {
   selectTransactionID,
+  unsetCheckout,
   unsetTransactionID,
 } from '../../store/slices/checkoutSlice';
 import { useAppDispatch, useAppSelector } from '../../store/store';
@@ -47,7 +48,10 @@ const SealabsPayPaymentRedirect = () => {
           const messageCapitalized = capitalizeFirstLetter(message);
           notifyErrorToast(messageCapitalized, true);
         })
-        .finally(() => dispatch(unsetTransactionID()));
+        .finally(() => {
+          dispatch(unsetCheckout());
+          dispatch(unsetTransactionID());
+        });
     }
   }, []);
 
