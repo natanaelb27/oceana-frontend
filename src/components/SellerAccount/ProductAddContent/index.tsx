@@ -77,10 +77,12 @@ const ProductAddContent = () => {
 
   type OpenModal = {
     cancel: boolean;
+    goToShipmentConfiguration: boolean;
   };
 
   const [openModal, setOpenModal] = useState<OpenModal>({
     cancel: false,
+    goToShipmentConfiguration: false,
   });
 
   const singleProductItem: PUMProductItem = {
@@ -265,11 +267,16 @@ const ProductAddContent = () => {
   const handleModalClose = () => {
     setOpenModal({
       cancel: false,
+      goToShipmentConfiguration: false,
     });
   };
 
   const handleGoBack = () => {
     navigate('/seller/marketing/products/list');
+  };
+
+  const handleGoToShipmentConfiguration = () => {
+    navigate('/seller/settings/shipment');
   };
 
   const handleSetFileImage = (newFilesView: string[]) => {
@@ -1785,11 +1792,31 @@ const ProductAddContent = () => {
                 <FormLayout.LabelContainer justify='start'>
                   <Label>Couriers</Label>
                 </FormLayout.LabelContainer>
-                <div className='col-span-3'>
-                  <CouriersConfiguration
-                    data={productFormik.values.couriers}
-                    updateData={updateCouriers}
-                  />
+                <div className='col-span-3 flex items-center'>
+                  {productFormik.values.couriers.length > 0 ? (
+                    <CouriersConfiguration
+                      data={productFormik.values.couriers}
+                      updateData={updateCouriers}
+                    />
+                  ) : (
+                    <div className='text-sm'>
+                      <span>
+                        You have no courier services configured for your shop.{' '}
+                        <a
+                          href='#'
+                          className='text-primary'
+                          onClick={() => {
+                            setOpenModal({
+                              ...openModal,
+                              goToShipmentConfiguration: true,
+                            });
+                          }}
+                        >
+                          Go to shipment configuration.
+                        </a>
+                      </span>
+                    </div>
+                  )}
                 </div>
               </FormLayout.LabelInputContainer>
             </FormLayout.LabelInputErrorContainer>
@@ -1832,6 +1859,13 @@ const ProductAddContent = () => {
         message='You will lose your changes.'
         onClose={handleModalClose}
         onAccepted={handleGoBack}
+      />
+      <ConfirmationModal
+        open={openModal.goToShipmentConfiguration}
+        title='Are you sure?'
+        message='You will lose your changes.'
+        onClose={handleModalClose}
+        onAccepted={handleGoToShipmentConfiguration}
       />
     </>
   );
