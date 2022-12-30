@@ -32,7 +32,7 @@ export interface Product {
   created_at: string;
 }
 
-interface ProductModel {
+export interface ProductModel {
   product_item_id: number;
   sku: string;
   stock_quantity: number;

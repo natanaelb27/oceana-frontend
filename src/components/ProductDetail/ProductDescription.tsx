@@ -8,32 +8,41 @@ import { toCompact, toRupiah } from '../../utils/convert';
 import ShopBanner from './ShopBanner';
 import {
   ProductDetail,
+  ProductModel,
   ProductVariation,
+  Role,
   ShopInformation,
 } from '../../types/component';
 import { titleCase } from '../../utils/titleCase';
+import { stringCompare } from '../../utils/validation';
+import { DISCOUNT_TYPE } from '../../constants';
 
 type ProductDescriptionProps = {
+  userRoleCode: string | null;
   productVariations: ProductVariation[];
   productDetail: ProductDetail;
   shopInformation: ShopInformation;
   handleClickVariation: (e: React.SyntheticEvent) => void;
   selectedVariations: number[];
+  selectedModel: ProductModel | null;
   purchasedQuantitiesPrice?: number;
+  purchasedQuantitiesProductMerchantPromotionID?: number;
   productItemPrice?: number;
 };
 
 const ProductDescription = ({
+  userRoleCode,
   productVariations,
   productDetail,
   shopInformation,
   handleClickVariation,
   selectedVariations,
+  selectedModel,
   purchasedQuantitiesPrice,
+  purchasedQuantitiesProductMerchantPromotionID,
   productItemPrice,
 }: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
-
   const renderTabContent = (tab: ProductTab) => {
     if (tab === ProductTab.Specification) {
       return (
@@ -53,7 +62,9 @@ const ProductDescription = ({
     if (tab === ProductTab.Description) {
       return (
         <div className='bg-base-200 p-4 text-sm'>
-          <p className='prose-sm whitespace-pre-line'>{productDetail.description}</p>
+          <p className='prose-sm whitespace-pre-line'>
+            {productDetail.description}
+          </p>
         </div>
       );
     }
@@ -71,20 +82,28 @@ const ProductDescription = ({
         <Tooltip message='Rating' color='warning'>
           <HiStar className='text-warning text-lg' />
         </Tooltip>{' '}
-        {productDetail.product_review_details.rating_star.toFixed(1)} ({productDetail.product_review_details.rating_count} ratings)
+        {productDetail.product_review_details.rating_star.toFixed(1)} (
+        {productDetail.product_review_details.rating_count} ratings)
       </div>
-      {purchasedQuantitiesPrice &&
-        selectedVariations.length === productVariations.length ? (
+      {userRoleCode === null &&
+      selectedVariations.filter((items) => typeof items === 'number').length ===
+        productVariations.length ? (
+        <h4 className='text-4xl font-bold mb-2.5'>
+          {toRupiah(selectedModel?.price_after_discount || 0)}
+        </h4>
+      ) : purchasedQuantitiesPrice !== undefined &&
+        selectedVariations.filter((items) => typeof items === 'number')
+          .length === productVariations.length ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(purchasedQuantitiesPrice)}
         </h4>
-      ) : productDetail.price_after_discount &&
+      ) : productDetail.price_after_discount !== null &&
         productDetail.price_after_discount ===
           productDetail.price_max_after_discount ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(productDetail.price_after_discount)}
         </h4>
-      ) : productDetail.price_min_after_discount &&
+      ) : productDetail.price_min_after_discount !== null &&
         productDetail.price_max_after_discount ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(productDetail.price_min_after_discount)}-
@@ -101,19 +120,29 @@ const ProductDescription = ({
         </h4>
       )}
 
-      {productDetail.price_after_discount ? (
+      {productDetail.price_after_discount !== null &&
+      purchasedQuantitiesProductMerchantPromotionID !== null ? (
         <div className='flex items-center'>
           <Tooltip message='Murah Lebay' color='success'>
-            <Badge color='success' size='sm' className='truncate'>
-              {productDetail.discount}%
-            </Badge>
+            {stringCompare(
+              productDetail.discount_type || '',
+              DISCOUNT_TYPE.PERCENTAGE
+            ) ? (
+              <Badge color='success' size='sm' className='truncate'>
+                {productDetail.discount}%
+              </Badge>
+            ) : (
+              <Badge color='success' size='sm' className='truncate'>
+                {toRupiah(productDetail.discount || 0)}
+              </Badge>
+            )}
           </Tooltip>
           {productDetail.price_min === productDetail.price_max ? (
             <h5 className='text-lg line-through ml-1'>
               {toRupiah(productDetail.price)}
             </h5>
-          ) : selectedVariations.length === productVariations.length &&
-            productItemPrice ? (
+          ) : selectedVariations.filter((items) => typeof items === 'number')
+              .length === productVariations.length && productItemPrice ? (
             <h5 className='text-lg line-through ml-1'>
               {toRupiah(productItemPrice)}
             </h5>
@@ -145,11 +174,6 @@ const ProductDescription = ({
                       : ''
                   }`}
                   key={option}
-                  disabled={
-                    selectedVariations.length !== variationIndex - 1
-                      ? false
-                      : true
-                  }
                   onClick={handleClickVariation}
                 >
                   {titleCase(option)}

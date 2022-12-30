@@ -44,6 +44,7 @@ import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { useNavigate } from 'react-router-dom';
 import { PRODUCT_STATUS } from '../../constants/index';
 import { useLazyGetMyShopProfileQuery } from '../../store/services/myShopService';
+import { ProductModel } from '../../types/component';
 
 type ProductDetailProps = {
   merchantID?: string;
@@ -112,6 +113,10 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
   const [selectedVariantImage, setSelectedVariantImage] = useState<string>('');
   const [disablePurchase, setDisablePurchase] = useState<boolean>(false);
+  const [productSelected, setProductSelected] = useState<ProductModel | null>(
+    null
+  );
+
   const [productItemName, setProductItemName] = useState<string>('');
   const [productItemPrice, setProductItemPrice] = useState<number>(0);
   const [productLikeCount, setProductLikeCount] = useState(0);
@@ -122,6 +127,13 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   const role = validateUserRole(roleCode);
 
   const handleClickVariation = (e: React.SyntheticEvent) => {
+    setProductSelected(null);
+    setPurchasedQuantitiesQuery({
+      product_id: Number(productID),
+      product_item_id: 0,
+      quantity: 1,
+    });
+
     if (!getProductDetailData?.data) {
       return;
     }
@@ -129,23 +141,21 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     const indexes = target.id.split('-');
     const variationIndex = Number(indexes[0]);
     const optionIndex = Number(indexes[1]);
-    const selectedVariationsCopy: number[] = [...selectedVariations];
-    if (selectedVariationsCopy.length < variationIndex + 1) {
-      selectedVariationsCopy.push(optionIndex);
-    } else {
-      if (selectedVariationsCopy[variationIndex] === optionIndex) {
-        if (
-          getProductDetailData.data.product_variation.length === 2 &&
-          variationIndex === 1
-        ) {
-          selectedVariationsCopy.splice(variationIndex, 1);
-        } else {
-          selectedVariationsCopy.length = 0;
+    let selectedVariationsCopy: number[] = [...selectedVariations];
+
+    if (selectedVariationsCopy[variationIndex] === optionIndex) {
+      const arr = new Array(getProductDetailData.data.product_variation.length);
+      for (let i = 0; i < arr.length; i++) {
+        if (variationIndex === i) {
+          continue;
         }
-      } else {
-        selectedVariationsCopy[variationIndex] = optionIndex;
+        arr[i] = selectedVariationsCopy[i];
       }
+      selectedVariationsCopy = arr;
+    } else {
+      selectedVariationsCopy[variationIndex] = optionIndex;
     }
+
     if (
       getProductDetailData.data.product_variation[0].image[
         selectedVariationsCopy[0]
@@ -172,6 +182,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       if (!foundProductModel) {
         return;
       }
+      setProductSelected(foundProductModel);
       setProductItemName(foundProductModel.product_variations);
       setProductItemPrice(foundProductModel.price);
       const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
@@ -184,6 +195,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
 
   const handleClickAddQuantity = () => {
     const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
+
     purchasedQuantitiesQueryCopy.quantity += 1;
     setPurchasedQuantitiesQuery(purchasedQuantitiesQueryCopy);
   };
@@ -199,9 +211,26 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
 
   const handleChangeQuantity = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLInputElement;
-    if (isNaN(Number(target.value))) {
+    if (isNaN(Number(target.value)) || Number(target.value) <= 0) {
       return;
     }
+
+    if (
+      Number(target.value) >=
+      (productSelected?.stock_quantity ||
+        getProductDetailData?.data?.total_stock ||
+        0)
+    ) {
+      setPurchasedQuantitiesQuery({
+        ...purchasedQuantitiesQuery,
+        quantity:
+          productSelected?.stock_quantity ||
+          getProductDetailData?.data?.total_stock ||
+          0,
+      });
+      return;
+    }
+
     if (Number(target.value) > 999) {
       const purchasedQuantitiesQueryCopy = { ...purchasedQuantitiesQuery };
       purchasedQuantitiesQueryCopy.quantity = 999;
@@ -214,6 +243,13 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   };
 
   const handleClickBuyNow = () => {
+    if (
+      selectedVariations.filter((items) => typeof items === 'number').length <=
+      (getProductDetailData?.data?.product_variation.length || 0)
+    ) {
+      notifyErrorToast('Please select product variation first');
+      return;
+    }
     let productItemID = 0;
     if (getProductDetailData?.data?.product_variation.length === 0) {
       productItemID =
@@ -238,6 +274,13 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   };
 
   const handleClickAddToCart = () => {
+    if (
+      selectedVariations.filter((items) => typeof items === 'number').length <
+      (getProductDetailData?.data?.product_variation.length || 0)
+    ) {
+      notifyErrorToast('Please select product variation first');
+      return;
+    }
     let productItemID = 0;
     if (getProductDetailData?.data?.product_variation.length === 0) {
       productItemID =
@@ -478,7 +521,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
         <div className='p-4 md:p-10 animate-pulse'>
           <div className='grid grid-cols-12 gap-4 md:gap-10'>
             <div className='col-span-12 md:col-span-3'>
-              <Card className='shadow max-w-sm'>
+              <Card className='shadow max-w'>
                 <div className='h-64 w-full bg-base-200 rounded'></div>
                 <div className='p-4'>
                   <div className='h-12 w-full bg-base-200 rounded-full'></div>
@@ -515,7 +558,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               <ShopBanner />
             </div>
             <div className='col-span-12 md:col-span-3'>
-              <Card className='shadow max-w-sm'>
+              <Card className='shadow max-w'>
                 <div className='p-4'>
                   <div className='h-36 w-full bg-base-200 rounded-md'></div>
                   <Divider />
@@ -537,6 +580,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       </div>
     );
   }
+
   return (
     <div className='container mx-auto'>
       <div className='px-4 py-10'>
@@ -556,6 +600,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               </div>
               <div className='col-span-12 md:col-span-8'>
                 <ProductDescription
+                  userRoleCode={roleCode}
                   productVariations={
                     getProductDetailData.data.product_variation
                   }
@@ -563,8 +608,13 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                   shopInformation={getShopInformationData.data}
                   handleClickVariation={handleClickVariation}
                   selectedVariations={selectedVariations}
+                  selectedModel={productSelected}
                   purchasedQuantitiesPrice={
                     getPurchasedQuantitiesData?.data?.price
+                  }
+                  purchasedQuantitiesProductMerchantPromotionID={
+                    getPurchasedQuantitiesData?.data
+                      ?.product_merchant_promotion_id
                   }
                   productItemPrice={productItemPrice}
                 />
