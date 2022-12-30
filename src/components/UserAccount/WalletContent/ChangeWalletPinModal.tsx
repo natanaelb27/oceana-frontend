@@ -95,12 +95,10 @@ const ChangeWalletPinModal = ({ open, setOpen }: ChangeWalletPinModalProps) => {
     })
       .unwrap()
       .then(() => {
-        console.log('thenn');
         notifySuccessToast('Alright! Your new wallet PIN is setted up!');
         setOpen(false);
       })
       .catch((err) => {
-        console.log('err');
         if ('data' in err) {
           const response = err.data as GetWalletDetailsResponse;
 

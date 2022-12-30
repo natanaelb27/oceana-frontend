@@ -12,5 +12,5 @@ export type MerchantPromotionRequest = {
   start_datetime: string;
   end_datetime: string;
   product_id_list: number[];
-  product_merchant_promotion: ProductMerchantPromotionRequest;
+  product_merchant_promotion: ProductMerchantPromotionRequest[];
 };

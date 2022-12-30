@@ -26,6 +26,7 @@ type ProductCartProps = {
   handleClickBuyNow: () => void;
   defaultImage: string;
   selectedVariantImage: string;
+  disablePurchase: boolean;
 };
 
 const ProductCart = ({
@@ -47,11 +48,13 @@ const ProductCart = ({
   handleClickBuyNow,
   defaultImage,
   selectedVariantImage,
+  disablePurchase,
 }: ProductCartProps) => {
   const renderPurchaseButtons = () => {
     if (
-      purchasedQuantitiesStock ||
-      (stock > 0 && selectedVariations.length < productVariations.length)
+      !disablePurchase &&
+      (purchasedQuantitiesStock ||
+        (stock > 0 && selectedVariations.length < productVariations.length))
     ) {
       return (
         <div>
@@ -89,6 +92,7 @@ const ProductCart = ({
                     : selectedVariantImage
                 }`}
                 className='w-20'
+                alt='Cart Image'
               />
               {productVariation &&
               productVariations.length === selectedVariations.length ? (

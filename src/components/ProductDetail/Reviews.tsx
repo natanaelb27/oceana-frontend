@@ -126,7 +126,11 @@ const Reviews = ({
               <div className='flex gap-2'>
                 {review.media.map((media, i) => (
                   <Zoom key={i}>
-                    <img src={media} className='w-12 rounded' />
+                    <img
+                      src={media}
+                      className='w-12 rounded'
+                      alt={`Review Media ${i}`}
+                    />
                   </Zoom>
                 ))}
               </div>

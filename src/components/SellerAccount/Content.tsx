@@ -2,14 +2,22 @@ import { Card } from 'react-daisyui';
 import { Merchant } from '../../types/component';
 import {
   SellerAccountContent,
+  SellerAccountPromotionFormContent,
   SellerAccountVoucherFormContent,
 } from '../../types/content';
 import AddressContent from './AddressContent';
+import OrderContent from './OrderContent';
 import ProfileContent from './ProfileContent';
+import PromotionContent from './PromotionContent';
+import PromotionDetailContent from './PromotionDetailContent';
+import PromotionFormContent from './PromotionFormContent';
 import ShipmentContent from './ShipmentContent';
 import VoucherContent from './VoucherContent';
 import VoucherDetailContent from './VoucherDetailContent';
 import VoucherFormContent from './VoucherFormContent';
+import ProductAddContent from './ProductAddContent/index';
+import RefundContent from './RefundContent';
+import ProductContent from './ProductContent';
 
 type ContentProps = {
   profile: Merchant;
@@ -27,7 +35,15 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === SellerAccountContent.Product) {
-      // return <AddressContent />;
+      return <ProductContent profile={profile} />;
+    }
+
+    if (content === SellerAccountContent.ProductAdd) {
+      return <ProductAddContent />;
+    }
+
+    if (content === SellerAccountContent.ProductEdit) {
+      return <ProductAddContent />;
     }
 
     if (content === SellerAccountContent.Voucher) {
@@ -57,15 +73,37 @@ const Content = ({ profile, content }: ContentProps) => {
     }
 
     if (content === SellerAccountContent.Promotion) {
-      // return <PromotionContent profile={profile} />;
+      return <PromotionContent />;
     }
 
     if (content === SellerAccountContent.PromotionDetail) {
-      // return <PromotionDetailContent profile={profile} />;
+      return <PromotionDetailContent profile={profile} />;
+    }
+
+    if (content === SellerAccountContent.PromotionAdd) {
+      return (
+        <PromotionFormContent
+          profile={profile}
+          content={SellerAccountPromotionFormContent.Add}
+        />
+      );
+    }
+
+    if (content === SellerAccountContent.PromotionEdit) {
+      return (
+        <PromotionFormContent
+          profile={profile}
+          content={SellerAccountPromotionFormContent.Edit}
+        />
+      );
     }
 
     if (content === SellerAccountContent.Order) {
-      // return <AddressContent />;
+      return <OrderContent />;
+    }
+
+    if (content === SellerAccountContent.Refund) {
+      return <RefundContent />;
     }
 
     if (content === SellerAccountContent.ShipmentSetting) {

@@ -55,6 +55,7 @@ const AdminVouchers = () => {
     sort: '',
     searchVoucherName: '',
     filterVoucherStatus: VOUCHER_STATUS.ALL,
+    filterVoucherAvailability: '',
   });
   const [openModal, setOpenModal] = useState<OpenModal>({
     delete: false,
@@ -160,7 +161,27 @@ const AdminVouchers = () => {
   };
 
   if (!getAllMarketplaceVoucherData?.data) {
-    return null;
+    return (
+      <Card className='shadow-lg bg-base-100'>
+        <Card.Body>
+          <div className='flex flex-row gap-y-3 justify-between items-center'>
+            <div className='h-8 bg-base-200 w-full md:w-1/5 rounded-full'></div>
+          </div>
+          <Divider />
+          <div className='flex flex-col'>
+            <div className='h-10 bg-base-200 w-2/5 rounded-full mb-8'></div>
+            <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+            <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+            <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+            <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+            <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+            <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+            <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+            <div className='h-8 bg-base-200 w-full rounded-full mb-4'></div>
+          </div>
+        </Card.Body>
+      </Card>
+    );
   }
 
   return (
@@ -220,7 +241,7 @@ const AdminVouchers = () => {
               <span></span>
             </Table.Head>
             <Table.Body>
-              {getAllMarketplaceVoucherData.data.length > 0 ? (
+              {getAllMarketplaceVoucherData.data.length > 0 &&
                 getAllMarketplaceVoucherData.data.map(
                   ({
                     id,
@@ -361,15 +382,17 @@ const AdminVouchers = () => {
                       </Table.Row>
                     );
                   }
-                )
-              ) : (
-                <NoData
-                  title='No vouchers?'
-                  message='Try add new voucher to see some secrets!'
-                />
-              )}
+                )}
             </Table.Body>
           </Table>
+          {getAllMarketplaceVoucherData.data.length === 0 && (
+            <div className='flex justify-center'>
+              <NoData
+                title='No vouchers?'
+                message='Try add new voucher to see some secrets!'
+              />
+            </div>
+          )}
         </div>
         <div className='mt-6 flex justify-center'>
           <Pager

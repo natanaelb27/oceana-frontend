@@ -3,8 +3,8 @@ import React from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
 import { Layout } from '../components';
-import { Loading } from '../components/common';
 import {
+  BuyerRefundCreate,
   Login,
   NotFound,
   Register,
@@ -13,6 +13,7 @@ import {
   SealabsPayRegisterRedirect,
   SealabsPayTopup,
   SealabsPayTopupRedirect,
+  ShopRefund,
 } from '../pages';
 
 const Home = React.lazy(() => import('../pages/Home'));
@@ -37,6 +38,14 @@ const BuyerSealabsPay = React.lazy(
   () => import('../pages/buyer/BuyerSealabsPay')
 );
 const BuyerWallet = React.lazy(() => import('../pages/buyer/BuyerWallet'));
+const BuyerPendingPayment = React.lazy(
+  () => import('../pages/buyer/BuyerPendingPayment')
+);
+const BuyerReview = React.lazy(() => import('../pages/buyer/BuyerReview'));
+const BuyerReviewDetail = React.lazy(
+  () => import('../pages/buyer/BuyerReviewDetail')
+);
+
 const SellerRegistration = React.lazy(
   () => import('../pages/buyer/SellerRegistration')
 );
@@ -111,9 +120,7 @@ const Routes = () => {
           allowedRoles={[Role.Guest, Role.Buyer, Role.Seller]}
           redirectTo='/admin'
         >
-          <React.Suspense fallback={<Loading isLoading />}>
-            <Layout />
-          </React.Suspense>
+          <Layout />
         </ProtectedRoute>
       ),
       children: [
@@ -199,8 +206,24 @@ const Routes = () => {
               element: <BuyerPurchaseHistory />,
             },
             {
+              path: '/user/pending-payment',
+              element: <BuyerPendingPayment />,
+            },
+            {
               path: '/user/refund',
               element: <BuyerRefund />,
+            },
+            {
+              path: '/user/refund/create/:orderID',
+              element: <BuyerRefundCreate />,
+            },
+            {
+              path: '/user/review',
+              element: <BuyerReview />,
+            },
+            {
+              path: '/user/review/detail/:orderID',
+              element: <BuyerReviewDetail />,
             },
             {
               path: '/cart',
@@ -275,7 +298,7 @@ const Routes = () => {
                   element: <ShopAddProduct />,
                 },
                 {
-                  path: '/seller/marketing/products/edit',
+                  path: '/seller/marketing/products/edit/:productID',
                   element: <ShopEditProduct />,
                 },
                 {
@@ -300,7 +323,7 @@ const Routes = () => {
                 },
                 {
                   path: '/seller/marketing/vouchers/edit/:voucherID',
-                  element: <ShopEditVoucher />,
+                  element: <ShopAddVoucher />,
                 },
                 {
                   path: '/seller/marketing/vouchers/duplicate/:voucherID',
@@ -331,8 +354,16 @@ const Routes = () => {
                   element: <ShopEditPromotion />,
                 },
                 {
-                  path: '/seller/orders/',
+                  path: '/seller/marketing/promotions/duplicate/:promotionID',
+                  element: <ShopAddPromotion />,
+                },
+                {
+                  path: '/seller/order/',
                   element: <ShopOrder />,
+                },
+                {
+                  path: '/seller/refund/',
+                  element: <ShopRefund />,
                 },
                 {
                   path: '/seller/settings/shipment/',

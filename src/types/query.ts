@@ -14,6 +14,7 @@ export type ProductQuery = {
   rating: number;
   merchantCities: string[];
   courierServices: string[];
+  status: string;
 } & Query;
 
 export type MerchantVoucherQuery = {
@@ -23,7 +24,15 @@ export type MerchantVoucherQuery = {
   sort: string;
   searchVoucherCode: string;
   filterVoucherStatus: string;
+  filterVoucherAvailability?: string;
   merchantID: number;
+};
+
+export type MerchantPromotionQuery = {
+  limit: number;
+  page: number;
+  searchPromotionName: string;
+  filterPromotionStatus: string;
 };
 
 export type MarketplaceVoucherQuery = {
@@ -33,11 +42,7 @@ export type MarketplaceVoucherQuery = {
   sort: string;
   searchVoucherName: string;
   filterVoucherStatus: string;
-};
-
-export type MerchantPromotionQuery = {
-  searchPromotionName: string;
-  filterPromotionStatus: string;
+  filterVoucherAvailability: string;
 };
 
 export type TransactionHistoryQuery = {
@@ -46,6 +51,7 @@ export type TransactionHistoryQuery = {
   filterOngoingOrderStatus: string;
   filterStartTransactionDate: string;
   filterEndTransactionDate: string;
+  filterIsReviewed: string;
   limit: number;
   page: number;
 };
@@ -87,4 +93,31 @@ export type ReviewQuery = {
   media: boolean;
   comment: boolean;
   rating: number[];
+};
+
+export type AvailableProductQuery = {
+  search: string;
+  filterCategory: number;
+  filterStartDatetime: Date | null;
+  filterEndDatetime: Date | null;
+};
+
+export type RefundQuery = {
+  sort: string;
+  sortBy: string;
+  limit: number;
+  page: number;
+  searchInvoice: string;
+  filterGroupedStatus: string;
+  filterStatus: string;
+  filterStartDate: string;
+  filterEndDate: string;
+};
+
+export type WalletHistoryQuery = {
+  filterType: string;
+  filterStartTransactionDate: string;
+  filterEndTransactionDate: string;
+  limit: number;
+  page: number;
 };

@@ -13,15 +13,17 @@ import {
   Button,
   Card,
   Divider,
+  Dropdown,
   Form,
   Input,
   InputGroup,
   Modal,
   Radio,
   Steps,
+  Tooltip,
 } from 'react-daisyui';
 import { useOutsideAlerter } from '../../../hooks';
-import { Image, Pager } from '../../common';
+import { ConfirmationModal, Image, Pager } from '../../common';
 import {
   HiOutlineCalendar,
   HiOutlineClock,
@@ -30,12 +32,18 @@ import {
   HiOutlineChevronRight,
   HiOutlineShoppingBag,
   HiSearch,
+  HiOutlineDotsHorizontal,
+  HiOutlineDotsVertical,
 } from 'react-icons/hi';
-import { LIMIT_TRANSACTION_HISTORY, DELIVERY_STATUS } from '../../../constants';
+import {
+  LIMIT_TRANSACTION_HISTORY,
+  DELIVERY_STATUS,
+  REVIEW_STATUS,
+} from '../../../constants';
 import { TransactionHistoryQuery } from '../../../types/query';
 import {
   useGetAllTransactionHistoryQuery,
-  useGetOrderDetailsQuery,
+  useLazyGetOrderDetailsQuery,
 } from '../../../store/services/orderService';
 import { toTransactionHistoryQuery } from '../../../utils/mapperDTO';
 import {
@@ -50,8 +58,20 @@ import DatePicker, { CalendarContainer } from 'react-datepicker';
 import moment from 'moment';
 import NoData from '../../common/NoData';
 import { stringCompare } from '../../../utils/validation';
+import DateCountdown from '../../common/DateCountdown';
+import { useNavigate } from 'react-router-dom';
+import { useUpdateCompleteOrderMutation } from '../../../store/services/profileService';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import { UpdateOrderStatusResponse } from '../../../types/response';
+
+type OpenModal = {
+  completeOrder: boolean;
+  detailOrder: boolean;
+};
 
 const PurchaseContent = () => {
+  const navigate = useNavigate();
+
   const [transactionHistoryQuery, setTransactionHistoryQuery] =
     useState<TransactionHistoryQuery>({
       limit: LIMIT_TRANSACTION_HISTORY,
@@ -61,6 +81,7 @@ const PurchaseContent = () => {
       filterOngoingOrderStatus: '',
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
+      filterIsReviewed: REVIEW_STATUS.ALL,
     });
 
   const {
@@ -70,10 +91,18 @@ const PurchaseContent = () => {
     toTransactionHistoryQuery(transactionHistoryQuery)
   );
 
-  const [orderID, setOrderID] = useState<string>('');
+  const [updateCompleteOrder, { isLoading: updateCompleteOrderIsLoading }] =
+    useUpdateCompleteOrderMutation();
 
-  const { data: getOrderDetailsData, isLoading: getOrderDetailsLoading } =
-    useGetOrderDetailsQuery(orderID);
+  const [orderID, setOrderID] = useState<string | null>(null);
+
+  // const { data: getOrderDetailsData, isLoading: getOrderDetailsLoading } =
+  //   useGetOrderDetailsQuery(orderID || '');
+
+  const [
+    getOrderDetails,
+    { data: getOrderDetailsData, isLoading: getOrderDetailsLoading },
+  ] = useLazyGetOrderDetailsQuery();
 
   const getBadgeColor = (orderStatus: string) => {
     if (stringCompare(orderStatus, DELIVERY_STATUS.COMPLETED)) {
@@ -82,7 +111,9 @@ const PurchaseContent = () => {
 
     if (
       stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_BUYER) ||
-      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SELLER)
+      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SELLER) ||
+      stringCompare(orderStatus, DELIVERY_STATUS.CANCELED_SYSTEM) ||
+      stringCompare(orderStatus, DELIVERY_STATUS.COMPLAINED)
     ) {
       return 'error';
     }
@@ -90,18 +121,96 @@ const PurchaseContent = () => {
     return 'warning';
   };
 
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  const getStatusDisplay = (orderStatus: string) => {
+    switch (orderStatus) {
+      case DELIVERY_STATUS.ALL:
+        return 'All';
+      case DELIVERY_STATUS.ONGOING:
+        return 'Ongoing';
+      case DELIVERY_STATUS.PENDING_SELLER:
+        return 'Waiting for Confirmation';
+      case DELIVERY_STATUS.ON_PROCESS:
+        return 'On Process';
+      case DELIVERY_STATUS.OUT_FOR_DELIVERY:
+        return 'Out for Delivery';
+      case DELIVERY_STATUS.DELIVERED:
+        return 'Delivered';
+      case DELIVERY_STATUS.COMPLAINED:
+        return 'Complained';
+      case DELIVERY_STATUS.COMPLETED:
+        return 'Completed';
+      case DELIVERY_STATUS.CANCELED:
+        return 'Canceled';
+      default:
+        return '';
+    }
+  };
+
+  const [openModal, setOpenModal] = useState<OpenModal>({
+    detailOrder: false,
+    completeOrder: false,
+  });
+
   const [openStatusModal, setOpenStatusModal] = useState<boolean>(false);
   const [openOrderTracking, setOpenOrderTracking] = useState<boolean>(false);
 
-  const handleViewDetailsClick = (orderID: string) => {
-    setOrderID(orderID);
-    setOpenModal(true);
+  const handleRefundClick = (id: string) => {
+    navigate(`/user/refund/create/${id}`);
+  };
+
+  const handleCompleteOrderClick = (id: string) => {
+    setOrderID(id);
+
+    setOpenModal({
+      detailOrder: false,
+      completeOrder: true,
+    });
+  };
+
+  const handleCompleteOrder = () => {
+    setOpenModal({
+      detailOrder: false,
+      completeOrder: false,
+    });
+
+    if (!orderID) {
+      return;
+    }
+
+    updateCompleteOrder(orderID)
+      .unwrap()
+      .then(() => {
+        notifySuccessToast('Order has been updated to completed!');
+      })
+      .catch((err) => {
+        if (err && 'data' in err) {
+          const response = err.data as UpdateOrderStatusResponse;
+
+          notifyErrorToast(response.message);
+        }
+      })
+      .finally(() => {
+        setOrderID(null);
+      });
+  };
+
+  const handleViewDetailsClick = (id: string) => {
+    setOrderID(id);
+    getOrderDetails(id);
+
+    setOpenModal({
+      detailOrder: true,
+      completeOrder: false,
+    });
   };
 
   const handleModalClose = () => {
-    setOpenModal(false);
+    setOpenModal({
+      detailOrder: false,
+      completeOrder: false,
+    });
     setOpenOrderTracking(false);
+    setOrderID(null);
   };
 
   const handleFilterStatusClick = () => {
@@ -171,13 +280,15 @@ const PurchaseContent = () => {
   };
 
   const handleApplyFilterDate = () => {
-    setTransactionHistoryQuery({
-      ...transactionHistoryQuery,
-      page: 1,
-      filterStartTransactionDate: moment(startDate).format('YYYY-MM-DD'),
-      filterEndTransactionDate: moment(endDate).format('YYYY-MM-DD'),
-    });
-    setIsDateOpen(false);
+    if (startDate && endDate) {
+      setTransactionHistoryQuery({
+        ...transactionHistoryQuery,
+        page: 1,
+        filterStartTransactionDate: moment(startDate).format('YYYY-MM-DD'),
+        filterEndTransactionDate: moment(endDate).format('YYYY-MM-DD'),
+      });
+      setIsDateOpen(false);
+    }
   };
 
   type DateContainerProps = {
@@ -253,7 +364,6 @@ const PurchaseContent = () => {
       setDateRange([null, null]);
       setTransactionHistoryQuery({
         ...transactionHistoryQuery,
-        page: 1,
         filterStartTransactionDate: '',
         filterEndTransactionDate: '',
       });
@@ -365,6 +475,7 @@ const PurchaseContent = () => {
       filterOngoingOrderStatus: '',
       filterStartTransactionDate: '',
       filterEndTransactionDate: '',
+      filterIsReviewed: REVIEW_STATUS.ALL,
     });
   };
 
@@ -373,6 +484,14 @@ const PurchaseContent = () => {
       ...transactionHistoryQuery,
       page: n,
     });
+  };
+
+  const handleStartShoppingClick = () => {
+    navigate('/');
+  };
+
+  const handleNavigateShop = (merchantID: number) => {
+    navigate(`/shops/${merchantID}`);
   };
 
   return (
@@ -401,19 +520,19 @@ const PurchaseContent = () => {
               startDate={
                 isDateOpen
                   ? startDate
+                  : transactionHistoryQuery.filterStartTransactionDate === ''
+                  ? null
                   : moment(
-                      transactionHistoryQuery.filterStartTransactionDate === ''
-                        ? new Date()
-                        : transactionHistoryQuery.filterStartTransactionDate
+                      transactionHistoryQuery.filterStartTransactionDate
                     ).toDate()
               }
               endDate={
                 isDateOpen
                   ? endDate
+                  : transactionHistoryQuery.filterEndTransactionDate === ''
+                  ? null
                   : moment(
-                      transactionHistoryQuery.filterEndTransactionDate === ''
-                        ? new Date()
-                        : transactionHistoryQuery.filterEndTransactionDate
+                      transactionHistoryQuery.filterEndTransactionDate
                     ).toDate()
               }
               dateFormat='dd MMM yyyy'
@@ -473,19 +592,23 @@ const PurchaseContent = () => {
               Canceled
             </Button>
           </div>
-          <Button
-            className='normal-case flex flex-row gap-1 justify-between btn-outline min-w-[30%] md:hidden'
-            onClick={handleFilterStatusClick}
-          >
-            {activeOngoingStatusButton || activeStatusButton}{' '}
-            <HiOutlineChevronDown className='text-sm' />
-          </Button>
-          <Button
-            className='normal-case text-sm btn-outline btn-primary'
-            onClick={handleResetFilterClick}
-          >
-            Reset Filter
-          </Button>
+          <div className='flex items-center gap-2 overflow-x-auto'>
+            <Button
+              className='normal-case flex flex-row gap-1 justify-between btn-outline min-w-[30%] md:hidden'
+              onClick={handleFilterStatusClick}
+            >
+              {getStatusDisplay(
+                activeOngoingStatusButton || activeStatusButton
+              )}{' '}
+              <HiOutlineChevronDown className='text-sm' />
+            </Button>
+            <Button
+              className='normal-case text-sm btn-outline btn-primary'
+              onClick={handleResetFilterClick}
+            >
+              Reset Filter
+            </Button>
+          </div>
         </div>
         <div
           className={
@@ -494,19 +617,6 @@ const PurchaseContent = () => {
               : 'hidden md:flex gap-2 overflow-x-auto overflow-y-hidden px-1'
           }
         >
-          <Button
-            className={
-              'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
-              (activeOngoingStatusButton === DELIVERY_STATUS.PENDING_PAYMENT
-                ? 'btn-active'
-                : '')
-            }
-            onClick={() =>
-              handleOngoingStatusClick(DELIVERY_STATUS.PENDING_PAYMENT)
-            }
-          >
-            Waiting for Payment
-          </Button>
           <Button
             className={
               'normal-case md:w-auto md:pl-7 md:pr-7 btn-outline ' +
@@ -570,18 +680,49 @@ const PurchaseContent = () => {
       </div>
       <div className='grid grid-cols-12 gap-4'>
         {getAllTransactionHistoryLoading && (
-          <Card className='col-span-12 shadow animate-pulse'>
-            <div className='p-4'>
-              <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
-              <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
-              <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+          <div className='grid col-span-12 gap-4'>
+            <div className='grid grid-cols-12 gap-4'>
+              <Card className='col-span-12 shadow animate-pulse h-48'>
+                <div className='p-4'>
+                  <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                  <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-3/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-4/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                </div>
+              </Card>
             </div>
-          </Card>
+            <div className='grid grid-cols-12 gap-4'>
+              <Card className='col-span-12 shadow animate-pulse h-48'>
+                <div className='p-4'>
+                  <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                  <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-3/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-4/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                </div>
+              </Card>
+            </div>
+            <div className='grid grid-cols-12 gap-4'>
+              <Card className='col-span-12 shadow animate-pulse h-48'>
+                <div className='p-4'>
+                  <div className='h-6 bg-base-200 w-1/5 rounded-full mb-4'></div>
+                  <div className='h-4 bg-base-200 w-2/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-3/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-4/5 rounded-full mb-2.5'></div>
+                  <div className='h-4 bg-base-200 w-full rounded-full mb-2.5'></div>
+                </div>
+              </Card>
+            </div>
+          </div>
         )}
-        {getAllTransactionHistoryData?.data?.order_list &&
-        getAllTransactionHistoryData?.data.order_list.length > 0 ? (
-          getAllTransactionHistoryData?.data.order_list.map(
-            (transactionHistory, n) => {
+        {!getAllTransactionHistoryLoading &&
+          (getAllTransactionHistoryData?.data &&
+          getAllTransactionHistoryData?.data.length > 0 ? (
+            getAllTransactionHistoryData?.data.map((transactionHistory, n) => {
               const productCount = transactionHistory.order_details.length;
               const firstProduct = transactionHistory.order_details.at(0);
               return (
@@ -590,25 +731,155 @@ const PurchaseContent = () => {
                   key={n}
                 >
                   <div className='p-4'>
-                    <div className='flex items-center mb-2.5 gap-3 justify-between md:justify-start'>
-                      <div className='flex gap-3 items-center'>
-                        <HiOutlineShoppingBag className='text-info text-xl' />
-                        <span className='font-light text-sm'>
-                          {toStringDate(
-                            transactionHistory.transaction_datetime
-                          )}
+                    <div className='flex items-center mb-2.5 gap-3 justify-between'>
+                      <div className='flex items-center gap-3 justify-between md:justify-start'>
+                        <div className='flex gap-3 items-center'>
+                          <HiOutlineShoppingBag className='text-info text-xl' />
+                          <span className='font-light text-sm'>
+                            {toStringDate(
+                              transactionHistory.transaction_datetime
+                            )}
+                          </span>
+                        </div>
+                        <Badge
+                          color={getBadgeColor(transactionHistory.order_status)}
+                          size='sm'
+                          className='truncate p-2 font-bold hidden md:flex'
+                        >
+                          {transactionHistory.order_status}
+                        </Badge>
+                        <span className='font-light text-sm hidden md:block'>
+                          {transactionHistory?.invoice_number}
                         </span>
+                        {transactionHistory?.refund_id ? (
+                          <Badge
+                            color='error'
+                            size='xs'
+                            className='font-bold p-2 rounded-none text-white'
+                          >
+                            refund
+                          </Badge>
+                        ) : null}
+
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.PENDING_SELLER
+                        ) ? (
+                          <Tooltip
+                            message='auto cancel order'
+                            className='hidden md:flex'
+                          >
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.seller_confirmation_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.ON_PROCESS
+                        ) ? (
+                          <Tooltip
+                            message='auto cancel order'
+                            className='hidden md:flex'
+                          >
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.on_process_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.DELIVERED
+                        ) ? (
+                          <Tooltip
+                            message='auto complete order'
+                            className='hidden md:flex'
+                          >
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.delivered_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.COMPLAINED
+                        ) &&
+                        transactionHistory?.refund_seller_confirmation_expiration_datetime ? (
+                          <Tooltip
+                            message='auto approve refund'
+                            className='hidden md:flex'
+                          >
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.refund_seller_confirmation_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
+
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.COMPLAINED
+                        ) &&
+                        transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                          <Tooltip
+                            message='auto complete order'
+                            className='hidden md:flex'
+                          >
+                            <DateCountdown
+                              date={moment(
+                                transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime
+                              ).toDate()}
+                            ></DateCountdown>
+                          </Tooltip>
+                        ) : null}
                       </div>
-                      <Badge
-                        color={getBadgeColor(transactionHistory.order_status)}
-                        size='sm'
-                        className='truncate'
-                      >
-                        {transactionHistory.order_status}
-                      </Badge>
-                      <span className='font-light text-sm hidden md:block'>
-                        {transactionHistory?.invoice_number}
-                      </span>
+                      <div className='flex gap-1 items-center'>
+                        <Badge
+                          color={getBadgeColor(transactionHistory.order_status)}
+                          size='sm'
+                          className='truncate p-2 font-bold flex md:hidden'
+                        >
+                          {transactionHistory.order_status}
+                        </Badge>
+                        {stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.DELIVERED
+                        ) ||
+                        (stringCompare(
+                          transactionHistory?.order_status,
+                          DELIVERY_STATUS.COMPLAINED
+                        ) &&
+                          transactionHistory?.refund_rejected_auto_complete_order_expiration_datetime) ? (
+                          <div className='flex gap-1'>
+                            <Dropdown horizontal='center' vertical='end'>
+                              <Dropdown.Toggle color='ghost' size='sm'>
+                                <HiOutlineDotsVertical></HiOutlineDotsVertical>
+                              </Dropdown.Toggle>
+                              <Dropdown.Menu className='w-52'>
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    handleRefundClick(
+                                      transactionHistory?.order_id
+                                    )
+                                  }
+                                >
+                                  Refund
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
                     <div className='mb-1'>
                       <span className='font-bold'>
@@ -634,9 +905,8 @@ const PurchaseContent = () => {
                         </span>
                         <span className='font-light text-sm'>
                           {firstProduct?.quantity} item
-                          {firstProduct?.quantity || 0 > 1
-                            ? 's'
-                            : null} &times; {toRupiah(firstProduct?.price || 0)}
+                          {(firstProduct?.quantity || 0) > 1 ? 's' : null}{' '}
+                          &times; {toRupiah(firstProduct?.price || 0)}
                         </span>
                         {productCount > 1 ? (
                           <span className='font-light text-sm'>
@@ -659,7 +929,7 @@ const PurchaseContent = () => {
                         </div>
                       </div>
                     </div>
-                    <div className='flex mt-3 gap-3 items-center justify-between md:justify-end'>
+                    <div className='flex mt-5 md:mt-3 gap-3 items-center justify-between md:justify-end'>
                       <span
                         className='hidden text-primary font-medium text-sm cursor-pointer md:block'
                         onClick={() =>
@@ -676,12 +946,33 @@ const PurchaseContent = () => {
                           )}
                         </span>
                       </div>
-                      <Button
-                        className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
-                        color='primary'
-                      >
-                        Buy Again
-                      </Button>
+                      {stringCompare(
+                        transactionHistory?.order_status,
+                        DELIVERY_STATUS.DELIVERED
+                      ) ? (
+                        <div className='flex gap-1'>
+                          <Button
+                            className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
+                            color='primary'
+                            loading={updateCompleteOrderIsLoading}
+                            onClick={() => {
+                              handleCompleteOrderClick(
+                                transactionHistory?.order_id
+                              );
+                            }}
+                          >
+                            Complete
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
+                          color='primary'
+                        >
+                          Buy Again
+                        </Button>
+                      )}
+
                       <Button
                         className='normal-case md:w-auto md:pl-7 md:pr-7 flex md:hidden'
                         color='primary'
@@ -695,25 +986,29 @@ const PurchaseContent = () => {
                   </div>
                 </Card>
               );
-            }
-          )
-        ) : stringCompare(activeStatusButton, DELIVERY_STATUS.ALL) &&
-          dateRange.at(0) === null &&
-          dateRange.at(1) === null &&
-          search === '' ? (
-          <div className='col-span-12'>
-            <NoData title='Oops, it seems that you have never made a purchase' />
-          </div>
-        ) : (
-          <div className='col-span-12'>
-            <NoData
-              title='Oops, there are no transactions that match the filter'
-              message='Try to reset or change your filter'
-              buttonMessage='Reset Filter'
-              buttonHandleClick={handleResetFilterClick}
-            ></NoData>
-          </div>
-        )}
+            })
+          ) : stringCompare(activeStatusButton, DELIVERY_STATUS.ALL) &&
+            transactionHistoryQuery.filterStartTransactionDate === '' &&
+            transactionHistoryQuery.filterEndTransactionDate === '' &&
+            transactionHistoryQuery.search === '' ? (
+            <div className='col-span-12'>
+              <NoData
+                title='Oops, it seems that you have never made a purchase'
+                message='Start shopping and fulfill your needs at Oceana'
+                buttonMessage='Start Shopping'
+                buttonHandleClick={handleStartShoppingClick}
+              />
+            </div>
+          ) : (
+            <div className='col-span-12'>
+              <NoData
+                title='Oops, there are no transactions that match the filter'
+                message='Try to reset or change your filter'
+                buttonMessage='Reset Filter'
+                buttonHandleClick={handleResetFilterClick}
+              ></NoData>
+            </div>
+          ))}
       </div>
       <div className='mt-6 flex justify-center'>
         <Pager
@@ -726,6 +1021,13 @@ const PurchaseContent = () => {
           onPageChange={handlePageChange}
         />
       </div>
+      <ConfirmationModal
+        open={openModal.completeOrder}
+        title='Are you sure?'
+        message='This action cannot be undone.'
+        onClose={handleModalClose}
+        onAccepted={handleCompleteOrder}
+      ></ConfirmationModal>
       <Modal
         open={openStatusModal}
         responsive
@@ -745,13 +1047,22 @@ const PurchaseContent = () => {
           Filter Status
         </Modal.Header>
         <Modal.Body>
-          <div className='flex flex-col px-4'>
+          <div className='flex flex-col px-4 text-sm'>
             <label
               className='flex flex-row justify-between label cursor-pointer'
               onClick={() => handleModalFilterStatusClick(DELIVERY_STATUS.ALL)}
             >
               <span className='font-bold'>All Transactions</span>
-              <Radio size='md' color='primary' name='filter-status' />
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.ALL
+                }
+                readOnly
+              />
             </label>
             <Divider className='m-0'></Divider>
             <label
@@ -761,22 +1072,19 @@ const PurchaseContent = () => {
               }
             >
               <span className='font-bold'>All Ongoing Transactions</span>
-              <Radio size='md' color='primary' name='filter-status' />
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.ONGOING
+                }
+                readOnly
+              />
             </label>
             <Divider className='m-0'></Divider>
             <div className='flex flex-col'>
-              <label
-                className='flex flex-row justify-between label cursor-pointer ml-6'
-                onClick={() =>
-                  handleModalFilterOngoingStatusClick(
-                    DELIVERY_STATUS.PENDING_PAYMENT
-                  )
-                }
-              >
-                <span className='font-light'>Pending Payment</span>
-                <Radio size='md' color='primary' name='filter-status' />
-              </label>
-              <Divider className='m-0'></Divider>
               <label
                 className='flex flex-row justify-between label cursor-pointer ml-6'
                 onClick={() =>
@@ -786,7 +1094,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Waiting for Confirmation</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.PENDING_SELLER
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -798,7 +1115,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>On Process</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.ON_PROCESS
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -810,7 +1136,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Out for Delivery</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.OUT_FOR_DELIVERY
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -820,7 +1155,16 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Delivered</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.DELIVERED
+                  }
+                  readOnly
+                />
               </label>
               <Divider className='m-0'></Divider>
               <label
@@ -832,34 +1176,61 @@ const PurchaseContent = () => {
                 }
               >
                 <span className='font-light'>Complained</span>
-                <Radio size='md' color='primary' name='filter-status' />
-              </label>
-              <Divider className='m-0'></Divider>
-              <label
-                className='flex flex-row justify-between label cursor-pointer'
-                onClick={() =>
-                  handleModalFilterOngoingStatusClick(DELIVERY_STATUS.COMPLETED)
-                }
-              >
-                <span className='font-bold'>Completed</span>
-                <Radio size='md' color='primary' name='filter-status' />
-              </label>
-              <Divider className='m-0'></Divider>
-              <label
-                className='flex flex-row justify-between label cursor-pointer'
-                onClick={() =>
-                  handleModalFilterOngoingStatusClick(DELIVERY_STATUS.CANCELED)
-                }
-              >
-                <span className='font-bold'>Canceled</span>
-                <Radio size='md' color='primary' name='filter-status' />
+                <Radio
+                  size='md'
+                  color='primary'
+                  name='filter-status'
+                  checked={
+                    (activeOngoingStatusButton || activeStatusButton) ===
+                    DELIVERY_STATUS.COMPLAINED
+                  }
+                  readOnly
+                />
               </label>
             </div>
+            <Divider className='m-0'></Divider>
+            <label
+              className='flex flex-row justify-between label cursor-pointer'
+              onClick={() =>
+                handleModalFilterOngoingStatusClick(DELIVERY_STATUS.COMPLETED)
+              }
+            >
+              <span className='font-bold'>Completed</span>
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.COMPLETED
+                }
+                readOnly
+              />
+            </label>
+            <Divider className='m-0'></Divider>
+            <label
+              className='flex flex-row justify-between label cursor-pointer'
+              onClick={() =>
+                handleModalFilterOngoingStatusClick(DELIVERY_STATUS.CANCELED)
+              }
+            >
+              <span className='font-bold'>Canceled</span>
+              <Radio
+                size='md'
+                color='primary'
+                name='filter-status'
+                checked={
+                  (activeOngoingStatusButton || activeStatusButton) ===
+                  DELIVERY_STATUS.CANCELED
+                }
+                readOnly
+              />
+            </label>
           </div>
         </Modal.Body>
       </Modal>
       <Modal
-        open={openModal}
+        open={openModal.detailOrder}
         responsive
         className='md:w-9/12 md:max-w-2xl px-0'
         onClickBackdrop={handleModalClose}
@@ -876,7 +1247,7 @@ const PurchaseContent = () => {
         <Modal.Header className='text-center font-bold'>
           Transaction Detail
         </Modal.Header>
-        <Modal.Body className='max-h-[48rem] overflow-y-scroll'>
+        <Modal.Body className='max-h-[48rem] md:overflow-y-scroll'>
           {getOrderDetailsLoading && (
             <Card className='col-span-12 shadow animate-pulse'>
               <div className='p-4'>
@@ -888,13 +1259,24 @@ const PurchaseContent = () => {
           )}
           {getOrderDetailsData?.data && (
             <div className='flex flex-col gap-2'>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
-                  <span className='font-bold'>
-                    {capitalizeFirstLetter(
-                      getOrderDetailsData?.data.order_status
-                    )}
-                  </span>
+                  <div className='flex gap-2 items-center'>
+                    <span className='font-bold'>
+                      {capitalizeFirstLetter(
+                        getOrderDetailsData?.data.order_status
+                      )}
+                    </span>
+                    {getOrderDetailsData?.data.refund_id ? (
+                      <Badge
+                        color='error'
+                        size='xs'
+                        className='font-bold p-2 rounded-none text-white'
+                      >
+                        refund
+                      </Badge>
+                    ) : null}
+                  </div>
                   <div
                     className='flex cursor-pointer text-primary items-center gap-1'
                     onClick={handleViewOrderTrackingClick}
@@ -952,11 +1334,107 @@ const PurchaseContent = () => {
                     )}
                   </span>
                 </div>
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.PENDING_SELLER
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Cancel Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .seller_confirmation_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.ON_PROCESS
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Cancel Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .on_process_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.DELIVERED
+                ) ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Complete Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .delivered_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.COMPLAINED
+                ) &&
+                getOrderDetailsData?.data
+                  ?.refund_seller_confirmation_expiration_datetime ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Approve Refund</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .refund_seller_confirmation_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
+
+                {stringCompare(
+                  getOrderDetailsData?.data.order_status,
+                  DELIVERY_STATUS.COMPLAINED
+                ) &&
+                getOrderDetailsData?.data
+                  ?.refund_rejected_auto_complete_order_expiration_datetime ? (
+                  <div className='flex justify-between items-center'>
+                    <span className='text-sm'>Auto Complete Order</span>
+                    <span className='text-sm'>
+                      <DateCountdown
+                        date={moment(
+                          getOrderDetailsData?.data
+                            .refund_rejected_auto_complete_order_expiration_datetime
+                        ).toDate()}
+                      ></DateCountdown>
+                    </span>
+                  </div>
+                ) : null}
               </div>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>Product Details</span>
-                  <div className='flex items-center gap-1 cursor-pointer hover:text-primary'>
+                  <div
+                    className='flex items-center gap-1 cursor-pointer hover:text-primary'
+                    onClick={() => {
+                      handleNavigateShop(
+                        getOrderDetailsData?.data?.merchant_id || 0
+                      );
+                    }}
+                  >
                     <span className='font-bold text-sm'>
                       {getOrderDetailsData?.data.shop_name}
                     </span>
@@ -1035,7 +1513,7 @@ const PurchaseContent = () => {
                   )}
                 </div>
               </div>
-              <div className='flex flex-col gap-2 p-5 border-b-8 border-[#f3f4f5]'>
+              <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <span className='font-bold'>Shipping Info</span>
                 <div className='flex flex-col gap-2'>
                   <div className='grid grid-cols-10'>

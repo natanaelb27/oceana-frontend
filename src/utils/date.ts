@@ -43,9 +43,32 @@ export const computeDatetime = (seconds: number) => {
   };
 };
 
+// export const computeDatetime2 = (seconds: number) => {
+//   const day = 86400;
+//   const hour = 3600;
+//   const minute = 60;
+
+//   const daysout = Math.floor(seconds / day);
+//   const hoursout = Math.floor((seconds - daysout * day) / hour);
+//   const minutesout = Math.floor(
+//     (seconds - daysout * day - hoursout * hour) / minute
+//   );
+//   const secondsout =
+//     seconds - daysout * day - hoursout * hour - minutesout * minute;
+
+//   return new Date(day)
+// };
+
 export const roundTimeToNearest30 = (date: Date) => {
   const minutes = 30;
   const ms = 1000 * 60 * minutes;
 
   return new Date(Math.ceil(date.getTime() / ms) * ms);
+};
+
+export const roundTimeToFloor = (date: Date) => {
+  const minutes = 30;
+  const ms = 1000 * 60 * minutes;
+
+  return new Date(Math.floor(date.getTime() / ms) * ms);
 };

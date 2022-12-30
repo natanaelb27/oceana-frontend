@@ -51,9 +51,9 @@ const AdminHome = () => {
             <div className='flex gap-2 justify-center md:justify-start'>
               <Button
                 color='primary'
-                onClick={() => handleScrollClick('promotions')}
+                onClick={() => handleScrollClick('vouchers')}
               >
-                Promotions
+                Vouchers
               </Button>
               <Button
                 color='secondary'
@@ -67,11 +67,12 @@ const AdminHome = () => {
             <Image
               src={require('../../../assets/images/admin.gif')}
               className='h-full'
+              alt='Logo'
             />
           </div>
         </div>
         <Divider />
-        <div id='promotions' className='p-4 bg-base-200 rounded-xl'>
+        <div id='vouchers' className='p-4 bg-base-200 rounded-xl'>
           <AdminVouchers />
         </div>
         <Divider />

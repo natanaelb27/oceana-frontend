@@ -6,18 +6,37 @@ export interface OrderDetail {
   quantity: number;
   price: number;
   total_price: number;
+  product_review_id: number | null;
+  rating: number | null;
+  review: string | null;
+  review_images: string[] | null;
+  review_videos: string[] | null;
+  review_created_datetime: string | null;
 }
-
 export interface OrderList {
   transaction_id: string;
   order_id: string;
   invoice_number: string;
   merchant_id: number;
   shop_name: string;
+  shop_photo: string;
+  user_id: string;
+  user_full_name: string;
+  courier_service_id: number;
+  courier_description: string;
   order_details: OrderDetail[];
   transaction_datetime: string;
   order_status: string;
   total_price: number;
+  refund_id: string | null;
+  ongoing_refund_id: string | null;
+  approved_refund_id: string | null;
+  claim_status: boolean;
+  seller_confirmation_expiration_datetime: string | null;
+  on_process_expiration_datetime: string | null;
+  delivered_expiration_datetime: string | null;
+  refund_seller_confirmation_expiration_datetime: string | null;
+  refund_rejected_auto_complete_order_expiration_datetime: string | null;
 }
 
 export interface OrderTracking {
@@ -32,9 +51,13 @@ export interface OrderListDetail {
   invoice_number: string;
   merchant_id: number;
   shop_name: string;
+  shop_photo: string;
+  user_id: string;
+  user_full_name: string;
   order_details: OrderDetail[];
   transaction_datetime: string;
   order_status: string;
+  courier_service_id: number;
   courier_description: string;
   order_tracking_history: OrderTracking[];
   address: {
@@ -51,5 +74,27 @@ export interface OrderListDetail {
   total_merchant_voucher_discount: number;
   total_marketplace_voucher_discount: number;
   shipping_fee: number;
+  total_payment: number;
+  refund_id: string | null;
+  ongoing_refund_id: string | null;
+  approved_refund_id: string | null;
+  claim_status: boolean;
+  seller_confirmation_expiration_datetime: string | null;
+  on_process_expiration_datetime: string | null;
+  delivered_expiration_datetime: string | null;
+  refund_seller_confirmation_expiration_datetime: string | null;
+  refund_rejected_auto_complete_order_expiration_datetime: string | null;
+}
+
+export interface PendingPayment {
+  transaction_id: string;
+  user_id: string;
+  user_full_name: string;
+  transaction_datetime: string;
+  payment_method_id: number;
+  payment_method_name: string;
+  payment_method_image: string;
+  payment_expiration_datetime: string;
+  card_number: string;
   total_payment: number;
 }

@@ -1,12 +1,12 @@
 import {
-  SealabsPayPaymentRequest,
-  SealabsPayRegisterRequest,
+  PaymentSealabsPayRequest,
+  RegisterSealabsPayRequest,
 } from '../../types/request';
 import {
   DeleteSealabsPayResponse,
   GetAllSealabsPayResponse,
   RegisterSealabsPayResponse,
-  SealabsPayRedirectResponse,
+  RedirectSealabsPayResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -21,7 +21,7 @@ export const sealabsPayApi = baseApi.injectEndpoints({
     }),
     registerSealabsPay: builder.mutation<
       RegisterSealabsPayResponse,
-      SealabsPayRegisterRequest
+      RegisterSealabsPayRequest
     >({
       query: (request) => ({
         url: '/sealabs-pay',
@@ -45,8 +45,8 @@ export const sealabsPayApi = baseApi.injectEndpoints({
       invalidatesTags: ['Profile'],
     }),
     sealabsPayRegisterOTP: builder.mutation<
-      SealabsPayRedirectResponse,
-      SealabsPayPaymentRequest
+      RedirectSealabsPayResponse,
+      PaymentSealabsPayRequest
     >({
       query: (request) => ({
         url: '/sealabs-pay/register-otp',
@@ -56,8 +56,8 @@ export const sealabsPayApi = baseApi.injectEndpoints({
       invalidatesTags: ['Profile'],
     }),
     sealabsPayTopupOTP: builder.mutation<
-      SealabsPayRedirectResponse,
-      SealabsPayPaymentRequest
+      RedirectSealabsPayResponse,
+      PaymentSealabsPayRequest
     >({
       query: (request) => ({
         url: '/sealabs-pay/topup-otp',
@@ -65,6 +65,16 @@ export const sealabsPayApi = baseApi.injectEndpoints({
         body: request,
       }),
       invalidatesTags: ['Profile'],
+    }),
+    sealabsPayPaymentOTP: builder.mutation<
+      RedirectSealabsPayResponse,
+      PaymentSealabsPayRequest
+    >({
+      query: (request) => ({
+        url: '/sealabs-pay/payment-otp',
+        method: 'POST',
+        body: request,
+      }),
     }),
   }),
 });
@@ -76,4 +86,5 @@ export const {
   useSetDefaultSealabsPayMutation,
   useSealabsPayRegisterOTPMutation,
   useSealabsPayTopupOTPMutation,
+  useSealabsPayPaymentOTPMutation,
 } = sealabsPayApi;
