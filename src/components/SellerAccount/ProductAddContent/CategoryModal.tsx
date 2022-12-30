@@ -3,6 +3,7 @@ import { Button, Modal } from 'react-daisyui';
 import { CgClose } from 'react-icons/cg';
 import CategoryCollapse from '../../common/CategoryCollapse';
 import { useGetAllCategoryQuery } from '../../../store/services/categoryService';
+import { Skeleton } from '../../common';
 
 type CategoryModalProps = {
   open: boolean;
@@ -15,7 +16,8 @@ const CategoryModal = ({
   setOpen,
   handleCategoryOnClick,
 }: CategoryModalProps) => {
-  const { data: getAllCategory } = useGetAllCategoryQuery('');
+  const { data: getAllCategory, isLoading: getAllCategoryIsLoading } =
+    useGetAllCategoryQuery('');
 
   const handleCategoryModalClose = () => {
     setOpen(false);
@@ -24,7 +26,7 @@ const CategoryModal = ({
   const handleCancelClick = () => {
     setOpen(false);
   };
-
+  console.log(getAllCategoryIsLoading);
   return (
     <Modal
       open={open}
@@ -41,19 +43,28 @@ const CategoryModal = ({
       >
         <CgClose className='text-lg' />
       </Button>
-      <Modal.Header className='text-center font-bold'>
-        Password Verification
-      </Modal.Header>
+      <Modal.Header className='text-center font-bold'>Category</Modal.Header>
       <Modal.Body>
-        <div className='overflow-y-auto max-h-[40vh]'>
-          {open && (
-            <CategoryCollapse
-              category={getAllCategory?.data ? getAllCategory.data : undefined}
-              marginLeft={0}
-              handleCategoryClick={handleCategoryOnClick}
-            />
-          )}
-        </div>
+        {getAllCategoryIsLoading && (
+          <>
+            {new Array(9).fill(undefined).map((_, index) => (
+              <Skeleton key={'skeleton-category-' + index} className='h-10' />
+            ))}
+          </>
+        )}
+        {!getAllCategoryIsLoading && getAllCategory !== undefined && (
+          <div className='overflow-y-auto max-h-[40vh]'>
+            {open && (
+              <CategoryCollapse
+                category={
+                  getAllCategory?.data ? getAllCategory.data : undefined
+                }
+                marginLeft={0}
+                handleCategoryClick={handleCategoryOnClick}
+              />
+            )}
+          </div>
+        )}
       </Modal.Body>
       <Modal.Actions>
         <Button onClick={handleCancelClick}>Cancel</Button>
