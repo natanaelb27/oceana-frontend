@@ -35,6 +35,7 @@ import { roleCodeToText } from '../../../utils/roleCodeToText';
 import NoData from '../NoData';
 import Image from '../Image';
 import ClassNames from '../../../utils/classnames';
+import { MdOutlineCancel } from 'react-icons/md';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -334,12 +335,17 @@ const Header = () => {
     );
   };
 
-  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSearchSubmit = (
+    e:
+      | FormEvent<HTMLFormElement>
+      | React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
     navigate({
       pathname: '/search',
       search: `?q=${search}`,
     });
+    setDisplaySearchBar(false);
   };
 
   const handleThemeClick = (theme: string) => {
@@ -515,26 +521,47 @@ const Header = () => {
               </div>
 
               <div className='flex flex-row flex-nowrap gap-1 items-center'>
-                <div className='flex'>
-                  <Form onSubmit={handleSearchSubmit}>
-                    <Input
-                      type='text'
-                      placeholder='Search...'
-                      color='ghost'
-                      className={`bg-base-100 bg-opacity-[13%] w-full border-none text-base-100 rounded-r-none focus:text-base-content placeholder:text-base-100 transition-all ${
-                        displaySearchBar
-                          ? 'w-full p-5 opacity-100'
-                          : 'w-0 p-0 opacity-30'
-                      }`}
-                      value={search}
-                      onChange={hanldeSearchChange}
-                    />
-                  </Form>
+                <div className='flex items-center'>
+                  <div className='relative'>
+                    <Form onSubmit={handleSearchSubmit}>
+                      <Input
+                        type='text'
+                        placeholder='Search...'
+                        color='ghost'
+                        className={`bg-base-100 bg-opacity-[13%] w-full border-none text-base-100 rounded-r-none focus:text-base-content placeholder:text-base-100 transition-all ${
+                          displaySearchBar
+                            ? 'w-full p-5 opacity-100'
+                            : 'w-0 p-0 opacity-30'
+                        }`}
+                        value={search}
+                        onChange={hanldeSearchChange}
+                      />
+                    </Form>
+                    {displaySearchBar && (
+                      <Button
+                        className='absolute bottom-0 right-0'
+                        color='ghost'
+                        shape='circle'
+                        size='sm'
+                        onClick={() => setDisplaySearchBar(false)}
+                      >
+                        <MdOutlineCancel className='text-xl text-error' />
+                      </Button>
+                    )}
+                  </div>
+
                   <Button
-                    className={displaySearchBar ? 'rounded-l-none' : ''}
-                    shape='square'
+                    className={`transition-all duration-100 ${
+                      displaySearchBar ? 'rounded-l-none' : ''
+                    }`}
+                    shape={displaySearchBar ? 'square' : 'circle'}
                     color='ghost'
-                    onClick={() => setDisplaySearchBar(!displaySearchBar)}
+                    size={displaySearchBar ? 'md' : 'sm'}
+                    onClick={(e) =>
+                      !displaySearchBar
+                        ? setDisplaySearchBar(true)
+                        : handleSearchSubmit(e)
+                    }
                   >
                     <FaSearch />
                   </Button>
