@@ -1,6 +1,7 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import {
   Avatar,
+  Badge,
   Button,
   Card,
   Divider,
@@ -32,6 +33,8 @@ import { baseApi, useAppDispatch, useAppSelector } from '../../../store/store';
 import { toRupiah } from '../../../utils/convert';
 import { roleCodeToText } from '../../../utils/roleCodeToText';
 import NoData from '../NoData';
+import Image from '../Image';
+import ClassNames from '../../../utils/classnames';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -41,6 +44,8 @@ const Header = () => {
   const [logout] = useLogoutMutation();
   const [hoverCart, setHoverCart] = useState(false);
   const [hoverProfile, setHoverProfile] = useState(false);
+  const [totalCartItems, setTotalCartItems] = useState(0);
+  const [displaySearchBar, setDisplaySearchBar] = useState(false);
   const [getUserCart, { data: userCartData }] = useLazyGetUserCartQuery();
   const [getUserProfile, { data: userProfileData }] = useLazyGetProfileQuery();
   const [getUserWallet, { data: userWalletData }] =
@@ -66,6 +71,18 @@ const Header = () => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    let totalItems = 0;
+    if (userCartData && userCartData.data) {
+      userCartData.data.forEach((merchant) => {
+        merchant.products.forEach(() => {
+          totalItems += 1;
+        });
+      });
+      setTotalCartItems(totalItems);
+    }
+  }, [userCartData]);
 
   const hanldeSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -96,11 +113,16 @@ const Header = () => {
 
     let totalItems = 0;
 
-    if (hoverCart) {
-      if (userCartData.data.length === 0) {
-        return (
+    return (
+      <div
+        className={ClassNames([
+          'transition-500',
+          hoverCart ? 'opacity-100 scale-100 top-8' : 'opacity-0 scale-0',
+        ])}
+      >
+        {userCartData.data.length === 0 ? (
           <div
-            className='absolute bg-base-100 rounded-xl border-none shadow-lg top-8 right-0 z-50 transition-all duration-300'
+            className='absolute bg-base-100 rounded-xl border-none shadow-lg top-0 right-0 z-50 transition-all duration-300'
             onMouseOver={handleHoverCart}
             onMouseOut={handleUnhoverCart}
           >
@@ -113,72 +135,71 @@ const Header = () => {
               </Card.Body>
             </Card>
           </div>
-        );
-      }
-      return (
-        <div
-          className='absolute bg-base-100 rounded-xl border-none shadow-lg top-8 right-0 z-50 transition-all duration-300'
-          onMouseOver={handleHoverCart}
-          onMouseOut={handleUnhoverCart}
-        >
-          <Card className=' text-base-content w-96'>
-            <Card.Body className='p-5 normal-case font-normal'>
-              <div className='flex justify-between'>
-                <div className='font-bold'>Cart</div>
-                <NavLink
-                  to='/cart'
-                  className=' hover:text-primary transition-all duration-200'
-                  onClick={() => handleUnhoverCart()}
-                >
-                  <div className='font-bold'>View Cart</div>
-                </NavLink>
-              </div>
-              <div>
-                {userCartData.data.map((merchant) => {
-                  return merchant.products.map((product, i) => {
-                    totalItems += 1;
-                    if (totalItems <= 4) {
-                      return (
-                        <React.Fragment key={i}>
-                          <Divider className='m-0' />
-                          <NavLink
-                            to='/cart'
-                            className='hover:text-primary transition-all duration-200'
-                            onClick={() => handleUnhoverCart()}
-                          >
-                            <div className='flex items-center justify-between text-sm mb-2'>
-                              <div className='flex mr-5'>
-                                <img
-                                  src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
-                                  className=' rounded-xl w-16 h-16'
-                                />
-                                <div className='ml-2 w-44'>
-                                  <div className='font-bold truncate'>
-                                    {product.product_name}
-                                  </div>
-                                  <div className='text-xs font-light'>
-                                    {product.quantity} items (
-                                    {product.product_weight}
-                                    gr) {product.product_variation}
+        ) : (
+          <div
+            className='absolute bg-base-100 rounded-xl border-none shadow-lg top-0 right-0 z-50 transition-all duration-300'
+            onMouseOver={handleHoverCart}
+            onMouseOut={handleUnhoverCart}
+          >
+            <Card className=' text-base-content w-96'>
+              <Card.Body className='p-5 normal-case font-normal'>
+                <div className='flex justify-between'>
+                  <div className='font-bold'>Cart</div>
+                  <NavLink
+                    to='/cart'
+                    className=' hover:text-primary transition-all duration-200'
+                    onClick={() => handleUnhoverCart()}
+                  >
+                    <div className='font-bold'>View Cart</div>
+                  </NavLink>
+                </div>
+                <div>
+                  {userCartData.data.map((merchant) => {
+                    return merchant.products.map((product, i) => {
+                      totalItems += 1;
+                      if (totalItems <= 4) {
+                        return (
+                          <React.Fragment key={i}>
+                            <Divider className='m-0' />
+                            <NavLink
+                              to='/cart'
+                              className='hover:text-primary transition-all duration-200'
+                              onClick={() => handleUnhoverCart()}
+                            >
+                              <div className='flex items-center justify-between text-sm mb-2'>
+                                <div className='flex mr-5'>
+                                  <Image
+                                    src={product.product_media_url}
+                                    className=' rounded-xl w-16 h-16'
+                                  />
+                                  <div className='ml-2 w-44'>
+                                    <div className='font-bold truncate'>
+                                      {product.product_name}
+                                    </div>
+                                    <div className='text-xs font-light'>
+                                      {product.quantity} items (
+                                      {product.product_weight}
+                                      gr) {product.product_variation}
+                                    </div>
                                   </div>
                                 </div>
+                                <div className='font-bold'>
+                                  {toRupiah(product.price_after_discount)}
+                                </div>
                               </div>
-                              <div className='font-bold'>
-                                {toRupiah(product.price)}
-                              </div>
-                            </div>
-                          </NavLink>
-                        </React.Fragment>
-                      );
-                    }
-                  });
-                })}
-              </div>
-            </Card.Body>
-          </Card>
-        </div>
-      );
-    }
+                            </NavLink>
+                          </React.Fragment>
+                        );
+                      }
+                    });
+                  })}
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderHoverProfile = () => {
@@ -190,10 +211,15 @@ const Header = () => {
       return null;
     }
 
-    if (hoverProfile) {
-      return (
+    return (
+      <div
+        className={ClassNames([
+          'transition-500',
+          hoverProfile ? 'opacity-100 scale-100 top-8' : 'opacity-0 scale-0',
+        ])}
+      >
         <div
-          className='absolute bg-base-100 rounded-xl border-none shadow-lg top-8 right-0 z-50 transition-all duration-300'
+          className='absolute bg-base-100 rounded-xl border-none shadow-lg top-0 right-0 z-50 transition-all duration-300'
           onMouseOver={handleHoverProfile}
           onMouseOut={handleUnhoverProfile}
         >
@@ -304,8 +330,8 @@ const Header = () => {
             </div>
           </Card>
         </div>
-      );
-    }
+      </div>
+    );
   };
 
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -356,8 +382,10 @@ const Header = () => {
     <>
       <div
         className={`${
-          hoverCart || hoverProfile ? 'fixed' : 'hidden'
-        } mt-[4.5rem] overlay w-full h-full bg-black bg-opacity-40 backdrop-blur-sm z-30`}
+          hoverCart || hoverProfile
+            ? 'opacity-100 w-full h-full transition-bg-blur-hover-on'
+            : ' opacity-0 h-0 transition-bg-blur-hover-off'
+        } absolute w-full h-full overlay bg-black bg-opacity-40 backdrop-blur-sm z-30`}
       ></div>
       <header
         className={`sticky top-0 z-30 py-2 w-full component-preview items-center justify-center gap-2 font-sans transition-all duration-100 ${
@@ -382,7 +410,7 @@ const Header = () => {
                     type='text'
                     placeholder='Search...'
                     color='ghost'
-                    className='text-base-content w-full border-none'
+                    className='focus:text-base-content bg-base-100 placeholder:text-base-100 bg-opacity-[13%] text-base-100 w-full border-none'
                     value={search}
                     onChange={hanldeSearchChange}
                   />
@@ -421,6 +449,14 @@ const Header = () => {
                     onMouseOut={handleUnhoverCart}
                   >
                     <FaShoppingCart className='text-lg' />
+                    {totalCartItems > 0 && (
+                      <Badge
+                        className='absolute ml-6 mb-4 bg-red-600 border-none text-white text-xs p-2'
+                        size='xs'
+                      >
+                        {totalCartItems}
+                      </Badge>
+                    )}
                   </Button>
                 </NavLink>
                 {renderHoverCart()}
@@ -452,77 +488,120 @@ const Header = () => {
             </div>
           </Navbar>
           <Navbar className='flex md:hidden'>
-            <div className='flex-1'>
-              <Form onSubmit={handleSearchSubmit} className='w-full'>
-                <InputGroup>
-                  <Input
-                    type='text'
-                    placeholder='Search...'
-                    color='ghost'
-                    className='text-base-content w-full border-none placeholder:text-base-content'
-                    value={search}
-                    onChange={hanldeSearchChange}
-                  />
-                  <Button shape='square' color='ghost'>
-                    <FaSearch />
-                  </Button>
-                </InputGroup>
-              </Form>
-            </div>
-            <div className='flex-none ml-4'>
-              {theme === 'light' ? (
-                <Button
-                  shape='circle'
-                  color='ghost'
-                  size='sm'
-                  onClick={() => handleThemeClick('dark')}
+            <div className='flex w-full justify-between'>
+              <div className='flex'>
+                <div
+                  className={`self-start mr-4  ${
+                    displaySearchBar ? 'w-0' : 'w-full'
+                  }`}
                 >
-                  <HiSun className='text-lg' />
-                </Button>
-              ) : (
-                <Button
-                  shape='circle'
-                  color='ghost'
-                  size='sm'
-                  onClick={() => handleThemeClick('light')}
-                >
-                  <HiMoon className='text-lg' />
-                </Button>
-              )}
-              <NavLink to='/cart'>
-                <Button shape='circle' color='ghost' size='sm'>
-                  <FaShoppingCart className='text-lg' />
-                </Button>
-              </NavLink>
-              {!role ? (
-                <>
-                  <NavLink to='/login'>
-                    <Button shape='circle' color='ghost' size='sm'>
-                      <GoPerson className='text-lg' />
+                  <NavLink to='/'>
+                    <Button className='text-xl normal-case p-0' color='ghost'>
+                      <span
+                        className={
+                          'font-main font-bold italic transition-all px-2' +
+                          ClassNames([
+                            displaySearchBar
+                              ? 'text-[0px] opacity-30'
+                              : 'opacity-100',
+                          ])
+                        }
+                      >
+                        Oceana
+                      </span>
                     </Button>
                   </NavLink>
-                </>
-              ) : (
-                <Dropdown horizontal='center' vertical='end'>
-                  <Dropdown.Toggle color='ghost' size='sm'>
-                    <GoPerson className='text-lg' />
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu className='w-52 text-base-content'>
-                    <Dropdown.Item onClick={handleProfileClick}>
-                      <CgProfile className='text-xl' />
-                      <span>Profile</span>
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={handleShopClick}>
-                      <BsShop className='text-xl' />
-                      <span>My Shop</span>
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={handleLogoutClick}>
-                      <CgLogOut className='text-xl' />
-                      <span>Logout</span>
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              )}
+                </div>
+              </div>
+
+              <div className='flex flex-row flex-nowrap gap-1 items-center'>
+                <div className='flex'>
+                  <Form onSubmit={handleSearchSubmit}>
+                    <Input
+                      type='text'
+                      placeholder='Search...'
+                      color='ghost'
+                      className={`bg-base-100 bg-opacity-[13%] w-full border-none text-base-100 rounded-r-none focus:text-base-content placeholder:text-base-100 transition-all ${
+                        displaySearchBar
+                          ? 'w-full p-5 opacity-100'
+                          : 'w-0 p-0 opacity-30'
+                      }`}
+                      value={search}
+                      onChange={hanldeSearchChange}
+                    />
+                  </Form>
+                  <Button
+                    className={displaySearchBar ? 'rounded-l-none' : ''}
+                    shape='square'
+                    color='ghost'
+                    onClick={() => setDisplaySearchBar(!displaySearchBar)}
+                  >
+                    <FaSearch />
+                  </Button>
+                </div>
+
+                {theme === 'light' ? (
+                  <Button
+                    shape='circle'
+                    color='ghost'
+                    size='sm'
+                    onClick={() => handleThemeClick('dark')}
+                  >
+                    <HiSun className='text-lg' />
+                  </Button>
+                ) : (
+                  <Button
+                    shape='circle'
+                    color='ghost'
+                    size='sm'
+                    onClick={() => handleThemeClick('light')}
+                  >
+                    <HiMoon className='text-lg' />
+                  </Button>
+                )}
+                <NavLink to='/cart'>
+                  <Button color='ghost' size='sm'>
+                    <FaShoppingCart className='text-lg' />
+                    {totalCartItems > 0 && (
+                      <Badge
+                        className='absolute ml-6 mb-4 bg-red-600 border-none text-white text-xs p-2'
+                        size='xs'
+                      >
+                        {totalCartItems}
+                      </Badge>
+                    )}
+                  </Button>
+                </NavLink>
+                {!role ? (
+                  <>
+                    <NavLink to='/login'>
+                      <Button shape='circle' color='ghost' size='sm'>
+                        <GoPerson className='text-lg' />
+                      </Button>
+                    </NavLink>
+                  </>
+                ) : (
+                  <Dropdown horizontal='center' vertical='end'>
+                    <Dropdown.Toggle color='ghost' size='sm'>
+                      <GoPerson className='text-lg' />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className='w-52 text-base-content'>
+                      <Dropdown.Item onClick={handleProfileClick}>
+                        <CgProfile className='text-xl' />
+                        <span>Profile</span>
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={handleShopClick}>
+                        <BsShop className='text-xl' />
+                        <span>My Shop</span>
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={handleLogoutClick}>
+                        <CgLogOut className='text-xl' />
+                        <span>Logout</span>
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                )}
+              </div>
             </div>
           </Navbar>
         </div>
