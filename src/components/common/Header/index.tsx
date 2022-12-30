@@ -402,9 +402,10 @@ const Header = () => {
     <>
       <div
         className={`${
-          hoverOverlay ? 'fixed' : 'hidden'
-        } mt-[4.5rem] overlay w-full h-full bg-black bg-opacity-40 backdrop-blur-sm z-30`}
-
+          hoverOverlay
+            ? 'opacity-100 w-full h-full transition-bg-blur-hover-on'
+            : ' opacity-0 h-0 transition-bg-blur-hover-off'
+        } fixed w-full h-full overlay bg-black bg-opacity-40 backdrop-blur-sm z-30`}
       ></div>
       <header
         className={`sticky top-0 z-30 py-2 w-full component-preview items-center justify-center gap-2 font-sans transition-all duration-100 ${
