@@ -65,9 +65,11 @@ import { MerchantVoucherQuery } from '../../../types/query';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
 import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import {
+  calculateDiscount,
   calculateSubtotal,
   calculateTotal,
   calculateTotalBeforeShipping,
+  calculateTotalMerchantDiscount,
   calculateTotalWeight,
   calculateTotalWithShipping,
 } from '../../../utils/checkout';
@@ -696,41 +698,45 @@ const BuyerCheckout = () => {
         <Skeleton className='my-4 w-44 h-8 rounded-full' />
 
         <div className='grid grid-cols-1 md:grid-cols-12'>
-          {Array(4)
-            .fill(0)
-            .map((_, n) => (
-              <Card key={n} className='p-4 mb-4 shadow-lg md:col-span-7'>
-                <Card.Title className='flex justify-between'>
-                  <Skeleton className='w-48 h-7 rounded-full' />
-                  <Skeleton className='w-12 h-12 rounded-full' />
-                </Card.Title>
-                <Card.Body className='p-0 pl-2 flex flex-col '>
-                  <div className='flex flex-col gap-2'>
-                    <Skeleton className='w-40 h-5' />
-                    <Skeleton className='w-72 h-5' />
-                    <Skeleton className='w-32 h-5' />
-                  </div>
-                  <Divider />
-                  <div className='flex justify-between'>
-                    <Skeleton className='w-32 h-5' />
-                    <Skeleton className='w-32 h-5' />
-                  </div>
-                </Card.Body>
-              </Card>
-            ))}
+          <div className='md:col-span-7'>
+            {Array(4)
+              .fill(0)
+              .map((_, n) => (
+                <Card key={n} className='p-4 mb-4 shadow-lg'>
+                  <Card.Title className='flex justify-between'>
+                    <Skeleton className='w-48 h-7 rounded-full' />
+                    <Skeleton className='w-12 h-12 rounded-full' />
+                  </Card.Title>
+                  <Card.Body className='p-0 pl-2 flex flex-col '>
+                    <div className='flex flex-col gap-2'>
+                      <Skeleton className='w-40 h-5' />
+                      <Skeleton className='w-72 h-5' />
+                      <Skeleton className='w-32 h-5' />
+                    </div>
+                    <Divider />
+                    <div className='flex justify-between'>
+                      <Skeleton className='w-32 h-5' />
+                      <Skeleton className='w-32 h-5' />
+                    </div>
+                  </Card.Body>
+                </Card>
+              ))}
+          </div>
 
           <div className='col-span-1' />
           {/* Total and make order button sticky bottom */}
-          <Card className='container p-6 fixed -bottom-1 left-0 z-30 rounded-b-none rounded-t-3xl bg-neutral shadow-2xl md:col-span-4 md:sticky md:w-full md:z-0'>
-            <Card.Body className='hidden p-0 text-neutral-content md:flex md:flex-col md:mb-2'>
-              <Skeleton className='w-20 h-5' />
-              <Skeleton className='w-20 h-5' />
-            </Card.Body>
-            <Card.Title className='flex justify-between text-neutral-content'>
-              <Skeleton className='w-32 h-7' />
-              <Skeleton className='w-28 h-10 rounded-full' />
-            </Card.Title>
-          </Card>
+          <div className='md:col-span-4'>
+            <Card className='container p-6 fixed -bottom-1 left-0 z-30 rounded-b-none rounded-t-3xl bg-neutral shadow-2xl md:sticky md:w-full md:z-0'>
+              <Card.Body className='hidden p-0 text-neutral-content md:flex md:flex-col md:mb-2'>
+                <Skeleton className='w-20 h-5' />
+                <Skeleton className='w-20 h-5' />
+              </Card.Body>
+              <Card.Title className='flex justify-between text-neutral-content'>
+                <Skeleton className='w-32 h-7' />
+                <Skeleton className='w-28 h-10 rounded-full' />
+              </Card.Title>
+            </Card>
+          </div>
         </div>
       </div>
     );
@@ -742,518 +748,582 @@ const BuyerCheckout = () => {
       </h1>
       <div className='grid grid-cols-1 md:grid-cols-12'>
         {/* Shipping address */}
-        <Card
-          className='group p-4 mb-4 shadow-lg cursor-pointer md:col-span-7 hover:bg-base-200'
-          onClick={
-            shippingAddress.id
-              ? handleChangeAddressClick
-              : handleAddAddressClick
-          }
-        >
-          <Card.Title className='flex justify-between'>
-            <div className='flex items-center gap-2 group-hover:text-primary'>
-              <HiOutlineLocationMarker />
-              <h2>Shipping Address</h2>
-            </div>
-            {shippingAddress.id ? (
-              <Tooltip message='Change shipping address' position='left'>
-                <Button
-                  className='bg-primary border-none shadow-md group-hover:bg-secondary'
-                  shape='circle'
-                  size='md'
-                  onClick={handleChangeAddressClick}
-                >
-                  <FaAddressBook className='text-xl' />
-                </Button>
-              </Tooltip>
-            ) : (
-              <Tooltip message='Add a shipping address' position='left'>
-                <Button
-                  className='bg-primary border-none shadow-md group-hover:bg-secondary'
-                  shape='circle'
-                  size='md'
-                  onClick={handleAddAddressClick}
-                >
-                  <MdOutlineAddLocationAlt className='text-xl' />
-                </Button>
-              </Tooltip>
-            )}
-          </Card.Title>
-          <Card.Body className='p-0 pl-2 flex flex-col gap-0'>
-            {shippingAddress.id ? (
-              <div>
-                <div className='flex items-center gap-2'>
-                  <AiOutlineHome className='text-secondary' />
-                  <h3 className='font-bold'>{shippingAddress.name}</h3>
-                </div>
-                <div>
-                  <p>{toPhoneNumber(shippingAddress.phone_number as string)}</p>
-                  <p>{`${shippingAddress.sub_district}, ${shippingAddress.district}, ${shippingAddress.city}, ${shippingAddress.province} ${shippingAddress.zip_code}`}</p>
-                </div>
+        <div className='md:col-span-7'>
+          <Card
+            className='group p-4 mb-4 shadow-lg cursor-pointer hover:bg-base-200'
+            onClick={
+              shippingAddress.id
+                ? handleChangeAddressClick
+                : handleAddAddressClick
+            }
+          >
+            <Card.Title className='flex justify-between'>
+              <div className='flex items-center gap-2 group-hover:text-primary'>
+                <HiOutlineLocationMarker />
+                <h2>Shipping Address</h2>
               </div>
-            ) : (
-              <NoData message="Oops, you haven't set a shipping address" />
-            )}
-          </Card.Body>
-        </Card>
-
-        {/* Checked out products card */}
-        {checkout.map(
-          (
-            { merchant_id, merchant_province, city_id, name, products },
-            index
-          ) => (
-            <Card
-              key={merchant_id}
-              className='p-4 mb-4 shadow-lg md:col-span-7'
-            >
-              <Card.Title className='flex justify-between'>
-                <div className='flex items-center gap-2'>
-                  <BiReceipt />
-                  <h2>Order {index + 1}</h2>
-                </div>
-                <Tooltip message='Delivery service' position='left'>
+              {shippingAddress.id ? (
+                <Tooltip message='Change shipping address' position='left'>
                   <Button
-                    className='shadow-md border-none hover:bg-secondary'
-                    color='primary'
+                    className='bg-primary border-none shadow-md group-hover:bg-secondary'
                     shape='circle'
                     size='md'
-                    onClick={() =>
-                      handleDeliveryServiceClick(
-                        merchant_id,
-                        products.map((product) => product.product_id),
-                        city_id,
-                        calculateTotalWeight(products)
-                      )
-                    }
+                    onClick={handleChangeAddressClick}
                   >
-                    <HiOutlineTruck className='text-2xl' />
+                    <FaAddressBook className='text-xl' />
                   </Button>
                 </Tooltip>
-              </Card.Title>
-              <Card.Body className='p-0 pl-2'>
-                <div id={`merchant-${name}`}>
+              ) : (
+                <Tooltip message='Add a shipping address' position='left'>
+                  <Button
+                    className='bg-primary border-none shadow-md group-hover:bg-secondary'
+                    shape='circle'
+                    size='md'
+                    onClick={handleAddAddressClick}
+                  >
+                    <MdOutlineAddLocationAlt className='text-xl' />
+                  </Button>
+                </Tooltip>
+              )}
+            </Card.Title>
+            <Card.Body className='p-0 pl-2 flex flex-col gap-0'>
+              {shippingAddress.id ? (
+                <div>
                   <div className='flex items-center gap-2'>
-                    <AiOutlineShop className='text-secondary' />
-                    <h3 className='font-bold'>{name}</h3>
+                    <AiOutlineHome className='text-secondary' />
+                    <h3 className='font-bold'>{shippingAddress.name}</h3>
                   </div>
-                  <p>{merchant_province}</p>
+                  <div>
+                    <p>
+                      {toPhoneNumber(shippingAddress.phone_number as string)}
+                    </p>
+                    <p>{`${shippingAddress.sub_district}, ${shippingAddress.district}, ${shippingAddress.city}, ${shippingAddress.province} ${shippingAddress.zip_code}`}</p>
+                  </div>
                 </div>
-                <div id='products'>
-                  {products.map((product) => {
-                    return (
-                      <div
-                        key={product.carts_id}
-                        className={`grid grid-cols-3 p-3 mb-1 rounded-xl md:grid-cols-8 ${
-                          !availableProductsForDelivery[merchant_id].includes(
-                            product.product_id
-                          )
-                            ? 'bg-base-200 text-base-content/50'
-                            : ''
-                        }`}
-                      >
-                        <div className='h-20 w-20 md:h-24 md:w-24 md:col-span-1'>
-                          <img
-                            src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
-                            className={`rounded-lg h-full w-full ${
-                              !availableProductsForDelivery[
-                                merchant_id
-                              ].includes(product.product_id)
-                                ? 'opacity-60'
-                                : 'opacity-100'
-                            }`}
-                            onError={({ currentTarget }) => {
-                              currentTarget.onerror = null;
-                              currentTarget.src =
-                                'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-                            }}
-                          />
-                        </div>
-                        <div className='w-full flex flex-col col-span-2 md:col-span-7'>
-                          <div className='justify-start mt-2 md:mt-0'>
-                            {titleCase(product.product_name)}
+              ) : (
+                <NoData message="Oops, you haven't set a shipping address" />
+              )}
+            </Card.Body>
+          </Card>
+
+          {/* Checked out products card */}
+          {checkout.map(
+            (
+              { merchant_id, merchant_province, city_id, name, products },
+              index
+            ) => (
+              <Card key={merchant_id} className='p-4 mb-4 shadow-lg'>
+                <Card.Title className='flex justify-between'>
+                  <div className='flex items-center gap-2'>
+                    <BiReceipt />
+                    <h2>Order {index + 1}</h2>
+                  </div>
+                  <Tooltip message='Delivery service' position='left'>
+                    <Button
+                      className='shadow-md border-none hover:bg-secondary'
+                      color='primary'
+                      shape='circle'
+                      size='md'
+                      onClick={() =>
+                        handleDeliveryServiceClick(
+                          merchant_id,
+                          products.map((product) => product.product_id),
+                          city_id,
+                          calculateTotalWeight(products)
+                        )
+                      }
+                    >
+                      <HiOutlineTruck className='text-2xl' />
+                    </Button>
+                  </Tooltip>
+                </Card.Title>
+                <Card.Body className='p-0 pl-2'>
+                  <div id={`merchant-${name}`}>
+                    <div className='flex items-center gap-2'>
+                      <AiOutlineShop className='text-secondary' />
+                      <h3 className='font-bold'>{name}</h3>
+                    </div>
+                    <p>{merchant_province}</p>
+                  </div>
+                  <div id='products'>
+                    {products.map((product) => {
+                      return (
+                        <div
+                          key={product.carts_id}
+                          className={`grid grid-cols-3 p-3 mb-1 rounded-xl md:grid-cols-8 ${
+                            !availableProductsForDelivery[merchant_id].includes(
+                              product.product_id
+                            )
+                              ? 'bg-base-200 text-base-content/50'
+                              : ''
+                          }`}
+                        >
+                          <div className='h-20 w-20 md:h-24 md:w-24 md:col-span-1'>
+                            <img
+                              src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
+                              className={`rounded-lg h-full w-full ${
+                                !availableProductsForDelivery[
+                                  merchant_id
+                                ].includes(product.product_id)
+                                  ? 'opacity-60'
+                                  : 'opacity-100'
+                              }`}
+                              onError={({ currentTarget }) => {
+                                currentTarget.onerror = null;
+                                currentTarget.src =
+                                  'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
+                              }}
+                            />
                           </div>
-                          <div className='text-sm mt-0.5'>
-                            {titleCase(product.product_variation)}
-                          </div>
-                          <div className='mb-1'>
-                            {product.price !== product.price_after_discount ? (
-                              <div className='flex items-center'>
+                          <div className='w-full flex flex-col col-span-2'>
+                            <div className='justify-start mt-2 md:mt-0'>
+                              {titleCase(product.product_name)}
+                            </div>
+                            <div className='text-sm mt-0.5'>
+                              {titleCase(product.product_variation)}
+                            </div>
+                            <div className='mb-1'>
+                              {product.price !==
+                              product.price_after_discount ? (
+                                <div className='flex items-center'>
+                                  <div className='text-base font-bold'>
+                                    {toRupiah(product.price_after_discount)}
+                                  </div>
+                                  <h5 className='text-xs line-through ml-1'>
+                                    {toRupiah(product.price)}
+                                  </h5>
+                                </div> // prevents looping
+                              ) : (
                                 <div className='text-base font-bold'>
                                   {toRupiah(product.price_after_discount)}
                                 </div>
-                                <h5 className='text-xs line-through ml-1'>
-                                  {toRupiah(product.price)}
-                                </h5>
-                              </div> // prevents looping
-                            ) : (
-                              <div className='text-base font-bold'>
-                                {toRupiah(product.price_after_discount)}
-                              </div>
-                            )}
-                          </div>
-                          <div className='flex items-center justify-between'>
-                            <div>{`x${product.quantity}`}</div>
-                            <div className='text-lg font-bold'>
-                              {toRupiah(
-                                product.price_after_discount * product.quantity
                               )}
                             </div>
+                            <div className='flex items-center justify-between'>
+                              <div>{`x${product.quantity}`}</div>
+                              <div className='text-lg font-bold'>
+                                {toRupiah(
+                                  product.price_after_discount *
+                                    product.quantity
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className='col-span-4'>
+                            {!availableProductsForDelivery[
+                              merchant_id
+                            ].includes(product.product_id) ? (
+                              <div className='p-3 flex justify-center text-sm text-center text-error bg-base-300 rounded-xl animate-pulse'>
+                                Delivery service does not support this product
+                              </div>
+                            ) : (
+                              <Textarea
+                                className='w-full'
+                                color='primary'
+                                id={String(product.product_item_id)}
+                                placeholder='Additional Notes (optional)'
+                                rows={1}
+                                value={
+                                  additionalNotes
+                                    ? additionalNotes[product.product_item_id]
+                                    : ''
+                                }
+                                onChange={handleChangeAdditionalNotes}
+                              />
+                            )}
                           </div>
                         </div>
-                        <div className='col-span-4'>
-                          {!availableProductsForDelivery[merchant_id].includes(
-                            product.product_id
-                          ) ? (
-                            <div className='p-3 flex justify-center text-sm text-center text-error bg-base-300 rounded-xl animate-pulse'>
-                              Delivery service does not support this product
-                            </div>
-                          ) : (
-                            <Textarea
-                              className='w-full'
-                              color='primary'
-                              id={String(product.product_item_id)}
-                              placeholder='Additional Notes (optional)'
-                              rows={1}
-                              value={
-                                additionalNotes
-                                  ? additionalNotes[product.product_item_id]
-                                  : ''
-                              }
-                              onChange={handleChangeAdditionalNotes}
-                            />
-                          )}
+                      );
+                    })}
+                  </div>
+                </Card.Body>
+                <Card
+                  className='mt-2 bg-primary/10 hover:bg-primary/20 active:bg-primary/10 cursor-pointer'
+                  onClick={() =>
+                    handleDeliveryServiceClick(
+                      merchant_id,
+                      products.map((product) => product.product_id),
+                      city_id,
+                      calculateTotalWeight(products)
+                    )
+                  }
+                >
+                  {!deliveryService || !deliveryService[merchant_id] ? (
+                    <div className='p-4 flex justify-between items-center'>
+                      <div>Pick a delivery service</div>
+                      <MdNavigateNext className='text-2xl' />
+                    </div>
+                  ) : (
+                    <div className='p-4 flex flex-col'>
+                      <div className='flex justify-between items-center'>
+                        <div>
+                          {
+                            deliveryService[merchant_id]?.courier_services[0]
+                              .description
+                          }
+                        </div>
+                        <div className='font-bold'>
+                          {deliveryService[merchant_id]?.courier_services[0]
+                            .shipping_fee &&
+                            toRupiah(
+                              deliveryService[merchant_id]?.courier_services[0]
+                                .shipping_fee as number
+                            )}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              </Card.Body>
-              <Card
-                className='mt-2 bg-primary/10 hover:bg-primary/20 active:bg-primary/10 cursor-pointer'
-                onClick={() =>
-                  handleDeliveryServiceClick(
-                    merchant_id,
-                    products.map((product) => product.product_id),
-                    city_id,
-                    calculateTotalWeight(products)
-                  )
-                }
-              >
-                {!deliveryService || !deliveryService[merchant_id] ? (
-                  <div className='p-4 flex justify-between items-center'>
-                    <div>Pick a delivery service</div>
-                    <MdNavigateNext className='text-2xl' />
-                  </div>
-                ) : (
-                  <div className='p-4 flex flex-col'>
-                    <div className='flex justify-between items-center'>
-                      <div>
-                        {
-                          deliveryService[merchant_id]?.courier_services[0]
-                            .description
-                        }
-                      </div>
-                      <div className='font-bold'>
-                        {deliveryService[merchant_id]?.courier_services[0]
-                          .shipping_fee &&
-                          toRupiah(
-                            deliveryService[merchant_id]?.courier_services[0]
-                              .shipping_fee as number
-                          )}
-                      </div>
-                    </div>
-                    <div className='text-sm font-light'>
-                      {deliveryService[merchant_id]?.courier_services[0].etd &&
-                        `Estimated delivery: ${toETD(
-                          deliveryService[merchant_id]?.courier_services[0]
-                            .etd as string
-                        )}`}
-                    </div>
-                  </div>
-                )}
-              </Card>
-              <Divider />
-              {!merchantVouchers || !merchantVouchers[merchant_id] ? (
-                <Card
-                  className='group p-4 shadow-md hover:bg-base-200 active:bg-base-100 cursor-pointer'
-                  onClick={() => {
-                    setCurrentMerchantID(merchant_id);
-                    setCurrentMerchantName(name);
-                    setCurrentMerchantSubtotalBeforeShipping(
-                      calculateSubtotal(
-                        products.filter((product) =>
-                          availableProductsForDelivery[merchant_id].includes(
-                            product.product_id
-                          )
-                        )
-                      )
-                    );
-                    setVoucherQuery((prev) => ({
-                      ...prev,
-                      merchantID: merchant_id,
-                    }));
-                    handleMerchantVoucherClick();
-                  }}
-                >
-                  <Card.Title className='flex justify-between'>
-                    <div className='flex gap-2 group-hover:text-primary group-active:text-base-content'>
-                      <IoTicketOutline />
-                      <div className='text-base '>{`${name}'s Vouchers`}</div>
-                    </div>
-                    <div>
-                      <MdNavigateNext className='text-2xl group-hover:text-primary' />
-                    </div>
-                  </Card.Title>
-                </Card>
-              ) : (
-                <VoucherTicket
-                  currentVoucher={
-                    merchantVouchers[merchant_id] as MerchantVoucher
-                  }
-                  selectedVoucher={merchantVouchers[merchant_id]}
-                  onClickVoucher={() => {
-                    setCurrentMerchantID(merchant_id);
-                    setCurrentMerchantName(name);
-                    setCurrentMerchantSubtotalBeforeShipping(
-                      calculateSubtotal(
-                        products.filter((product) =>
-                          availableProductsForDelivery[merchant_id].includes(
-                            product.product_id
-                          )
-                        )
-                      )
-                    );
-                    setVoucherQuery((prev) => ({
-                      ...prev,
-                      merchantID: merchant_id,
-                    }));
-                    handleMerchantVoucherClick();
-                  }}
-                />
-              )}
-              <Divider />
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-1'>
-                  <ImPriceTag />
-                  <p>Subtotal</p>
-                </div>
-                <p className='text-xl font-bold'>
-                  {deliveryService && merchantVouchers
-                    ? toRupiah(
-                        calculateSubtotal(
-                          products,
-                          deliveryService[merchant_id]?.courier_services[0]
-                            .shipping_fee,
-                          merchantVouchers[merchant_id],
-                          availableProductsForDelivery[merchant_id]
-                        )
-                      )
-                    : deliveryService
-                    ? toRupiah(
-                        calculateSubtotal(
-                          products,
-                          deliveryService[merchant_id]?.courier_services[0]
-                            .shipping_fee,
-                          null,
-                          availableProductsForDelivery[merchant_id]
-                        )
-                      )
-                    : merchantVouchers
-                    ? toRupiah(
-                        calculateSubtotal(
-                          products,
-                          0,
-                          merchantVouchers[merchant_id],
-                          availableProductsForDelivery[merchant_id]
-                        )
-                      )
-                    : toRupiah(
-                        calculateSubtotal(
-                          products,
-                          0,
-                          null,
-                          availableProductsForDelivery[merchant_id]
-                        )
-                      )}
-                </p>
-              </div>
-            </Card>
-          )
-        )}
-
-        {/* Voucher card */}
-        <Card
-          className='group p-4 mb-4 shadow-lg md:col-span-7 cursor-pointer hover:bg-base-200'
-          onClick={handleMarketplaceVoucherClick}
-        >
-          <Card.Title className='flex justify-between'>
-            <div className='flex items-center gap-2'>
-              <div className='flex items-center text-primary gap-1'>
-                <TbDiscount2 className='text-primary group-hover:text-secondary' />
-                <span className='font-main italic group-hover:text-secondary'>
-                  Oceana
-                </span>
-              </div>
-              <h2>Vouchers</h2>
-            </div>
-            <Tooltip message="Add a voucher, it's on us!" position='left'>
-              <Button
-                className='bg-primary border-none shadow-md group-hover:bg-secondary'
-                shape='circle'
-                size='md'
-                onClick={handleMarketplaceVoucherClick}
-              >
-                <IoTicketOutline className='text-2xl' />
-              </Button>
-            </Tooltip>
-          </Card.Title>
-          {marketplaceVoucher && (
-            <Card.Body className='p-0 mt-2'>
-              <VoucherTicket
-                currentVoucher={marketplaceVoucher}
-                selectedVoucher={marketplaceVoucher}
-                onClickVoucher={handleMarketplaceVoucherClick}
-              />
-            </Card.Body>
-          )}
-        </Card>
-
-        {/* Payment method card */}
-        <Card className='col-span-1 p-4 mb-4 shadow-lg md:col-span-7'>
-          <Card.Title className='flex justify-between'>
-            <div className='flex items-center gap-2'>
-              {paymentMethod === PaymentMethod.Wallet ? (
-                <IoWalletOutline className='w-5 h-5' />
-              ) : (
-                <SealabsPayImg className='w-5 h-5' />
-              )}
-              <h2>Payment Method</h2>
-            </div>
-            <Tooltip message='Change payment method' position='left'>
-              <Button
-                className='bg-primary border-none shadow-md hover:bg-secondary'
-                shape='circle'
-                size='md'
-                onClick={handlePaymentMethodClick}
-              >
-                <FaListUl className='text-xl' />
-              </Button>
-            </Tooltip>
-          </Card.Title>
-          <Card.Body className='p-0 pl-2'>
-            <div className='flex flex-col gap-2'>
-              <div className='text-lg'>
-                {pascalCaseToTitleCase(PaymentMethod[paymentMethod])}
-              </div>
-              {paymentMethod === PaymentMethod.Wallet ? (
-                <div className='flex justify-between items-center'>
-                  <div className='text-sm font-light'>Balance</div>
-                  <div className='text-sm font-bold'>
-                    {toRupiah(walletBalance)}
-                  </div>
-                </div>
-              ) : getAllSealabsPayData.data.length !== 0 ? (
-                <div
-                  className='p-4 z-20 flex justify-between items-center cursor-pointer rounded-xl bg-primary/10 hover:bg-primary/20 active:bg-primary/10'
-                  onClick={handleSealabsPayAccountsClick}
-                >
-                  {currentSealabsPayAccount ? (
-                    <>
                       <div className='text-sm font-light'>
-                        {currentSealabsPayAccount.name_on_card}
+                        {deliveryService[merchant_id]?.courier_services[0]
+                          .etd &&
+                          `Estimated delivery: ${toETD(
+                            deliveryService[merchant_id]?.courier_services[0]
+                              .etd as string
+                          )}`}
                       </div>
+                    </div>
+                  )}
+                </Card>
+                <Divider />
+                {!merchantVouchers || !merchantVouchers[merchant_id] ? (
+                  <Card
+                    className='group p-4 shadow-md hover:bg-base-200 active:bg-base-100 cursor-pointer'
+                    onClick={() => {
+                      setCurrentMerchantID(merchant_id);
+                      setCurrentMerchantName(name);
+                      setCurrentMerchantSubtotalBeforeShipping(
+                        calculateSubtotal(
+                          products.filter((product) =>
+                            availableProductsForDelivery[merchant_id].includes(
+                              product.product_id
+                            )
+                          )
+                        )
+                      );
+                      setVoucherQuery((prev) => ({
+                        ...prev,
+                        merchantID: merchant_id,
+                      }));
+                      handleMerchantVoucherClick();
+                    }}
+                  >
+                    <Card.Title className='flex justify-between'>
+                      <div className='flex gap-2 group-hover:text-primary group-active:text-base-content'>
+                        <IoTicketOutline />
+                        <div className='text-base '>{`${name}'s Vouchers`}</div>
+                      </div>
+                      <div>
+                        <MdNavigateNext className='text-2xl group-hover:text-primary' />
+                      </div>
+                    </Card.Title>
+                  </Card>
+                ) : (
+                  <VoucherTicket
+                    currentVoucher={
+                      merchantVouchers[merchant_id] as MerchantVoucher
+                    }
+                    selectedVoucher={merchantVouchers[merchant_id]}
+                    onClickVoucher={() => {
+                      setCurrentMerchantID(merchant_id);
+                      setCurrentMerchantName(name);
+                      setCurrentMerchantSubtotalBeforeShipping(
+                        calculateSubtotal(
+                          products.filter((product) =>
+                            availableProductsForDelivery[merchant_id].includes(
+                              product.product_id
+                            )
+                          )
+                        )
+                      );
+                      setVoucherQuery((prev) => ({
+                        ...prev,
+                        merchantID: merchant_id,
+                      }));
+                      handleMerchantVoucherClick();
+                    }}
+                  />
+                )}
+                <Divider />
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-1'>
+                    <ImPriceTag />
+                    <p>Subtotal</p>
+                  </div>
+                  <p className='text-xl font-bold'>
+                    {deliveryService && merchantVouchers
+                      ? toRupiah(
+                          calculateSubtotal(
+                            products,
+                            deliveryService[merchant_id]?.courier_services[0]
+                              .shipping_fee,
+                            merchantVouchers[merchant_id],
+                            availableProductsForDelivery[merchant_id]
+                          )
+                        )
+                      : deliveryService
+                      ? toRupiah(
+                          calculateSubtotal(
+                            products,
+                            deliveryService[merchant_id]?.courier_services[0]
+                              .shipping_fee,
+                            null,
+                            availableProductsForDelivery[merchant_id]
+                          )
+                        )
+                      : merchantVouchers
+                      ? toRupiah(
+                          calculateSubtotal(
+                            products,
+                            0,
+                            merchantVouchers[merchant_id],
+                            availableProductsForDelivery[merchant_id]
+                          )
+                        )
+                      : toRupiah(
+                          calculateSubtotal(
+                            products,
+                            0,
+                            null,
+                            availableProductsForDelivery[merchant_id]
+                          )
+                        )}
+                  </p>
+                </div>
+              </Card>
+            )
+          )}
+
+          {/* Voucher card */}
+          <Card
+            className='group p-4 mb-4 shadow-lg cursor-pointer hover:bg-base-200'
+            onClick={handleMarketplaceVoucherClick}
+          >
+            <Card.Title className='flex justify-between'>
+              <div className='flex items-center gap-2'>
+                <div className='flex items-center text-primary gap-1'>
+                  <TbDiscount2 className='text-primary group-hover:text-secondary' />
+                  <span className='font-main italic group-hover:text-secondary'>
+                    Oceana
+                  </span>
+                </div>
+                <h2>Vouchers</h2>
+              </div>
+              <Tooltip message="Add a voucher, it's on us!" position='left'>
+                <Button
+                  className='bg-primary border-none shadow-md group-hover:bg-secondary'
+                  shape='circle'
+                  size='md'
+                  onClick={handleMarketplaceVoucherClick}
+                >
+                  <IoTicketOutline className='text-2xl' />
+                </Button>
+              </Tooltip>
+            </Card.Title>
+            {marketplaceVoucher && (
+              <Card.Body className='p-0 mt-2'>
+                <VoucherTicket
+                  currentVoucher={marketplaceVoucher}
+                  selectedVoucher={marketplaceVoucher}
+                  onClickVoucher={handleMarketplaceVoucherClick}
+                />
+              </Card.Body>
+            )}
+          </Card>
+
+          {/* Payment method card */}
+          <Card className='col-span-1 p-4 mb-4 shadow-lg'>
+            <Card.Title className='flex justify-between'>
+              <div className='flex items-center gap-2'>
+                {paymentMethod === PaymentMethod.Wallet ? (
+                  <IoWalletOutline className='w-5 h-5' />
+                ) : (
+                  <SealabsPayImg className='w-5 h-5' />
+                )}
+                <h2>Payment Method</h2>
+              </div>
+              <Tooltip message='Change payment method' position='left'>
+                <Button
+                  className='bg-primary border-none shadow-md hover:bg-secondary'
+                  shape='circle'
+                  size='md'
+                  onClick={handlePaymentMethodClick}
+                >
+                  <FaListUl className='text-xl' />
+                </Button>
+              </Tooltip>
+            </Card.Title>
+            <Card.Body className='p-0 pl-2'>
+              <div className='flex flex-col gap-2'>
+                <div className='text-lg'>
+                  {pascalCaseToTitleCase(PaymentMethod[paymentMethod])}
+                </div>
+                {paymentMethod === PaymentMethod.Wallet ? (
+                  <div className='flex justify-between items-center'>
+                    <div className='text-sm font-light'>Balance</div>
+                    <div className='text-sm font-bold'>
+                      {toRupiah(walletBalance)}
+                    </div>
+                  </div>
+                ) : getAllSealabsPayData.data.length !== 0 ? (
+                  <div
+                    className='p-4 z-20 flex justify-between items-center cursor-pointer rounded-xl bg-primary/10 hover:bg-primary/20 active:bg-primary/10'
+                    onClick={handleSealabsPayAccountsClick}
+                  >
+                    {currentSealabsPayAccount ? (
+                      <>
+                        <div className='text-sm font-light'>
+                          {currentSealabsPayAccount.name_on_card}
+                        </div>
+                        <div className='flex gap-2 items-center'>
+                          <div className='text-sm font-bold'>
+                            {toCardNumber(currentSealabsPayAccount.card_number)}
+                          </div>
+                          <div className='text-xl'>
+                            <HiOutlineChevronDown />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
                       <div className='flex gap-2 items-center'>
                         <div className='text-sm font-bold'>
-                          {toCardNumber(currentSealabsPayAccount.card_number)}
+                          Please select a card
                         </div>
                         <div className='text-xl'>
                           <HiOutlineChevronDown />
                         </div>
                       </div>
-                    </>
-                  ) : (
-                    <div className='flex gap-2 items-center'>
-                      <div className='text-sm font-bold'>
-                        Please select a card
-                      </div>
-                      <div className='text-xl'>
-                        <HiOutlineChevronDown />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div
-                  className='p-4 w-full z-20 rounded-xl cursor-pointer bg-primary/10 hover:bg-primary/20 hover:text-accent active:bg-primary/10'
-                  onClick={() => navigate('/user/account/sealabs-pay')}
-                >
-                  Create an account?
-                </div>
-              )}
-            </div>
-          </Card.Body>
-        </Card>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    className='p-4 w-full z-20 rounded-xl cursor-pointer bg-primary/10 hover:bg-primary/20 hover:text-accent active:bg-primary/10'
+                    onClick={() => navigate('/user/account/sealabs-pay')}
+                  >
+                    Create an account?
+                  </div>
+                )}
+              </div>
+            </Card.Body>
+          </Card>
+        </div>
 
         <div className='col-span-1' />
         {/* Total and make order button sticky bottom */}
-        <Card className='container p-6 fixed -bottom-1 left-0 z-[100] rounded-b-none rounded-t-3xl bg-neutral shadow-2xl md:col-span-4 md:sticky md:w-full md:z-0'>
-          <Card.Body className='hidden p-0 text-neutral-content md:inline'>
-            <div className='flex items-center gap-2 text-lg'>
-              <ImPriceTag />
-              <h3>
-                {toRupiah(
-                  calculateTotalBeforeShipping(
-                    checkout,
-                    availableProductsForDelivery
-                  )
-                )}
-              </h3>
-            </div>
-            <div className='flex items-center gap-2 text-lg'>
-              <HiOutlineTruck />
-              <h3>
-                {toRupiah(
-                  calculateTotalWithShipping(
-                    checkout,
-                    deliveryService,
-                    availableProductsForDelivery
-                  ) -
-                    calculateTotalBeforeShipping(
-                      checkout,
-                      availableProductsForDelivery
-                    )
-                )}
-              </h3>
-            </div>
-            <Divider className='m-0' color='primary' />
-          </Card.Body>
-          <Card.Title className='flex justify-between text-neutral-content'>
-            <div className='flex items-center gap-2'>
-              <ImPriceTags />
-              <h2>{toRupiah(totalPayment)}</h2>
-            </div>
-            <Button
-              className='flex items-center gap-2 rounded-full shadow-md'
-              color={
-                !payCartWithSealabsPayData && !payCartWithSealabsPayLoading
-                  ? 'primary'
-                  : 'accent'
-              }
-              size='md'
-              onClick={handleOrderClick}
-              loading={
-                Boolean(payCartWithSealabsPayData) ||
-                payCartWithSealabsPayLoading
-              }
-            >
-              {!payCartWithSealabsPayData && !payCartWithSealabsPayLoading && (
-                <IoBagCheckOutline className='text-2xl' />
-              )}
-              <h2 className='inline'>Order</h2>
-            </Button>
-          </Card.Title>
-        </Card>
+        <div className='md:col-span-4'>
+          <Card className='container p-6 fixed bottom-0 left-0 z-[100] rounded-b-none rounded-t-3xl text-neutral-content bg-neutral shadow-xl md:sticky md:top-24 md:rounded-3xl md:text-base-content md:bg-base-100 md:w-full md:z-0'>
+            <Card.Body className='hidden p-0 md:flex md:flex-col md:gap-1'>
+              <div className='flex items-center justify-between text-lg'>
+                <div className='flex items-center gap-2'>
+                  <ImPriceTag />
+                  <h3>
+                    {toRupiah(
+                      calculateTotalBeforeShipping(
+                        checkout,
+                        availableProductsForDelivery
+                      )
+                    )}
+                  </h3>
+                </div>
+                <div>
+                  <h3 className='hidden text-xs md:inline'>before shipping</h3>
+                </div>
+              </div>
+              <div className='flex items-center justify-between text-lg'>
+                <div className='flex items-center gap-2'>
+                  <HiOutlineTruck />
+                  <h3>
+                    {toRupiah(
+                      calculateTotalWithShipping(
+                        checkout,
+                        deliveryService,
+                        availableProductsForDelivery
+                      ) -
+                        calculateTotalBeforeShipping(
+                          checkout,
+                          availableProductsForDelivery
+                        )
+                    )}
+                  </h3>
+                </div>
+                <div>
+                  <h3 className='hidden text-xs md:inline'>shipping fee</h3>
+                </div>
+              </div>
+              <div className='flex items-center justify-between text-lg'>
+                <div className='flex items-center gap-2'>
+                  <IoTicketOutline />
+                  <h3>{`${
+                    merchantVouchers
+                      ? toRupiah(
+                          -1 *
+                            calculateTotalMerchantDiscount(
+                              checkout,
+                              merchantVouchers,
+                              availableProductsForDelivery
+                            )
+                        )
+                      : toRupiah(0)
+                  }`}</h3>
+                </div>
+                <div>
+                  <h3 className='hidden text-xs md:inline'>shop vouchers</h3>
+                </div>
+              </div>
+              <div className='flex items-center justify-between text-lg'>
+                <div className='flex items-center gap-2'>
+                  <TbDiscount2 className='text-primary' />
+                  <h3>{`${
+                    marketplaceVoucher
+                      ? toRupiah(
+                          -1 *
+                            calculateDiscount(
+                              marketplaceVoucher,
+                              calculateTotalBeforeShipping(
+                                checkout,
+                                availableProductsForDelivery
+                              )
+                            )
+                        )
+                      : toRupiah(0)
+                  }`}</h3>
+                </div>
+                <div>
+                  <h3 className='hidden text-xs md:inline'>
+                    <span className='font-main font-bold italic text-primary'>
+                      Oceana
+                    </span>{' '}
+                    voucher
+                  </h3>
+                </div>
+              </div>
+              <Divider className='m-0 md:my-6' />
+            </Card.Body>
+            <Card.Title className='flex justify-between'>
+              <div className='flex items-center gap-2'>
+                <ImPriceTags />
+                <h2>{toRupiah(totalPayment)}</h2>
+              </div>
+              <Button
+                className='flex items-center gap-2 rounded-full shadow-md'
+                color={
+                  !payCartWithSealabsPayData && !payCartWithSealabsPayLoading
+                    ? 'primary'
+                    : 'accent'
+                }
+                size='md'
+                onClick={handleOrderClick}
+                loading={
+                  Boolean(payCartWithSealabsPayData) ||
+                  payCartWithSealabsPayLoading
+                }
+              >
+                {!payCartWithSealabsPayData &&
+                  !payCartWithSealabsPayLoading && (
+                    <IoBagCheckOutline className='text-2xl' />
+                  )}
+                <h2 className='inline'>Order</h2>
+              </Button>
+            </Card.Title>
+          </Card>
+        </div>
       </div>
 
       {/* Shipping Address Modal */}
