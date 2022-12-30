@@ -10,6 +10,7 @@ export const toMarketplaceVoucherQuery = (query: MarketplaceVoucherQuery) => {
   result += '&page=' + query.page;
   result += '&search-voucher-name=' + query.searchVoucherName;
   result += '&filter-voucher-status=' + query.filterVoucherStatus;
+  result += '&filter-voucher-availability=' + query.filterVoucherAvailability;
 
   return result;
 };

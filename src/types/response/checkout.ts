@@ -1,6 +1,6 @@
 import { Metadata } from '../component';
 
-export type WalletPaymentResponse = {
+export type PaymentResponse = {
   data: {
     id: string;
     user_id: string;

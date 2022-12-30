@@ -1,5 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import {
   Avatar,
   Badge,
@@ -12,26 +11,27 @@ import {
   InputGroup,
   Navbar,
 } from 'react-daisyui';
+import { BiLogOutCircle } from 'react-icons/bi';
+import { CgLogOut, CgProfile } from 'react-icons/cg';
 import { FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { GoPerson } from 'react-icons/go';
 import { HiMoon, HiSun } from 'react-icons/hi';
-import { CgLogOut, CgProfile } from 'react-icons/cg';
-import { BiLogOutCircle } from 'react-icons/bi';
+import { NavLink, useNavigate } from 'react-router-dom';
 
+import { BsShop } from 'react-icons/bs';
+import { TAG_TYPES } from '../../../constants/tags';
 import { useLocalStorage, useScrollPosition } from '../../../hooks';
-import { selectRole, unsetCredentials } from '../../../store/slices/authSlice';
-import { baseApi, useAppDispatch, useAppSelector } from '../../../store/store';
+import { useLazyGetUserCartQuery } from '../../../store/services/cartService';
+import { useLazyGetMyShopProfileQuery } from '../../../store/services/myShopService';
 import {
   useLazyGetProfileQuery,
   useLogoutMutation,
 } from '../../../store/services/profileService';
-import { TAG_TYPES } from '../../../constants/tags';
-import { BsShop } from 'react-icons/bs';
-import { useLazyGetUserCartQuery } from '../../../store/services/cartService';
-import { toRupiah } from '../../../utils/convert';
 import { useLazyGetWalletDetailsQuery } from '../../../store/services/walletService';
+import { selectRole, unsetCredentials } from '../../../store/slices/authSlice';
+import { baseApi, useAppDispatch, useAppSelector } from '../../../store/store';
+import { toRupiah } from '../../../utils/convert';
 import { roleCodeToText } from '../../../utils/roleCodeToText';
-import { useLazyGetMyShopProfileQuery } from '../../../store/services/myShopService';
 import NoData from '../NoData';
 import Image from '../Image';
 import ClassNames from '../../../utils/classnames';
