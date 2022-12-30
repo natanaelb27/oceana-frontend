@@ -2,8 +2,10 @@
 import tw from 'tailwind-styled-components';
 
 export const ShopDetailCardContainer = tw.div<any>`
-    w-3/5
+    lg:w-3/5
+    w-full
     my-10
+    bg-secondary
 `;
 
 export const ShopDetailCardContent = tw.div<any>`
@@ -11,37 +13,39 @@ export const ShopDetailCardContent = tw.div<any>`
     px-5
     flex
     flex-col
-    sm:flex-row
+    lg:flex-row
     text-white
-    items-center
-    sm:justify-between
-
+    lg:items-center
+    lg:justify-between
 `;
 
 export const ShopDetailCardContentLeft = tw.div<any>`
     flex
     flex-wrap
-    flex-col
-    sm:flex-row
+    flex-row
     items-center
-    justify-center
-    mb-5
-    sm:mb-0
+    lg:justify-center
+    sm:justify-start
+    lg:mb-0
+    mb-10
 `;
 
 export const ShopDetailCardContentRight = tw(ShopDetailCardContentLeft)<any>`
-    flex-col
-    sm:flex-row
+    flex-row
+    flex-wrap
+    justify-between
+    mb-0
 `;
 
 export const RightContentAttribute = tw.div<any>`
     flex
     flex-col
+    flex-wrap
     items-center
     justify-center
-    mr-0
+    mr-1
     mb-3
-    sm:mr-5
+    lg:mr-5
 `;
 
 export const RatingField = tw.div<any>`
@@ -52,7 +56,8 @@ export const RatingField = tw.div<any>`
 `;
 
 export const ShopVouchersCardContainer = tw.div<any>`
-    w-3/5
+    lg:w-3/5
+    w-full
     px-3
     py-3
     border-solid
@@ -106,4 +111,16 @@ export const ShopVoucherButton = tw.button<any>`
     py-3
     rounded
     font-bold
+`;
+
+export const ShopCategoryFilter = tw.div<any>`
+    w-56
+    h-auto
+    bg-base-200
+    mr-14
+    rounded-lg
+    text-xl
+    font-bold
+    sticky
+    top-0
 `;

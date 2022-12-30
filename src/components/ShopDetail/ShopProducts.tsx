@@ -5,13 +5,10 @@ import { useSearchParams } from 'react-router-dom';
 import { MerchantProductQuery } from '../../types/query';
 import { toMerchantProductQuery } from '../../utils/mapperDTO';
 import { ProductCard } from '../common';
-import {
-  ProductsSortBy,
-  ProductsSortByString,
-  ProductsSortString,
-} from '../../types/sort';
+import { ProductsSortByString, ProductsSortString } from '../../types/sort';
 import { useGetCategoriesByMerchantIDQuery } from '../../store/services/categoryService';
 import CategoryCollapse from '../common/CategoryCollapse';
+import { ShopCategoryFilter } from './style';
 
 type CategoryFilter = {
   id: number;
@@ -173,7 +170,7 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
   };
 
   return (
-    <div ref={ref} className='flex w-3/5 flex-col'>
+    <div ref={ref} className='flex lg:w-3/5 sm:w-full flex-col'>
       <div className='mb-3'>
         <div className='flex flex-row justify-start'>
           <button
@@ -206,10 +203,10 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
       <div className='mb-5'>
         {mostPurchasedTab && (
           <div>
-            <div className='flex flex-row flex-wrap justify-start'>
+            <div className='grid lg:grid-cols-3 grid-cols-2 justify-items-center gap-4'>
               {getAllMerchantProducts?.data?.map((product, i) => {
                 return (
-                  <div className='mr-3 mb-3 w-64 flex' key={i}>
+                  <div className='lg:w-80 w-44' key={i}>
                     <ProductCard product={product} key={product.id} />
                   </div>
                 );
@@ -244,18 +241,22 @@ const ShopProducts = ({ merchantID }: ShopProductsCardProps) => {
               </div>
             </div>
             <div className='flex flex-row justify-start'>
-              <div className='mr-14'>
-                <CategoryCollapse
-                  category={
-                    getCategoriesByMerchantID?.data
-                      ? getCategoriesByMerchantID.data
-                      : undefined
-                  }
-                  marginLeft={0}
-                  handleCategoryClick={handleCategoryClick}
-                />
-              </div>
-              <div className='grid grid-cols-3 justify-center'>
+              <ShopCategoryFilter>
+                <h1 className='mt-5 text-center'>CATEGORIES</h1>
+                <div className='divider' />
+                <div className='px-5'>
+                  <CategoryCollapse
+                    category={
+                      getCategoriesByMerchantID?.data
+                        ? getCategoriesByMerchantID.data
+                        : undefined
+                    }
+                    marginLeft={0}
+                    handleCategoryClick={handleCategoryClick}
+                  />
+                </div>
+              </ShopCategoryFilter>
+              <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1'>
                 {getAllMerchantProducts?.data?.map((product, i) => {
                   return (
                     <div className='mr-3 mb-3 w-64' key={i}>

@@ -1,4 +1,3 @@
-import { Avatar } from 'react-daisyui';
 import { AiFillStar } from 'react-icons/ai';
 import { MerchantDetail } from '../../types/component';
 import { Image } from '../common';
@@ -17,19 +16,16 @@ type ShopDetailCardProps = {
 
 const ShopDetailCard = ({ merchant }: ShopDetailCardProps) => {
   return (
-    <ShopDetailCardContainer className='bg-secondary '>
+    <ShopDetailCardContainer>
       <ShopDetailCardContent>
         <ShopDetailCardContentLeft>
           {merchant?.photo ? (
             <div>
-              <Image
-                src={merchant?.photo}
-                className='rounded-full mr-0 sm:mr-3'
-              />
+              <Image src={merchant?.photo} className='rounded-full mr-3' />
             </div>
           ) : (
             <div className='avatar placeholder'>
-              <div className='bg-neutral-focus text-neutral-content rounded-full w-24 sm:mr-3'>
+              <div className='bg-neutral-focus text-neutral-content rounded-full w-24 mr-3'>
                 <span className='text-3xl'>{merchant?.name.charAt(0)}</span>
               </div>
             </div>
@@ -46,11 +42,11 @@ const ShopDetailCard = ({ merchant }: ShopDetailCardProps) => {
           </RightContentAttribute>
           <RightContentAttribute>
             <div className='text-2xl font-bold'>{merchant?.product_count}</div>
-            <div>Products</div>
+            <div className='text-center'>Products</div>
           </RightContentAttribute>
           <RightContentAttribute>
             <div className='text-2xl font-bold'>{merchant?.total_rating}</div>
-            <div>No. of Ratings</div>
+            <div className='text-center'>No. of Ratings</div>
           </RightContentAttribute>
         </ShopDetailCardContentRight>
       </ShopDetailCardContent>
