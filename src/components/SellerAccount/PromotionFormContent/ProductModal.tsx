@@ -16,6 +16,7 @@ import { Image, LoadingData, NoData } from '../../common';
 type ProductModalProps = {
   open: boolean;
   products: SelectedProductMerchantPromotion;
+  // setProducts: (s: SelectedProductMerchantPromotion) => void;
   onClose: () => void;
   onConfirm: (newProducts: SelectedProductMerchantPromotion) => void;
   merchantID: string;
@@ -26,6 +27,7 @@ type ProductModalProps = {
 const ProductModal = ({
   open,
   products,
+  // setProducts,
   onClose,
   onConfirm,
   merchantID,
@@ -51,6 +53,9 @@ const ProductModal = ({
 
   useEffect(() => {
     setSelectedProductMerchantPromotion(products);
+  }, [open]);
+
+  useEffect(() => {
     setProductQuery({
       ...productQuery,
       filterStartDatetime: startDate,

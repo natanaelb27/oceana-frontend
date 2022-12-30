@@ -93,7 +93,7 @@ const BuyerCheckout = () => {
   const navigate = useNavigate();
   const { data: getAddressesData } = useGetAddressesQuery();
   const { data: getWalletDetailsData, refetch: refetchGetWalletDetails } =
-    useGetWalletDetailsQuery();
+    useGetWalletDetailsQuery('');
   const { data: getActiveMarketplaceVoucherData } =
     useGetActiveMarketplaceVoucherQuery();
   const [payCartWithWallet, { isLoading: payCartWithWalletLoading }] =
