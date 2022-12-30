@@ -12,6 +12,7 @@ import {
 } from 'react-daisyui';
 import { BiPlus } from 'react-icons/bi';
 import { CgTrashEmpty } from 'react-icons/cg';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import {
   MEDIA_TYPE,
@@ -20,42 +21,33 @@ import {
   PRODUCT_STATUS,
 } from '../../../constants';
 import { useLazyGetAncestorsCategoryQuery } from '../../../store/services/categoryService';
+import { useUploadMediaMutation } from '../../../store/services/mediaService';
 import {
   useCreateProductUpsertModelMutation,
   useLazyGetProductUpsertModelQuery,
   useUpdateProductUpsertModelMutation,
 } from '../../../store/services/productService';
-import { useGetSelectedShipmentQuery } from '../../../store/services/shipmentService';
 import {
   PUMProduct,
   PUMProductItem,
   PUMVariant,
 } from '../../../types/component/product';
 import { Courier } from '../../../types/component/shipment';
-import {
-  CreateProductResponse,
-  GetAncestorsCategoryResponse,
-} from '../../../types/response';
-import {
-  notifyErrorToast,
-  notifySuccessToast,
-  notifyInfoToast,
-} from '../../../utils/toast';
+import { CreateProductResponse } from '../../../types/response';
+import { UploadMediaResponse } from '../../../types/response/media';
+import { toUploadMediaRequest } from '../../../utils/mapperDTO';
+import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { getCount, handleNumberInvalidKey } from '../../../utils/validation';
 import { formikPreorderDay } from '../../../utils/yupValidation';
+import { ConfirmationModal } from '../../common';
 import SectionHeading from '../../common/SectionHeading/index';
+import UploadFileCardPerFile from '../../common/UploadFileCardPerFile';
 import CouriersConfiguration from '../ShipmentContent/CouriersConfiguration';
 import { Action, ButtonAddMore } from './Button';
 import CategoryModal from './CategoryModal';
 import { Label } from './Form';
 import * as FormLayout from './FormLayout';
 import * as ProductVariantLayout from './ProductVariantLayout';
-import UploadFileCardPerFile from '../../common/UploadFileCardPerFile';
-import { useUploadMediaMutation } from '../../../store/services/mediaService';
-import { toUploadMediaRequest } from '../../../utils/mapperDTO';
-import { UploadMediaResponse } from '../../../types/response/media';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ConfirmationModal } from '../../common';
 
 const ProductAddContent = () => {
   const navigate = useNavigate();
@@ -79,8 +71,7 @@ const ProductAddContent = () => {
       isLoading: getProductUpsertModelIsLoading,
     },
   ] = useLazyGetProductUpsertModelQuery();
-  const { data: getShipmentData, isLoading: getShipmentIsLoading } =
-    useGetSelectedShipmentQuery();
+
   const [uploadMedia, { isLoading: uploadMediaIsLoading }] =
     useUploadMediaMutation();
 
@@ -116,8 +107,7 @@ const ProductAddContent = () => {
       package_size_height: 0,
       condition: PRODCUT_CONDITION_TYPE.NEW,
       status: 'active',
-      process_day: 2,
-      preorder_day: 0,
+      process_day: 0,
       images: [] as string[],
       videos: [] as string[],
       product_items: [
@@ -189,8 +179,7 @@ const ProductAddContent = () => {
       package_size_length: Yup.number().min(1).max(1000).label('length'),
       package_size_width: Yup.number().min(1).max(1000).label('width'),
       package_size_height: Yup.number().min(1).max(1000).label('height'),
-      process_day: Yup.number().required('Please enter process_day'),
-      preorder_day: Yup.number().test('preorder_day', (value, ctx) =>
+      process_day: Yup.number().test('process_day', (value, ctx) =>
         formikPreorderDay(ctx, value)
       ),
       images: Yup.array()
@@ -286,7 +275,8 @@ const ProductAddContent = () => {
   const handleSetFileImage = (newFilesView: string[]) => {
     productFormik.setFieldValue('images', newFilesView);
   };
-
+  console.log(productFormik.errors);
+  console.log(productFormik.values);
   const handleUploadImage = (files: FileList) => {
     uploadMedia({ formData: toUploadMediaRequest(files[0]) })
       .unwrap()
@@ -375,12 +365,10 @@ const ProductAddContent = () => {
   };
 
   const handlePreorderToggleOnChange = () => {
-    if (productFormik.values.process_day == 2) {
-      productFormik.setFieldValue('process_day', 0);
-      productFormik.setFieldValue('preorder_day', 7);
+    if (productFormik.values.process_day < 7) {
+      productFormik.setFieldValue('process_day', 7);
     } else {
-      productFormik.setFieldValue('process_day', 2);
-      productFormik.setFieldValue('preorder_day', 0);
+      productFormik.setFieldValue('process_day', 0);
     }
   };
 
@@ -1073,12 +1061,6 @@ const ProductAddContent = () => {
   };
 
   useEffect(() => {
-    if (getShipmentData?.data?.couriers !== undefined) {
-      productFormik.setFieldValue('couriers', getShipmentData?.data?.couriers);
-    }
-  }, [getShipmentData]);
-
-  useEffect(() => {
     if (productID) {
       console.log('EXISTS product id');
       // get edit data
@@ -1123,8 +1105,10 @@ const ProductAddContent = () => {
         package_size_height: parseInt(packageSize?.[2]) || 0,
         condition: upsertModel.condition,
         status: upsertModel.status,
-        process_day: upsertModel.process_day,
-        preorder_day: upsertModel.preorder_day,
+        process_day:
+          upsertModel.process_day == 2 || upsertModel.process_day < 7
+            ? 0
+            : upsertModel.process_day,
         images: upsertModel.images,
         videos: upsertModel.videos,
         product_items: upsertModel.product_items,
@@ -1734,7 +1718,7 @@ const ProductAddContent = () => {
                 <FormLayout.InputContainer>
                   <div className='flex items-center gap-2'>
                     <Toggle
-                      checked={productFormik.values.process_day !== 2}
+                      checked={productFormik.values.process_day >= 7}
                       onChange={handlePreorderToggleOnChange}
                     />
                     <p className='text-sm'>
@@ -1743,7 +1727,7 @@ const ProductAddContent = () => {
                   </div>
                 </FormLayout.InputContainer>
               </FormLayout.LabelInputContainer>
-              {productFormik.values.process_day === 2 && (
+              {productFormik.values.process_day < 7 && (
                 <FormLayout.InputError>
                   <p className='text-sm'>
                     Send the product within 2 days (excluding Saturdays,
@@ -1752,7 +1736,7 @@ const ProductAddContent = () => {
                   </p>
                 </FormLayout.InputError>
               )}
-              {productFormik.values.process_day !== 2 && (
+              {productFormik.values.process_day >= 7 && (
                 <>
                   <FormLayout.LabelInputContainer>
                     <FormLayout.LabelContainer />
@@ -1761,12 +1745,21 @@ const ProductAddContent = () => {
                         <div className='flex items-center gap-2'>
                           <Input
                             type='number'
-                            name='preorder_day'
+                            name='process_day'
                             className='w-full'
-                            value={productFormik.values.preorder_day}
-                            onChange={productFormik.handleChange}
+                            value={productFormik.values.process_day}
+                            onChange={(e) => {
+                              if (parseInt(e.target.value) < 7) {
+                                productFormik.setFieldValue('process_day', 0);
+                                return;
+                              }
+                              productFormik.setFieldValue(
+                                'process_day',
+                                e.target.value
+                              );
+                            }}
                             onFocus={() =>
-                              (productFormik.touched.preorder_day = true)
+                              (productFormik.touched.process_day = true)
                             }
                             onKeyDown={handleNumberInvalidKey}
                             min={0}
@@ -1777,10 +1770,10 @@ const ProductAddContent = () => {
                     </FormLayout.InputContainer>
                   </FormLayout.LabelInputContainer>
                   <FormLayout.InputError>
-                    {productFormik.touched.preorder_day &&
-                      productFormik.errors.preorder_day && (
+                    {productFormik.touched.process_day &&
+                      productFormik.errors.process_day && (
                         <label className='label-text-alt text-error'>
-                          {productFormik.errors.preorder_day}
+                          {productFormik.errors.process_day}
                         </label>
                       )}
                   </FormLayout.InputError>
@@ -1818,7 +1811,6 @@ const ProductAddContent = () => {
             color='primary'
             form='addProductForm'
             loading={
-              getShipmentIsLoading ||
               createProductIsLoading ||
               updateProductIsLoading ||
               uploadMediaIsLoading ||

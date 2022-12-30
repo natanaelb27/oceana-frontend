@@ -146,7 +146,6 @@ export interface PUMProduct {
   condition: string;
   status: string;
   process_day: number;
-  preorder_day: number;
   images: string[];
   videos: string[];
   product_items: PUMProductItem[];
