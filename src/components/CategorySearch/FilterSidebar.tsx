@@ -350,7 +350,7 @@ const FilterSidebar = ({
         </Collapse>
       </FilterSidebarContainer>
       <Button
-        className='fixed bottom-10 right-10 btn-circle text-xl drop-shadow-xl z-40 md:hidden'
+        className='fixed bottom-10 left-8 btn-circle text-xl drop-shadow-xl z-40 md:hidden'
         color='primary'
         onClick={handleClickFilterToggle}
       >
