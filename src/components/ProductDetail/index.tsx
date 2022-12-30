@@ -14,6 +14,7 @@ import { useLazyGetAllReviewsQuery } from '../../store/services/reviewService';
 import { useGetShopInformationQuery } from '../../store/services/shopService';
 import {
   useIncrementUserCartMutation,
+  useLazyGetUserCartQuery,
   useUpdateUserCartMutation,
 } from '../../store/services/cartService';
 import {
@@ -29,7 +30,7 @@ import ReviewStatsAndFilter from './ReviewStatsAndFilter';
 import ShopBanner from './ShopBanner';
 import { PurchasedQuantitiesQuery, ReviewQuery } from '../../types/query';
 import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
-import { useAppSelector } from '../../store/store';
+import { useAppDispatch, useAppSelector } from '../../store/store';
 import { selectRole } from '../../store/slices/authSlice';
 import { validateUserRole } from '../../utils/auth';
 import { Role } from '../../types/role';
@@ -44,6 +45,8 @@ import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 import { useNavigate } from 'react-router-dom';
 import { PRODUCT_STATUS } from '../../constants/index';
 import { useLazyGetMyShopProfileQuery } from '../../store/services/myShopService';
+import { setCheckout, unsetCheckout } from '../../store/slices/checkoutSlice';
+import { CartGroupedByMerchant, CartProduct } from '../../types/component';
 
 type ProductDetailProps = {
   merchantID?: string;
@@ -86,6 +89,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     getMyShopProfile,
     { data: myShopProfileData, isLoading: myShopProfileIsLoading },
   ] = useLazyGetMyShopProfileQuery();
+  const [getUserCart] = useLazyGetUserCartQuery();
   const [getReviews, { data: getReviewsData }] = useLazyGetAllReviewsQuery();
   const [updateUserCart] = useUpdateUserCartMutation();
   const [incrementUserCart] = useIncrementUserCartMutation();
@@ -116,6 +120,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   const [productItemPrice, setProductItemPrice] = useState<number>(0);
   const [productLikeCount, setProductLikeCount] = useState(0);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [sort, setSort] = useState<ReviewsSort>(ReviewsSort.Latest);
 
   const roleCode = useAppSelector(selectRole);
@@ -227,7 +232,61 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
     })
       .unwrap()
       .then(() => {
-        navigate('/checkout');
+        getUserCart()
+          .unwrap()
+          .then((res) => {
+            const { data: userCart } = res;
+            dispatch(unsetCheckout());
+
+            const toCheckout: CartGroupedByMerchant[] = [];
+            const cartProducts: CartProduct[] = [];
+            const cartByMerchant = userCart?.filter(
+              (cartByMerchant) =>
+                cartByMerchant.products.filter(
+                  (product) => product.product_item_id === productItemID
+                ).length > 0
+            ) as CartGroupedByMerchant[];
+
+            const productInCart = cartByMerchant[0].products.filter(
+              (product) => product.product_item_id === productItemID
+            )[0];
+            const cartProduct: CartProduct = {
+              carts_id: productInCart.carts_id,
+              price: productInCart.price,
+              price_after_discount: productInCart.price_after_discount,
+              product_id: productInCart.product_id,
+              product_item_id: productInCart.product_item_id,
+              product_media_url: productInCart.product_media_url,
+              product_merchant_promotion_id:
+                productInCart.product_merchant_promotion_id,
+              product_name: productInCart.product_name,
+              product_variation: productInCart.product_variation,
+              product_weight: productInCart.product_weight,
+              stock_quantity: productInCart.stock_quantity,
+              quantity: purchasedQuantitiesQuery.quantity,
+            };
+            cartProducts.push(cartProduct);
+
+            const toCheckoutProductItem: CartGroupedByMerchant = {
+              city_id: cartByMerchant[0].city_id,
+              merchant_id: cartByMerchant[0].merchant_id,
+              merchant_province: cartByMerchant[0].merchant_province,
+              name: cartByMerchant[0].name,
+              products: cartProducts,
+            };
+            toCheckoutProductItem.products[0].quantity =
+              purchasedQuantitiesQuery.quantity;
+            toCheckout.push(toCheckoutProductItem);
+
+            dispatch(setCheckout({ cartGroupedByMerchants: toCheckout }));
+            navigate('/checkout');
+          })
+          .catch((err) => {
+            if (err && 'data' in err) {
+              const data = err.data as UpdateUserCartResponse;
+              notifyErrorToast(capitalizeFirstLetter(data.message));
+            }
+          });
       })
       .catch((err) => {
         if (err && 'data' in err) {
