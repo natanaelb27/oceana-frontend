@@ -18,6 +18,7 @@ import { MdNavigateNext, MdOutlineAddLocationAlt } from 'react-icons/md';
 import { TbDiscount2 } from 'react-icons/tb';
 import { Link, useNavigate } from 'react-router-dom';
 import {
+  Image,
   NoData,
   SealabsPayImg,
   Skeleton,
@@ -86,11 +87,7 @@ import {
   toSealabsPayPaymentRequest,
 } from '../../../utils/mapperDTO';
 import { titleCase } from '../../../utils/titleCase';
-import {
-  notifyErrorToast,
-  notifyInfoToast,
-  notifySuccessToast,
-} from '../../../utils/toast';
+import { notifyErrorToast, notifyInfoToast } from '../../../utils/toast';
 import DeliveryServiceModal from './DeliveryServiceModal';
 import MarketplaceVoucherModal from './MarketplaceVoucherModal';
 import MerchantVoucherModal from './MerchantVoucherModal';
@@ -862,8 +859,8 @@ const BuyerCheckout = () => {
                           }`}
                         >
                           <div className='h-20 w-20 md:h-24 md:w-24 md:col-span-1'>
-                            <img
-                              src='https://images.tokopedia.net/img/cache/100-square/product-1/2020/8/25/49295037/49295037_d63120b6-8ab4-4084-9765-a3b679ab18df_1000_1000.webp?ect=4g'
+                            <Image
+                              src={product.product_media_url}
                               className={`rounded-lg h-full w-full ${
                                 !availableProductsForDelivery[
                                   merchant_id
@@ -871,11 +868,7 @@ const BuyerCheckout = () => {
                                   ? 'opacity-60'
                                   : 'opacity-100'
                               }`}
-                              onError={({ currentTarget }) => {
-                                currentTarget.onerror = null;
-                                currentTarget.src =
-                                  'https://cdn.shopify.com/s/files/1/0332/8881/4637/products/noimageavailable_7b25b64a-d5f8-423b-a498-8a2785ea69b2_2000x.jpg?v=1669356395';
-                              }}
+                              alt='Checkout Item'
                             />
                           </div>
                           <div className='w-full flex flex-col col-span-2'>
