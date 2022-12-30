@@ -83,3 +83,17 @@ input[type='number'] {
     clip-path: polygon(0 0, 90% 0, 100% 10%, 100% 90%, 90% 100%, 0 100%);
   }
 }
+
+.transition-bg-blur-hover-on {
+  transition: opacity 500ms, height 0ms;
+}
+
+.transition-bg-blur-hover-off {
+  transition: opacity 500ms, height 0ms linear 400ms;
+}
+
+@layer components {
+  .transition-500 {
+    @apply transition-all  duration-[500ms];
+  }
+}
