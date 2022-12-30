@@ -26,13 +26,13 @@ const CategoryCollapse = ({
   };
 
   useEffect(() => {
+    const data: boolean[] = [];
     category?.map((category) => {
       if (category?.category) {
-        const data: boolean[] = [];
         category?.category.map(() => data.push(false));
-        setSubCategoryCollapse(data);
       }
     });
+    setSubCategoryCollapse(data);
   }, [category]);
 
   const handleClick = (id: number, name: string) => {
@@ -42,7 +42,7 @@ const CategoryCollapse = ({
   return (
     <div className='mb-2 w-full'>
       {category?.map((category, i) => (
-        <div key={i} className={`ml-${marginLeft}`}>
+        <div key={'category-' + category.id} className={`ml-${marginLeft}`}>
           <div className='flex hover:bg-base-300 p-2 pr-1 rounded-md items-center justify-between'>
             <div
               className='w-full cursor-pointer'
