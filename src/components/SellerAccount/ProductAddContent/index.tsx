@@ -17,11 +17,20 @@ import {
   MEDIA_TYPE,
   PRODCUT_CONDITION_TYPE,
   PRODCUT_IS_HAZARDOUS_STATUS,
+  PRODUCT_STATUS,
 } from '../../../constants';
 import { useLazyGetAncestorsCategoryQuery } from '../../../store/services/categoryService';
-import { useCreateProductUpsertModelMutation } from '../../../store/services/productService';
+import {
+  useCreateProductUpsertModelMutation,
+  useLazyGetProductUpsertModelQuery,
+  useUpdateProductUpsertModelMutation,
+} from '../../../store/services/productService';
 import { useGetSelectedShipmentQuery } from '../../../store/services/shipmentService';
-import { PUMProductItem, PUMVariant } from '../../../types/component/product';
+import {
+  PUMProduct,
+  PUMProductItem,
+  PUMVariant,
+} from '../../../types/component/product';
 import { Courier } from '../../../types/component/shipment';
 import {
   CreateProductResponse,
@@ -41,19 +50,47 @@ import CategoryModal from './CategoryModal';
 import { Label } from './Form';
 import * as FormLayout from './FormLayout';
 import * as ProductVariantLayout from './ProductVariantLayout';
-import UploadFileCard from '../../common/UploadFileCard';
+import UploadFileCardPerFile from '../../common/UploadFileCardPerFile';
 import { useUploadMediaMutation } from '../../../store/services/mediaService';
 import { toUploadMediaRequest } from '../../../utils/mapperDTO';
 import { UploadMediaResponse } from '../../../types/response/media';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ConfirmationModal } from '../../common';
 
 const ProductAddContent = () => {
+  const navigate = useNavigate();
+  const { productID } = useParams();
+
   const [createProduct, { isLoading: createProductIsLoading }] =
     useCreateProductUpsertModelMutation();
-  const [getAncestorsCategory] = useLazyGetAncestorsCategoryQuery();
+  const [updateProduct, { isLoading: updateProductIsLoading }] =
+    useUpdateProductUpsertModelMutation();
+  const [
+    getAncestorsCategory,
+    {
+      data: getAncestorsCategoryData,
+      isLoading: getAncestorsCategoryIsLoading,
+    },
+  ] = useLazyGetAncestorsCategoryQuery();
+  const [
+    getProductUpsertModel,
+    {
+      data: getProductUpsertModelData,
+      isLoading: getProductUpsertModelIsLoading,
+    },
+  ] = useLazyGetProductUpsertModelQuery();
   const { data: getShipmentData, isLoading: getShipmentIsLoading } =
     useGetSelectedShipmentQuery();
   const [uploadMedia, { isLoading: uploadMediaIsLoading }] =
     useUploadMediaMutation();
+
+  type OpenModal = {
+    cancel: boolean;
+  };
+
+  const [openModal, setOpenModal] = useState<OpenModal>({
+    cancel: false,
+  });
 
   const singleProductItem: PUMProductItem = {
     id: 0,
@@ -81,8 +118,8 @@ const ProductAddContent = () => {
       status: 'active',
       process_day: 2,
       preorder_day: 0,
-      images: [],
-      videos: [],
+      images: [] as string[],
+      videos: [] as string[],
       product_items: [
         {
           id: 0,
@@ -139,7 +176,7 @@ const ProductAddContent = () => {
           options: ['S', 'M', 'L'],
           images: [],
         },
-      ],
+      ] as PUMVariant[],
       couriers: [] as Courier[],
     },
     validationSchema: Yup.object({
@@ -149,22 +186,9 @@ const ProductAddContent = () => {
       category_id: Yup.number().min(1, 'Please enter category'),
       // merchant_id: Yup.number().required('Please enter merchant_id'),
       weight: Yup.number().required('Please enter weight').min(1),
-      package_size_length: Yup.number()
-        .min(1)
-        .max(1000)
-        .required()
-        .label('length'),
-      package_size_width: Yup.number()
-        .min(1)
-        .max(1000)
-        .required()
-        .label('width'),
-      package_size_height: Yup.number()
-        .min(1)
-        .max(1000)
-        .required()
-        .label('height'),
-      // status: Yup.string().required('Please enter status'),
+      package_size_length: Yup.number().min(1).max(1000).label('length'),
+      package_size_width: Yup.number().min(1).max(1000).label('width'),
+      package_size_height: Yup.number().min(1).max(1000).label('height'),
       process_day: Yup.number().required('Please enter process_day'),
       preorder_day: Yup.number().test('preorder_day', (value, ctx) =>
         formikPreorderDay(ctx, value)
@@ -185,7 +209,7 @@ const ProductAddContent = () => {
             .label('price'),
           stock_quantity: Yup.number()
             .required('Please enter stock quantity')
-            .min(1)
+            .min(0)
             .max(10000)
             .label('stock'),
         })
@@ -202,80 +226,122 @@ const ProductAddContent = () => {
     }),
     onSubmit: (values) => {
       values.package_size =
-        (values.package_size_length || '-') +
+        (values.package_size_length || '0') +
         'x' +
-        (values.package_size_width || '-') +
+        (values.package_size_width || '0') +
         'x' +
-        (values.package_size_height || '-');
-      createProduct({
-        request: values,
-      })
-        .unwrap()
-        .then(() => {
-          notifySuccessToast('Product has been created!');
-        })
-        .catch((err) => {
-          if ('data' in err) {
-            const response = err.data as CreateProductResponse;
+        (values.package_size_height || '0');
 
-            notifyErrorToast(response.message);
-          }
+      if (productFormik.values.id) {
+        updateProduct({
+          id: productFormik.values.id,
+          request: values,
         })
-        .finally();
+          .unwrap()
+          .then(() => {
+            notifySuccessToast('Product has been updated!');
+            navigate('/seller/marketing/products/list');
+          })
+          .catch((err) => {
+            if ('data' in err) {
+              const response = err.data as CreateProductResponse;
+              notifyErrorToast(response.message);
+            }
+          });
+      } else {
+        createProduct({
+          request: values,
+        })
+          .unwrap()
+          .then(() => {
+            notifySuccessToast('Product has been created!');
+            navigate('/seller/marketing/products/list');
+          })
+          .catch((err) => {
+            if ('data' in err) {
+              const response = err.data as CreateProductResponse;
+              notifyErrorToast(response.message);
+            } else {
+              notifyErrorToast('there is something wrong please try again');
+            }
+          })
+          .finally();
+      }
       return;
     },
   });
 
-  const [images, setImages] = useState<File[]>([]);
-  const [videos, setVideos] = useState<File[]>([]);
-  const [variantImages, setVariantImages] = useState<File[][]>([]);
-  const [variantImagesIndex, setVariantImagesIndex] = useState<
-    number | undefined
-  >(undefined);
-
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
 
-  useEffect(() => {
-    let getter: File[] | undefined = undefined;
-    let setter: React.Dispatch<React.SetStateAction<File[]>> | undefined =
-      undefined;
-    let productFormikMediaFields = '';
+  const handleModalClose = () => {
+    setOpenModal({
+      cancel: false,
+    });
+  };
 
-    if (images.length > productFormik.values.images.length) {
-      productFormikMediaFields = 'images';
-      getter = images;
-      setter = setImages;
-    } else if (videos.length > productFormik.values.videos.length) {
-      productFormikMediaFields = 'videos';
-      getter = videos;
-      setter = setVideos;
-    } else {
-      return;
-    }
+  const handleGoBack = () => {
+    navigate('/seller/marketing/products/list');
+  };
 
-    if (
-      getter === undefined ||
-      setter === undefined ||
-      productFormikMediaFields === ''
-    ) {
-      return;
-    }
+  const handleSetFileImage = (newFilesView: string[]) => {
+    productFormik.setFieldValue('images', newFilesView);
+  };
 
-    notifyInfoToast(`Uploading ${productFormikMediaFields}...`);
-
-    uploadMedia({ formData: toUploadMediaRequest(getter[getter.length - 1]) })
+  const handleUploadImage = (files: FileList) => {
+    uploadMedia({ formData: toUploadMediaRequest(files[0]) })
       .unwrap()
       .then(({ data }) => {
-        notifySuccessToast(`${productFormikMediaFields} has been uploaded!`);
-        const productFormikMedias = [
-          ...(productFormikMediaFields === 'images'
-            ? productFormik.values.images
-            : productFormik.values.videos),
-          data?.media_url,
-        ];
+        notifySuccessToast('Images has been uploaded!');
+        const filesURLs = [...productFormik.values.images, data?.media_url];
+        productFormik.setFieldValue('images', filesURLs);
+      })
+      .catch((err) => {
+        if ('data' in err) {
+          const response = err.data as UploadMediaResponse;
+          notifyErrorToast(response.message);
+        } else {
+          notifyErrorToast('upload image failed');
+        }
+      });
+  };
+
+  const handleSetFileVideo = (newFilesView: string[]) => {
+    productFormik.setFieldValue('videos', newFilesView);
+  };
+
+  const handleUploadVideo = (files: FileList) => {
+    uploadMedia({ formData: toUploadMediaRequest(files[0]) })
+      .unwrap()
+      .then(({ data }) => {
+        notifySuccessToast('Video has been uploaded!');
+        const filesURLs = [...productFormik.values.videos, data?.media_url];
+        productFormik.setFieldValue('videos', filesURLs);
+      })
+      .catch((err) => {
+        if ('data' in err) {
+          const response = err.data as UploadMediaResponse;
+          notifyErrorToast(response.message);
+        } else {
+          notifyErrorToast('upload video failed');
+        }
+      });
+  };
+
+  const handleSetFileVariantImages = (
+    index: number,
+    newFilesView: string[]
+  ) => {
+    productFormik.setFieldValue(`variants[0]images[${index}]`, newFilesView);
+  };
+
+  const handleUploadVariantImages = (index: number, files: FileList) => {
+    uploadMedia({ formData: toUploadMediaRequest(files[0]) })
+      .unwrap()
+      .then(({ data }) => {
+        notifySuccessToast('Variant images has been uploaded!');
         productFormik.setFieldValue(
-          productFormikMediaFields,
-          productFormikMedias
+          `variants[0]images[${index}]`,
+          data?.media_url
         );
       })
       .catch((err) => {
@@ -283,20 +349,10 @@ const ProductAddContent = () => {
           const response = err.data as UploadMediaResponse;
           notifyErrorToast(response.message);
         } else {
-          notifyErrorToast('upload media failed');
+          notifyErrorToast('upload variant images failed');
         }
-        if (
-          getter === undefined ||
-          setter === undefined ||
-          productFormikMediaFields === ''
-        ) {
-          return;
-        }
-        const currentMedia = [...getter];
-        currentMedia.splice(currentMedia.length - 1, 1);
-        setter(currentMedia);
       });
-  }, [images, videos]);
+  };
 
   const handleImagesOnDelete = (index: number) => {
     const images = [...productFormik.values.images];
@@ -310,58 +366,8 @@ const ProductAddContent = () => {
     productFormik.setFieldValue('videos', videos);
   };
 
-  useEffect(() => {
-    if (
-      variantImagesIndex === undefined ||
-      variantImages[variantImagesIndex].length === 0
-    ) {
-      return;
-    }
-
-    notifyInfoToast('Uploading variant image...');
-
-    uploadMedia({
-      formData: toUploadMediaRequest(variantImages[variantImagesIndex][0]),
-    })
-      .unwrap()
-      .then(({ data }) => {
-        notifySuccessToast('variant imagehas been uploaded!');
-        productFormik.setFieldValue(
-          `variants[0]images[${variantImagesIndex}]`,
-          data?.media_url
-        );
-      })
-      .catch((err) => {
-        if ('data' in err) {
-          const response = err.data as UploadMediaResponse;
-          notifyErrorToast(response.message);
-        } else {
-          notifyErrorToast('upload media failed');
-        }
-
-        const currentMedia = [...variantImages];
-        currentMedia[variantImagesIndex].splice(0, 1);
-        setVariantImages(currentMedia);
-      })
-      .finally(() => {
-        setVariantImagesIndex(undefined);
-      });
-  }, [variantImages && variantImagesIndex !== undefined]);
-
   const handleVariantImagesOnDelete = (index: number) => {
     productFormik.setFieldValue(`variants[0].images[${index}]`, '');
-    setVariantImagesIndex(undefined);
-  };
-
-  const handleSetFilesVariantImages = (
-    newVariantImages: File[],
-    index: number
-  ) => {
-    const newVariantImagesState = [...variantImages];
-    newVariantImagesState[index] = newVariantImages;
-
-    setVariantImages(newVariantImagesState);
-    setVariantImagesIndex(index);
   };
 
   const updateCouriers = (couriers: Courier[]) => {
@@ -572,10 +578,6 @@ const ProductAddContent = () => {
     updateProductItemsAccordingToVariants(newVariants);
 
     productFormik.setFieldValue('variants', newVariants);
-
-    if (index === 0) {
-      setVariantImages([]);
-    }
   };
 
   const handleDeleteVariantOptionOnClick = (
@@ -598,12 +600,12 @@ const ProductAddContent = () => {
       indexOption
     );
 
+    productFormik.setFieldValue('variants', newVariants);
+
     // if 1st variant then delete images
     if (indexVariant === 0) {
       deleteVariantImages(indexOption);
     }
-
-    productFormik.setFieldValue('variants', newVariants);
   };
 
   const handleIsHazardousOnChange = (
@@ -620,54 +622,27 @@ const ProductAddContent = () => {
   };
 
   const handleCategoryOnClick = (id: number) => {
-    let categoryNames = '';
-    getAncestorsCategory(id.toString())
-      .unwrap()
-      .then((response: GetAncestorsCategoryResponse) => {
-        const { data: ancestorsCategory } = response;
-        ancestorsCategory?.map((v, i) => {
-          categoryNames +=
-            v.name + (i < ancestorsCategory.length - 1 ? ' > ' : '');
-        });
-      })
-      .finally(() => {
-        productFormik.setFieldValue('category_name', categoryNames);
-        productFormik.setFieldValue('category_id', id);
-        setOpenCategoryModal(false);
-      });
-  };
-
-  const assignVariantImages = () => {
-    const newVariantImages: File[][] = [];
-    if (
-      productFormik.values.variants.length > 0 &&
-      variantImages.length === 0
-    ) {
-      productFormik.values.variants[0].options.forEach(() => {
-        newVariantImages.push([]);
-      });
-      if (newVariantImages.length > 0) {
-        setVariantImages(newVariantImages);
-      }
-    }
+    productFormik.setFieldValue('category_id', id);
+    getAncestorsCategory(id.toString());
   };
 
   const deleteVariantImages = (indexOption: number) => {
     if (
       productFormik.values.variants[0] === undefined ||
-      variantImages[indexOption] === undefined
+      productFormik.values.variants[0].images?.[indexOption] === undefined
     ) {
       return;
     }
-    const newVariantImagesState = [...variantImages];
+
+    const newVariantImagesState = [...productFormik.values.variants[0].images];
     newVariantImagesState.splice(indexOption, 1);
-    setVariantImages(newVariantImagesState);
+
+    productFormik.setFieldValue('variants[0]images', newVariantImagesState);
   };
 
   const renderVariants = () => {
     // if(productFormik.values.variants.length>0){
     // }
-    assignVariantImages();
     return (
       <div className='flex flex-col gap-3'>
         {
@@ -908,12 +883,27 @@ const ProductAddContent = () => {
                                 className='border border-base-300'
                                 rowSpan={rowSpanValue}
                               >
-                                <UploadFileCard
-                                  files={variantImages[valueVariantIndex] || []}
-                                  setFiles={(newVariantImages) => {
-                                    handleSetFilesVariantImages(
-                                      newVariantImages,
+                                <UploadFileCardPerFile
+                                  files={
+                                    productFormik.values.variants?.[0].images[
                                       valueVariantIndex
+                                    ]
+                                      ? [
+                                          productFormik.values.variants?.[0]
+                                            .images[valueVariantIndex],
+                                        ]
+                                      : ([] as string[])
+                                  }
+                                  setFiles={(newVariantImages) => {
+                                    handleSetFileVariantImages(
+                                      valueVariantIndex,
+                                      newVariantImages
+                                    );
+                                  }}
+                                  upload={(files) => {
+                                    handleUploadVariantImages(
+                                      valueVariantIndex,
+                                      files
                                     );
                                   }}
                                   uploadLimit={1}
@@ -1088,6 +1078,62 @@ const ProductAddContent = () => {
     }
   }, [getShipmentData]);
 
+  useEffect(() => {
+    if (productID) {
+      console.log('EXISTS product id');
+      // get edit data
+      getProductUpsertModel(productID);
+    }
+  }, [productID]);
+
+  useEffect(() => {
+    console.log('CATEGORYCHANGES');
+    if (getAncestorsCategoryData !== undefined) {
+      let categoryNames = '';
+      const { data: ancestorsCategory } = getAncestorsCategoryData;
+      ancestorsCategory?.map((v, i) => {
+        categoryNames +=
+          v.name + (i < ancestorsCategory.length - 1 ? ' > ' : '');
+      });
+      productFormik.setFieldValue('category_name', categoryNames);
+      setOpenCategoryModal(false);
+    }
+  }, [getAncestorsCategoryData]);
+
+  useEffect(() => {
+    if (getProductUpsertModelData !== undefined) {
+      const upsertModel = getProductUpsertModelData.data as PUMProduct;
+
+      const packageSize = upsertModel.package_size.split('x');
+
+      getAncestorsCategory(upsertModel.category_id.toString());
+
+      productFormik.setValues({
+        id: upsertModel.id,
+        name: upsertModel.name,
+        description: upsertModel.description,
+        category_id: upsertModel.category_id,
+        category_name: productFormik.values.category_name,
+        merchant_id: upsertModel.merchant_id,
+        weight: upsertModel.weight,
+        is_hazardous: upsertModel.is_hazardous,
+        package_size: upsertModel.package_size,
+        package_size_length: parseInt(packageSize?.[0]) || 0,
+        package_size_width: parseInt(packageSize?.[1]) || 0,
+        package_size_height: parseInt(packageSize?.[2]) || 0,
+        condition: upsertModel.condition,
+        status: upsertModel.status,
+        process_day: upsertModel.process_day,
+        preorder_day: upsertModel.preorder_day,
+        images: upsertModel.images,
+        videos: upsertModel.videos,
+        product_items: upsertModel.product_items,
+        variants: upsertModel.variants,
+        couriers: upsertModel.couriers,
+      });
+    }
+  }, [getProductUpsertModelData]);
+
   return (
     <>
       <Form
@@ -1096,7 +1142,9 @@ const ProductAddContent = () => {
         onSubmit={(e) => {
           e.preventDefault();
           const count = getCount(productFormik.errors, 0);
-          notifyErrorToast(`There is ${count} mistakes`);
+          if (count > 0) {
+            notifyErrorToast(`There is ${count} mistakes`);
+          }
           productFormik.handleSubmit();
         }}
       >
@@ -1114,15 +1162,16 @@ const ProductAddContent = () => {
                   <Label required={true}>Pictures</Label>
                 </FormLayout.LabelContainer>
                 <FormLayout.InputContainer>
-                  <UploadFileCard
-                    files={images}
-                    setFiles={setImages}
+                  <UploadFileCardPerFile
+                    files={productFormik.values.images}
+                    setFiles={handleSetFileImage}
                     uploadLimit={5}
+                    upload={handleUploadImage}
                     fileType={MEDIA_TYPE.IMAGE}
                     multiple={false}
                     onDelete={handleImagesOnDelete}
                     loading={uploadMediaIsLoading}
-                  ></UploadFileCard>
+                  ></UploadFileCardPerFile>
                 </FormLayout.InputContainer>
               </FormLayout.LabelInputContainer>
               <FormLayout.InputError>
@@ -1138,19 +1187,20 @@ const ProductAddContent = () => {
             <FormLayout.LabelInputErrorContainer>
               <FormLayout.LabelInputContainer>
                 <FormLayout.LabelContainer justify='justify-start'>
-                  <Label required={true}>Videos</Label>
+                  <Label required={false}>Videos</Label>
                 </FormLayout.LabelContainer>
                 <FormLayout.InputContainer>
                   <div className='flex flex-col md:flex-row gap-2'>
-                    <UploadFileCard
-                      files={videos}
-                      setFiles={setVideos}
+                    <UploadFileCardPerFile
+                      files={productFormik.values.videos}
+                      setFiles={handleSetFileVideo}
+                      upload={handleUploadVideo}
                       uploadLimit={1}
                       fileType={MEDIA_TYPE.VIDEO}
                       multiple={false}
                       onDelete={handleVideosOnDelete}
                       loading={uploadMediaIsLoading}
-                    ></UploadFileCard>
+                    ></UploadFileCardPerFile>
                     <p className='text-sm text-base-content/60'>
                       Size: Max. 30MB and max. resolution 1,280x1,280px
                       <br />
@@ -1371,6 +1421,56 @@ const ProductAddContent = () => {
               title='Product Management'
               description='Manage the product.'
             />
+
+            {/* input: Status */}
+            <FormLayout.LabelInputErrorContainer>
+              <FormLayout.LabelInputContainer>
+                <FormLayout.LabelContainer justify='justify-start'>
+                  <Label required={true}>Status</Label>
+                </FormLayout.LabelContainer>
+                <FormLayout.InputContainer>
+                  <div className='flex items-center gap-2'>
+                    <label className='flex flex-row gap-2 items-center cursor-pointer'>
+                      <Radio
+                        size='sm'
+                        color='primary'
+                        name='status'
+                        value={PRODUCT_STATUS.ACTIVE}
+                        checked={
+                          productFormik.values.status === PRODUCT_STATUS.ACTIVE
+                        }
+                        onChange={productFormik.handleChange}
+                      />
+                      <span className='text-sm'>Active</span>
+                    </label>
+                    <label className='flex flex-row gap-2 items-center cursor-pointer'>
+                      <Radio
+                        size='sm'
+                        color='primary'
+                        name='status'
+                        value={PRODUCT_STATUS.INACTIVE}
+                        checked={
+                          productFormik.values.status ===
+                          PRODUCT_STATUS.INACTIVE
+                        }
+                        onChange={productFormik.handleChange}
+                      />
+                      <span className='text-sm'>
+                        Inactive (Cannot be seen by buyer)
+                      </span>
+                    </label>
+                  </div>
+                </FormLayout.InputContainer>
+              </FormLayout.LabelInputContainer>
+              <FormLayout.InputError>
+                {productFormik.touched.status &&
+                  productFormik.errors.status && (
+                    <label className='label-text-alt text-error'>
+                      {productFormik.errors.status}
+                    </label>
+                  )}
+              </FormLayout.InputError>
+            </FormLayout.LabelInputErrorContainer>
             {/* input: product variant */}
             <FormLayout.LabelInputErrorContainer>
               <FormLayout.LabelInputContainer>
@@ -1702,23 +1802,44 @@ const ProductAddContent = () => {
             </FormLayout.LabelInputErrorContainer>
           </div>
         </Card>
-        <Button
-          color='primary'
-          type='submit'
-          form='addProductForm'
-          loading={
-            getShipmentIsLoading ||
-            createProductIsLoading ||
-            uploadMediaIsLoading
-          }
-        >
-          Save
-        </Button>
+        <div className='w-full md:w-sm flex flex-col md:flex-row md:justify-end gap-2'>
+          <Button
+            type='button'
+            color='ghost'
+            variant='outline'
+            onClick={() => {
+              setOpenModal({ ...openModal, cancel: true });
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            type='submit'
+            color='primary'
+            form='addProductForm'
+            loading={
+              getShipmentIsLoading ||
+              createProductIsLoading ||
+              updateProductIsLoading ||
+              uploadMediaIsLoading ||
+              getAncestorsCategoryIsLoading
+            }
+          >
+            {productFormik.values.id === 0 ? 'Add Product' : 'Edit Product'}
+          </Button>
+        </div>
       </Form>
       <CategoryModal
         open={openCategoryModal}
         setOpen={setOpenCategoryModal}
         handleCategoryOnClick={handleCategoryOnClick}
+      />
+      <ConfirmationModal
+        open={openModal.cancel}
+        title='Are you sure?'
+        message='You will lose your changes.'
+        onClose={handleModalClose}
+        onAccepted={handleGoBack}
       />
     </>
   );
