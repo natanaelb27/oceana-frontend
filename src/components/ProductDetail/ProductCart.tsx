@@ -124,7 +124,10 @@ const ProductCart = ({
               size='sm'
               onClick={handleClickAddQuantity}
               disabled={
-                (purchasedQuantitiesStock || 0) <= quantity || stock <= quantity
+                selectedVariations.filter((items) => typeof items === 'number')
+                  .length === (productVariations.length || 0)
+                  ? (purchasedQuantitiesStock || 0) <= quantity
+                  : stock <= quantity
               }
             >
               +
@@ -147,7 +150,9 @@ const ProductCart = ({
             <p className='min-w-fit line-clamp-1'>Stock: {stock}</p>
           )}
         </div>
-        {purchasedQuantitiesStock !== 0 &&
+        {selectedVariations.filter((items) => typeof items === 'number')
+          .length === (productVariations.length || 0) &&
+        purchasedQuantitiesStock !== 0 &&
         productMerchantPromotionID !== null &&
         userMaxPurchaseQuantity &&
         maxPurchaseQuantity &&

@@ -123,7 +123,10 @@ const ProductDescription = ({
       )}
 
       {productDetail.price_after_discount !== null &&
-      purchasedQuantitiesProductMerchantPromotionID !== null ? (
+      (selectedVariations.filter((items) => typeof items === 'number')
+        .length === (productVariations.length || 0)
+        ? purchasedQuantitiesProductMerchantPromotionID !== null
+        : true) ? (
         <div className='flex items-center'>
           <Tooltip message='Murah Lebay' color='success'>
             {stringCompare(
