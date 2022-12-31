@@ -400,6 +400,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
         setProductLikeCount(data.data.like_count);
         if (data.data.product_variation.length === 0) {
           if (role === Role.Buyer || role === Role.Seller) {
+            setProductSelected(data.data.product_model[0]);
             getPurchasedQuantities(
               toPurchasedQuantitiesQuery({
                 product_item_id: data.data.product_model[0].product_item_id,
@@ -407,6 +408,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                 quantity: purchasedQuantitiesQuery.quantity,
               })
             );
+          } else {
+            setProductSelected(data.data.product_model[0]);
           }
         }
         getAllSimilarProducts(

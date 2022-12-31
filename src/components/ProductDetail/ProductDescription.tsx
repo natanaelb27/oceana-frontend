@@ -96,7 +96,9 @@ const ProductDescription = ({
       selectedVariations.filter((items) => typeof items === 'number').length ===
         productVariations.length ? (
         <h4 className='text-4xl font-bold mb-2.5'>
-          {toRupiah(selectedModel?.price_after_discount || 0)}
+          {toRupiah(
+            selectedModel?.price_after_discount || selectedModel?.price || 0
+          )}
         </h4>
       ) : purchasedQuantitiesPrice !== undefined &&
         selectedVariations.filter((items) => typeof items === 'number')
