@@ -2,10 +2,10 @@ import React from 'react';
 import ClassNames from '../../../utils/classnames';
 
 type SkeletonProps = {
-  className: string;
+  className?: string;
 };
 
-const Skeleton = ({ className }: SkeletonProps) => {
+const Skeleton = ({ className = '' }: SkeletonProps) => {
   return (
     <div
       className={ClassNames([

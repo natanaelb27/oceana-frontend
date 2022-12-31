@@ -46,7 +46,7 @@ export const ChatBoxContainer = tw.div<any>`
 
     h-[80vh]
     w-[80vw]
-    md:h-[80vh]
+    md:h-[60vh]
     md:w-[50vw]
     
     shadow
@@ -57,11 +57,4 @@ export const ChatBoxContainer = tw.div<any>`
     rounded-t-lg
 
     bg-base-100
-`;
-
-const Temp = tw.div<any>`
-    min-w-[30vw]
-    max-w-[50vh]
-    min-h-[30vh]
-    max-h-[50vh]
 `;

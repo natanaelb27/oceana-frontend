@@ -1,5 +1,4 @@
 import React from 'react';
-import { Badge } from 'react-daisyui';
 import { CHAT_POSITION } from '../../constants/chat';
 import ClassNames from '../../utils/classnames';
 
@@ -20,12 +19,16 @@ const ChatBubble = ({
         position === CHAT_POSITION.LEFT ? 'items-start' : '',
       ])}
     >
-      <Badge
-        color={position === CHAT_POSITION.RIGHT ? undefined : 'primary'}
-        className='p-4 rounded-lg'
+      <div
+        className={ClassNames([
+          position === CHAT_POSITION.RIGHT
+            ? 'bg-base-content/70'
+            : 'bg-primary',
+          'p-3 rounded-lg text-secondary-content break-all',
+        ])}
       >
         {children}
-      </Badge>
+      </div>
       <span className='text-xs text-accent-content p-1'>12:01</span>
     </div>
   );
