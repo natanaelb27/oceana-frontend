@@ -106,11 +106,12 @@ const ProductCart = ({
         )}
         <div className='mb-2 font-bold text-lg'>Quantity</div>
         <div className='flex justify-between items-center flex-wrap gap-2'>
-          <InputGroup size='sm' className='max-w-fit'>
+          <div className='max-w-fit'>
             <Button
               size='sm'
               onClick={handleClickDecreaseQuantity}
               disabled={quantity === 0 || quantity === 1}
+              className='rounded-r-none'
             >
               -
             </Button>
@@ -118,7 +119,7 @@ const ProductCart = ({
               size='sm'
               value={quantity || 0}
               onChange={handleChangeQuantity}
-              className='w-16 text-center'
+              className='w-16 text-center rounded-none'
             />
             <Button
               size='sm'
@@ -129,10 +130,11 @@ const ProductCart = ({
                   ? (purchasedQuantitiesStock || 0) <= quantity
                   : stock <= quantity
               }
+              className='rounded-l-none'
             >
               +
             </Button>
-          </InputGroup>
+          </div>
           {purchasedQuantitiesStock &&
           productVariations.length ===
             selectedVariations.filter((items) => typeof items === 'number')
