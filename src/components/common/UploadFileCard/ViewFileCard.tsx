@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Tooltip } from 'react-daisyui';
 import { HiXCircle } from 'react-icons/hi';
 import Zoom from 'react-medium-image-zoom';
@@ -12,7 +12,7 @@ type ContentProps = {
 };
 
 function ViewFileCard({ file, idx, type, handleClickDelete }: ContentProps) {
-  const [isHovering, setIsHovering] = useState(false);
+  const [isHovering, setIsHovering] = useState<boolean>(false);
 
   const handleMouseOver = () => {
     setIsHovering(true);

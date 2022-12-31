@@ -13,9 +13,9 @@ import {
 } from 'react-daisyui';
 import { BiLogOutCircle } from 'react-icons/bi';
 import { CgLogOut, CgProfile } from 'react-icons/cg';
-import { FaSearch, FaShoppingCart } from 'react-icons/fa';
+import { FaPalette, FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { GoPerson } from 'react-icons/go';
-import { HiMoon, HiSun } from 'react-icons/hi';
+import { HiHeart, HiMoon, HiSun } from 'react-icons/hi';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 import { BsShop } from 'react-icons/bs';
@@ -30,11 +30,13 @@ import {
 import { useLazyGetWalletDetailsQuery } from '../../../store/services/walletService';
 import { selectRole, unsetCredentials } from '../../../store/slices/authSlice';
 import { baseApi, useAppDispatch, useAppSelector } from '../../../store/store';
+import { Role } from '../../../types/role';
+import { validateUserRole } from '../../../utils/auth';
+import ClassNames from '../../../utils/classnames';
 import { toRupiah } from '../../../utils/convert';
 import { roleCodeToText } from '../../../utils/roleCodeToText';
-import NoData from '../NoData';
 import Image from '../Image';
-import ClassNames from '../../../utils/classnames';
+import NoData from '../NoData';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -42,8 +44,11 @@ const Header = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [logout] = useLogoutMutation();
+  const [hoverTheme, setHoverTheme] = useState(false);
   const [hoverCart, setHoverCart] = useState(false);
   const [hoverProfile, setHoverProfile] = useState(false);
+  const [hoverOverlay, setHoverOverlay] = useState(false);
+  const [enableHoverGap, setEnableHoverGap] = useState(false);
   const [totalCartItems, setTotalCartItems] = useState(0);
   const [displaySearchBar, setDisplaySearchBar] = useState(false);
   const [getUserCart, { data: userCartData }] = useLazyGetUserCartQuery();
@@ -62,7 +67,11 @@ const Header = () => {
   const [search, setSearch] = useState<string>('');
 
   useEffect(() => {
-    if (role !== null) {
+    if (
+      role &&
+      validateUserRole(role) !== Role.Guest &&
+      validateUserRole(role) !== Role.Admin
+    ) {
       getUserCart();
       getUserProfile();
       getUserWallet('');
@@ -88,22 +97,638 @@ const Header = () => {
     setSearch(e.target.value);
   };
 
+  const handleHoverTheme = () => {
+    setHoverTheme(true);
+  };
+
+  const handleUnhoverTheme = () => {
+    setHoverTheme(false);
+  };
+
   const handleHoverCart = () => {
     if (role !== null) {
       setHoverCart(true);
+      setHoverOverlay(true);
+      setEnableHoverGap(true);
     }
   };
 
   const handleUnhoverCart = () => {
     setHoverCart(false);
+    setHoverOverlay(false);
+    setEnableHoverGap(false);
   };
 
   const handleHoverProfile = () => {
     setHoverProfile(true);
+    setHoverOverlay(true);
+    setEnableHoverGap(true);
   };
 
   const handleUnhoverProfile = () => {
     setHoverProfile(false);
+    setHoverOverlay(false);
+    setEnableHoverGap(false);
+  };
+
+  const handleHoverGap = () => {
+    if (enableHoverGap === true) {
+      setHoverOverlay(true);
+    }
+  };
+
+  const handleUnhoverGap = () => {
+    setHoverOverlay(false);
+  };
+
+  const renderHoverTheme = () => {
+    if (!hoverTheme) {
+      return null;
+    }
+
+    return (
+      <div
+        className='absolute bg-base-100 rounded-xl border-none shadow-lg top-8 right-0 z-50 transition-all duration-300'
+        onMouseOver={handleHoverTheme}
+        onMouseOut={handleUnhoverTheme}
+      >
+        <Card className='text-base-content w-64'>
+          <Card.Body className='p-5 normal-case font-normal overflow-y-auto h-64'>
+            <div className='grid grid-cols-1 gap-3'>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='light'
+                  onClick={() => handleThemeClick('light')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>light</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='dark'
+                  onClick={() => handleThemeClick('dark')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>dark</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='cupcake'
+                  onClick={() => handleThemeClick('cupcake')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>cupcake</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='bumblebee'
+                  onClick={() => handleThemeClick('bumblebee')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        bumblebee
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='emerald'
+                  onClick={() => handleThemeClick('emerald')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>emerald</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='corporate'
+                  onClick={() => handleThemeClick('corporate')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        corporate
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='synthwave'
+                  onClick={() => handleThemeClick('synthwave')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        synthwave
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='retro'
+                  onClick={() => handleThemeClick('retro')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>retro</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='cyberpunk'
+                  onClick={() => handleThemeClick('cyberpunk')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        cyberpunk
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='valentine'
+                  onClick={() => handleThemeClick('valentine')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        valentine
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='halloween'
+                  onClick={() => handleThemeClick('halloween')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        halloween
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='garden'
+                  onClick={() => handleThemeClick('garden')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>garden</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='forest'
+                  onClick={() => handleThemeClick('forest')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>forest</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='aqua'
+                  onClick={() => handleThemeClick('aqua')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>aqua</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='lofi'
+                  onClick={() => handleThemeClick('lofi')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>lofi</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='pastel'
+                  onClick={() => handleThemeClick('pastel')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>pastel</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='fantasy'
+                  onClick={() => handleThemeClick('fantasy')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>fantasy</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='wireframe'
+                  onClick={() => handleThemeClick('wireframe')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        wireframe
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='black'
+                  onClick={() => handleThemeClick('black')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>black</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='luxury'
+                  onClick={() => handleThemeClick('luxury')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>luxury</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='dracula'
+                  onClick={() => handleThemeClick('dracula')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>dracula</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='cmyk'
+                  onClick={() => handleThemeClick('cmyk')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>cmyk</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='autumn'
+                  onClick={() => handleThemeClick('autumn')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>autumn</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='business'
+                  onClick={() => handleThemeClick('business')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        business
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='acid'
+                  onClick={() => handleThemeClick('acid')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>acid</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='lemonade'
+                  onClick={() => handleThemeClick('lemonade')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>
+                        lemonade
+                      </div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='night'
+                  onClick={() => handleThemeClick('night')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>night</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='coffee'
+                  onClick={() => handleThemeClick('coffee')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>coffee</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'>
+                <div
+                  data-theme='winter'
+                  onClick={() => handleThemeClick('winter')}
+                  className='bg-base-100 text-base-content w-full cursor-pointer font-sans'
+                >
+                  <div className='grid grid-cols-5 grid-rows-3'>
+                    <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                      <div className='flex-grow text-sm font-bold'>winter</div>
+                      <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                        <div className='bg-primary w-2 rounded'></div>
+                        <div className='bg-secondary w-2 rounded'></div>
+                        <div className='bg-accent w-2 rounded'></div>
+                        <div className='bg-neutral w-2 rounded'></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
+      </div>
+    );
   };
 
   const renderHoverCart = () => {
@@ -223,7 +848,7 @@ const Header = () => {
           onMouseOver={handleHoverProfile}
           onMouseOut={handleUnhoverProfile}
         >
-          <Card className=' text-base-content w-96 p-5 normal-case font-normal gap-1'>
+          <Card className='text-base-content w-96 p-5 normal-case font-normal gap-1'>
             <div
               className='text-lg p-2 rounded-lg shadow-md mb-1 hover:bg-base-200 hover:cursor-pointer border-r-4 border-r-secondary transition-all duration-200'
               onClick={handleProfileClick}
@@ -274,6 +899,20 @@ const Header = () => {
                 </div>
               )}
               <div className='text-xs'>Wallet ID: {userWalletData.data.id}</div>
+            </div>
+            <div
+              className='text-lg p-2 rounded-lg shadow-md mb-1 flex flex-row hover:bg-base-200 hover:cursor-pointer border-r-4 border-r-secondary transition-all duration-200'
+              onClick={handleWishlistClick}
+            >
+              <div className='w-16 flex items-center justify-center'>
+                <HiHeart className='text-4xl text-secondary' />
+              </div>
+              <div className='flex flex-col'>
+                <span className='font-bold'>Wishlist</span>
+                <span className='text-xs'>
+                  List of all your favorite products
+                </span>
+              </div>
             </div>
             {myShopProfileData?.data ? (
               <div
@@ -358,6 +997,11 @@ const Header = () => {
     setHoverProfile(false);
   };
 
+  const handleWishlistClick = () => {
+    navigate('/user/wishlist');
+    setHoverProfile(false);
+  };
+
   const handleRegisterShopClick = () => {
     navigate('/seller');
     setHoverProfile(false);
@@ -382,10 +1026,10 @@ const Header = () => {
     <>
       <div
         className={`${
-          hoverCart || hoverProfile
+          hoverOverlay
             ? 'opacity-100 w-full h-full transition-bg-blur-hover-on'
             : ' opacity-0 h-0 transition-bg-blur-hover-off'
-        } absolute w-full h-full overlay bg-black bg-opacity-40 backdrop-blur-sm z-30`}
+        } fixed w-full h-full overlay bg-black bg-opacity-40 backdrop-blur-sm z-30`}
       ></div>
       <header
         className={`sticky top-0 z-30 py-2 w-full component-preview items-center justify-center gap-2 font-sans transition-all duration-100 ${
@@ -404,63 +1048,64 @@ const Header = () => {
               </NavLink>
             </div>
             <div className='flex-1'>
-              <Form onSubmit={handleSearchSubmit} className='w-full'>
-                <InputGroup>
-                  <Input
-                    type='text'
-                    placeholder='Search...'
-                    color='ghost'
-                    className='focus:text-base-content bg-base-100 placeholder:text-base-100 bg-opacity-[13%] text-base-100 w-full border-none'
-                    value={search}
-                    onChange={hanldeSearchChange}
-                  />
-                  <Button shape='square' color='ghost'>
-                    <FaSearch />
-                  </Button>
-                </InputGroup>
-              </Form>
+              {validateUserRole(role) !== Role.Admin && (
+                <Form onSubmit={handleSearchSubmit} className='w-full'>
+                  <InputGroup>
+                    <Input
+                      type='text'
+                      placeholder='Search...'
+                      color='ghost'
+                      className='focus:text-base-content bg-base-100 placeholder:text-base-100 bg-opacity-[13%] text-base-100 w-full border-none'
+                      value={search}
+                      onChange={hanldeSearchChange}
+                    />
+                    <Button shape='square' color='ghost'>
+                      <FaSearch />
+                    </Button>
+                  </InputGroup>
+                </Form>
+              )}
             </div>
             <div className='flex-none ml-4 gap-2'>
-              {theme === 'light' ? (
-                <Button
-                  shape='circle'
-                  color='ghost'
-                  size='sm'
-                  onClick={() => handleThemeClick('dark')}
-                >
-                  <HiSun className='text-lg' />
-                </Button>
-              ) : (
-                <Button
-                  shape='circle'
-                  color='ghost'
-                  size='sm'
-                  onClick={() => handleThemeClick('light')}
-                >
-                  <HiMoon className='text-lg' />
-                </Button>
-              )}
               <div className='relative'>
-                <NavLink to='/cart' className=''>
-                  <Button
-                    color='ghost'
-                    size='sm'
-                    onMouseOver={handleHoverCart}
-                    onMouseOut={handleUnhoverCart}
-                  >
-                    <FaShoppingCart className='text-lg' />
-                    {totalCartItems > 0 && (
-                      <Badge
-                        className='absolute ml-6 mb-4 bg-red-600 border-none text-white text-xs p-2'
-                        size='xs'
-                      >
-                        {totalCartItems}
-                      </Badge>
-                    )}
-                  </Button>
-                </NavLink>
-                {renderHoverCart()}
+                <Button
+                  color='ghost'
+                  size='sm'
+                  onMouseOver={handleHoverTheme}
+                  onMouseOut={handleUnhoverTheme}
+                >
+                  <FaPalette className='text-lg' />
+                </Button>
+                {renderHoverTheme()}
               </div>
+
+              {validateUserRole(role) !== Role.Admin && (
+                <div
+                  className='relative pr-2'
+                  onMouseOver={handleHoverGap}
+                  onMouseOut={handleUnhoverGap}
+                >
+                  <NavLink to='/cart' className=''>
+                    <Button
+                      color='ghost'
+                      size='sm'
+                      onMouseOver={handleHoverCart}
+                      onMouseOut={handleUnhoverCart}
+                    >
+                      <FaShoppingCart className='text-lg' />
+                      {totalCartItems > 0 && (
+                        <Badge
+                          className='absolute ml-6 mb-4 bg-red-600 border-none text-white text-xs p-2'
+                          size='xs'
+                        >
+                          {totalCartItems}
+                        </Badge>
+                      )}
+                    </Button>
+                  </NavLink>
+                  {renderHoverCart()}
+                </div>
+              )}
               {!role ? (
                 <>
                   <NavLink to='/login'>
@@ -470,20 +1115,28 @@ const Header = () => {
                     <Button color='ghost'>Register</Button>
                   </NavLink>
                 </>
-              ) : (
-                <div className='relative'>
+              ) : validateUserRole(role) === Role.Buyer ||
+                validateUserRole(role) === Role.Seller ? (
+                <div
+                  className='relative'
+                  onMouseOver={handleHoverProfile}
+                  onMouseOut={handleUnhoverProfile}
+                >
                   <div onClick={handleProfileClick}>
-                    <Button
-                      color='ghost'
-                      size='sm'
-                      onMouseOver={handleHoverProfile}
-                      onMouseOut={handleUnhoverProfile}
-                    >
+                    <Button color='ghost' size='sm'>
                       <GoPerson className='text-lg' />
                     </Button>
                   </div>
                   {renderHoverProfile()}
                 </div>
+              ) : (
+                <Button
+                  color='ghost'
+                  startIcon={<CgLogOut className='text-xl' />}
+                  onClick={handleLogoutClick}
+                >
+                  Logout
+                </Button>
               )}
             </div>
           </Navbar>
@@ -515,30 +1168,32 @@ const Header = () => {
               </div>
 
               <div className='flex flex-row flex-nowrap gap-1 items-center'>
-                <div className='flex'>
-                  <Form onSubmit={handleSearchSubmit}>
-                    <Input
-                      type='text'
-                      placeholder='Search...'
+                {validateUserRole(role) !== Role.Admin && (
+                  <div className='flex'>
+                    <Form onSubmit={handleSearchSubmit}>
+                      <Input
+                        type='text'
+                        placeholder='Search...'
+                        color='ghost'
+                        className={`bg-base-100 bg-opacity-[13%] w-full border-none text-base-100 rounded-r-none focus:text-base-content placeholder:text-base-100 transition-all ${
+                          displaySearchBar
+                            ? 'w-full p-5 opacity-100'
+                            : 'w-0 p-0 opacity-30'
+                        }`}
+                        value={search}
+                        onChange={hanldeSearchChange}
+                      />
+                    </Form>
+                    <Button
+                      className={displaySearchBar ? 'rounded-l-none' : ''}
+                      shape='square'
                       color='ghost'
-                      className={`bg-base-100 bg-opacity-[13%] w-full border-none text-base-100 rounded-r-none focus:text-base-content placeholder:text-base-100 transition-all ${
-                        displaySearchBar
-                          ? 'w-full p-5 opacity-100'
-                          : 'w-0 p-0 opacity-30'
-                      }`}
-                      value={search}
-                      onChange={hanldeSearchChange}
-                    />
-                  </Form>
-                  <Button
-                    className={displaySearchBar ? 'rounded-l-none' : ''}
-                    shape='square'
-                    color='ghost'
-                    onClick={() => setDisplaySearchBar(!displaySearchBar)}
-                  >
-                    <FaSearch />
-                  </Button>
-                </div>
+                      onClick={() => setDisplaySearchBar(!displaySearchBar)}
+                    >
+                      <FaSearch />
+                    </Button>
+                  </div>
+                )}
 
                 {theme === 'light' ? (
                   <Button
@@ -559,19 +1214,22 @@ const Header = () => {
                     <HiMoon className='text-lg' />
                   </Button>
                 )}
-                <NavLink to='/cart'>
-                  <Button color='ghost' size='sm'>
-                    <FaShoppingCart className='text-lg' />
-                    {totalCartItems > 0 && (
-                      <Badge
-                        className='absolute ml-6 mb-4 bg-red-600 border-none text-white text-xs p-2'
-                        size='xs'
-                      >
-                        {totalCartItems}
-                      </Badge>
-                    )}
-                  </Button>
-                </NavLink>
+
+                {validateUserRole(role) !== Role.Admin && (
+                  <NavLink to='/cart'>
+                    <Button color='ghost' size='sm'>
+                      <FaShoppingCart className='text-lg' />
+                      {totalCartItems > 0 && (
+                        <Badge
+                          className='absolute ml-6 mb-4 bg-red-600 border-none text-white text-xs p-2'
+                          size='xs'
+                        >
+                          {totalCartItems}
+                        </Badge>
+                      )}
+                    </Button>
+                  </NavLink>
+                )}
                 {!role ? (
                   <>
                     <NavLink to='/login'>
@@ -586,14 +1244,19 @@ const Header = () => {
                       <GoPerson className='text-lg' />
                     </Dropdown.Toggle>
                     <Dropdown.Menu className='w-52 text-base-content'>
-                      <Dropdown.Item onClick={handleProfileClick}>
-                        <CgProfile className='text-xl' />
-                        <span>Profile</span>
-                      </Dropdown.Item>
-                      <Dropdown.Item onClick={handleShopClick}>
-                        <BsShop className='text-xl' />
-                        <span>My Shop</span>
-                      </Dropdown.Item>
+                      {(validateUserRole(role) === Role.Buyer ||
+                        validateUserRole(role) === Role.Seller) && (
+                        <>
+                          <Dropdown.Item onClick={handleProfileClick}>
+                            <CgProfile className='text-xl' />
+                            <span>Profile</span>
+                          </Dropdown.Item>
+                          <Dropdown.Item onClick={handleShopClick}>
+                            <BsShop className='text-xl' />
+                            <span>My Shop</span>
+                          </Dropdown.Item>
+                        </>
+                      )}
                       <Dropdown.Item onClick={handleLogoutClick}>
                         <CgLogOut className='text-xl' />
                         <span>Logout</span>

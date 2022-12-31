@@ -32,7 +32,7 @@ export interface Product {
   created_at: string;
 }
 
-interface ProductModel {
+export interface ProductModel {
   product_item_id: number;
   sku: string;
   stock_quantity: number;
@@ -146,10 +146,13 @@ export interface PUMProduct {
   condition: string;
   status: string;
   process_day: number;
-  preorder_day: number;
   images: string[];
   videos: string[];
   product_items: PUMProductItem[];
   variants: PUMVariant[];
   couriers: Courier[];
 }
+
+export type SelectedProduct = {
+  [id: number]: boolean | null;
+};

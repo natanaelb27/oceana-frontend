@@ -14,6 +14,7 @@ import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { formikProcessDayAnndPreorderDay } from '../../../utils/yupValidation';
 import { SectionHeading, Skeleton } from '../../common';
 import CouriersConfiguration from './CouriersConfiguration';
+import { handleNumberInvalidKey } from '../../../utils/validation';
 
 const ShipmentContent = () => {
   const [data, setData] = useState<Shipment | null | undefined>(null);
@@ -24,6 +25,7 @@ const ShipmentContent = () => {
     useUpdateShipmentMutation();
   const shipmentFormik = useFormik({
     initialValues: {
+      isEditPreorderDay: false,
       preorderDay: 0,
     },
     validationSchema: Yup.object({
@@ -154,6 +156,28 @@ const ShipmentContent = () => {
     return renderLoading();
   }
 
+  const handlePreorderToggleOnChange = () => {
+    const newData = deepCopyShipmentData(data);
+    if (newData === null) {
+      return;
+    }
+
+    if (newData?.is_edit_preorder_day === null) {
+      setData(newData);
+      shipmentFormik.setFieldValue('isEditPreorderDay', false);
+      return;
+    }
+
+    newData.is_edit_preorder_day = !newData?.is_edit_preorder_day;
+
+    setData(newData);
+
+    shipmentFormik.setFieldValue(
+      'isEditPreorderDay',
+      newData.is_edit_preorder_day
+    );
+  };
+
   return (
     <div className='p-4 md:p-10'>
       {getShipmentLoadingIsFinished && (
@@ -171,33 +195,53 @@ const ShipmentContent = () => {
             />
           )}
           <Divider />
-          <div className='flex flex-col lg:flex-row items-start lg:items-center justify-start lg:justify-between'>
+          {/* Is Preorder */}
+          <div className='flex items-center justify-between'>
             <SectionHeading
-              title='Process Day'
-              description='Change process day for all product in your shop.'
+              title='Process and Preorder Day'
+              description='Set preorder day for all active products.'
               icon={<IoCalendarNumberOutline />}
             />
-            <Divider />
-            <div className='flex flex-col gap-2 w-full lg:w-[50%]'>
-              <div className='flex items-center gap-5'>
-                <Input
-                  type='number'
-                  name='preorderDay'
-                  className='w-full'
-                  value={shipmentFormik.values.preorderDay}
-                  onChange={handleProcessDayOnChange}
-                  onFocus={() => (shipmentFormik.touched.preorderDay = true)}
-                />
-                <span>days</span>
-              </div>
-              {shipmentFormik.touched.preorderDay &&
-                shipmentFormik.errors.preorderDay && (
-                  <label className='label-text-alt text-error'>
-                    {shipmentFormik.errors.preorderDay}
-                  </label>
-                )}
-            </div>
+            <Toggle
+              checked={shipmentFormik.values.isEditPreorderDay}
+              onChange={handlePreorderToggleOnChange}
+            />
           </div>
+          {/* Preorder Day */}
+          {shipmentFormik.values.isEditPreorderDay && (
+            <>
+              <Divider />
+              <div className='flex flex-col lg:flex-row items-start lg:items-center justify-start lg:justify-between'>
+                <SectionHeading
+                  title=''
+                  description='Change process day for all product in your shop.'
+                />
+                <div className='flex flex-col gap-2 w-full lg:w-[50%]'>
+                  <div className='flex items-center gap-5'>
+                    <Input
+                      type='number'
+                      name='preorderDay'
+                      className='w-full'
+                      value={shipmentFormik.values.preorderDay}
+                      onChange={handleProcessDayOnChange}
+                      onFocus={() =>
+                        (shipmentFormik.touched.preorderDay = true)
+                      }
+                      onKeyDown={handleNumberInvalidKey}
+                      min={0}
+                    />
+                    <span>days</span>
+                  </div>
+                  {shipmentFormik.touched.preorderDay &&
+                    shipmentFormik.errors.preorderDay && (
+                      <label className='label-text-alt text-error'>
+                        {shipmentFormik.errors.preorderDay}
+                      </label>
+                    )}
+                </div>
+              </div>
+            </>
+          )}
           <Divider />
           {/* Print Label */}
           <div className='flex items-center justify-between'>
@@ -209,7 +253,6 @@ const ShipmentContent = () => {
             <Toggle
               checked={data.is_print_label}
               onChange={handlePrintLabelOnChange}
-              className='w-20 h-10'
             />
           </div>
           <Divider />
