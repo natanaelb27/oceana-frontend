@@ -15,6 +15,7 @@ import {
 import { titleCase } from '../../utils/titleCase';
 import { stringCompare } from '../../utils/validation';
 import { DISCOUNT_TYPE } from '../../constants';
+import { toUrl } from '../../utils/toUrl';
 
 type ProductDescriptionProps = {
   userRoleCode: string | null;
@@ -45,6 +46,7 @@ const ProductDescription = ({
 }: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
   const renderTabContent = (tab: ProductTab) => {
+    console.log(productDetail.category + productDetail.category_id);
     if (tab === ProductTab.Specification) {
       return (
         <div className='bg-base-200 p-4 text-sm'>
@@ -52,7 +54,12 @@ const ProductDescription = ({
           <p className='mb-2'>Unit Weight: {productDetail.weight}g</p>
           <p>
             Category:{' '}
-            <NavLink to='/category' className='font-bold text-primary'>
+            <NavLink
+              to={`/category/${toUrl(productDetail.category)}-i.${
+                productDetail.category_id
+              }`}
+              className='font-bold text-primary'
+            >
               {productDetail.category}
             </NavLink>
           </p>
