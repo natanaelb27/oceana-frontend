@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Button, Card, Divider, Input, InputGroup } from 'react-daisyui';
+import React from 'react';
+import { Button, Card, Divider, Input } from 'react-daisyui';
 import { HiShoppingBag, HiShoppingCart } from 'react-icons/hi';
 import { ProductVariation } from '../../types/component';
 

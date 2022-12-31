@@ -10,7 +10,6 @@ import {
   ProductDetail,
   ProductModel,
   ProductVariation,
-  Role,
   ShopInformation,
 } from '../../types/component';
 import { titleCase } from '../../utils/titleCase';
