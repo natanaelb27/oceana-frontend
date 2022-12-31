@@ -469,6 +469,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   }, [myShopProfileData, getShopInformationData]);
 
   useEffect(() => {
+    console.log(purchasedQuantitiesQuery.product_item_id);
     if (purchasedQuantitiesQuery.product_item_id === 0) {
       return;
     }
@@ -693,6 +694,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               </div>
               <div className='col-span-12 md:hidden relative'>
                 <ProductCart
+                  userRoleCode={roleCode}
+                  selectedModel={productSelected}
                   stock={getProductDetailData.data.total_stock}
                   quantity={purchasedQuantitiesQuery.quantity}
                   handleClickAddQuantity={handleClickAddQuantity}
@@ -756,6 +759,8 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
           </div>
           <div className='hidden md:block md:col-span-3 relative'>
             <ProductCart
+              userRoleCode={roleCode}
+              selectedModel={productSelected}
               stock={getProductDetailData.data.total_stock}
               quantity={purchasedQuantitiesQuery.quantity}
               handleClickAddQuantity={handleClickAddQuantity}

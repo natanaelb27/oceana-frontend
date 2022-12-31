@@ -1,13 +1,15 @@
 import React from 'react';
 import { Button, Card, Divider, Input } from 'react-daisyui';
 import { HiShoppingBag, HiShoppingCart } from 'react-icons/hi';
-import { ProductVariation } from '../../types/component';
+import { ProductModel, ProductVariation } from '../../types/component';
 
 import { toRupiah } from '../../utils/convert';
 import { titleCase } from '../../utils/titleCase';
 import { Image } from '../common';
 
 type ProductCartProps = {
+  userRoleCode: string | null;
+  selectedModel: ProductModel | null;
   stock: number;
   quantity: number;
   handleClickAddQuantity: () => void;
@@ -30,6 +32,8 @@ type ProductCartProps = {
 };
 
 const ProductCart = ({
+  userRoleCode,
+  selectedModel,
   stock,
   quantity,
   handleClickAddQuantity,
@@ -76,6 +80,19 @@ const ProductCart = ({
       </div>
     );
   };
+
+  console.log(
+    userRoleCode,
+    purchasedQuantitiesStock,
+    selectedVariations.filter((items) => typeof items === 'number').length ===
+      (productVariations.length || 0) && userRoleCode,
+    selectedVariations.filter((items) => typeof items === 'number').length ===
+      (productVariations.length || 0) && userRoleCode
+      ? 'tes'
+      : 'haha',
+    quantity,
+    stock
+  );
 
   return (
     <Card className='shadow sticky top-24'>
@@ -126,27 +143,28 @@ const ProductCart = ({
               onClick={handleClickAddQuantity}
               disabled={
                 selectedVariations.filter((items) => typeof items === 'number')
-                  .length === (productVariations.length || 0)
+                  .length === (productVariations.length || 0) && userRoleCode
                   ? (purchasedQuantitiesStock || 0) <= quantity
-                  : stock <= quantity
+                  : (selectedModel?.stock_quantity || stock || 0) <= quantity
               }
               className='rounded-l-none'
             >
               +
             </Button>
           </div>
-          {purchasedQuantitiesStock &&
+          {userRoleCode &&
           productVariations.length ===
             selectedVariations.filter((items) => typeof items === 'number')
               .length ? (
             <p className='min-w-fit line-clamp-1'>
               Stock: {purchasedQuantitiesStock}
             </p>
-          ) : productVariations.length ===
+          ) : !userRoleCode &&
+            productVariations.length ===
               selectedVariations.filter((items) => typeof items === 'number')
-                .length && purchasedQuantitiesStock === 0 ? (
+                .length ? (
             <p className='min-w-fit line-clamp-1'>
-              Stock: {purchasedQuantitiesStock}
+              Stock: {selectedModel?.stock_quantity}
             </p>
           ) : (
             <p className='min-w-fit line-clamp-1'>Stock: {stock}</p>
