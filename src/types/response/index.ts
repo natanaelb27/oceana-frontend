@@ -3,6 +3,7 @@ export * from './auth';
 export * from './cart';
 export * from './category';
 export * from './checkout';
+export * from './chat';
 export * from './city';
 export * from './marketplaceVoucher';
 export * from './merchant';
