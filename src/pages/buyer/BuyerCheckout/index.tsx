@@ -384,7 +384,10 @@ const BuyerCheckout = () => {
     const currentCardNumber = currentSealabsPayAccount
       ? currentSealabsPayAccount.card_number
       : '';
-    if (currentCardNumber === '') {
+    if (
+      currentCardNumber === '' &&
+      paymentMethod === PaymentMethod.SealabsPay
+    ) {
       notifyInfoToast('No card selected, please select a SealabsPay Account');
       return;
     }
