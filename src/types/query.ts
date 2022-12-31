@@ -42,6 +42,7 @@ export type MarketplaceVoucherQuery = {
   sort: string;
   searchVoucherName: string;
   filterVoucherStatus: string;
+  filterVoucherAvailability: string;
 };
 
 export type TransactionHistoryQuery = {
@@ -103,4 +104,12 @@ export type RefundQuery = {
   filterStatus: string;
   filterStartDate: string;
   filterEndDate: string;
+};
+
+export type WalletHistoryQuery = {
+  filterType: string;
+  filterStartTransactionDate: string;
+  filterEndTransactionDate: string;
+  limit: number;
+  page: number;
 };

@@ -303,7 +303,7 @@ const Routes = () => {
                   element: <ShopAddProduct />,
                 },
                 {
-                  path: '/seller/marketing/products/edit',
+                  path: '/seller/marketing/products/edit/:productID',
                   element: <ShopEditProduct />,
                 },
                 {
@@ -328,7 +328,7 @@ const Routes = () => {
                 },
                 {
                   path: '/seller/marketing/vouchers/edit/:voucherID',
-                  element: <ShopEditVoucher />,
+                  element: <ShopAddVoucher />,
                 },
                 {
                   path: '/seller/marketing/vouchers/duplicate/:voucherID',

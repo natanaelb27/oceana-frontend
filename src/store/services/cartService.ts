@@ -2,11 +2,13 @@ import {
   IncrementUserCartRequest,
   UpdateUserCartRequest,
   PayCartWithWalletRequest,
+  PayCartWithSealabsPayRequest,
+  PayCartWithSealabsPaySuccessRequest,
 } from '../../types/request';
 import {
   GetUserCartResponse,
   UpdateUserCartResponse,
-  WalletPaymentResponse,
+  PaymentResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -31,7 +33,7 @@ export const cartApi = baseApi.injectEndpoints({
       invalidatesTags: ['Cart'],
     }),
     payCartWithWallet: builder.mutation<
-      WalletPaymentResponse,
+      PaymentResponse,
       PayCartWithWalletRequest
     >({
       query: (request) => ({
@@ -52,6 +54,27 @@ export const cartApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Cart'],
     }),
+    payCartWithSealabsPay: builder.mutation<
+      PaymentResponse,
+      PayCartWithSealabsPayRequest
+    >({
+      query: (request) => ({
+        url: '/carts/payment/sealabs-pay',
+        method: 'POST',
+        body: request,
+      }),
+      invalidatesTags: ['Cart'],
+    }),
+    usePayCartWithSealabsPaySuccess: builder.mutation<
+      void,
+      PayCartWithSealabsPaySuccessRequest
+    >({
+      query: (request) => ({
+        url: '/carts/payment/sealabs-pay/success',
+        method: 'POST',
+        body: request,
+      }),
+    }),
   }),
 });
 
@@ -61,4 +84,6 @@ export const {
   useUpdateUserCartMutation,
   usePayCartWithWalletMutation,
   useIncrementUserCartMutation,
+  usePayCartWithSealabsPayMutation,
+  useUsePayCartWithSealabsPaySuccessMutation,
 } = cartApi;

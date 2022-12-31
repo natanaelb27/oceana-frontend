@@ -55,6 +55,7 @@ const AdminVouchers = () => {
     sort: '',
     searchVoucherName: '',
     filterVoucherStatus: VOUCHER_STATUS.ALL,
+    filterVoucherAvailability: '',
   });
   const [openModal, setOpenModal] = useState<OpenModal>({
     delete: false,

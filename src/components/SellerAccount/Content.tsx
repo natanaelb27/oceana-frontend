@@ -42,6 +42,10 @@ const Content = ({ profile, content }: ContentProps) => {
       return <ProductAddContent />;
     }
 
+    if (content === SellerAccountContent.ProductEdit) {
+      return <ProductAddContent />;
+    }
+
     if (content === SellerAccountContent.Voucher) {
       return <VoucherContent profile={profile} />;
     }

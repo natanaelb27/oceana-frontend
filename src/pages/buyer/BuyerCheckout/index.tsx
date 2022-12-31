@@ -3,7 +3,11 @@ import { Button, Card, Divider, Textarea, Tooltip } from 'react-daisyui';
 import { AiOutlineHome, AiOutlineShop } from 'react-icons/ai';
 import { BiReceipt } from 'react-icons/bi';
 import { FaAddressBook, FaListUl } from 'react-icons/fa';
-import { HiOutlineLocationMarker, HiOutlineTruck } from 'react-icons/hi';
+import {
+  HiOutlineChevronDown,
+  HiOutlineLocationMarker,
+  HiOutlineTruck,
+} from 'react-icons/hi';
 import { ImPriceTag, ImPriceTags } from 'react-icons/im';
 import {
   IoBagCheckOutline,
@@ -29,11 +33,20 @@ import {
   STATUS_UNPROCESSABLE_ENTITY,
 } from '../../../constants/statusCodes';
 import { useGetAddressesQuery } from '../../../store/services/addressService';
-import { usePayCartWithWalletMutation } from '../../../store/services/cartService';
-import { useGetActiveMarketplaceVoucherQuery } from '../../../store/services/marketplaceService';
+import {
+  usePayCartWithSealabsPayMutation,
+  usePayCartWithWalletMutation,
+} from '../../../store/services/cartService';
+import {
+  useGetAllSealabsPayQuery,
+  useSealabsPayPaymentOTPMutation,
+} from '../../../store/services/sealabsPayService';
 import { useGetWalletDetailsQuery } from '../../../store/services/walletService';
-import { selectCheckout } from '../../../store/slices/checkoutSlice';
-import { useAppSelector } from '../../../store/store';
+import {
+  selectCheckout,
+  setTransactionID,
+} from '../../../store/slices/checkoutSlice';
+import { useAppDispatch, useAppSelector } from '../../../store/store';
 import {
   AdditionalNotes,
   Address,
@@ -46,6 +59,7 @@ import {
   MerchantVoucher,
   MerchantVouchers,
   PaymentMethod,
+  SealabsPayAccount,
 } from '../../../types/component';
 import { MerchantVoucherQuery } from '../../../types/query';
 import { GetRajaOngkirShippingCostRequest } from '../../../types/request';
@@ -59,11 +73,16 @@ import {
 } from '../../../utils/checkout';
 import {
   pascalCaseToTitleCase,
+  toCardNumber,
   toETD,
   toPhoneNumber,
   toRupiah,
 } from '../../../utils/convert';
-import { toPayCartWithWalletRequest } from '../../../utils/mapperDTO';
+import {
+  toPayCartWithSealabsPayRequest,
+  toPayCartWithWalletRequest,
+  toSealabsPayPaymentRequest,
+} from '../../../utils/mapperDTO';
 import { titleCase } from '../../../utils/titleCase';
 import {
   notifyErrorToast,
@@ -75,6 +94,7 @@ import MarketplaceVoucherModal from './MarketplaceVoucherModal';
 import MerchantVoucherModal from './MerchantVoucherModal';
 import PaymentMethodModal from './PaymentMethodModal';
 import PaymentWalletPinModal from './PaymentWalletPinModal';
+import SealabsPayAccountsModal from './SealabsPayAccountsModal';
 import ShippingAddressModal from './ShippingAddressModal';
 
 type OpenCheckoutModal = {
@@ -87,17 +107,26 @@ type OpenCheckoutModal = {
   marketplaceVoucher: boolean;
   paymentMethod: boolean;
   paymentWalletPin: boolean;
+  sealabsPayAccounts: boolean;
 };
 
 const BuyerCheckout = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { data: getAddressesData } = useGetAddressesQuery();
   const { data: getWalletDetailsData, refetch: refetchGetWalletDetails } =
-    useGetWalletDetailsQuery();
-  const { data: getActiveMarketplaceVoucherData } =
-    useGetActiveMarketplaceVoucherQuery();
+    useGetWalletDetailsQuery('');
+  const { data: getAllSealabsPayData } = useGetAllSealabsPayQuery();
   const [payCartWithWallet, { isLoading: payCartWithWalletLoading }] =
     usePayCartWithWalletMutation();
+  const [
+    payCartWithSealabsPay,
+    {
+      data: payCartWithSealabsPayData,
+      isLoading: payCartWithSealabsPayLoading,
+    },
+  ] = usePayCartWithSealabsPayMutation();
+  const [sealabsPayPaymentOTP] = useSealabsPayPaymentOTPMutation();
   const checkout = useAppSelector(selectCheckout);
   const [openModal, setOpenModal] = useState<OpenCheckoutModal>({
     shippingAddress: {
@@ -109,6 +138,7 @@ const BuyerCheckout = () => {
     marketplaceVoucher: false,
     paymentMethod: false,
     paymentWalletPin: false,
+    sealabsPayAccounts: false,
   });
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
@@ -116,6 +146,8 @@ const BuyerCheckout = () => {
   );
   const [totalPayment, setTotalPayment] = useState<number>(0);
   const [walletBalance, setWalletBalance] = useState<number>(0);
+  const [currentSealabsPayAccount, setCurrentSealabsPayAccount] =
+    useState<SealabsPayAccount | null>(null);
   const [deliveryService, setDeliveryService] =
     useState<DeliveryService | null>(null);
   const [availableProductsForDelivery, setAvailableProductsForDelivery] =
@@ -159,6 +191,7 @@ const BuyerCheckout = () => {
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
+      sealabsPayAccounts: false,
     });
     console.log(openModal);
   };
@@ -174,6 +207,7 @@ const BuyerCheckout = () => {
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
+      sealabsPayAccounts: false,
     });
   };
 
@@ -210,6 +244,7 @@ const BuyerCheckout = () => {
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
+      sealabsPayAccounts: false,
     });
     setGetShippingCostRequest({
       origin,
@@ -231,6 +266,7 @@ const BuyerCheckout = () => {
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
+      sealabsPayAccounts: false,
     });
   };
 
@@ -245,6 +281,7 @@ const BuyerCheckout = () => {
       marketplaceVoucher: true,
       paymentMethod: false,
       paymentWalletPin: false,
+      sealabsPayAccounts: false,
     });
   };
 
@@ -259,6 +296,7 @@ const BuyerCheckout = () => {
       marketplaceVoucher: false,
       paymentMethod: true,
       paymentWalletPin: false,
+      sealabsPayAccounts: false,
     });
   };
 
@@ -273,6 +311,22 @@ const BuyerCheckout = () => {
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: true,
+      sealabsPayAccounts: false,
+    });
+  };
+
+  const handleSealabsPayAccountsClick = () => {
+    setOpenModal({
+      shippingAddress: {
+        add: false,
+        change: false,
+      },
+      deliveryService: false,
+      merchantVoucher: false,
+      marketplaceVoucher: false,
+      paymentMethod: false,
+      paymentWalletPin: false,
+      sealabsPayAccounts: true,
     });
   };
 
@@ -287,6 +341,7 @@ const BuyerCheckout = () => {
       marketplaceVoucher: false,
       paymentMethod: false,
       paymentWalletPin: false,
+      sealabsPayAccounts: false,
     });
   };
 
@@ -316,11 +371,94 @@ const BuyerCheckout = () => {
       return;
     }
     // validate payment method (sealabs pay, pick a card)
+    if (
+      paymentMethod === PaymentMethod.SealabsPay &&
+      !currentSealabsPayAccount
+    ) {
+      notifyInfoToast('Please pick a Sealabs Pay Account');
+      return;
+    }
 
-    handlePaymentWalletPinClick();
+    const createdOrder = createCheckoutOrder();
+    const shippingAddressID = shippingAddress ? shippingAddress.id : '';
+    const currentCardNumber = currentSealabsPayAccount
+      ? currentSealabsPayAccount.card_number
+      : '';
+    if (currentCardNumber === '') {
+      notifyInfoToast('No card selected, please select a SealabsPay Account');
+      return;
+    }
+    const currentNameOnCard = currentSealabsPayAccount
+      ? currentSealabsPayAccount.name_on_card
+      : '';
+
+    const marketplaceVoucherID = marketplaceVoucher
+      ? marketplaceVoucher.id
+      : null;
+    switch (paymentMethod) {
+      case PaymentMethod.SealabsPay:
+        payCartWithSealabsPay(
+          toPayCartWithSealabsPayRequest(
+            createdOrder[0] as CheckoutCartOrderItem[],
+            createdOrder[1] as number[],
+            marketplaceVoucherID,
+            shippingAddressID,
+            currentCardNumber,
+            totalPayment
+          )
+        )
+          .unwrap()
+          .then((res) => {
+            const { data: paymentResponseData } = res;
+            dispatch(
+              setTransactionID({
+                transactionID: paymentResponseData?.id as string,
+              })
+            );
+
+            sealabsPayPaymentOTP(
+              toSealabsPayPaymentRequest(
+                currentNameOnCard,
+                currentCardNumber,
+                String(totalPayment)
+              )
+            )
+              .unwrap()
+              .then((res) => {
+                if (!res?.data) return;
+                const { data: otpURLData } = res;
+                window.location.replace(otpURLData);
+              })
+              .catch((err) => console.error(err));
+          })
+          .catch((err) => {
+            const { data } = err;
+            const { message } = data;
+            const messageCapitalized = capitalizeFirstLetter(message);
+            if (data.code === STATUS_INTERNAL_SERVER_ERROR) {
+              notifyErrorToast('Payment failed, our fault. Please try again.');
+              return;
+            }
+            if (data.code === STATUS_UNPROCESSABLE_ENTITY) {
+              notifyErrorToast(messageCapitalized);
+              notifyInfoToast(
+                'We apologize for the inconvenience. Please try again.'
+              );
+              navigate('/cart');
+              return;
+            }
+            notifyErrorToast(messageCapitalized);
+          });
+        break;
+
+      default:
+        handlePaymentWalletPinClick();
+        break;
+    }
   };
 
-  const handleSuccessPaymentWalletPin = (pin: string) => {
+  // index-0: checkoutCartOrderItems, index-1: cartIDs
+  const createCheckoutOrder = () => {
     const cartIDs: number[] = [];
     const checkoutCartOrderItems = checkout.map(
       (cartGroupedByMerchant): CheckoutCartOrderItem => {
@@ -402,23 +540,24 @@ const BuyerCheckout = () => {
         return checkoutCartOrderItem;
       }
     );
-
+    return [checkoutCartOrderItems, cartIDs];
+  };
+  const handleSuccessPaymentWalletPin = (pin: string) => {
+    const createdOrder = createCheckoutOrder();
     const marketplaceVoucherID = marketplaceVoucher
       ? marketplaceVoucher.id
       : null;
 
-    // debugging
-    const dbgReq = toPayCartWithWalletRequest(
-      checkoutCartOrderItems,
-      cartIDs,
-      marketplaceVoucherID,
-      shippingAddress?.id as string,
-      pin,
-      totalPayment
-    );
-    console.log(dbgReq);
-
-    payCartWithWallet(dbgReq)
+    payCartWithWallet(
+      toPayCartWithWalletRequest(
+        createdOrder[0] as CheckoutCartOrderItem[],
+        createdOrder[1] as number[],
+        marketplaceVoucherID,
+        shippingAddress?.id as string,
+        pin,
+        totalPayment
+      )
+    )
       .unwrap()
       .then(() => notifySuccessToast('Payment success!'))
       .catch((err) => {
@@ -426,7 +565,7 @@ const BuyerCheckout = () => {
         const { message } = data;
         const messageCapitalized = capitalizeFirstLetter(message);
         if (data.code === STATUS_INTERNAL_SERVER_ERROR) {
-          notifyErrorToast('Payment failed, please try again');
+          notifyErrorToast('Payment failed, our fault. Please try again.');
           return;
         }
         if (data.code === STATUS_UNPROCESSABLE_ENTITY) {
@@ -468,6 +607,25 @@ const BuyerCheckout = () => {
     setAvailableProductsForDelivery(initialAvailableProductsForDelivery);
   }, []);
 
+  useEffect(() => {
+    if (!getAllSealabsPayData?.data) {
+      return;
+    }
+    getAllSealabsPayData.data
+      .filter((account) => account.is_default)
+      .forEach((account, _, accounts) => {
+        if (accounts.length !== 0) {
+          setCurrentSealabsPayAccount(account);
+          return;
+        }
+        if (getAllSealabsPayData.data?.length !== 0) {
+          setCurrentSealabsPayAccount(
+            getAllSealabsPayData.data?.at(0) as SealabsPayAccount
+          );
+          return;
+        }
+      });
+  }, [getAllSealabsPayData]);
   useEffect(() => {
     if (!getWalletDetailsData?.data) {
       refetchGetWalletDetails();
@@ -531,7 +689,7 @@ const BuyerCheckout = () => {
   if (
     !getAddressesData?.data ||
     !shippingAddress ||
-    !getActiveMarketplaceVoucherData?.data
+    !getAllSealabsPayData?.data
   ) {
     return (
       <div className='px-2 container mx-auto flex flex-col'>
@@ -563,7 +721,7 @@ const BuyerCheckout = () => {
 
           <div className='col-span-1' />
           {/* Total and make order button sticky bottom */}
-          <Card className='container p-6 fixed -bottom-1 left-0 z-[100] rounded-b-none rounded-t-3xl bg-neutral shadow-2xl md:col-span-4 md:sticky md:w-full md:z-0'>
+          <Card className='container p-6 fixed -bottom-1 left-0 z-30 rounded-b-none rounded-t-3xl bg-neutral shadow-2xl md:col-span-4 md:sticky md:w-full md:z-0'>
             <Card.Body className='hidden p-0 text-neutral-content md:flex md:flex-col md:mb-2'>
               <Skeleton className='w-20 h-5' />
               <Skeleton className='w-20 h-5' />
@@ -656,7 +814,7 @@ const BuyerCheckout = () => {
                 </div>
                 <Tooltip message='Delivery service' position='left'>
                   <Button
-                    className='shadow-md'
+                    className='shadow-md border-none hover:bg-secondary'
                     color='primary'
                     shape='circle'
                     size='md'
@@ -962,11 +1120,8 @@ const BuyerCheckout = () => {
         </Card>
 
         {/* Payment method card */}
-        <Card
-          className='group col-span-1 p-4 mb-4 shadow-lg cursor-pointer md:col-span-7 hover:bg-base-200'
-          onClick={handlePaymentMethodClick}
-        >
-          <Card.Title className='flex justify-between group-hover:text-primary'>
+        <Card className='col-span-1 p-4 mb-4 shadow-lg md:col-span-7'>
+          <Card.Title className='flex justify-between'>
             <div className='flex items-center gap-2'>
               {paymentMethod === PaymentMethod.Wallet ? (
                 <IoWalletOutline className='w-5 h-5' />
@@ -977,7 +1132,7 @@ const BuyerCheckout = () => {
             </div>
             <Tooltip message='Change payment method' position='left'>
               <Button
-                className='bg-primary border-none shadow-md group-hover:bg-secondary'
+                className='bg-primary border-none shadow-md hover:bg-secondary'
                 shape='circle'
                 size='md'
                 onClick={handlePaymentMethodClick}
@@ -998,10 +1153,42 @@ const BuyerCheckout = () => {
                     {toRupiah(walletBalance)}
                   </div>
                 </div>
+              ) : getAllSealabsPayData.data.length !== 0 ? (
+                <div
+                  className='p-4 z-20 flex justify-between items-center cursor-pointer rounded-xl bg-primary/10 hover:bg-primary/20 active:bg-primary/10'
+                  onClick={handleSealabsPayAccountsClick}
+                >
+                  {currentSealabsPayAccount ? (
+                    <>
+                      <div className='text-sm font-light'>
+                        {currentSealabsPayAccount.name_on_card}
+                      </div>
+                      <div className='flex gap-2 items-center'>
+                        <div className='text-sm font-bold'>
+                          {toCardNumber(currentSealabsPayAccount.card_number)}
+                        </div>
+                        <div className='text-xl'>
+                          <HiOutlineChevronDown />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className='flex gap-2 items-center'>
+                      <div className='text-sm font-bold'>
+                        Please select a card
+                      </div>
+                      <div className='text-xl'>
+                        <HiOutlineChevronDown />
+                      </div>
+                    </div>
+                  )}
+                </div>
               ) : (
-                <div className='flex justify-between items-center'>
-                  <div className='text-sm font-light'>Card Number</div>
-                  <div className='text-sm'>1234-1234-1234-1234</div>
+                <div
+                  className='p-4 w-full z-20 rounded-xl cursor-pointer bg-primary/10 hover:bg-primary/20 hover:text-accent active:bg-primary/10'
+                  onClick={() => navigate('/user/account/sealabs-pay')}
+                >
+                  Create an account?
                 </div>
               )}
             </div>
@@ -1048,11 +1235,21 @@ const BuyerCheckout = () => {
             </div>
             <Button
               className='flex items-center gap-2 rounded-full shadow-md'
-              color='primary'
+              color={
+                !payCartWithSealabsPayData && !payCartWithSealabsPayLoading
+                  ? 'primary'
+                  : 'accent'
+              }
               size='md'
               onClick={handleOrderClick}
+              loading={
+                Boolean(payCartWithSealabsPayData) ||
+                payCartWithSealabsPayLoading
+              }
             >
-              <IoBagCheckOutline className='text-2xl' />
+              {!payCartWithSealabsPayData && !payCartWithSealabsPayLoading && (
+                <IoBagCheckOutline className='text-2xl' />
+              )}
               <h2 className='inline'>Order</h2>
             </Button>
           </Card.Title>
@@ -1091,7 +1288,6 @@ const BuyerCheckout = () => {
       />
       {/* Marketplace Voucher Modal */}
       <MarketplaceVoucherModal
-        activeMarketplaceVouchers={getActiveMarketplaceVoucherData.data}
         currentMarketplaceVoucher={marketplaceVoucher}
         totalPayment={calculateTotal(checkout, null, null, null)}
         open={openModal.marketplaceVoucher}
@@ -1101,9 +1297,17 @@ const BuyerCheckout = () => {
       {/* Payment Method Modal */}
       <PaymentMethodModal
         currentPaymentMethod={paymentMethod}
+        sealabsPayAccounts={getAllSealabsPayData.data}
         open={openModal.paymentMethod}
         onClose={handleModalClose}
         setPaymentMethod={setPaymentMethod}
+      />
+      {/* SealabsPay Accounts Modal */}
+      <SealabsPayAccountsModal
+        open={openModal.sealabsPayAccounts}
+        onClose={handleModalClose}
+        sealabsPayAccounts={getAllSealabsPayData.data}
+        setCurrentSealabsPayAccount={setCurrentSealabsPayAccount}
       />
       {/* Payment Wallet Pin Modal */}
       <PaymentWalletPinModal

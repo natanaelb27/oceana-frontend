@@ -20,12 +20,12 @@ import { passwordInUsername } from '../../utils/validation';
 type RegisterGoogleProps = {
   handleSuccessRegister: () => void;
   handleFailedRegister: (
-    message: string,
     setFieldValue: (
       field: string,
       value: string,
       shouldValidate?: boolean | undefined
-    ) => void
+    ) => void,
+    message?: string
   ) => void;
 };
 
@@ -78,7 +78,7 @@ const RegisterGoogle = ({
           const { data: errorResponse } = err;
           const { message } = errorResponse;
           const messageCapitalized = capitalizeFirstLetter(message);
-          handleFailedRegister(messageCapitalized, setFieldValue);
+          handleFailedRegister(setFieldValue, messageCapitalized);
         })
         .finally(() => window.location.reload());
     },

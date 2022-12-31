@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Badge, Card, Tooltip } from 'react-daisyui';
-import { HiLocationMarker, HiStar } from 'react-icons/hi';
+import { HiLocationMarker, HiShoppingBag, HiStar } from 'react-icons/hi';
 import LazyLoad from 'react-lazy-load';
 import { Link } from 'react-router-dom';
 
@@ -13,6 +14,16 @@ type ProductCardProps = {
 };
 
 const ProductCard = ({ product }: ProductCardProps) => {
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+
+  const handleMouseOver = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseOut = () => {
+    setIsHovering(false);
+  };
+
   if (!product) {
     return (
       <LazyLoad threshold={0.99} className='w-full'>
@@ -47,7 +58,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
         }`}
         className='w-full'
       >
-        <Card className='w-full shadow transition max-h-[27rem] md:max-h-full md:min-h-[27rem] h-full transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:border-b-4 hover:border-b-secondary'>
+        <Card
+          className='w-full shadow transition max-h-[27rem] md:max-h-full md:min-h-[27rem] h-full transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none hover:border-b-4 hover:border-b-secondary'
+          onMouseOver={handleMouseOver}
+          onMouseOut={handleMouseOut}
+        >
           <figure className='w-full h-64'>
             <Image
               src={product.media_url}
@@ -59,18 +74,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <p className='line-clamp-2 mb-2'>{product.name}</p>
             {product.price_minimum_after_discount !==
             product.price_maximum_after_discount ? (
-              <p className='font-bold mb-2.5 truncate text-ellipsis'>
+              <p className='font-bold mb-2 truncate text-ellipsis'>
                 {toRupiah(product.price_minimum_after_discount)}
                 {' - '}
                 {toRupiah(product.price_maximum_after_discount)}
               </p>
             ) : (
-              <p className='font-bold mb-2.5 truncate text-ellipsis'>
+              <p className='font-bold mb-2 truncate text-ellipsis'>
                 {toRupiah(product.price_minimum_after_discount)}
               </p>
             )}
             {product.product_merchant_promotion_id !== 0 ? (
-              <div className='flex items-center mb-2.5 text-sm'>
+              <div className='flex items-center mb-2 text-sm'>
                 <Tooltip
                   message={product.merchant_promotion_name}
                   color='success'
@@ -94,12 +109,33 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 </p>
               </div>
             ) : null}
-            <div className='flex items-center mb-1 text-sm'>
-              <Tooltip message='Location' className='mr-2' color='info'>
-                <HiLocationMarker className='text-info' />
-              </Tooltip>
-              <p className='truncate text-ellipsis'>{product.merchant.city}</p>
+            <div className='relative h-6'>
+              <div
+                className={`absolute flex items-center text-sm transition-all transform duration-300 ${
+                  isHovering ? '-translate-y-4 scale-y-0' : 'scale-y-100'
+                }`}
+              >
+                <Tooltip message='Location' className='mr-2' color='info'>
+                  <HiLocationMarker className='text-info' />
+                </Tooltip>
+                <p className='truncate text-ellipsis'>
+                  {product.merchant.city}
+                </p>
+              </div>
+              <div
+                className={`absolute flex items-center mb-1 text-sm transition-all transform duration-300 ${
+                  isHovering ? 'scale-y-100' : 'translate-y-4 scale-y-0'
+                }`}
+              >
+                <Tooltip message='Shop' className='mr-2' color='info'>
+                  <HiShoppingBag className='text-accent' />
+                </Tooltip>
+                <p className='truncate text-ellipsis'>
+                  {product.merchant.name}
+                </p>
+              </div>
             </div>
+
             {product.rating_star === 0 ? (
               <div className='flex items-center mb-1 text-sm'>
                 <p className='truncate text-ellipsis'>

@@ -29,12 +29,12 @@ type RegisterFormProps = {
     response: GoogleLoginResponse | GoogleLoginResponseOffline
   ) => void;
   handleFailedRegister: (
-    message: string,
     setFieldValue: (
       field: string,
       value: string,
       shouldValidate?: boolean | undefined
-    ) => void
+    ) => void,
+    message?: string
   ) => void;
 };
 
@@ -98,7 +98,7 @@ const RegisterForm = ({
           const { data: errorResponse } = err;
           const { message } = errorResponse;
           const messageCapitalized = capitalizeFirstLetter(message);
-          handleFailedRegister(messageCapitalized, setFieldValue);
+          handleFailedRegister(setFieldValue, messageCapitalized);
         });
     },
   });
@@ -108,10 +108,10 @@ const RegisterForm = ({
         <FormTitle to='/'>Oceana</FormTitle>
       </FormTitleContainer>
       <Form onSubmit={formik.handleSubmit}>
-        <div className='md:flex md:justify-between'>
+        <div className='flex justify-between'>
           <InputGroup className='md:inline'>
             <Input
-              className='input-sm md:input-md max-w-[240px]'
+              className='input-sm max-w-[140px] md:input-md md:max-w-[240px]'
               color='primary'
               name='firstName'
               onChange={formik.handleChange}
@@ -126,7 +126,7 @@ const RegisterForm = ({
           </InputGroup>
           <InputGroup className='md:inline'>
             <Input
-              className='input-sm md:input-md max-w-[240px]'
+              className='input-sm max-w-[140px] md:input-md md:max-w-[240px]'
               color='primary'
               name='lastName'
               onChange={formik.handleChange}
@@ -185,36 +185,38 @@ const RegisterForm = ({
             <FormErrorText>{formik.errors.phoneNumber}</FormErrorText>
           ) : null}
         </InputGroup>
-        <InputGroup>
-          <Input
-            className='input-sm md:input-md'
-            color='primary'
-            name='password'
-            onChange={formik.handleChange}
-            placeholder='Password'
-            type='password'
-            value={formik.values.password}
-          />
+        <div className='md:flex md:justify-between'>
+          <InputGroup>
+            <Input
+              className='input-sm md:input-md md:max-w-[240px]'
+              color='primary'
+              name='password'
+              onChange={formik.handleChange}
+              placeholder='Password'
+              type='password'
+              value={formik.values.password}
+            />
 
-          {formik.touched.password && formik.errors.password ? (
-            <FormErrorText>{formik.errors.password}</FormErrorText>
-          ) : null}
-        </InputGroup>
-        <InputGroup>
-          <Input
-            className='input-sm md:input-md'
-            color='primary'
-            name='confirm'
-            onChange={formik.handleChange}
-            placeholder='Confirm Password'
-            type='password'
-            value={formik.values.confirm}
-          />
+            {formik.touched.password && formik.errors.password ? (
+              <FormErrorText>{formik.errors.password}</FormErrorText>
+            ) : null}
+          </InputGroup>
+          <InputGroup>
+            <Input
+              className='input-sm md:input-md md:max-w-[240px]'
+              color='primary'
+              name='confirm'
+              onChange={formik.handleChange}
+              placeholder='Confirm Password'
+              type='password'
+              value={formik.values.confirm}
+            />
 
-          {formik.touched.confirm && formik.errors.confirm ? (
-            <FormErrorText>{formik.errors.confirm}</FormErrorText>
-          ) : null}
-        </InputGroup>
+            {formik.touched.confirm && formik.errors.confirm ? (
+              <FormErrorText>{formik.errors.confirm}</FormErrorText>
+            ) : null}
+          </InputGroup>
+        </div>
         <Button
           className='mt-2'
           color={!isLoading ? 'secondary' : 'accent'}
@@ -236,7 +238,7 @@ const RegisterForm = ({
         clientId={String(clientId)}
         buttonText='Sign in with Google'
         onSuccess={handleSuccessGoogleLogin}
-        onFailure={() => notifyErrorToast('Sign up failed, please try again!')}
+        onFailure={() => handleFailedRegister(formik.setFieldValue)}
         cookiePolicy='single_host_origin'
       />
       <FormFooter />

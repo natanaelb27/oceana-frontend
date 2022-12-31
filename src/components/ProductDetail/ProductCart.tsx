@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Divider, Input, InputGroup } from 'react-daisyui';
+import { Button, Card, Divider, Input } from 'react-daisyui';
 import { HiShoppingBag, HiShoppingCart } from 'react-icons/hi';
 import { ProductVariation } from '../../types/component';
 
@@ -26,6 +26,7 @@ type ProductCartProps = {
   handleClickBuyNow: () => void;
   defaultImage: string;
   selectedVariantImage: string;
+  disablePurchase: boolean;
 };
 
 const ProductCart = ({
@@ -47,35 +48,35 @@ const ProductCart = ({
   handleClickBuyNow,
   defaultImage,
   selectedVariantImage,
+  disablePurchase,
 }: ProductCartProps) => {
   const renderPurchaseButtons = () => {
-    if (
-      purchasedQuantitiesStock ||
-      (stock > 0 && selectedVariations.length < productVariations.length)
-    ) {
-      return (
-        <div>
-          <Button
-            color='primary'
-            endIcon={<HiShoppingCart className='text-lg' />}
-            className='w-full mb-2.5 text-xs lg:text-sm'
-            onClick={handleClickAddToCart}
-          >
-            Add to Cart
-          </Button>
-          <Button
-            color='primary'
-            variant='outline'
-            endIcon={<HiShoppingBag className='text-lg' />}
-            className='w-full mb-2.5 text-xs lg:text-sm'
-            onClick={handleClickBuyNow}
-          >
-            Buy Now
-          </Button>
-        </div>
-      );
-    }
+    return (
+      <div>
+        <Button
+          color='primary'
+          endIcon={<HiShoppingCart className='text-lg' />}
+          className='w-full mb-2.5 text-xs lg:text-sm'
+          disabled={
+            disablePurchase || purchasedQuantitiesStock === 0 || stock === 0
+          }
+          onClick={handleClickAddToCart}
+        >
+          Add to Cart
+        </Button>
+        <Button
+          color='primary'
+          variant='outline'
+          endIcon={<HiShoppingBag className='text-lg' />}
+          className='w-full mb-2.5 text-xs lg:text-sm'
+          onClick={handleClickBuyNow}
+        >
+          Buy Now
+        </Button>
+      </div>
+    );
   };
+
   return (
     <Card className='shadow sticky top-24'>
       <div className='p-4'>
@@ -92,7 +93,9 @@ const ProductCart = ({
                 alt='Cart Image'
               />
               {productVariation &&
-              productVariations.length === selectedVariations.length ? (
+              productVariations.length ===
+                selectedVariations.filter((items) => typeof items === 'number')
+                  .length ? (
                 <p className='line-clamp-1'>{titleCase(productVariation)}</p>
               ) : (
                 <p className='line-clamp-1'>No selected variation</p>
@@ -103,11 +106,12 @@ const ProductCart = ({
         )}
         <div className='mb-2 font-bold text-lg'>Quantity</div>
         <div className='flex justify-between items-center flex-wrap gap-2'>
-          <InputGroup size='sm' className='max-w-fit'>
+          <div className='max-w-fit'>
             <Button
               size='sm'
               onClick={handleClickDecreaseQuantity}
-              disabled={quantity === 0}
+              disabled={quantity === 0 || quantity === 1}
+              className='rounded-r-none'
             >
               -
             </Button>
@@ -115,33 +119,32 @@ const ProductCart = ({
               size='sm'
               value={quantity || 0}
               onChange={handleChangeQuantity}
-              className='w-16 text-center'
+              className='w-16 text-center rounded-none'
             />
             <Button
               size='sm'
               onClick={handleClickAddQuantity}
               disabled={
-                stock <= quantity ||
-                (productVariations.length === selectedVariations.length &&
-                  purchasedQuantitiesStock &&
-                  purchasedQuantitiesStock <= quantity) ||
-                (productVariations.length === selectedVariations.length &&
-                  productVariations.length > 0 &&
-                  purchasedQuantitiesStock === 0)
-                  ? true
-                  : false
+                selectedVariations.filter((items) => typeof items === 'number')
+                  .length === (productVariations.length || 0)
+                  ? (purchasedQuantitiesStock || 0) <= quantity
+                  : stock <= quantity
               }
+              className='rounded-l-none'
             >
               +
             </Button>
-          </InputGroup>
+          </div>
           {purchasedQuantitiesStock &&
-          productVariations.length === selectedVariations.length ? (
+          productVariations.length ===
+            selectedVariations.filter((items) => typeof items === 'number')
+              .length ? (
             <p className='min-w-fit line-clamp-1'>
               Stock: {purchasedQuantitiesStock}
             </p>
-          ) : productVariations.length === selectedVariations.length &&
-            purchasedQuantitiesStock === 0 ? (
+          ) : productVariations.length ===
+              selectedVariations.filter((items) => typeof items === 'number')
+                .length && purchasedQuantitiesStock === 0 ? (
             <p className='min-w-fit line-clamp-1'>
               Stock: {purchasedQuantitiesStock}
             </p>
@@ -149,11 +152,13 @@ const ProductCart = ({
             <p className='min-w-fit line-clamp-1'>Stock: {stock}</p>
           )}
         </div>
-        {productMerchantPromotionID !== null &&
+        {selectedVariations.filter((items) => typeof items === 'number')
+          .length === (productVariations.length || 0) &&
+        purchasedQuantitiesStock !== 0 &&
+        productMerchantPromotionID !== null &&
         userMaxPurchaseQuantity &&
         maxPurchaseQuantity &&
-        Math.min(userMaxPurchaseQuantity, maxPurchaseQuantity) === quantity &&
-        quantity !== 0 ? (
+        Math.min(userMaxPurchaseQuantity, maxPurchaseQuantity) === quantity ? (
           <div className='mt-1 text-sm text-red-600'>
             Purchase quantity is at maximum threshold, increasing quantity may
             cause increase in price
@@ -173,7 +178,9 @@ const ProductCart = ({
           </div>
         ) : purchasedQuantitiesStock === 0 &&
           quantity !== 0 &&
-          productVariations.length === selectedVariations.length ? (
+          productVariations.length ===
+            selectedVariations.filter((items) => typeof items === 'number')
+              .length ? (
           <div className='text-sm mt-1 text-red-600'>
             There are {purchasedQuantitiesStock} items left
           </div>
@@ -184,7 +191,9 @@ const ProductCart = ({
         ) : purchasedQuantitiesStock &&
           purchasedQuantitiesStock !== 0 &&
           purchasedQuantitiesStock < quantity &&
-          productVariations.length === selectedVariations.length ? (
+          productVariations.length ===
+            selectedVariations.filter((items) => typeof items === 'number')
+              .length ? (
           <div className='text-sm mt-1 text-red-600'>
             There are only {purchasedQuantitiesStock} items left
           </div>
@@ -198,7 +207,9 @@ const ProductCart = ({
             <h5 className='font-bold text-xl'>
               {toRupiah(productPrice * quantity)}
             </h5>
-          ) : productVariations.length === selectedVariations.length &&
+          ) : productVariations.length ===
+              selectedVariations.filter((items) => typeof items === 'number')
+                .length &&
             purchasedQuantitiesPrice &&
             purchasedQuantitiesStock !== 0 ? (
             <h5 className='font-bold text-xl'>

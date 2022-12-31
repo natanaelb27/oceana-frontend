@@ -19,6 +19,7 @@ export interface Courier {
 }
 
 export interface Shipment {
+  is_edit_preorder_day: boolean;
   preorder_day: number;
   is_print_label: boolean;
   couriers: Courier[];
