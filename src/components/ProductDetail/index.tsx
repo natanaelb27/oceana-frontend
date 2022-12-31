@@ -488,24 +488,26 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   }, [reviewQuery]);
 
   useEffect(() => {
-    setDisabledVariants([]);
-    const finalArr: number[][] = [
-      ...Array(getProductDetailData?.data?.product_variation?.length),
-    ].map(() => [...Array(0)]);
-    getProductDetailData?.data?.product_model?.map((model) => {
-      model.variation_index.map((eModel, idx) => {
-        if (eModel === selectedVariations.at(idx)) {
-          if (model.stock_quantity === 0) {
-            model.variation_index.map((vi, viIdx) => {
-              if (viIdx !== idx) {
-                finalArr[viIdx]?.push(vi);
-              }
-            });
+    if (selectedVariations.length > 0) {
+      setDisabledVariants([]);
+      const finalArr: number[][] = [
+        ...Array(getProductDetailData?.data?.product_variation?.length),
+      ].map(() => [...Array(0)]);
+      getProductDetailData?.data?.product_model?.map((model) => {
+        model.variation_index.map((eModel, idx) => {
+          if (eModel === selectedVariations.at(idx)) {
+            if (model.stock_quantity === 0) {
+              model.variation_index.map((vi, viIdx) => {
+                if (viIdx !== idx) {
+                  finalArr[viIdx]?.push(vi);
+                }
+              });
+            }
           }
-        }
+        });
       });
-    });
-    setDisabledVariants(finalArr);
+      setDisabledVariants(finalArr);
+    }
   }, [selectedVariations]);
 
   const handleChangeReviewPage = (n: number) => {
