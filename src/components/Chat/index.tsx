@@ -126,7 +126,9 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    scrollToLastMessage();
+    if (currentToUserID) {
+      scrollToLastMessage();
+    }
     setCurrentToUserID(getChatData?.data?.to_user_id);
   }, [getChatData]);
 
