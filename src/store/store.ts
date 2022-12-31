@@ -14,6 +14,7 @@ import checkoutReducer from './slices/checkoutSlice';
 import registerGoogleReducer from './slices/registerGoogleSlice';
 import sealabsPayReducer from './slices/sealabsPaySlice';
 import sellerSidebarReducer from './slices/sellerSidebarSlice';
+import chatReducer from './slices/chatSlice';
 
 export const baseApi = createApi({
   reducerPath: 'baseApi',
@@ -30,6 +31,7 @@ const reducers = combineReducers({
   registerGoogle: registerGoogleReducer,
   sealabsPay: sealabsPayReducer,
   sellerSidebar: sellerSidebarReducer,
+  chat: chatReducer,
 });
 
 const persistConfig = {
