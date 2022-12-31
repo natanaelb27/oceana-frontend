@@ -116,7 +116,6 @@ const Chat = () => {
   const scrollToLastMessage = () => {
     setTimeout(() => {
       const element = document.getElementById('lastMessage');
-      console.log(element);
       if (element) {
         // 👇 Will scroll smoothly to the top of the next section
         element.scrollIntoView({ behavior: 'smooth' });
