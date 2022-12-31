@@ -1,15 +1,18 @@
-import React from 'react';
+import { Tooltip } from 'react-daisyui';
 import { CHAT_POSITION } from '../../constants/chat';
 import ClassNames from '../../utils/classnames';
+import { toStringDatetime, toStringTime } from '../../utils/convert';
 
 type ChatBubbleProps = {
   position?: string;
   children?: JSX.Element | string;
+  datetime?: string;
 };
 
 const ChatBubble = ({
   position = CHAT_POSITION.RIGHT,
   children,
+  datetime,
 }: ChatBubbleProps) => {
   return (
     <div
@@ -29,7 +32,15 @@ const ChatBubble = ({
       >
         {children}
       </div>
-      <span className='text-xs text-accent-content p-1'>12:01</span>
+      <Tooltip
+        className='hover:cursor-pointer'
+        position={position === CHAT_POSITION.RIGHT ? 'left' : 'right'}
+        message={datetime ? toStringDatetime(datetime) : '--:--'}
+      >
+        <span className='text-xs text-accent-content p-1'>
+          {datetime ? toStringTime(datetime) : '--:--'}
+        </span>
+      </Tooltip>
     </div>
   );
 };

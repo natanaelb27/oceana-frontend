@@ -1,8 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useFormik } from 'formik';
+import React, { useEffect, useState } from 'react';
+import { Form } from 'react-daisyui';
 import { AiOutlineDownSquare } from 'react-icons/ai';
 import { BiPaperPlane } from 'react-icons/bi';
 import { BsChatDotsFill, BsShop } from 'react-icons/bs';
+import { CgSpinner } from 'react-icons/cg';
 import { HiChatAlt2 } from 'react-icons/hi';
+import * as Yup from 'yup';
 import { CHAT_POSITION } from '../../constants/chat';
 import useInterval from '../../hooks/Interval/index';
 import {
@@ -10,6 +14,7 @@ import {
   useLazyGetChatListQuery,
   useLazyGetChatQuery,
 } from '../../store/services/chatService';
+import { selectRole } from '../../store/slices/authSlice';
 import {
   selectChatBoxShown,
   selectToUserID,
@@ -17,20 +22,14 @@ import {
   setToUserID,
 } from '../../store/slices/chatSlice';
 import { useAppDispatch, useAppSelector } from '../../store/store';
+import { CreateChatRequest } from '../../types/request/chat';
+import { CreateChatResponse } from '../../types/response';
 import ClassNames from '../../utils/classnames';
+import { notifyErrorToast } from '../../utils/toast';
 import { Image } from '../common';
+import Skeleton from '../common/Loading/Skeleton';
 import ChatBubble from './ChatBubble';
 import * as S from './style';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { CreateChatRequest } from '../../types/request/chat';
-import { notifyErrorToast } from '../../utils/toast';
-import { CreateChatResponse } from '../../types/response';
-import { Form } from 'react-daisyui';
-import { CgSpinner } from 'react-icons/cg';
-import { selectRole } from '../../store/slices/authSlice';
-import { IoReturnUpForwardOutline } from 'react-icons/io5';
-import Skeleton from '../common/Loading/Skeleton';
 
 const Chat = () => {
   const [
@@ -63,7 +62,6 @@ const Chat = () => {
       } as CreateChatRequest)
         .unwrap()
         .then(() => {
-          setScrollIntoLastMessageRef(true);
           chatFormik.setFieldValue('message', '');
         })
         .catch((err) => {
@@ -78,9 +76,7 @@ const Chat = () => {
     },
   });
 
-  const lastMessageRef = useRef<null | HTMLDivElement>(null);
-  const [scrollIntoLastMessageRef, setScrollIntoLastMessageRef] =
-    useState(false);
+  useState(false);
   const [chatUpdateInterval, setChatUpdateInterval] = useState(30000);
   const [currentToUserID, setCurrentToUserID] = useState<string | undefined>(
     undefined
@@ -91,7 +87,6 @@ const Chat = () => {
   };
 
   const handleChatListItemOnClick = (id: string) => {
-    setScrollIntoLastMessageRef(true);
     dispatch(setToUserID({ toUserID: id }));
   };
 
@@ -118,16 +113,23 @@ const Chat = () => {
     }
   }, [chatBoxShown]);
 
-  useEffect(() => {
-    setCurrentToUserID(getChatData?.data?.to_user_id);
-  }, [getChatData]);
+  const scrollToLastMessage = () => {
+    setTimeout(() => {
+      const element = document.getElementById('lastMessage');
+      console.log(element);
+      if (element) {
+        // 👇 Will scroll smoothly to the top of the next section
+        element.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        scrollToLastMessage();
+      }
+    }, 1000);
+  };
 
   useEffect(() => {
-    if (lastMessageRef !== null) {
-      lastMessageRef.current?.scrollIntoView({ behavior: 'auto' });
-      setScrollIntoLastMessageRef(false);
-    }
-  }, [lastMessageRef.current]);
+    scrollToLastMessage();
+    setCurrentToUserID(getChatData?.data?.to_user_id);
+  }, [getChatData]);
 
   useInterval(() => {
     if (role === null) {
@@ -195,7 +197,7 @@ const Chat = () => {
                       <div className='h-fit  p-2 flex flex-col-reverse gap-2'>
                         {getChatData?.data?.chats.map((valueChat, i) => (
                           <React.Fragment key={'message-' + i}>
-                            {i == 0 && <div ref={lastMessageRef} />}
+                            {i === 0 && <div id='lastMessage' />}
                             <ChatBubble
                               position={
                                 getChatData.data?.to_user_id ===
@@ -203,6 +205,7 @@ const Chat = () => {
                                   ? CHAT_POSITION.RIGHT
                                   : CHAT_POSITION.LEFT
                               }
+                              datetime={valueChat.created_at}
                             >
                               {valueChat.message}
                             </ChatBubble>
