@@ -152,3 +152,7 @@ export interface PUMProduct {
   variants: PUMVariant[];
   couriers: Courier[];
 }
+
+export type SelectedProduct = {
+  [id: number]: boolean | null;
+};
