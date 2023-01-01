@@ -104,7 +104,7 @@ export const productApi = baseApi.injectEndpoints({
         method: 'POST',
         body: request,
       }),
-      invalidatesTags: ['ProductUpsertModel', 'Product', 'MyShopProduct'],
+      invalidatesTags: ['Product', 'MyShopProduct'],
     }),
     updateProductUpsertModel: builder.mutation<
       GetProductUpsertModelResponse,
@@ -115,7 +115,7 @@ export const productApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: request,
       }),
-      invalidatesTags: ['ProductUpsertModel', 'Product', 'MyShopProduct'],
+      invalidatesTags: ['Product', 'MyShopProduct'],
     }),
   }),
 });
