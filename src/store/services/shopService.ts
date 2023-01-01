@@ -48,6 +48,7 @@ export const shopApi = baseApi.injectEndpoints({
 
 export const {
   useGetShopInformationQuery,
+  useLazyGetShopInformationQuery,
   useGetAllMerchantVoucherQuery,
   useLazyGetAllMerchantVoucherQuery,
   useGetMerchantVoucherDetailsQuery,

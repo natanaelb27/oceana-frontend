@@ -20,7 +20,7 @@ import {
   Tabs,
 } from 'react-daisyui';
 import { useOutsideAlerter } from '../../../hooks';
-import { Pager } from '../../common';
+import { Image, Pager } from '../../common';
 import {
   HiOutlineCalendar,
   HiOutlineClock,
@@ -428,7 +428,7 @@ const ReviewContent = () => {
                     </div>
                     <div className='grid md:grid-cols-6 gap-5'>
                       <div className='flex gap-5 items-center col-span-2 md:border-r'>
-                        <img
+                        <Image
                           src={transactionHistory?.shop_photo || ''}
                           alt={transactionHistory?.shop_name || ''}
                           className='h-12 w-12 md:h-20 md:w-20 rounded-md'
@@ -466,7 +466,7 @@ const ReviewContent = () => {
                                 className='grid grid-flow-col grid-cols-4 gap-5 items-center'
                               >
                                 <div className='flex gap-5 items-center col-span-3'>
-                                  <img
+                                  <Image
                                     src={orderDetail?.product_image || ''}
                                     alt={orderDetail?.product_name || ''}
                                     className='h-12 w-12 md:h-20 md:w-20 rounded-md'

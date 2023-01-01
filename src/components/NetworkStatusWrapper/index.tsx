@@ -34,7 +34,8 @@ const NetworkStatusWrapper = ({ children }: NetworkStatusWrapperProps) => {
   return (
     <div
       className={ClassNames([
-        online ? '' : 'sticky z-20 h-screen w-screen grayscale ',
+        'transition-all duration-700',
+        online ? '' : 'grayscale',
       ])}
     >
       {children}

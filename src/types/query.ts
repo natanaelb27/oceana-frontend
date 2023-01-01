@@ -42,6 +42,7 @@ export type MarketplaceVoucherQuery = {
   sort: string;
   searchVoucherName: string;
   filterVoucherStatus: string;
+  filterVoucherAvailability: string;
 };
 
 export type TransactionHistoryQuery = {
@@ -75,6 +76,14 @@ export type PurchasedQuantitiesQuery = {
   product_item_id: number;
   quantity: number;
 };
+
+export type MerchantProductQuery = {
+  categoryID: number;
+  priceMinimum: number;
+  priceMaximum: number;
+  merchantCities: string[];
+  courierServices: string[];
+} & Query;
 
 export type ReviewQuery = {
   sort: string;

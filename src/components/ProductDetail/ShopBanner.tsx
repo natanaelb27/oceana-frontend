@@ -1,10 +1,12 @@
-import { Avatar, Tooltip } from 'react-daisyui';
-import { HiStar } from 'react-icons/hi';
-import { Link } from 'react-router-dom';
 import moment from 'moment';
+import { Avatar, Tooltip } from 'react-daisyui';
+import { HiChatAlt2, HiStar } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 
-import { toCompact } from '../../utils/convert';
+import { setChatBoxShown, setToUserID } from '../../store/slices/chatSlice';
+import { useAppDispatch } from '../../store/store';
 import { ShopInformation } from '../../types/component';
+import { toCompact } from '../../utils/convert';
 import { Image } from '../common';
 
 type ShopBannerProps = {
@@ -13,6 +15,8 @@ type ShopBannerProps = {
 };
 
 const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
+  const dispatch = useAppDispatch();
+
   if (!shopInformation || isLoading) {
     return (
       <div className='animate-pulse'>
@@ -31,7 +35,7 @@ const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
     <div className='flex flex-row gap-4 md:items-center'>
       {shopInformation.photo ? (
         <div className='avatar'>
-          <div className='w-14 rounded-full'>
+          <div className='w-20 rounded-full'>
             <Image src={shopInformation.photo} alt='Shop Banner' />
           </div>
         </div>
@@ -43,7 +47,10 @@ const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
         />
       )}
       <div>
-        <Link to='/' className='font-bold mb-2.5 line-clamp-1 link link-hover'>
+        <Link
+          to={`/shops/${shopInformation.id}`}
+          className='font-bold mb-2.5 line-clamp-1 link link-hover'
+        >
           {shopInformation.name}
         </Link>
         <div className='flex items-center text-sm w-full'>
@@ -56,6 +63,19 @@ const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
             {moment(shopInformation.joined_date).format('MMMM YYYY')}
           </p>
         </div>
+        <button
+          type='button'
+          className='p-1 px-3 border-2 border-primary bg-primary bg-opacity-10 hover:bg-primary hover:bg-opacity-5 text-primary text-sm w-fit transition-all'
+          onClick={() => {
+            dispatch(setToUserID({ toUserID: shopInformation.user_id }));
+            dispatch(setChatBoxShown({ chatBoxShown: true }));
+          }}
+        >
+          <span className='flex flex-row gap-1 items-center justify-center'>
+            <HiChatAlt2 />
+            Chat Now
+          </span>
+        </button>
       </div>
     </div>
   );

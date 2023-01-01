@@ -20,3 +20,7 @@ export type UpdateProfilePasswordRequest = {
 export type CheckPasswordVerificationCodeRequest = {
   verification_code: string;
 };
+
+export type DeleteBatchFavoriteProducts = {
+  product_ids: number[];
+};

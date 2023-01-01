@@ -19,6 +19,8 @@ const ResetPassword = () => {
     useResetPasswordMutation();
   const [resetPasswordID, setResetPasswordID] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const params = useParams();
   const navigate = useNavigate();
 
@@ -70,6 +72,10 @@ const ResetPassword = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleDisplayConfirmPasswordClick = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
     <Tiles>
       <AuthContainer>
@@ -99,11 +105,11 @@ const ResetPassword = () => {
                 onChange={formik.handleChange}
               />
               {showPassword ? (
-                <Button onClick={handleDisplayPasswordClick}>
+                <Button type='button' onClick={handleDisplayPasswordClick}>
                   <HiEyeOff className='text-neutral-content' />
                 </Button>
               ) : (
-                <Button onClick={handleDisplayPasswordClick}>
+                <Button type='button' onClick={handleDisplayPasswordClick}>
                   <HiEye className='text-neutral-content' />
                 </Button>
               )}
@@ -114,18 +120,24 @@ const ResetPassword = () => {
             <InputGroup>
               <Input
                 name='confirm'
-                type={showPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? 'text' : 'password'}
                 className='w-full'
                 placeholder='Confirm Password'
                 value={formik.values.confirm}
                 onChange={formik.handleChange}
               />
-              {showPassword ? (
-                <Button onClick={handleDisplayPasswordClick}>
+              {showConfirmPassword ? (
+                <Button
+                  type='button'
+                  onClick={handleDisplayConfirmPasswordClick}
+                >
                   <HiEyeOff className='text-neutral-content' />
                 </Button>
               ) : (
-                <Button onClick={handleDisplayPasswordClick}>
+                <Button
+                  type='button'
+                  onClick={handleDisplayConfirmPasswordClick}
+                >
                   <HiEye className='text-neutral-content' />
                 </Button>
               )}

@@ -1,6 +1,7 @@
 export * from './address';
 export * from './auth';
 export * from './cart';
+export * from './chat';
 export * from './checkout';
 export * from './marketplaceVoucher';
 export * from './media';
@@ -9,6 +10,7 @@ export * from './merchantPromotion';
 export * from './merchantVoucher';
 export * from './product';
 export * from './profile';
+export * from './product';
 export * from './rajaOngkir';
 export * from './refund';
 export * from './review';

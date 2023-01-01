@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from 'react-daisyui';
 import { BiCheckDouble, BiHeart, BiPencil } from 'react-icons/bi';
-import { BsEye } from 'react-icons/bs';
+import { BsEye, BsQuestionCircle } from 'react-icons/bs';
 import { HiPlus, HiSearch } from 'react-icons/hi';
 import Zoom from 'react-medium-image-zoom';
 import { useNavigate } from 'react-router-dom';
@@ -33,6 +33,8 @@ import { ConfirmationModal, Image, Pager } from '../../common';
 import NoData from '../../common/NoData';
 import { toRupiah } from '../../../utils/convert';
 import ClassNames from '../../../utils/classnames';
+import 'intro.js/introjs.css';
+import { Steps, Hints } from 'intro.js-react';
 
 type ContentProps = {
   profile: Merchant;
@@ -51,8 +53,8 @@ const ProductContent = ({ profile }: ContentProps) => {
   const [search, setSearch] = useState<string>('');
   const [productQuery, setProductQuery] = useState<ProductQuery>({
     search: search,
-    sort: '',
-    sortBy: ProductsSortByString.Newest,
+    sort: 'DESC',
+    sortBy: ProductsSortByString.LastUpdated,
     limit: LIMIT_SELLER_PRODUCT_LIST,
     page: 1,
     merchantID: 0,
@@ -161,11 +163,55 @@ const ProductContent = ({ profile }: ContentProps) => {
       });
   };
 
+  const [steps, setSteps] = useState([
+    {
+      element: '#addProduct',
+      intro: 'You can add a new product by pressing this button',
+      position: 'right',
+      tooltipClass: 'myTooltipClass',
+      highlightClass: 'myHighlightClass',
+    },
+    {
+      element: '#productFilterStatus',
+      intro:
+        'You can filter out product by its status by choosing between this tabs',
+    },
+    {
+      element: '#productFilterSearch',
+      intro:
+        'You can filter out product by its name by typing and pressing search icon',
+    },
+  ]);
+
+  const [stepsEnabled, setStepsEnabled] = useState(false);
+
+  const introOnExit = () => {
+    setStepsEnabled(false);
+  };
+
   return (
     <div className='p-4 md:p-10'>
+      <Steps
+        enabled={stepsEnabled}
+        steps={steps}
+        initialStep={0}
+        onExit={introOnExit}
+      />
       <div className='flex flex-col md:flex-row gap-y-3 justify-between items-center'>
-        <h5 className='font-bold text-2xl text-primary'>Products</h5>
+        <div className='flex flex-row justify items-center gap-2'>
+          <h5 className='font-bold text-2xl text-primary'>Products</h5>
+          <a
+            href='#'
+            onClick={() => {
+              setStepsEnabled(true);
+            }}
+            className='text-sm flex items-center gap-2'
+          >
+            Usage guide <BsQuestionCircle />
+          </a>
+        </div>
         <Button
+          id='addProduct'
           className='w-full md:w-auto'
           startIcon={<HiPlus className='text-xl' />}
           color='primary'
@@ -180,11 +226,15 @@ const ProductContent = ({ profile }: ContentProps) => {
         value={filterStatus}
         onChange={handleFilterStatusClick}
         className='mb-3 border-b-2'
+        id='productFilterStatus'
       >
         <Tabs.Tab value={PRODUCT_STATUS.ACTIVE}>Active</Tabs.Tab>
         <Tabs.Tab value={PRODUCT_STATUS.INACTIVE}>Inactive</Tabs.Tab>
       </Tabs>
-      <div className='flex flex-wrap justify-between mb-4 gap-4'>
+      <div
+        className='flex flex-wrap justify-between mb-4 gap-4'
+        id='productFilterSearch'
+      >
         <Form onSubmit={handleFormSubmit} className='w-full md:w-auto'>
           <InputGroup>
             <Input
@@ -209,7 +259,7 @@ const ProductContent = ({ profile }: ContentProps) => {
               <span>Variations</span>
               <div className='flex justify-center'>Prices</div>
               <div className='flex justify-center'>Stocks</div>
-              <div className='flex justify-center'>Total Salse</div>
+              <div className='flex justify-center'>Total Sales</div>
               <span>Action</span>
             </Table.Head>
             <Table.Body>
