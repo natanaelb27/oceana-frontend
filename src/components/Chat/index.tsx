@@ -116,7 +116,7 @@ const Chat = () => {
   const scrollToLastMessage = () => {
     setTimeout(() => {
       const element = document.getElementById('lastMessage');
-      console.log(element);
+      console.log('FINDING');
       if (element) {
         // 👇 Will scroll smoothly to the top of the next section
         element.scrollIntoView({ behavior: 'smooth' });
@@ -127,7 +127,9 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    scrollToLastMessage();
+    if (getChatData) {
+      scrollToLastMessage();
+    }
     setCurrentToUserID(getChatData?.data?.to_user_id);
   }, [getChatData]);
 
