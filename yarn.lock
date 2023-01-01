@@ -5433,10 +5433,20 @@
     "has" "^1.0.3"
     "side-channel" "^1.0.4"
 
-"ipaddr.js@^2.0.1":
-  "integrity" "sha512-1qTgH9NG+IIJ4yfKs2e6Pp1bZg8wbDbKHT21HrLIeYBTRLgMYKnMTPAuI3Lcs61nfx5h1xlXnbJtH1kX5/d/ng=="
-  "resolved" "https://registry.npmjs.org/ipaddr.js/-/ipaddr.js-2.0.1.tgz"
-  "version" "2.0.1"
+intro.js-react@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/intro.js-react/-/intro.js-react-0.7.1.tgz#e045e718d8716fcd66df6be92e5a82da0bc186e3"
+  integrity sha512-UtRfSlfkzY5Ztti3dcnHuWFLy2+EGFNgLXrVZUX8dloYj49e2iqEhQ7kbDH2B9lqVIy3yMfnsyWkWB61AAnz3A==
+
+intro.js@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/intro.js/-/intro.js-6.0.0.tgz#710c963ce7bc4f5d1af1f901fffc83ad7af658da"
+  integrity sha512-ZUiR6BoLSvPSlLG0boewnWVgji1fE1gBvP/pyw5pgCKXEDQz1mMeUxarggClPNs71UTq364LwSk9zxz17A9gaQ==
+
+ipaddr.js@1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.9.1.tgz#bff38543eeb8984825079ff3a2a8e6cbd46781b3"
+  integrity sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==
 
 "ipaddr.js@1.9.1":
   "integrity" "sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g=="
