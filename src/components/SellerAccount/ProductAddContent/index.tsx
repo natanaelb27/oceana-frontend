@@ -290,10 +290,7 @@ const ProductAddContent = () => {
   const handleSetFileImage = (newFilesView: string[]) => {
     productFormik.setFieldValue('images', newFilesView);
   };
-<<<<<<< HEAD
-=======
 
->>>>>>> f9032e488f89dc1e49835601ba4875a21a2ed93a
   const handleUploadImage = (files: FileList) => {
     uploadMedia({ formData: toUploadMediaRequest(files[0]) })
       .unwrap()
