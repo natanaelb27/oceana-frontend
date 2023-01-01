@@ -231,7 +231,7 @@ const Chat = () => {
                   toUserID === currentToUserID ? (
                     <div className='flex flex-col h-full justify-between'>
                       {/* section: profile */}
-                      <div className='flex flex-row p-2 gap-2 items-center bg-'>
+                      <div className='flex flex-row p-2 gap-2 items-center bg-primary-content'>
                         <div className='aspect-square'>
                           <Zoom>
                             <Image
