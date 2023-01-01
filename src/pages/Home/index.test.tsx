@@ -1,14 +1,10 @@
-import { screen, waitFor, render } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
-import { persistStore } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
-import { Loading } from '../../components/common';
-import { store } from '../../store/store';
+import { screen, waitFor } from '@testing-library/react';
 import { server } from '../../tests/server';
 
-import Home from './index';
 import '@testing-library/jest-dom';
+import { renderWithProviders } from '../../tests/test';
+import Home from './index';
+import { categoriesMock } from '../../mocks/categories';
 
 describe('Home', () => {
   beforeAll(() => {
@@ -33,21 +29,12 @@ describe('Home', () => {
     server.close();
   });
 
-  it('should display all categories', async () => {
-    render(
-      <Provider store={store}>
-        <PersistGate loading={<Loading />} persistor={persistStore(store)}>
-          <BrowserRouter>
-            <Home />
-          </BrowserRouter>
-        </PersistGate>
-      </Provider>
-    );
+  it('should render all data', async () => {
+    renderWithProviders(<Home />);
 
     await waitFor(() => {
-      // expect(screen.getByText(/promotions/i)).toBeInTheDocument();
+      expect(screen.getByText(/promotions/i)).toBeInTheDocument();
       expect(screen.getByText(/category/i)).toBeInTheDocument();
-      expect(screen.getByText(/animal/i)).toBeInTheDocument();
       expect(
         screen.getByText(
           /there are various products with special prices waiting for you/i
@@ -57,6 +44,12 @@ describe('Home', () => {
       expect(
         screen.getByText(/these are the most seen products/i)
       ).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      categoriesMock.data?.forEach(({ name }) => {
+        expect(screen.getByText(new RegExp(name, 'i'))).toBeInTheDocument();
+      });
     });
   });
 });

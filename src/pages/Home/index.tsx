@@ -33,8 +33,6 @@ type ProductStorageProps = {
   timestamp: Date | null;
 };
 
-console.log('aaaa');
-
 const Home = () => {
   const navigate = useNavigate();
   const recommendedProductQuery: ProductQuery = {
@@ -158,7 +156,6 @@ const Home = () => {
 
   return (
     <div className='container mx-auto'>
-      <p>{JSON.stringify(categories)}</p>
       <div className='px-4 py-10'>
         <div className='mb-8'>
           <PromoBanner />
