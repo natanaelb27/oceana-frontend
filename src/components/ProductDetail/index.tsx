@@ -703,6 +703,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
                   }
                   productItemPrice={productItemPrice}
                   disabledVariants={disabledVariants}
+                  disablePurchase={disablePurchase}
                 />
               </div>
               <div className='col-span-12 md:hidden relative'>
