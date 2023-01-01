@@ -1,21 +1,39 @@
 import moment from 'moment';
 import { Avatar, Tooltip } from 'react-daisyui';
 import { HiChatAlt2, HiStar } from 'react-icons/hi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { setChatBoxShown, setToUserID } from '../../store/slices/chatSlice';
 import { useAppDispatch } from '../../store/store';
-import { ShopInformation } from '../../types/component';
+import { Role, ShopInformation } from '../../types/component';
 import { toCompact } from '../../utils/convert';
 import { Image } from '../common';
 
 type ShopBannerProps = {
   shopInformation?: ShopInformation;
   isLoading?: boolean;
+  userRoleCode?: string | null;
+  disablePurchase?: boolean;
 };
 
-const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
+const ShopBanner = ({
+  shopInformation,
+  isLoading,
+  userRoleCode,
+  disablePurchase,
+}: ShopBannerProps) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleClickChatSeller = () => {
+    console.log(userRoleCode);
+    if (userRoleCode) {
+      dispatch(setToUserID({ toUserID: shopInformation?.user_id || '' }));
+      dispatch(setChatBoxShown({ chatBoxShown: true }));
+    } else {
+      navigate('/login');
+    }
+  };
 
   if (!shopInformation || isLoading) {
     return (
@@ -63,19 +81,18 @@ const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
             {moment(shopInformation.joined_date).format('MMMM YYYY')}
           </p>
         </div>
-        <button
-          type='button'
-          className='p-1 px-3 border-2 border-primary bg-primary bg-opacity-10 hover:bg-primary hover:bg-opacity-5 text-primary text-sm w-fit transition-all'
-          onClick={() => {
-            dispatch(setToUserID({ toUserID: shopInformation.user_id }));
-            dispatch(setChatBoxShown({ chatBoxShown: true }));
-          }}
-        >
-          <span className='flex flex-row gap-1 items-center justify-center'>
-            <HiChatAlt2 />
-            Chat Now
-          </span>
-        </button>
+        {!disablePurchase ? (
+          <button
+            type='button'
+            className='mt-2 p-1 px-3 border-2 border-primary bg-primary bg-opacity-10 hover:bg-primary hover:bg-opacity-5 text-primary text-sm w-fit transition-all'
+            onClick={handleClickChatSeller}
+          >
+            <span className='flex flex-row gap-1 items-center justify-center'>
+              <HiChatAlt2 />
+              Chat Now
+            </span>
+          </button>
+        ) : null}
       </div>
     </div>
   );
