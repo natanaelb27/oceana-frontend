@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Button } from 'react-daisyui';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { Button, Form, Input, InputGroup } from 'react-daisyui';
 import { CgClose } from 'react-icons/cg';
+import { HiSearch } from 'react-icons/hi';
 import { useSearchParams } from 'react-router-dom';
 import { Pager, ProductCard, SortBar } from '../../../components/common';
 import NoData from '../../../components/common/NoData';
@@ -48,7 +49,30 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
     toProductQuery(productQuery)
   );
 
-  const q = searchParams.get('q') || '';
+  const [search, setSearch] = useState<string>('');
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setProductQuery({
+      ...productQuery,
+      page: 1,
+      search: search,
+    });
+  };
+
+  const handleSearchClick = () => {
+    setProductQuery({
+      ...productQuery,
+      page: 1,
+      search: search,
+    });
+  };
+
   const sortBy = searchParams.get('sort-by') || ProductsSortByString.BestSeller;
 
   useEffect(() => {
@@ -58,10 +82,9 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
 
     setProductQuery({
       ...productQuery,
-      search: q,
       sortBy,
     });
-  }, [q, sortBy]);
+  }, [sortBy]);
 
   const handleSortChange = (productSort: ProductsSortBy) => {
     let sortBy = '';
@@ -111,6 +134,14 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
     });
   };
 
+  const handleClearSearchFilter = () => {
+    setSearch('');
+    setProductQuery({
+      ...productQuery,
+      search: '',
+    });
+  };
+
   const handleClearRatingFilter = () => {
     setProductQuery({
       ...productQuery,
@@ -119,9 +150,11 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
   };
 
   const handleClickResetFilter = () => {
+    setSearch('');
     setProductQuery({
       ...productQuery,
       merchantCities: [],
+      search: '',
       priceMinimum: 0,
       priceMaximum: 0,
       rating: 0,
@@ -177,8 +210,24 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
             className='col-span-5 flex flex-col'
           >
             <div className='product-list-header'>
-              <div className='ml-2 flex items-center gap-2 text-lg'>
-                <span className='font-bold'>Shop Products</span>
+              <div className='flex gap-3'>
+                <div className='ml-2 flex items-center gap-2 text-lg'>
+                  <span className='font-bold'>Shop Products</span>
+                </div>
+                <Form onSubmit={handleFormSubmit} className='w-full md:w-auto'>
+                  <InputGroup>
+                    <Input
+                      type='text'
+                      placeholder='Search...'
+                      className='w-full md:max-w-xs'
+                      value={search}
+                      onChange={handleSearchChange}
+                    />
+                    <Button onClick={handleSearchClick}>
+                      <HiSearch className='text-lg' />
+                    </Button>
+                  </InputGroup>
+                </Form>
               </div>
               <div className='mt-6'>
                 <SortBar sort={sort} onSortChange={handleSortChange} />
@@ -223,13 +272,30 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
         </div>
         <div id='product-list-search-page' className='col-span-5 flex flex-col'>
           <div className='product-list-header'>
-            <div className='ml-2 flex items-center gap-2 text-lg'>
-              <span className='font-bold'>Shop Products</span>
+            <div className='flex gap-3'>
+              <div className='ml-2 flex items-center gap-2 text-lg'>
+                <span className='font-bold'>Shop Products</span>
+              </div>
+              <Form onSubmit={handleFormSubmit} className='w-full md:w-auto'>
+                <InputGroup>
+                  <Input
+                    type='text'
+                    placeholder='Search...'
+                    className='w-full md:max-w-xs'
+                    value={search}
+                    onChange={handleSearchChange}
+                  />
+                  <Button onClick={handleSearchClick}>
+                    <HiSearch className='text-lg' />
+                  </Button>
+                </InputGroup>
+              </Form>
             </div>
             <div className='mt-6'>
               <SortBar sort={sort} onSortChange={handleSortChange} />
             </div>
-            {productQuery.merchantCities.length > 0 ||
+            {productQuery.search ||
+            productQuery.merchantCities.length > 0 ||
             productQuery.priceMinimum ||
             productQuery.priceMaximum ||
             productQuery.rating ||
@@ -265,6 +331,24 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
                           );
                         })
                     : null}
+                  {productQuery.search ? (
+                    <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
+                      <span className='whitespace-nowrap'>
+                        Search: {productQuery.search}
+                      </span>
+                      <Button
+                        size='xs'
+                        shape='circle'
+                        color='ghost'
+                        className=''
+                        onClick={() => {
+                          handleClearSearchFilter();
+                        }}
+                      >
+                        <CgClose className='text-xs' />
+                      </Button>
+                    </div>
+                  ) : null}
                   {productQuery.priceMinimum ? (
                     <div className='border-2 pl-4 pr-2 py-2 rounded-2xl flex items-center gap-2'>
                       <span className='whitespace-nowrap'>
@@ -354,7 +438,8 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
                   <ProductCard key={n} product={product} />
                 ))}
               </div>
-            ) : productQuery.merchantCities.length > 0 ||
+            ) : productQuery.search ||
+              productQuery.merchantCities.length > 0 ||
               productQuery.priceMinimum ||
               productQuery.priceMaximum ||
               productQuery.rating ||
@@ -369,7 +454,7 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
               </div>
             ) : (
               <div className='mt-4'>
-                <NoData title='Oops, it seems that there are no products that match the keyword...'></NoData>
+                <NoData title='Oops, it seems that there are no products available'></NoData>
               </div>
             ))}
           <div className='mt-6 flex justify-center'>
