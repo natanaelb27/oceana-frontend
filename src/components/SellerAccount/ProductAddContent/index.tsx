@@ -1762,7 +1762,7 @@ const ProductAddContent = () => {
                               }
                               productFormik.setFieldValue(
                                 'process_day',
-                                e.target.value
+                                parseInt(e.target.value)
                               );
                             }}
                             onFocus={() =>

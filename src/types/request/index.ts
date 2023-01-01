@@ -1,6 +1,7 @@
 export * from './address';
 export * from './auth';
 export * from './cart';
+export * from './chat';
 export * from './checkout';
 export * from './marketplaceVoucher';
 export * from './media';
