@@ -26,7 +26,6 @@ const CategoryModal = ({
   const handleCancelClick = () => {
     setOpen(false);
   };
-  console.log(getAllCategoryIsLoading);
   return (
     <Modal
       open={open}

@@ -23,7 +23,6 @@ export const formikPreorderDay = (
   ctx: Yup.TestContext<AnyObject>,
   value: number | undefined
 ) => {
-  console.log(value);
   if (!value && value !== 0) {
     return ctx.createError({
       message: 'Pre-Order Day cannot be empty',

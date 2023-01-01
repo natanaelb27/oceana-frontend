@@ -289,7 +289,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
 
   const handleClickBuyNow = () => {
     if (
-      selectedVariations.filter((items) => typeof items === 'number').length <=
+      selectedVariations.filter((items) => typeof items === 'number').length <
       (getProductDetailData?.data?.product_variation.length || 0)
     ) {
       notifyErrorToast('Please select product variation first');

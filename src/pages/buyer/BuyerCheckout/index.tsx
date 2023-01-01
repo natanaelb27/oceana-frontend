@@ -193,7 +193,6 @@ const BuyerCheckout = () => {
       paymentWalletPin: false,
       sealabsPayAccounts: false,
     });
-    console.log(openModal);
   };
 
   const handleChangeAddressClick = () => {

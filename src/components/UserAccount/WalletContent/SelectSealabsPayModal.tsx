@@ -26,7 +26,6 @@ const SelectSealabsPayModal = ({
     useGetAllSealabsPayQuery();
 
   const handleSelectSealabspay = (cardNumber: string, nameOnCard: string) => {
-    console.log('select sealabspay');
     setSealabsPayDetails({
       cardNumber,
       nameOnCard,

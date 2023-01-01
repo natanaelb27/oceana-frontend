@@ -81,19 +81,6 @@ const ProductCart = ({
     );
   };
 
-  console.log(
-    userRoleCode,
-    purchasedQuantitiesStock,
-    selectedVariations.filter((items) => typeof items === 'number').length ===
-      (productVariations.length || 0) && userRoleCode,
-    selectedVariations.filter((items) => typeof items === 'number').length ===
-      (productVariations.length || 0) && userRoleCode
-      ? 'tes'
-      : 'haha',
-    quantity,
-    stock
-  );
-
   return (
     <Card className='shadow sticky top-24'>
       <div className='p-4'>

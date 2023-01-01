@@ -38,7 +38,6 @@ const SealabsPayPaymentRedirect = () => {
         cardNumber,
         signature
       );
-      console.log(req);
       payCartWithSealabsPaySuccess(req)
         .unwrap()
         .catch((err) => {
