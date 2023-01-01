@@ -109,6 +109,7 @@ const ProductAddContent = () => {
       package_size_height: 0,
       condition: PRODCUT_CONDITION_TYPE.NEW,
       status: 'active',
+      is_preorder: false,
       process_day: 0,
       images: [] as string[],
       videos: [] as string[],
@@ -181,9 +182,12 @@ const ProductAddContent = () => {
       package_size_length: Yup.number().min(1).max(1000).label('length'),
       package_size_width: Yup.number().min(1).max(1000).label('width'),
       package_size_height: Yup.number().min(1).max(1000).label('height'),
-      process_day: Yup.number().test('process_day', (value, ctx) =>
-        formikPreorderDay(ctx, value)
-      ),
+      process_day: Yup.number().test('process_day', (value, ctx) => {
+        if (productFormik.values.is_preorder) {
+          return formikPreorderDay(ctx, value);
+        }
+        return true;
+      }),
       images: Yup.array()
         .of(Yup.string().required('Please enter images'))
         .min(1),
@@ -222,6 +226,10 @@ const ProductAddContent = () => {
         (values.package_size_width || '0') +
         'x' +
         (values.package_size_height || '0');
+
+      if (values.process_day < 7) {
+        values.process_day = 0;
+      }
 
       if (productFormik.values.id) {
         updateProduct({
@@ -282,8 +290,7 @@ const ProductAddContent = () => {
   const handleSetFileImage = (newFilesView: string[]) => {
     productFormik.setFieldValue('images', newFilesView);
   };
-  console.log(productFormik.errors);
-  console.log(productFormik.values);
+
   const handleUploadImage = (files: FileList) => {
     uploadMedia({ formData: toUploadMediaRequest(files[0]) })
       .unwrap()
@@ -372,11 +379,13 @@ const ProductAddContent = () => {
   };
 
   const handlePreorderToggleOnChange = () => {
-    if (productFormik.values.process_day < 7) {
-      productFormik.setFieldValue('process_day', 7);
-    } else {
+    if (productFormik.values.is_preorder) {
       productFormik.setFieldValue('process_day', 0);
     }
+    productFormik.setFieldValue(
+      'is_preorder',
+      !productFormik.values.is_preorder
+    );
   };
 
   const deepCopyVariants = (data: PUMVariant[]) => {
@@ -1112,6 +1121,7 @@ const ProductAddContent = () => {
         package_size_height: parseInt(packageSize?.[2]) || 0,
         condition: upsertModel.condition,
         status: upsertModel.status,
+        is_preorder: upsertModel.process_day < 7 ? false : true,
         process_day:
           upsertModel.process_day == 2 || upsertModel.process_day < 7
             ? 0
@@ -1725,7 +1735,7 @@ const ProductAddContent = () => {
                 <FormLayout.InputContainer>
                   <div className='flex items-center gap-2'>
                     <Toggle
-                      checked={productFormik.values.process_day >= 7}
+                      checked={productFormik.values.is_preorder}
                       onChange={handlePreorderToggleOnChange}
                     />
                     <p className='text-sm'>
@@ -1734,7 +1744,7 @@ const ProductAddContent = () => {
                   </div>
                 </FormLayout.InputContainer>
               </FormLayout.LabelInputContainer>
-              {productFormik.values.process_day < 7 && (
+              {productFormik.values.is_preorder && (
                 <FormLayout.InputError>
                   <p className='text-sm'>
                     Send the product within 2 days (excluding Saturdays,
@@ -1743,7 +1753,7 @@ const ProductAddContent = () => {
                   </p>
                 </FormLayout.InputError>
               )}
-              {productFormik.values.process_day >= 7 && (
+              {productFormik.values.is_preorder && (
                 <>
                   <FormLayout.LabelInputContainer>
                     <FormLayout.LabelContainer />
@@ -1756,18 +1766,15 @@ const ProductAddContent = () => {
                             className='w-full'
                             value={productFormik.values.process_day}
                             onChange={(e) => {
-                              if (parseInt(e.target.value) < 7) {
-                                productFormik.setFieldValue('process_day', 0);
-                                return;
-                              }
                               productFormik.setFieldValue(
                                 'process_day',
                                 parseInt(e.target.value)
                               );
                             }}
-                            onFocus={() =>
-                              (productFormik.touched.process_day = true)
-                            }
+                            onFocus={(e) => {
+                              e.target.select();
+                              productFormik.touched.process_day = true;
+                            }}
                             onKeyDown={handleNumberInvalidKey}
                             min={0}
                           />
