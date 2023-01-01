@@ -1,6 +1,7 @@
 import {
   GetAllCategoryResponse,
   GetAncestorsCategoryResponse,
+  GetCategoriesByMerchantIDResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -20,7 +21,10 @@ export const categoryApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Category'],
     }),
-    getCategoriesByMerchantID: builder.query<GetAllCategoryResponse, string>({
+    getCategoriesByMerchantID: builder.query<
+      GetCategoriesByMerchantIDResponse,
+      string
+    >({
       query: (id) => ({
         url: `/categories/merchants/${id}`,
         method: 'GET',

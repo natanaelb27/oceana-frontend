@@ -46,10 +46,10 @@ const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
           letters={shopInformation.name.charAt(0)}
         />
       )}
-      <div className='flex flex-col gap-1'>
+      <div>
         <Link
-          to='/'
-          className='font-bold line-clamp-1 link link-hover flex items-center justify-center'
+          to={`/shops/${shopInformation.id}`}
+          className='font-bold mb-2.5 line-clamp-1 link link-hover'
         >
           {shopInformation.name}
         </Link>

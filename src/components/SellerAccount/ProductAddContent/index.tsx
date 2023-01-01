@@ -500,10 +500,6 @@ const ProductAddContent = () => {
     let indexNewProductItem = 0;
     // filter new product items
     const newProductItems = data.filter((productItem) => {
-      console.log(
-        productItem.variant_index[deletedOptionIndexVariant],
-        deletedOptionIndexOption
-      );
       if (
         productItem.variant_index[deletedOptionIndexVariant] ===
         deletedOptionIndexOption
@@ -550,13 +546,11 @@ const ProductAddContent = () => {
             variantIndex
           )
         ) {
-          console.log(indexProductItem);
           matchedProductItemIndex = indexProductItem;
         }
       });
 
       if (matchedProductItemIndex !== -1) {
-        console.log(data[matchedProductItemIndex]);
         return data[matchedProductItemIndex];
       }
 
@@ -1078,14 +1072,12 @@ const ProductAddContent = () => {
 
   useEffect(() => {
     if (productID) {
-      console.log('EXISTS product id');
       // get edit data
       getProductUpsertModel(productID);
     }
   }, [productID]);
 
   useEffect(() => {
-    console.log('CATEGORYCHANGES');
     if (getAncestorsCategoryData !== undefined) {
       let categoryNames = '';
       const { data: ancestorsCategory } = getAncestorsCategoryData;
