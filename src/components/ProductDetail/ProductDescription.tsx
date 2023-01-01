@@ -29,6 +29,7 @@ type ProductDescriptionProps = {
   purchasedQuantitiesProductMerchantPromotionID?: number;
   productItemPrice?: number;
   disabledVariants?: number[][];
+  disablePurchase?: boolean;
 };
 
 const ProductDescription = ({
@@ -43,6 +44,7 @@ const ProductDescription = ({
   purchasedQuantitiesProductMerchantPromotionID,
   productItemPrice,
   disabledVariants,
+  disablePurchase,
 }: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
   const renderTabContent = (tab: ProductTab) => {
@@ -206,7 +208,11 @@ const ProductDescription = ({
       </Tabs>
       {renderTabContent(tab)}
       <Divider />
-      <ShopBanner shopInformation={shopInformation} />
+      <ShopBanner
+        shopInformation={shopInformation}
+        userRoleCode={userRoleCode}
+        disablePurchase={disablePurchase}
+      />
     </div>
   );
 };

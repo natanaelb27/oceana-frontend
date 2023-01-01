@@ -8,6 +8,8 @@ import { useLazyGetProfileQuery } from '../../store/services/profileService';
 import { ShopInformation } from '../../types/component';
 import { Role } from '../../types/role';
 import { Image } from '../common';
+import { useAppDispatch } from '../../store/store';
+import { setChatBoxShown, setToUserID } from '../../store/slices/chatSlice';
 
 type ShopDetailCardProps = {
   merchant: ShopInformation | null | undefined;
@@ -16,10 +18,12 @@ type ShopDetailCardProps = {
 
 const ShopDetailCard = ({ merchant, role }: ShopDetailCardProps) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleClickChatSeller = () => {
     if (role) {
-      console.log('first');
+      dispatch(setToUserID({ toUserID: merchant?.user_id || '' }));
+      dispatch(setChatBoxShown({ chatBoxShown: true }));
     } else {
       navigate('/login');
     }
@@ -44,7 +48,7 @@ const ShopDetailCard = ({ merchant, role }: ShopDetailCardProps) => {
           </div>
           <div className='flex flex-col md:flex-row md:items-center gap-1'>
             <span className='text-sm'>
-              Since {moment(merchant?.joined_date).format('MMMM YYYY')}
+              Joined since {moment(merchant?.joined_date).format('MMMM YYYY')}
             </span>
             <span className='hidden md:flex'>•</span>
             <span className='text-sm font-light'>{merchant?.shop_city}</span>
