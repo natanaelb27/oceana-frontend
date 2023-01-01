@@ -76,6 +76,19 @@ input[type='number'] {
   z-index: 0;
 }
 
+.textarea-no-outline {
+  border: none;
+  overflow: auto;
+  outline: none;
+  box-sizing: border-box;
+
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+
+  resize: none; /*remove the resize handle on the bottom right*/
+}
+
 @layer utilities {
   .clip-left {
     clip-path: polygon(0 10%, 3% 0, 100% 0, 100% 100%, 3% 100%, 0 90%);

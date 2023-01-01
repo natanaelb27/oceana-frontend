@@ -221,9 +221,9 @@ const Chat = () => {
               </div>
               <div className='border-b-[0.5px] border-base-content/20 ' />
               {/* section: body */}
-              <div className='flex h-full overflow-y-auto'>
+              <div className='flex h-full'>
                 {/* section: chat */}
-                <div className='w-full h-full overflow-y-auto'>
+                <div className='w-full h-full bg-base-200/80'>
                   {/* section: chat with someon */}
                   {toUserID !== undefined &&
                   getChatData !== undefined &&
@@ -231,7 +231,7 @@ const Chat = () => {
                   toUserID === currentToUserID ? (
                     <div className='flex flex-col h-full justify-between'>
                       {/* section: profile */}
-                      <div className='flex flex-row p-2 gap-2 items-center'>
+                      <div className='flex flex-row p-2 gap-2 items-center bg-'>
                         <div className='aspect-square'>
                           <Zoom>
                             <Image
@@ -259,7 +259,7 @@ const Chat = () => {
                       </div>
                       <div className='border-b-[0.5px] border-base-content/20 ' />
                       {/* section: chat */}
-                      <div className='overflow-auto h-full'>
+                      <div className='overflow-auto h-full basis-0 grow'>
                         <div className='h-fit flex flex-col-reverse gap-2 p-2 md:p-4'>
                           {getChatData?.data?.chats.map((valueChat, i) => (
                             <React.Fragment key={'message-' + i}>
@@ -281,40 +281,47 @@ const Chat = () => {
                       </div>
                       <div className='border-b-[0.5px] border-base-content/20 ' />
                       {/* section: chat input*/}
-                      <Form
-                        id='createChatForm'
-                        className='flex flex-row'
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          if (!createChatIsLoading) {
-                            chatFormik.handleSubmit();
-                          }
-                        }}
+                      <Resizable
+                        enable={{ top: true }}
+                        className=''
+                        maxHeight='40%'
+                        minHeight='10%'
                       >
-                        <textarea
-                          name='message'
-                          placeholder='Say something...'
-                          className='h-20 p-2 w-full min-h-12 max-h-52'
-                          value={chatFormik.values.message}
-                          onChange={chatFormik.handleChange}
-                          onKeyDown={handleMessageOnKeyDown}
-                        />
-                        <button
-                          type='submit'
-                          className={ClassNames([
-                            'p-2 w-20 bg-base-300 flex items-center justify-center text-[1.5rem] transition-all',
-                            createChatIsLoading ? 'bg-base-content/60' : '',
-                          ])}
-                          form='createChatForm'
-                          disabled={createChatIsLoading ? true : false}
+                        <Form
+                          id='createChatForm'
+                          className='flex flex-row w-full h-full'
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            if (!createChatIsLoading) {
+                              chatFormik.handleSubmit();
+                            }
+                          }}
                         >
-                          {createChatIsLoading ? (
-                            <CgSpinner className='animate-spin' />
-                          ) : (
-                            <BiPaperPlane />
-                          )}
-                        </button>
-                      </Form>
+                          <textarea
+                            name='message'
+                            placeholder='Say something...'
+                            className='w-full h-full p-4 textarea-no-outline'
+                            value={chatFormik.values.message}
+                            onChange={chatFormik.handleChange}
+                            onKeyDown={handleMessageOnKeyDown}
+                          />
+                          <button
+                            type='submit'
+                            className={ClassNames([
+                              'p-2 w-20 flex items-center justify-center text-[1.5rem] transition-all text-primary-content',
+                              createChatIsLoading ? '' : 'bg-primary',
+                            ])}
+                            form='createChatForm'
+                            disabled={createChatIsLoading ? true : false}
+                          >
+                            {createChatIsLoading ? (
+                              <CgSpinner className='animate-spin' />
+                            ) : (
+                              <BiPaperPlane />
+                            )}
+                          </button>
+                        </Form>
+                      </Resizable>
                     </div>
                   ) : (
                     <div className='h-full flex items-center justify-center'>
@@ -323,6 +330,7 @@ const Chat = () => {
                   )}
                 </div>
                 <div className='border-r-[0.5px] border-base-content/20 ' />
+                {/* section: chat list */}
                 <Resizable
                   enable={{ left: true }}
                   size={
@@ -341,7 +349,6 @@ const Chat = () => {
                     }
                   }}
                 >
-                  {/* section: chat list */}
                   <div className='w-full h-full overflow-y-auto '>
                     {!role && (
                       <div className='w-full h-full flex items-center justify-center'>
