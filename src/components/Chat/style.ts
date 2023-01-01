@@ -5,7 +5,7 @@ export const ChatContainer = tw.div<any>`
     z-90
     fixed 
     bottom-0 
-    right-8
+    right-[5%]
 
     flex
     flex-col
