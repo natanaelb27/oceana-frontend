@@ -231,7 +231,7 @@ const Chat = () => {
                   toUserID === currentToUserID ? (
                     <div className='flex flex-col h-full justify-between'>
                       {/* section: profile */}
-                      <div className='flex flex-row p-2 gap-2 items-center bg-primary-content'>
+                      <div className='flex flex-row p-2 gap-2 items-center bg-base-100'>
                         <div className='aspect-square'>
                           <Zoom>
                             <Image
@@ -250,7 +250,7 @@ const Chat = () => {
                               to={'/shops/' + getChatData?.data?.to_merchant_id}
                             >
                               <div className='text-sm flex flex-row gap-1 items-center'>
-                                <BsShop className='text-base' />
+                                <BsShop className='text-base-content' />
                                 {getChatData?.data?.to_merchant_name}
                               </div>
                             </Link>
@@ -365,7 +365,7 @@ const Chat = () => {
                           className={ClassNames([
                             'flex items-center gap-4 p-2 cursor-pointer',
                             toUserID === valueChatList.to_user_id
-                              ? 'bg-base-content/10'
+                              ? 'bg-base-200'
                               : '',
                           ])}
                           onClick={() => {
@@ -377,17 +377,17 @@ const Chat = () => {
                             src={valueChatList.to_user_photo}
                           />
                           <div className='flex flex-col'>
-                            <span className='text-accent-content font-semibold w-52 truncate text-sm'>
+                            <span className='text-base-content font-semibold w-52 truncate text-sm'>
                               {valueChatList.to_user_full_name}
                             </span>
                             {valueChatList.to_merchant_id !== 0 && (
-                              <span className='text-accent-content font-semibold w-52 truncate text-sm flex gap-1'>
+                              <span className='text-base-content font-semibold w-52 truncate text-sm flex gap-1'>
                                 <BsShop className='text-lg' />
                                 {valueChatList.to_merchant_name}
                               </span>
                             )}
                             {valueChatList.last_message !== '' && (
-                              <span className='text-accent-content/70 w-52 truncate'>
+                              <span className='text-base-content/70 w-52 truncate'>
                                 {valueChatList.last_message}
                               </span>
                             )}
