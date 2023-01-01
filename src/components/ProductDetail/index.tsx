@@ -469,7 +469,6 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   }, [myShopProfileData, getShopInformationData]);
 
   useEffect(() => {
-    console.log(purchasedQuantitiesQuery.product_item_id);
     if (purchasedQuantitiesQuery.product_item_id === 0) {
       return;
     }
