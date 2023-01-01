@@ -4,6 +4,7 @@ import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
 import { Layout } from '../components';
 import {
+  ProductSnapshot,
   BuyerRefundCreate,
   Login,
   NotFound,
@@ -207,8 +208,12 @@ const Routes = () => {
               element: <BuyerPurchaseHistory />,
             },
             {
-              path: '/user/pending-payment',
-              element: <BuyerPendingPayment />,
+              path: '/user/purchase',
+              element: <BuyerPurchaseHistory />,
+            },
+            {
+              path: '/product-snapshot/:orderDetailID',
+              element: <ProductSnapshot />,
             },
             {
               path: '/user/refund',

@@ -59,7 +59,7 @@ import moment from 'moment';
 import NoData from '../../common/NoData';
 import { stringCompare } from '../../../utils/validation';
 import DateCountdown from '../../common/DateCountdown';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUpdateCompleteOrderMutation } from '../../../store/services/profileService';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { UpdateOrderStatusResponse } from '../../../types/response';
@@ -1458,9 +1458,14 @@ const PurchaseContent = () => {
                               />
                             </div>
                             <div className='flex flex-col col-span-4'>
-                              <span className='font-bold line-clamp-2 md:line-clamp-1  cursor-pointer'>
-                                {orderDetail.product_name || ''}
-                              </span>
+                              <Link
+                                to={`/product-snapshot/${orderDetail?.order_detail_id}`}
+                                target={'_blank'}
+                              >
+                                <span className='font-bold line-clamp-2 md:line-clamp-1 cursor-pointer'>
+                                  {orderDetail.product_name || ''}
+                                </span>
+                              </Link>
                               <span className='font-light text-sm line-clamp-2 md:line-clamp-1'>
                                 {orderDetail.product_variations || ''}
                               </span>
