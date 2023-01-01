@@ -46,8 +46,8 @@ export const ChatBoxContainer = tw.div<any>`
 
     h-[80vh]
     w-[80vw]
-    md:h-[60vh]
-    md:w-[50vw]
+    md:h-full
+    md:w-full
     
     shadow
 
