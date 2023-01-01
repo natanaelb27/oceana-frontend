@@ -195,11 +195,15 @@ const Chat = () => {
           maxWidth='80vw'
           minHeight='30vh'
           maxHeight='90vh'
-          enable={{
-            topLeft: true,
-            left: true,
-            top: true,
-          }}
+          enable={
+            isMobileView
+              ? {}
+              : {
+                  topLeft: true,
+                  left: true,
+                  top: true,
+                }
+          }
         >
           <S.ChatBoxContainer>
             <div className='flex flex-col w-full h-full'>
