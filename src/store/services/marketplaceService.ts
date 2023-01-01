@@ -29,6 +29,16 @@ export const marketplaceApi = baseApi.injectEndpoints({
       }),
       providesTags: ['MarketplaceVoucher'],
     }),
+    getMarketplaceVoucherByBuyer: builder.query<
+      GetMarketplaceVoucherResponse,
+      string
+    >({
+      query: (query) => ({
+        url: `/marketplace/vouchers/buyer?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['MarketplaceVoucher'],
+    }),
     getMarketplaceVoucherDetails: builder.query<
       GetMarketplaceVoucherDetailsResponse,
       number
@@ -81,6 +91,8 @@ export const {
   useGetActiveMarketplaceVoucherQuery,
   useGetAllMarketplaceVoucherQuery,
   useLazyGetAllMarketplaceVoucherQuery,
+  useGetMarketplaceVoucherByBuyerQuery,
+  useLazyGetMarketplaceVoucherByBuyerQuery,
   useGetMarketplaceVoucherDetailsQuery,
   useLazyGetMarketplaceVoucherDetailsQuery,
   useCreateMarketplaceVoucherMutation,

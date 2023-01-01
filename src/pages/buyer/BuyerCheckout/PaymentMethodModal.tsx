@@ -1,11 +1,13 @@
 import { Modal } from 'react-daisyui';
 import { IoWalletOutline } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
 import { SealabsPayImg } from '../../../components/common';
-import { PaymentMethod } from '../../../types/component';
+import { PaymentMethod, SealabsPayAccount } from '../../../types/component';
 import { pascalCaseToTitleCase } from '../../../utils/convert';
 
 type PaymentMethodModalProps = {
   currentPaymentMethod: PaymentMethod;
+  sealabsPayAccounts: SealabsPayAccount[];
   open: boolean;
   onClose: () => void;
   setPaymentMethod: React.Dispatch<React.SetStateAction<PaymentMethod>>;
@@ -13,10 +15,23 @@ type PaymentMethodModalProps = {
 
 const PaymentMethodModal = ({
   currentPaymentMethod,
+  sealabsPayAccounts,
   open,
   onClose,
   setPaymentMethod,
 }: PaymentMethodModalProps) => {
+  const navigate = useNavigate();
+  const isMissingSealabsPayAccount = (paymentMethod: PaymentMethod) =>
+    paymentMethod === PaymentMethod.SealabsPay &&
+    sealabsPayAccounts.length === 0;
+  const handlePaymentMethodClick = (paymentMethod: PaymentMethod) => {
+    if (isMissingSealabsPayAccount(paymentMethod)) {
+      navigate('/user/account/sealabs-pay');
+    }
+    setPaymentMethod(paymentMethod);
+    onClose();
+  };
+
   return (
     <Modal
       open={open}
@@ -42,13 +57,14 @@ const PaymentMethodModal = ({
                 onClick={
                   currentPaymentMethod === index + 1
                     ? onClose
-                    : () => {
-                        setPaymentMethod(index + 1);
-                        onClose();
-                      }
+                    : () => handlePaymentMethodClick(index + 1)
                 }
               >
-                <div className='text-lg'>{pascalCaseToTitleCase(key)}</div>
+                <div className='text-lg'>
+                  {isMissingSealabsPayAccount(index + 1)
+                    ? `Create a ${pascalCaseToTitleCase(key)} Account`
+                    : pascalCaseToTitleCase(key)}
+                </div>
                 <div className='flex items-center'>
                   {key === PaymentMethod[1] ? (
                     <IoWalletOutline className='w-5 h-5' />

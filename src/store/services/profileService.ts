@@ -1,5 +1,6 @@
 import {
   CheckPasswordVerificationCodeRequest,
+  DeleteBatchFavoriteProducts,
   UpdateProfileEmailRequest,
   UpdateProfilePasswordRequest,
   UpdateProfileRequest,
@@ -7,6 +8,7 @@ import {
 } from '../../types/request';
 import {
   CheckPasswordVerificationCodeResponse,
+  GetAllProductsResponse,
   GetAllRefundDetailsResponse,
   GetProfileResponse,
   RequestPasswordVerificationCodeResponse,
@@ -130,6 +132,24 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Refund'],
     }),
+    getAllUserFavoriteProducts: builder.query<GetAllProductsResponse, string>({
+      query: (query) => ({
+        url: `/profile/favorites?${query}`,
+        method: 'GET',
+      }),
+      providesTags: ['Product', 'FavoriteProduct'],
+    }),
+    deleteBatchFavoriteProducts: builder.mutation<
+      void,
+      DeleteBatchFavoriteProducts
+    >({
+      query: (request) => ({
+        url: '/profile/favorites/batch-delete',
+        method: 'DELETE',
+        body: request,
+      }),
+      invalidatesTags: ['Product', 'FavoriteProduct'],
+    }),
   }),
 });
 
@@ -147,4 +167,7 @@ export const {
   useUpdateCompleteOrderMutation,
   useGetAllProfileRefundsQuery,
   useLazyGetAllProfileRefundsQuery,
+  useGetAllUserFavoriteProductsQuery,
+  useLazyGetAllUserFavoriteProductsQuery,
+  useDeleteBatchFavoriteProductsMutation,
 } = profileApi;

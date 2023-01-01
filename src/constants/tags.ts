@@ -13,5 +13,5 @@ export const TAG_TYPES = [
   'Merchant',
   'MerchantVoucher',
   'MerchantPromotion',
-  'Refund'
+  'Refund',
 ];

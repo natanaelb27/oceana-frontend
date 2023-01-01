@@ -66,6 +66,16 @@ export const sealabsPayApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+    sealabsPayPaymentOTP: builder.mutation<
+      RedirectSealabsPayResponse,
+      PaymentSealabsPayRequest
+    >({
+      query: (request) => ({
+        url: '/sealabs-pay/payment-otp',
+        method: 'POST',
+        body: request,
+      }),
+    }),
   }),
 });
 
@@ -76,4 +86,5 @@ export const {
   useSetDefaultSealabsPayMutation,
   useSealabsPayRegisterOTPMutation,
   useSealabsPayTopupOTPMutation,
+  useSealabsPayPaymentOTPMutation,
 } = sealabsPayApi;

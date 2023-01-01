@@ -8,33 +8,45 @@ import { toCompact, toRupiah } from '../../utils/convert';
 import ShopBanner from './ShopBanner';
 import {
   ProductDetail,
+  ProductModel,
   ProductVariation,
   ShopInformation,
 } from '../../types/component';
 import { titleCase } from '../../utils/titleCase';
+import { stringCompare } from '../../utils/validation';
+import { DISCOUNT_TYPE } from '../../constants';
+import { toUrl } from '../../utils/toUrl';
 
 type ProductDescriptionProps = {
+  userRoleCode: string | null;
   productVariations: ProductVariation[];
   productDetail: ProductDetail;
   shopInformation: ShopInformation;
   handleClickVariation: (e: React.SyntheticEvent) => void;
   selectedVariations: number[];
+  selectedModel: ProductModel | null;
   purchasedQuantitiesPrice?: number;
+  purchasedQuantitiesProductMerchantPromotionID?: number;
   productItemPrice?: number;
+  disabledVariants?: number[][];
 };
 
 const ProductDescription = ({
+  userRoleCode,
   productVariations,
   productDetail,
   shopInformation,
   handleClickVariation,
   selectedVariations,
+  selectedModel,
   purchasedQuantitiesPrice,
+  purchasedQuantitiesProductMerchantPromotionID,
   productItemPrice,
+  disabledVariants,
 }: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
-
   const renderTabContent = (tab: ProductTab) => {
+    console.log(productDetail.category + productDetail.category_id);
     if (tab === ProductTab.Specification) {
       return (
         <div className='bg-base-200 p-4 text-sm'>
@@ -42,7 +54,12 @@ const ProductDescription = ({
           <p className='mb-2'>Unit Weight: {productDetail.weight}g</p>
           <p>
             Category:{' '}
-            <NavLink to='/category' className='font-bold text-primary'>
+            <NavLink
+              to={`/category/${toUrl(productDetail.category)}-i.${
+                productDetail.category_id
+              }`}
+              className='font-bold text-primary'
+            >
               {productDetail.category}
             </NavLink>
           </p>
@@ -53,7 +70,9 @@ const ProductDescription = ({
     if (tab === ProductTab.Description) {
       return (
         <div className='bg-base-200 p-4 text-sm'>
-          <p className='prose-sm whitespace-pre-line'>{productDetail.description}</p>
+          <p className='prose-sm whitespace-pre-line'>
+            {productDetail.description}
+          </p>
         </div>
       );
     }
@@ -71,20 +90,30 @@ const ProductDescription = ({
         <Tooltip message='Rating' color='warning'>
           <HiStar className='text-warning text-lg' />
         </Tooltip>{' '}
-        {productDetail.product_review_details.rating_star.toFixed(1)} ({productDetail.product_review_details.rating_count} ratings)
+        {productDetail.product_review_details.rating_star.toFixed(1)} (
+        {productDetail.product_review_details.rating_count} ratings)
       </div>
-      {purchasedQuantitiesPrice &&
-        selectedVariations.length === productVariations.length ? (
+      {userRoleCode === null &&
+      selectedVariations.filter((items) => typeof items === 'number').length ===
+        productVariations.length ? (
+        <h4 className='text-4xl font-bold mb-2.5'>
+          {toRupiah(
+            selectedModel?.price_after_discount || selectedModel?.price || 0
+          )}
+        </h4>
+      ) : purchasedQuantitiesPrice !== undefined &&
+        selectedVariations.filter((items) => typeof items === 'number')
+          .length === productVariations.length ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(purchasedQuantitiesPrice)}
         </h4>
-      ) : productDetail.price_after_discount &&
+      ) : productDetail.price_after_discount !== null &&
         productDetail.price_after_discount ===
           productDetail.price_max_after_discount ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(productDetail.price_after_discount)}
         </h4>
-      ) : productDetail.price_min_after_discount &&
+      ) : productDetail.price_min_after_discount !== null &&
         productDetail.price_max_after_discount ? (
         <h4 className='text-4xl font-bold mb-2.5'>
           {toRupiah(productDetail.price_min_after_discount)}-
@@ -101,19 +130,32 @@ const ProductDescription = ({
         </h4>
       )}
 
-      {productDetail.price_after_discount ? (
+      {productDetail.price_after_discount !== null &&
+      (selectedVariations.filter((items) => typeof items === 'number')
+        .length === (productVariations.length || 0)
+        ? purchasedQuantitiesProductMerchantPromotionID !== null
+        : true) ? (
         <div className='flex items-center'>
           <Tooltip message='Murah Lebay' color='success'>
-            <Badge color='success' size='sm' className='truncate'>
-              {productDetail.discount}%
-            </Badge>
+            {stringCompare(
+              productDetail.discount_type || '',
+              DISCOUNT_TYPE.PERCENTAGE
+            ) ? (
+              <Badge color='success' size='sm' className='truncate'>
+                {productDetail.discount}%
+              </Badge>
+            ) : (
+              <Badge color='success' size='sm' className='truncate'>
+                {toRupiah(productDetail.discount || 0)}
+              </Badge>
+            )}
           </Tooltip>
           {productDetail.price_min === productDetail.price_max ? (
             <h5 className='text-lg line-through ml-1'>
               {toRupiah(productDetail.price)}
             </h5>
-          ) : selectedVariations.length === productVariations.length &&
-            productItemPrice ? (
+          ) : selectedVariations.filter((items) => typeof items === 'number')
+              .length === productVariations.length && productItemPrice ? (
             <h5 className='text-lg line-through ml-1'>
               {toRupiah(productItemPrice)}
             </h5>
@@ -139,18 +181,17 @@ const ProductDescription = ({
                   id={`${variationIndex}-${optionIndex}`}
                   size='sm'
                   variant='outline'
-                  className={`font-normal normal-case btn-primary disabled:btn-outline ${
+                  className={`font-normal normal-case btn-primary ${
                     selectedVariations[variationIndex] === optionIndex
                       ? 'btn-active'
                       : ''
                   }`}
                   key={option}
-                  disabled={
-                    selectedVariations.length !== variationIndex - 1
-                      ? false
-                      : true
-                  }
                   onClick={handleClickVariation}
+                  disabled={
+                    variation.summed_stocks.at(optionIndex) === 0 ||
+                    disabledVariants?.at(variationIndex)?.includes(optionIndex)
+                  }
                 >
                   {titleCase(option)}
                 </Button>

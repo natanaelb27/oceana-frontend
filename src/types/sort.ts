@@ -20,6 +20,27 @@ export enum ProductsSortString {
   LowestPrice = 'asc',
 }
 
+export enum FavoriteProductsSortBy {
+  Default = 0,
+  RecentlySaved,
+  OldestSaved,
+  HighestPrice,
+  LowestPrice,
+}
+
+export enum FavoriteProductsSortByString {
+  Default = '',
+  Saved = 'saved',
+  Price = 'price',
+}
+
+export enum FavoriteProductsSortString {
+  RecentlySaved = 'desc',
+  OldestSaved = 'asc',
+  HighestPrice = 'desc',
+  LowestPrice = 'asc',
+}
+
 export enum ReviewsSort {
   Latest = 0,
   HighestRating,

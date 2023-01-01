@@ -11,7 +11,7 @@ import {
 import { IoCopyOutline } from 'react-icons/io5';
 import { Button } from 'react-daisyui';
 import { toCompact } from '../../utils/convert';
-import { notifyInfoToast } from '../../utils/toast';
+import { notifyErrorToast, notifyInfoToast } from '../../utils/toast';
 import { Image } from '../common';
 
 type ProductMediaProps = {
@@ -29,10 +29,29 @@ const ProductMedia = ({
   favoriteProductValue,
   productLikeCount,
 }: ProductMediaProps) => {
-  const handleCopyClick = () => {
-    navigator.clipboard.writeText(window.location.href);
+  function copyFailed() {
+    notifyErrorToast('Uh oh copy failed, please copy link manually!');
+  }
 
-    notifyInfoToast('Copied to clipboard');
+  function updateClipboard(text: string) {
+    navigator.clipboard.writeText(text).then(
+      () => {
+        notifyInfoToast('Copied to clipboard!');
+      },
+      () => {
+        copyFailed();
+      }
+    );
+  }
+  const handleCopyClick = () => {
+    const permissionName = 'clipboard-write' as PermissionName;
+    navigator.permissions.query({ name: permissionName }).then((result) => {
+      if (result.state === 'granted' || result.state === 'prompt') {
+        updateClipboard(window.location.href);
+      } else {
+        copyFailed();
+      }
+    });
   };
 
   return (

@@ -65,6 +65,7 @@ const DeliveryServiceModal = ({
     const courierCode = e.currentTarget.id;
     getShippingCostRequest.courier = courierCode;
     setOpenCourierServicesModal(true);
+    onClose();
     getRajaOngkirShippingCost(getShippingCostRequest)
       .unwrap()
       .then((response) => {
@@ -161,7 +162,9 @@ const DeliveryServiceModal = ({
             {Array(4)
               .fill(0)
               .map((_, n) => (
-                <Skeleton key={n} className='w-40 h-40' />
+                <div key={n} className='flex justify-center'>
+                  <Skeleton className='w-40 h-40' />
+                </div>
               ))}
           </div>
         </Modal.Body>
