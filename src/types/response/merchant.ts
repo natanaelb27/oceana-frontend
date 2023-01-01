@@ -38,6 +38,7 @@ export type MerchantGetInformationByIDResponse = {
     shop_district: string;
     shop_city: string;
     shop_province: string;
+    joined_date: string;
   } | null;
   code: number;
   error: string | null;

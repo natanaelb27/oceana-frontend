@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ShopDetailCard from '../../components/ShopDetail/ShopDetailCard';
-import ShopProducts from '../../components/ShopDetail/ShopProducts';
+import ShopProducts from '../../components/ShopDetail/ShopProducts/index';
 import ShopVouchers from '../../components/ShopDetail/ShopVouchers';
 import {
   LIMIT_HOME_ALL_PRODUCTS,
@@ -19,6 +19,7 @@ import {
   useGetAllMerchantVoucherByBuyerQuery,
   useLazyGetAllMerchantVoucherByBuyerQuery,
   useLazyGetAllMerchantVoucherQuery,
+  useLazyGetShopInformationQuery,
 } from '../../store/services/shopService';
 import { MerchantProductQuery, MerchantVoucherQuery } from '../../types/query';
 import {
@@ -61,7 +62,7 @@ const ShopDetail = () => {
   });
 
   const [getMerchant, { data: getMerchantData }] =
-    useLazyGetMerchantByIDQuery();
+    useLazyGetShopInformationQuery();
 
   const [getMerchantVoucher, { data: getMerchantVoucherData }] =
     useLazyGetAllMerchantVoucherQuery();
@@ -89,7 +90,7 @@ const ShopDetail = () => {
   return (
     <div className='mb-3'>
       <div className='flex justify-center items-center'>
-        <ShopDetailCard merchant={getMerchantData?.data} />
+        <ShopDetailCard merchant={getMerchantData?.data} role={role} />
       </div>
       <div className='flex justify-center items-center'>
         <ShopVouchers

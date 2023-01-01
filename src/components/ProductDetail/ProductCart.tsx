@@ -56,7 +56,7 @@ const ProductCart = ({
 }: ProductCartProps) => {
   const renderPurchaseButtons = () => {
     return (
-      <div>
+      <div className='flex flex-col items-center'>
         <Button
           color='primary'
           endIcon={<HiShoppingCart className='text-lg' />}
@@ -70,13 +70,20 @@ const ProductCart = ({
         </Button>
         <Button
           color='primary'
-          variant='outline'
           endIcon={<HiShoppingBag className='text-lg' />}
           className='w-full mb-2.5 text-xs lg:text-sm'
+          disabled={
+            disablePurchase || purchasedQuantitiesStock === 0 || stock === 0
+          }
           onClick={handleClickBuyNow}
         >
           Buy Now
         </Button>
+        {disablePurchase ? (
+          <span className='text-error text-xs'>
+            You can&apos;t buy your own product
+          </span>
+        ) : null}
       </div>
     );
   };

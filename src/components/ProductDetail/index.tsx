@@ -295,27 +295,32 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       notifyErrorToast('Please select product variation first');
       return;
     }
-    let productItemID = 0;
-    if (getProductDetailData?.data?.product_variation.length === 0) {
-      productItemID =
-        getProductDetailData.data.product_model[0].product_item_id;
-    } else {
-      productItemID = purchasedQuantitiesQuery.product_item_id;
-    }
-    updateUserCart({
-      product_item_id: productItemID,
-      quantity: purchasedQuantitiesQuery.quantity,
-    })
-      .unwrap()
-      .then(() => {
-        navigate('/checkout');
+
+    if (roleCode) {
+      let productItemID = 0;
+      if (getProductDetailData?.data?.product_variation.length === 0) {
+        productItemID =
+          getProductDetailData.data.product_model[0].product_item_id;
+      } else {
+        productItemID = purchasedQuantitiesQuery.product_item_id;
+      }
+      updateUserCart({
+        product_item_id: productItemID,
+        quantity: purchasedQuantitiesQuery.quantity,
       })
-      .catch((err) => {
-        if (err && 'data' in err) {
-          const data = err.data as UpdateUserCartResponse;
-          notifyErrorToast(capitalizeFirstLetter(data.message));
-        }
-      });
+        .unwrap()
+        .then(() => {
+          navigate('/checkout');
+        })
+        .catch((err) => {
+          if (err && 'data' in err) {
+            const data = err.data as UpdateUserCartResponse;
+            notifyErrorToast(capitalizeFirstLetter(data.message));
+          }
+        });
+    } else {
+      navigate('/login');
+    }
   };
 
   const handleClickAddToCart = () => {
@@ -326,52 +331,61 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
       notifyErrorToast('Please select product variation first');
       return;
     }
-    let productItemID = 0;
-    if (getProductDetailData?.data?.product_variation.length === 0) {
-      productItemID =
-        getProductDetailData.data.product_model[0].product_item_id;
-    } else {
-      productItemID = purchasedQuantitiesQuery.product_item_id;
-    }
-    incrementUserCart({
-      product_item_id: productItemID,
-      quantity: purchasedQuantitiesQuery.quantity,
-      action: 'increment',
-    })
-      .unwrap()
-      .then(() => {
-        notifySuccessToast('Product has been added to cart');
-      })
-      .catch((err) => {
-        if (err && 'data' in err) {
-          const data = err.data as UpdateUserCartResponse;
-          notifyErrorToast(capitalizeFirstLetter(data.message));
-        }
-      });
-    getPurchasedQuantities(
-      toPurchasedQuantitiesQuery({
+
+    if (roleCode) {
+      let productItemID = 0;
+      if (getProductDetailData?.data?.product_variation.length === 0) {
+        productItemID =
+          getProductDetailData.data.product_model[0].product_item_id;
+      } else {
+        productItemID = purchasedQuantitiesQuery.product_item_id;
+      }
+      incrementUserCart({
         product_item_id: productItemID,
-        product_id: Number(productID),
         quantity: purchasedQuantitiesQuery.quantity,
+        action: 'increment',
       })
-    );
+        .unwrap()
+        .then(() => {
+          notifySuccessToast('Product has been added to cart');
+        })
+        .catch((err) => {
+          if (err && 'data' in err) {
+            const data = err.data as UpdateUserCartResponse;
+            notifyErrorToast(capitalizeFirstLetter(data.message));
+          }
+        });
+      getPurchasedQuantities(
+        toPurchasedQuantitiesQuery({
+          product_item_id: productItemID,
+          product_id: Number(productID),
+          quantity: purchasedQuantitiesQuery.quantity,
+        })
+      );
+    } else {
+      navigate('/login');
+    }
   };
 
   const handleClickFavoriteProduct = () => {
-    favoriteProduct(productID)
-      .unwrap()
-      .then((res) => {
-        if (!res.data) {
-          return;
-        }
-        if (res.data.is_favorite) {
-          notifySuccessToast('Product added to favorite list');
-          setProductLikeCount(productLikeCount + 1);
-        } else {
-          notifySuccessToast('Product removed from favorite list');
-          setProductLikeCount(productLikeCount - 1);
-        }
-      });
+    if (roleCode) {
+      favoriteProduct(productID)
+        .unwrap()
+        .then((res) => {
+          if (!res.data) {
+            return;
+          }
+          if (res.data.is_favorite) {
+            notifySuccessToast('Product added to favorite list');
+            setProductLikeCount(productLikeCount + 1);
+          } else {
+            notifySuccessToast('Product removed from favorite list');
+            setProductLikeCount(productLikeCount - 1);
+          }
+        });
+    } else {
+      navigate('/login');
+    }
   };
 
   useEffect(() => {

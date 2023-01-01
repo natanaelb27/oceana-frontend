@@ -1,7 +1,6 @@
 import { MerchantVoucher } from '../../types/component';
 import { Slider } from '../common';
 import ShopVoucherCard from './ShopVoucherCard';
-import { ShopVouchersCardContainer, ShopVouchersFlex } from './style';
 
 type ShopVouchersProp = {
   vouchers: MerchantVoucher[] | null | undefined;
@@ -9,12 +8,11 @@ type ShopVouchersProp = {
 
 const ShopVouchers = ({ vouchers }: ShopVouchersProp) => {
   return (
-    <ShopVouchersCardContainer>
-      <div className='text-lg font-bold mb-3'>Shop Vouchers</div>
+    <div className='relative lg:w-3/5 w-full p-3 border rounded mb-10 flex flex-col justify-center'>
+      <span className='text-lg font-bold mb-3'>Shop Vouchers</span>
       {vouchers?.length != 0 && (
         <Slider id='voucher'>
-          <div className='hidden'></div>
-          <ShopVouchersFlex>
+          <div className='flex gap-3'>
             {vouchers?.map((voucher) => {
               return (
                 <ShopVoucherCard
@@ -28,15 +26,17 @@ const ShopVouchers = ({ vouchers }: ShopVouchersProp) => {
                 />
               );
             })}
-          </ShopVouchersFlex>
+          </div>
         </Slider>
       )}
       {vouchers?.length == 0 && (
-        <h1 className='text-center font-bold'>
-          No vouchers available for right now.
-        </h1>
+        <div className='h-12 text-center'>
+          <span className='text-center font-bold'>
+            No vouchers available right now
+          </span>
+        </div>
       )}
-    </ShopVouchersCardContainer>
+    </div>
   );
 };
 
