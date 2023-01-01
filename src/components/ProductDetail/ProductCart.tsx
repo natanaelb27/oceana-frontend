@@ -1,13 +1,15 @@
 import React from 'react';
 import { Button, Card, Divider, Input } from 'react-daisyui';
 import { HiShoppingBag, HiShoppingCart } from 'react-icons/hi';
-import { ProductVariation } from '../../types/component';
+import { ProductModel, ProductVariation } from '../../types/component';
 
 import { toRupiah } from '../../utils/convert';
 import { titleCase } from '../../utils/titleCase';
 import { Image } from '../common';
 
 type ProductCartProps = {
+  userRoleCode: string | null;
+  selectedModel: ProductModel | null;
   stock: number;
   quantity: number;
   handleClickAddQuantity: () => void;
@@ -30,6 +32,8 @@ type ProductCartProps = {
 };
 
 const ProductCart = ({
+  userRoleCode,
+  selectedModel,
   stock,
   quantity,
   handleClickAddQuantity,
@@ -52,7 +56,7 @@ const ProductCart = ({
 }: ProductCartProps) => {
   const renderPurchaseButtons = () => {
     return (
-      <div>
+      <div className='flex flex-col items-center'>
         <Button
           color='primary'
           endIcon={<HiShoppingCart className='text-lg' />}
@@ -66,13 +70,20 @@ const ProductCart = ({
         </Button>
         <Button
           color='primary'
-          variant='outline'
           endIcon={<HiShoppingBag className='text-lg' />}
           className='w-full mb-2.5 text-xs lg:text-sm'
+          disabled={
+            disablePurchase || purchasedQuantitiesStock === 0 || stock === 0
+          }
           onClick={handleClickBuyNow}
         >
           Buy Now
         </Button>
+        {disablePurchase ? (
+          <span className='text-error text-xs'>
+            You can&apos;t buy your own product
+          </span>
+        ) : null}
       </div>
     );
   };
@@ -126,27 +137,28 @@ const ProductCart = ({
               onClick={handleClickAddQuantity}
               disabled={
                 selectedVariations.filter((items) => typeof items === 'number')
-                  .length === (productVariations.length || 0)
+                  .length === (productVariations.length || 0) && userRoleCode
                   ? (purchasedQuantitiesStock || 0) <= quantity
-                  : stock <= quantity
+                  : (selectedModel?.stock_quantity || stock || 0) <= quantity
               }
               className='rounded-l-none'
             >
               +
             </Button>
           </div>
-          {purchasedQuantitiesStock &&
+          {userRoleCode &&
           productVariations.length ===
             selectedVariations.filter((items) => typeof items === 'number')
               .length ? (
             <p className='min-w-fit line-clamp-1'>
               Stock: {purchasedQuantitiesStock}
             </p>
-          ) : productVariations.length ===
+          ) : !userRoleCode &&
+            productVariations.length ===
               selectedVariations.filter((items) => typeof items === 'number')
-                .length && purchasedQuantitiesStock === 0 ? (
+                .length ? (
             <p className='min-w-fit line-clamp-1'>
-              Stock: {purchasedQuantitiesStock}
+              Stock: {selectedModel?.stock_quantity}
             </p>
           ) : (
             <p className='min-w-fit line-clamp-1'>Stock: {stock}</p>

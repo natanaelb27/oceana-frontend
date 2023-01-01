@@ -1,5 +1,9 @@
-import { CreateMerchantRequest } from '../../types/request';
 import {
+  GetAllMerchantProductRequest,
+  CreateMerchantRequest,
+} from '../../types/request';
+import {
+  GetAllProductsResponse,
   CreateMerchantResponse,
   MerchantGetInformationByIDResponse,
 } from '../../types/response';
@@ -23,6 +27,20 @@ export const merchantApi = baseApi.injectEndpoints({
         url: `/shop/information/${id}`,
         method: 'GET',
       }),
+      providesTags: ['Merchant'],
+    }),
+    getAllMerchantProducts: builder.query<
+      GetAllProductsResponse,
+      GetAllMerchantProductRequest
+    >({
+      query: (arg) => {
+        const { id, query } = arg;
+
+        return {
+          url: `/shop/${id}/products?${query}`,
+          method: 'GET',
+        };
+      },
       providesTags: ['Merchant', 'MyShop'],
     }),
   }),
@@ -31,5 +49,6 @@ export const merchantApi = baseApi.injectEndpoints({
 export const {
   useCreateMerchantMutation,
   useGetMerchantByIDQuery,
+  useGetAllMerchantProductsQuery,
   useLazyGetMerchantByIDQuery,
 } = merchantApi;

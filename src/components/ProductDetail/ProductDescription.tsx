@@ -46,7 +46,6 @@ const ProductDescription = ({
 }: ProductDescriptionProps) => {
   const [tab, setTab] = useState<ProductTab>(ProductTab.Specification);
   const renderTabContent = (tab: ProductTab) => {
-    console.log(productDetail.category + productDetail.category_id);
     if (tab === ProductTab.Specification) {
       return (
         <div className='bg-base-200 p-4 text-sm'>

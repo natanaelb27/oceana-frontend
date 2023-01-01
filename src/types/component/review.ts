@@ -3,7 +3,8 @@ export interface Review {
   user_id: string;
   full_name: string;
   username: string;
-  media: string[];
+  review_images: string[];
+  review_videos: string[];
   photo: string | null;
   product_id: number;
   rating: number;

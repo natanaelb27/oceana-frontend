@@ -43,7 +43,10 @@ const ShopBanner = ({ shopInformation, isLoading }: ShopBannerProps) => {
         />
       )}
       <div>
-        <Link to='/' className='font-bold mb-2.5 line-clamp-1 link link-hover'>
+        <Link
+          to={`/shops/${shopInformation.id}`}
+          className='font-bold mb-2.5 line-clamp-1 link link-hover'
+        >
           {shopInformation.name}
         </Link>
         <div className='flex items-center text-sm w-full'>

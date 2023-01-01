@@ -531,6 +531,10 @@ const OrderContent = () => {
     navigate('/seller/refund');
   };
 
+  const handleNavigateShop = (merchantID: number) => {
+    navigate(`/shops/${merchantID}`);
+  };
+
   const handleViewOrderTrackingClick = () => {
     setOpenOrderTracking(!openOrderTracking);
   };
@@ -1210,7 +1214,14 @@ const OrderContent = () => {
               <div className='flex flex-col gap-2 p-5 border-b-8 border-base-200'>
                 <div className='flex justify-between items-center'>
                   <span className='font-bold'>Product Details</span>
-                  <div className='flex items-center gap-1 cursor-pointer hover:text-primary'>
+                  <div
+                    className='flex items-center gap-1 cursor-pointer hover:text-primary'
+                    onClick={() => {
+                      handleNavigateShop(
+                        getMerchantOrderDetailsData?.data?.merchant_id || 0
+                      );
+                    }}
+                  >
                     <span className='font-bold text-sm'>
                       {getMerchantOrderDetailsData?.data.shop_name}
                     </span>
