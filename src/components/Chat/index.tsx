@@ -30,6 +30,8 @@ import { Image } from '../common';
 import Skeleton from '../common/Loading/Skeleton';
 import ChatBubble from './ChatBubble';
 import * as S from './style';
+import Zoom from 'react-medium-image-zoom';
+import { Link } from 'react-router-dom';
 
 const Chat = () => {
   const [
@@ -142,6 +144,11 @@ const Chat = () => {
     }
   }, chatUpdateInterval);
 
+  useEffect(() => {
+    getChatList();
+    console.log('MOUNT');
+  }, []);
+
   return (
     <>
       <S.ChatContainer
@@ -155,7 +162,7 @@ const Chat = () => {
             {/* section: header */}
             <div className='flex items-center justify-between p-2'>
               <span className='flex items-center gap-2 text-primary font-semibold'>
-                <HiChatAlt2 className='text-xl' /> OceaChat
+                <HiChatAlt2 className='text-xl' /> OceaTalk
               </span>
               <button
                 className='text-base-content/70'
@@ -178,24 +185,34 @@ const Chat = () => {
                     {/* section: profile */}
                     <div className='flex flex-row p-2 gap-2 items-center'>
                       <div className='aspect-square'>
-                        <Image
-                          className='w-12 rounded-full'
-                          src={getChatData?.data?.to_user_photo}
-                        />
+                        <Zoom>
+                          <Image
+                            className='w-12 rounded-full'
+                            src={getChatData?.data?.to_user_photo}
+                          />
+                        </Zoom>
                       </div>
                       <div className='flex flex-col'>
                         <div className='text-sm'>
                           {getChatData?.data?.to_user_full_name}
                         </div>
-                        <div className='text-sm'>
-                          {getChatData?.data?.to_merchant_name}
-                        </div>
+                        {getChatData?.data?.to_merchant_id !== 0 && (
+                          <Link
+                            className='text-primary underline'
+                            to={'/shops/' + getChatData?.data?.to_merchant_id}
+                          >
+                            <div className='text-sm flex flex-row gap-1 items-center'>
+                              <BsShop className='text-base' />
+                              {getChatData?.data?.to_merchant_name}
+                            </div>
+                          </Link>
+                        )}
                       </div>
                     </div>
                     <div className='border-b-[0.5px] border-base-content/20 ' />
                     {/* section: chat */}
                     <div className='overflow-auto h-full'>
-                      <div className='h-fit  p-2 flex flex-col-reverse gap-2'>
+                      <div className='h-fit flex flex-col-reverse gap-2 p-2 md:p-4'>
                         {getChatData?.data?.chats.map((valueChat, i) => (
                           <React.Fragment key={'message-' + i}>
                             {i === 0 && <div id='lastMessage' />}
@@ -259,7 +276,7 @@ const Chat = () => {
               </div>
               <div className='border-r-[0.5px] border-base-content/20 ' />
               {/* section: chat list */}
-              <div className='w-full h-full overflow-y-auto p-2 '>
+              <div className='w-full h-full overflow-y-auto '>
                 {!role && (
                   <div className='w-full h-full flex items-center justify-center'>
                     <p className='text-center'>
@@ -272,7 +289,12 @@ const Chat = () => {
                   getChatListData?.data?.map((valueChatList, i) => (
                     <div
                       key={'chat-list-' + i}
-                      className='flex items-center gap-4 p-2 cursor-pointer'
+                      className={ClassNames([
+                        'flex items-center gap-4 p-2 cursor-pointer',
+                        toUserID === valueChatList.to_user_id
+                          ? 'bg-base-content/10'
+                          : '',
+                      ])}
                       onClick={() => {
                         handleChatListItemOnClick(valueChatList.to_user_id);
                       }}
@@ -299,17 +321,15 @@ const Chat = () => {
                       </div>
                     </div>
                   ))}
-                {role &&
-                  getChatListIsLoading &&
-                  currentToUserID === undefined && (
-                    <>
-                      <Skeleton className='h-10' />
-                      <Skeleton className='h-10' />
-                      <Skeleton className='h-10' />
-                      <Skeleton className='h-10' />
-                      <Skeleton className='h-10' />
-                    </>
-                  )}
+                {role && getChatListData == undefined && (
+                  <div className='p-2'>
+                    <Skeleton className='h-16' />
+                    <Skeleton className='h-16' />
+                    <Skeleton className='h-16' />
+                    <Skeleton className='h-16' />
+                    <Skeleton className='h-16' />
+                  </div>
+                )}
               </div>
             </div>
           </div>

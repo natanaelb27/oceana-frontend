@@ -25,9 +25,9 @@ const ChatBubble = ({
       <div
         className={ClassNames([
           position === CHAT_POSITION.RIGHT
-            ? 'bg-base-content/70'
-            : 'bg-primary',
-          'p-3 rounded-lg text-secondary-content break-all',
+            ? 'bg-base-content/70 hover:bg-base-content/60'
+            : 'bg-primary hover:bg-primary/80',
+          'p-3 rounded-lg text-secondary-content break-all transition-all min-w-[2rem]',
         ])}
       >
         {children}
