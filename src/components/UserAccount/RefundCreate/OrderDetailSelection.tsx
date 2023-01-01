@@ -79,20 +79,32 @@ const OrderDetailSelection = ({
   };
 
   const handleDecreaseRefundItemQuantity = () => {
-    handleInputChange((selectedOrderDetail?.at(idx)?.quantity || 1) - 1);
+    handleInputChange(
+      (selectedOrderDetail?.find(
+        (o) => o.orderDetailID === orderDetailData.order_detail_id
+      )?.quantity || 1) - 1
+    );
   };
 
   const handleAddRefundItemQuantity = () => {
-    handleInputChange((selectedOrderDetail?.at(idx)?.quantity || 1) + 1);
+    handleInputChange(
+      (selectedOrderDetail?.find(
+        (o) => o.orderDetailID === orderDetailData.order_detail_id
+      )?.quantity || 1) + 1
+    );
   };
 
   return (
-    <div className='flex justify-between items-center'>
+    <div className='flex gap-2 flex-col md:flex-row justify-between items-start md:items-center'>
       <div className='flex items-center'>
         <input
           type='checkbox'
           className='checkbox checkbox-success'
-          checked={selectedOrderDetail.at(idx)?.selectOrderDetail || false}
+          checked={
+            selectedOrderDetail?.find(
+              (o) => o.orderDetailID === orderDetailData.order_detail_id
+            )?.selectOrderDetail || false
+          }
           onChange={(e) => {
             handleSelectOrderDetailChange(e, orderDetailData);
           }}
@@ -104,7 +116,7 @@ const OrderDetailSelection = ({
           />
         </div>
         <div className='h-16 flex flex-col justify-center'>
-          <span className='mt-2 md:mt-0 w-60 md:w-full truncate'>
+          <span className='w-24 md:w-96 overflow-hidden truncate'>
             {orderDetailData.product_name}
           </span>
           {orderDetailData.product_variations && (
@@ -114,51 +126,61 @@ const OrderDetailSelection = ({
           )}
         </div>
       </div>
-      <div className='flex flex-col items-center gap-1'>
-        <div className='flex items-center justify-end gap-1'>
-          <Button
-            className='btn-ghost'
-            shape='circle'
-            size='sm'
-            onClick={handleDecreaseRefundItemQuantity}
-          >
-            <AiOutlineMinusCircle
-              size={'2em'}
-              className='text-primary pointer-events-none'
-              pointerEvents={'none'}
+      <div className='w-full flex justify-end'>
+        <div className='flex flex-col w-32 items-end gap-1'>
+          <div className='flex items-center justify-end gap-1'>
+            <Button
+              className='btn-ghost'
+              shape='circle'
+              size='sm'
+              onClick={handleDecreaseRefundItemQuantity}
+            >
+              <AiOutlineMinusCircle
+                size={'2em'}
+                className='text-primary pointer-events-none'
+                pointerEvents={'none'}
+              />
+            </Button>
+            <Input
+              size='sm'
+              className='w-14 text-center border-2 border-primary'
+              value={
+                selectedOrderDetail?.find(
+                  (o) => o.orderDetailID === orderDetailData.order_detail_id
+                )?.quantity || 1
+              }
+              min={1}
+              max={orderDetailData.quantity}
+              onChange={handleChangeInputRefundItemQuantity}
+              type='number'
+              onKeyDown={handleNumberInvalidKey}
             />
-          </Button>
-          <Input
-            size='sm'
-            className='w-14 text-center border-2 border-primary'
-            value={selectedOrderDetail[idx]?.quantity || 1}
-            min={1}
-            max={orderDetailData.quantity}
-            onChange={handleChangeInputRefundItemQuantity}
-            type='number'
-            onKeyDown={handleNumberInvalidKey}
-          />
-          <Button
-            className='btn-ghost'
-            shape='circle'
-            size='sm'
-            onClick={handleAddRefundItemQuantity}
-          >
-            <AiOutlinePlusCircle
-              size='2em'
-              className='text-primary pointer-events-none'
-              pointerEvents={'none'}
-            />
-          </Button>
+            <Button
+              className='btn-ghost'
+              shape='circle'
+              size='sm'
+              onClick={handleAddRefundItemQuantity}
+            >
+              <AiOutlinePlusCircle
+                size='2em'
+                className='text-primary pointer-events-none'
+                pointerEvents={'none'}
+              />
+            </Button>
+          </div>
+          <div className='w-full flex justify-center'>
+            <span className='text-sm'>
+              {selectedOrderDetail?.find(
+                (o) => o.orderDetailID === orderDetailData.order_detail_id
+              )?.quantity || 1}
+              /{orderDetailData.quantity}{' '}
+              {(orderDetailData.quantity || 0) > 0 ? 'items' : 'item'}
+            </span>
+            {errorOrderDetail ? (
+              <span className='text-xs text-error'>{errorOrderDetail}</span>
+            ) : null}
+          </div>
         </div>
-        <div className='text-sm'>
-          {selectedOrderDetail?.at(idx)?.quantity || 1}/
-          {orderDetailData.quantity}{' '}
-          {(orderDetailData.quantity || 0) > 0 ? 'items' : 'item'}
-        </div>
-        {errorOrderDetail ? (
-          <span className='text-xs text-error'>{errorOrderDetail}</span>
-        ) : null}
       </div>
     </div>
   );
