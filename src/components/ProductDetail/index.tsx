@@ -675,6 +675,7 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
               <div className='col-span-12 md:col-span-4'>
                 <ProductMedia
                   images={getProductDetailData.data.images}
+                  videos={[]}
                   selectedVariantImage={selectedVariantImage}
                   handleClickFavoriteProduct={handleClickFavoriteProduct}
                   favoriteProductValue={Boolean(

@@ -16,6 +16,7 @@ import { Image } from '../common';
 
 type ProductMediaProps = {
   images: string[];
+  videos: string[];
   selectedVariantImage: string;
   handleClickFavoriteProduct: () => void;
   favoriteProductValue: boolean;
@@ -24,6 +25,7 @@ type ProductMediaProps = {
 
 const ProductMedia = ({
   images,
+  videos,
   selectedVariantImage,
   handleClickFavoriteProduct,
   favoriteProductValue,
