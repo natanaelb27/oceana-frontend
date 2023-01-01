@@ -15,3 +15,11 @@ export type GetAncestorsCategoryResponse = {
   message: string;
   metadata: Metadata | null;
 };
+
+export type GetCategoriesByMerchantIDResponse = {
+  data: Category[] | null;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};

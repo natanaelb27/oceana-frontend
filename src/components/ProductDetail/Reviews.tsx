@@ -6,7 +6,7 @@ import { Metadata, Review } from '../../types/component';
 
 import { ReviewsSort } from '../../types/sort';
 import { titleCase } from '../../utils/titleCase';
-import { Pager, NoData } from '../common';
+import { Pager, NoData, Image } from '../common';
 
 type ReviewsProps = {
   reviewData?: Review[] | null;
@@ -122,19 +122,34 @@ const Reviews = ({
               </span>
             )}
             <p className='prose-sm mb-4 whitespace-pre-line'>{review.review}</p>
-            {review.media.length > 0 && (
-              <div className='flex gap-2'>
-                {review.media.map((media, i) => (
-                  <Zoom key={i}>
-                    <img
-                      src={media}
-                      className='w-12 rounded'
-                      alt={`Review Media ${i}`}
+
+            <div className='flex gap-2'>
+              {review.review_images.length > 0 && (
+                <div className='flex gap-2'>
+                  {review.review_images.map((image, i) => (
+                    <Zoom key={i}>
+                      <Image
+                        src={image}
+                        className='h-12 w-12 md:h-20 md:w-20 rounded-md'
+                        alt={`Review Media ${i}`}
+                      />
+                    </Zoom>
+                  ))}
+                </div>
+              )}
+              {review.review_videos.length > 0 && (
+                <div className='flex gap-2'>
+                  {review.review_videos.map((video, i) => (
+                    <video
+                      key={i}
+                      src={video}
+                      controls
+                      className='h-12 w-12 md:h-20 md:w-40 rounded-md'
                     />
-                  </Zoom>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         ))}
         <div className='mx-auto'>

@@ -77,6 +77,14 @@ export type PurchasedQuantitiesQuery = {
   quantity: number;
 };
 
+export type MerchantProductQuery = {
+  categoryID: number;
+  priceMinimum: number;
+  priceMaximum: number;
+  merchantCities: string[];
+  courierServices: string[];
+} & Query;
+
 export type ReviewQuery = {
   sort: string;
   sort_by: string;

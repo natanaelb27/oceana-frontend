@@ -69,6 +69,9 @@ const Search = () => {
     } else if (productSort === ProductsSortBy.Recommended) {
       sortBy = ProductsSortByString.Recommended;
       sort = ProductsSortByString.Default;
+    } else if (productSort === ProductsSortBy.Newest) {
+      sortBy = ProductsSortByString.Newest;
+      sort = ProductsSortByString.Default;
     } else if (productSort === ProductsSortBy.HighestPrice) {
       sortBy = ProductsSortByString.Price;
       sort = ProductsSortString.HighestPrice;
