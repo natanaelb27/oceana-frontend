@@ -53,8 +53,8 @@ const ProductContent = ({ profile }: ContentProps) => {
   const [search, setSearch] = useState<string>('');
   const [productQuery, setProductQuery] = useState<ProductQuery>({
     search: search,
-    sort: '',
-    sortBy: ProductsSortByString.Newest,
+    sort: 'DESC',
+    sortBy: ProductsSortByString.LastUpdated,
     limit: LIMIT_SELLER_PRODUCT_LIST,
     page: 1,
     merchantID: 0,

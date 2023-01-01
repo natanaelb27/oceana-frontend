@@ -13,6 +13,7 @@ export enum ProductsSortByString {
   Newest = 'newest',
   BestSeller = 'most-buy',
   Price = 'price',
+  LastUpdated = 'updated-at',
 }
 
 export enum ProductsSortString {
