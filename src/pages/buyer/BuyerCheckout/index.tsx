@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Button, Card, Divider, Textarea, Tooltip } from 'react-daisyui';
 import { AiOutlineHome, AiOutlineShop } from 'react-icons/ai';
 import { BiReceipt } from 'react-icons/bi';
+import { BsTruck } from 'react-icons/bs';
 import { FaAddressBook, FaListUl } from 'react-icons/fa';
 import {
   HiOutlineChevronDown,
@@ -833,7 +834,7 @@ const BuyerCheckout = () => {
                         )
                       }
                     >
-                      <HiOutlineTruck className='text-2xl' />
+                      <HiOutlineTruck className='text-2xl text-base-content' />
                     </Button>
                   </Tooltip>
                 </Card.Title>
@@ -1204,7 +1205,7 @@ const BuyerCheckout = () => {
         <div className='col-span-1' />
         {/* Total and make order button sticky bottom */}
         <div className='md:col-span-4'>
-          <Card className='container p-6 fixed bottom-0 left-0 z-[100] rounded-b-none rounded-t-3xl text-neutral-content bg-neutral shadow-xl md:sticky md:top-24 md:rounded-3xl md:text-base-content md:bg-base-100 md:w-full md:z-0'>
+          <Card className='container p-6 fixed bottom-0 left-0 z-40 rounded-b-none rounded-t-3xl text-neutral-content bg-neutral shadow-xl md:sticky md:top-24 md:rounded-3xl md:text-base-content md:bg-base-100 md:w-full md:z-0'>
             <Card.Body className='hidden p-0 md:flex md:flex-col md:gap-1'>
               <div className='flex items-center justify-between text-lg'>
                 <div className='flex items-center gap-2'>
