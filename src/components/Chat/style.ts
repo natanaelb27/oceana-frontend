@@ -4,7 +4,7 @@ import tw from 'tailwind-styled-components';
 export const ChatContainer = tw.div<any>`
     z-90
     fixed 
-    bottom-0 
+    bottom-0
     right-[5%]
 
     flex
@@ -44,8 +44,8 @@ export const ChatButton = tw.button<any>`
 export const ChatBoxContainer = tw.div<any>`
     sticky
 
-    h-[80vh]
-    w-[80vw]
+    h-full
+    w-full
     md:h-full
     md:w-full
     
