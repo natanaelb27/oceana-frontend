@@ -245,7 +245,7 @@ const SealabsPayContent = () => {
           <div className='col-span-2 justify-center'>
             <NoData
               title='No Sealabs Pay?'
-              message='How about creating a new account?'
+              message='How about registering an account?'
             />
           </div>
         )}

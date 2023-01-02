@@ -5,6 +5,7 @@ import { TXN_STATUS } from '../../constants/sealabsPay';
 import { useUsePayCartWithSealabsPaySuccessMutation } from '../../store/services/cartService';
 import {
   selectTransactionID,
+  unsetCheckout,
   unsetTransactionID,
 } from '../../store/slices/checkoutSlice';
 import { useAppDispatch, useAppSelector } from '../../store/store';
@@ -46,7 +47,10 @@ const SealabsPayPaymentRedirect = () => {
           const messageCapitalized = capitalizeFirstLetter(message);
           notifyErrorToast(messageCapitalized, true);
         })
-        .finally(() => dispatch(unsetTransactionID()));
+        .finally(() => {
+          dispatch(unsetCheckout());
+          dispatch(unsetTransactionID());
+        });
     }
   }, []);
 
@@ -56,7 +60,7 @@ const SealabsPayPaymentRedirect = () => {
     return (
       <FailedModal
         open={true}
-        title='Transaction Failed'
+        title='Checkout Failed'
         message='Oops... Something went wrong, please try again'
         btnMessage='Back to Cart'
         onClose={() => navigate(failedRedirectURL)}
@@ -68,8 +72,8 @@ const SealabsPayPaymentRedirect = () => {
   return (
     <SuccessModal
       open={true}
-      title='Transaction Success'
-      message='Your transaction has been processed successfully'
+      title='Checkout Success'
+      message='Click to see your order details'
       btnMessage='See Purchases'
       onClose={() => navigate(successRedirectURL)}
       onAccepted={() => navigate(successRedirectURL)}

@@ -25,9 +25,9 @@ const ChatBubble = ({
       <div
         className={ClassNames([
           position === CHAT_POSITION.RIGHT
-            ? 'bg-base-content/70'
-            : 'bg-primary',
-          'p-3 rounded-lg text-secondary-content break-all',
+            ? 'bg-base-content/70 hover:bg-base-content/60'
+            : 'bg-primary hover:bg-primary/80',
+          'p-3 rounded-lg text-base-100 break-all transition-all min-w-[2rem]',
         ])}
       >
         {children}
@@ -37,7 +37,7 @@ const ChatBubble = ({
         position={position === CHAT_POSITION.RIGHT ? 'left' : 'right'}
         message={datetime ? toStringDatetime(datetime) : '--:--'}
       >
-        <span className='text-xs text-accent-content p-1'>
+        <span className='text-xs text-base-content p-1'>
           {datetime ? toStringTime(datetime) : '--:--'}
         </span>
       </Tooltip>

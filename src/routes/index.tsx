@@ -333,7 +333,7 @@ const Routes = () => {
                 },
                 {
                   path: '/seller/marketing/vouchers/edit/:voucherID',
-                  element: <ShopAddVoucher />,
+                  element: <ShopEditVoucher />,
                 },
                 {
                   path: '/seller/marketing/vouchers/duplicate/:voucherID',
@@ -503,6 +503,19 @@ const Routes = () => {
     },
     {
       path: '/sealabs-pay/redirect/payment',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayPaymentRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/checkout/success',
       element: (
         <ProtectedRoute
           roleCode={roleCode}

@@ -73,6 +73,20 @@ input[type='number'] {
 
 .table th:first-child {
   position: relative;
+  z-index: 0;
+}
+
+.textarea-no-outline {
+  border: none;
+  overflow: auto;
+  outline: none;
+  box-sizing: border-box;
+
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+
+  resize: none; /*remove the resize handle on the bottom right*/
 }
 
 @layer utilities {
