@@ -7,6 +7,7 @@ import {
   ProductDetail,
   PurchasedQuantities,
   ViewPost,
+  ProductSnapshot,
 } from '../component';
 
 export type GetAllProductsResponse = {
@@ -74,3 +75,11 @@ export type GetProductUpsertModelResponse = {
 };
 
 export type CreateProductResponse = GetProductUpsertModelResponse;
+
+export type GetProductSnapshotResponse = {
+  data: ProductSnapshot;
+  code: number;
+  error: string | null;
+  message: string;
+  metadata: Metadata | null;
+};

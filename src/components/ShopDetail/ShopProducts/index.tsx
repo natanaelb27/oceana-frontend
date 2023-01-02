@@ -206,8 +206,8 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
             />
           </div>
           <div
-            id='product-list-search-page'
             className='col-span-5 flex flex-col'
+            id='product-list-search-page'
           >
             <div className='product-list-header'>
               <div className='flex gap-3'>
@@ -270,7 +270,7 @@ const ShopProducts = ({ merchantID }: ContentProps) => {
             setCategoryFilter={setCategoryFilter}
           />
         </div>
-        <div id='product-list-search-page' className='col-span-5 flex flex-col'>
+        <div className='col-span-5 flex flex-col' id='product-list-search-page'>
           <div className='product-list-header'>
             <div className='flex gap-3'>
               <div className='ml-2 flex items-center gap-2 text-lg'>

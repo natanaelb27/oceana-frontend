@@ -52,6 +52,7 @@ export interface ProductVariation {
 export interface ProductDetail {
   id: number;
   name: string;
+  merchant_id: number;
   is_hazardous: boolean;
   weight: number;
   package_size: string;
@@ -156,4 +157,26 @@ export interface PUMProduct {
 
 export type SelectedProduct = {
   [id: number]: boolean | null;
+};
+
+export type ProductSnapshot = {
+  product_snapshot_id: number;
+  user_id: string;
+  transaction_datetime: string;
+  product_id: number;
+  merchant_photo: string;
+  merchant_id: number;
+  shop_name: string;
+  product_name: string;
+  current_product_name: string;
+  is_hazardous: boolean;
+  weight: number;
+  package_size: string;
+  condition: string;
+  description: string;
+  current_status: string;
+  images: string[];
+  videos: string[];
+  product_variations: string;
+  price: number;
 };

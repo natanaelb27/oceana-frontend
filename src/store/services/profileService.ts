@@ -15,6 +15,7 @@ import {
   UpdateOrderStatusResponse,
   UpdateProfilePasswordResponse,
   UpdateProfileResponse,
+  GetProductSnapshotResponse,
 } from '../../types/response';
 import { baseApi } from '../store';
 
@@ -140,6 +141,13 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Product', 'FavoriteProduct'],
     }),
+    getProductSnapshot: builder.query<GetProductSnapshotResponse, string>({
+      query: (id) => ({
+        url: `/profile/product-snapshot/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['Order'],
+    }),
   }),
 });
 
@@ -160,4 +168,6 @@ export const {
   useGetAllUserFavoriteProductsQuery,
   useLazyGetAllUserFavoriteProductsQuery,
   useDeleteBatchFavoriteProductsMutation,
+  useGetProductSnapshotQuery,
+  useLazyGetProductSnapshotQuery,
 } = profileApi;

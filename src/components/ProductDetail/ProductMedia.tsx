@@ -78,8 +78,6 @@ const ProductMedia = ({
 
   useEffect(() => {
     if (indexMediaOpen !== 0) {
-      console.log(indexMediaOpen);
-      console.log('OPENN');
       setGalleryOpen(!galleryOpen);
     }
   }, [indexMediaOpen]);
