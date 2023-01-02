@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Carousel } from 'react-daisyui';
 import { useNavigate } from 'react-router-dom';
 import { useGetActiveMarketplaceVoucherQuery } from '../../store/services/marketplaceService';
+import Skeleton from '../common/Loading/Skeleton';
 
 const PromoBanner = () => {
   const navigate = useNavigate();
@@ -57,9 +58,7 @@ const PromoBanner = () => {
           </div>
         </div>
         {getActiveMarketplaceVoucherIsLoading && (
-          <div className='col-span-12 md:col-span-8 md:flex md:flex-col md:items-center md:justify-between md:h-full'>
-            tes
-          </div>
+          <Skeleton className='h-full w-full col-span-12 md:col-span-8' />
         )}
         {!getActiveMarketplaceVoucherIsLoading &&
           getActiveMarketplaceVoucherData && (
