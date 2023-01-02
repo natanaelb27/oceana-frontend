@@ -832,7 +832,7 @@ const BuyerCheckout = () => {
                         )
                       }
                     >
-                      <HiOutlineTruck className='text-2xl text-base-content' />
+                      <HiOutlineTruck className='text-2xl' />
                     </Button>
                   </Tooltip>
                 </Card.Title>

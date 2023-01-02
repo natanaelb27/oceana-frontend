@@ -1,8 +1,14 @@
 import React from 'react';
 import { Button, Modal } from 'react-daisyui';
+import { useNavigate } from 'react-router-dom';
 import { useGetAllSealabsPayQuery } from '../../../store/services/sealabsPayService';
 import { toCardNumber } from '../../../utils/convert';
-import { SealabsPayCardImg, SealabsPayImg } from '../../common';
+import {
+  NoData,
+  SealabsPayCardImg,
+  SealabsPayImg,
+  Skeleton,
+} from '../../common';
 
 type SealabsPayDetails = {
   nameOnCard: string;
@@ -22,8 +28,8 @@ const SelectSealabsPayModal = ({
   nextSetOpen,
   setSealabsPayDetails,
 }: SelectSealabsPayModalProps) => {
-  const { data: sealabsPayData, isLoading: sealabsPayIsLoading } =
-    useGetAllSealabsPayQuery();
+  const navigate = useNavigate();
+  const { data: sealabsPayData } = useGetAllSealabsPayQuery();
 
   const handleSelectSealabspay = (cardNumber: string, nameOnCard: string) => {
     setSealabsPayDetails({
@@ -34,10 +40,24 @@ const SelectSealabsPayModal = ({
     nextSetOpen(true);
   };
 
-  if (sealabsPayIsLoading || !sealabsPayData?.data) {
+  if (!sealabsPayData?.data) {
     return (
       <Modal open={open} responsive onClickBackdrop={handleClose}>
-        <Modal.Header>Select Sealabs Pay Account For Wallet Topup</Modal.Header>
+        <Modal.Header className='font-bold text-center'>
+          Select Sealabs Pay Account
+        </Modal.Header>
+        <Modal.Body>
+          <div className='w-full flex justify-center mb-4'>
+            <SealabsPayImg className='w-24' />
+          </div>
+          <div className='flex flex-col justify-center gap-4'>
+            {Array(3)
+              .fill(0)
+              .map((n) => (
+                <Skeleton key={n} className='w-full h-20' />
+              ))}
+          </div>
+        </Modal.Body>
       </Modal>
     );
   }
@@ -50,26 +70,41 @@ const SelectSealabsPayModal = ({
         <div className='w-full flex justify-center mb-4'>
           <SealabsPayImg className='w-24' />
         </div>
-        <div className='overflow-y-scroll h-72'>
-          {sealabsPayData?.data?.map((sealabsPay, i) => (
+        {sealabsPayData.data.length === 0 ? (
+          <div className='overflow-y-scroll flex flex-col justify-center hide-scrollbar'>
             <Button
-              className='w-full glass bg-primary/80 text-white font-mono normal-case border-2 rounded-lg my-1 hover:cursor-pointer hover:bg-primary shadow-md text-lg'
-              size='lg'
-              key={i}
-              onClick={() =>
-                handleSelectSealabspay(
-                  sealabsPay.card_number,
-                  sealabsPay.name_on_card
-                )
-              }
+              onClick={() => navigate('/user/account/sealabs-pay')}
+              color='primary'
             >
-              <div className='flex justify-between w-full'>
-                <SealabsPayCardImg />
-                <div>{toCardNumber(sealabsPay.card_number)}</div>
-              </div>
+              Register Sealabs Pay
             </Button>
-          ))}
-        </div>
+            <NoData
+              title='No Sealabs Pay Account'
+              message='Please register your account with us before topping up your wallet'
+            />
+          </div>
+        ) : (
+          <div className='overflow-y-scroll h-72'>
+            {sealabsPayData.data.map((sealabsPay, i) => (
+              <Button
+                className='w-full glass bg-primary/80 text-white font-mono normal-case border-2 rounded-lg my-1 hover:cursor-pointer hover:bg-primary shadow-md text-lg'
+                size='lg'
+                key={i}
+                onClick={() =>
+                  handleSelectSealabspay(
+                    sealabsPay.card_number,
+                    sealabsPay.name_on_card
+                  )
+                }
+              >
+                <div className='flex justify-between w-full'>
+                  <SealabsPayCardImg />
+                  <div>{toCardNumber(sealabsPay.card_number)}</div>
+                </div>
+              </Button>
+            ))}
+          </div>
+        )}
       </Modal.Body>
     </Modal>
   );

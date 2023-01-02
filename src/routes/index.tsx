@@ -12,7 +12,6 @@ import {
   ResetPassword,
   SealabsPayPaymentRedirect,
   SealabsPayRegisterRedirect,
-  SealabsPayTopup,
   SealabsPayTopupRedirect,
   ShopRefund,
 } from '../pages';
@@ -129,10 +128,6 @@ const Routes = () => {
         {
           path: '/',
           element: <Home />,
-        },
-        {
-          path: '/sealabs-pay',
-          element: <SealabsPayTopup />,
         },
         {
           path: '/category',
