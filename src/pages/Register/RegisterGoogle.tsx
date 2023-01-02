@@ -1,5 +1,7 @@
 import { useFormik } from 'formik';
+import { useState } from 'react';
 import { Button, Form, Input } from 'react-daisyui';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import * as Yup from 'yup';
 import {
   FormErrorText,
@@ -35,6 +37,7 @@ const RegisterGoogle = ({
 }: RegisterGoogleProps) => {
   const [registerWithGoogle, { isLoading }] = useRegisterWithGoogleMutation();
   const registerGoogleState = useAppSelector(selectRegisterGoogleState);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const formik = useFormik({
     initialValues: {
@@ -128,16 +131,31 @@ const RegisterGoogle = ({
             <FormErrorText>{formik.errors.phoneNumber}</FormErrorText>
           ) : null}
         </InputGroup>
-        <InputGroup>
+        <InputGroup className='relative'>
           <Input
             className='input-sm md:input-md'
             color='primary'
             name='password'
             onChange={formik.handleChange}
             placeholder='Password'
-            type='password'
+            type={showPassword ? 'text' : 'password'}
             value={formik.values.password}
           />
+
+          <Button
+            className='absolute top-0 right-0 md:top-2'
+            color='ghost'
+            shape='circle'
+            size='sm'
+            type='button'
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+              <AiOutlineEyeInvisible />
+            ) : (
+              <AiOutlineEye className='text-primary' />
+            )}
+          </Button>
 
           {formik.touched.password && formik.errors.password ? (
             <FormErrorText>{formik.errors.password}</FormErrorText>
@@ -150,7 +168,7 @@ const RegisterGoogle = ({
             name='confirm'
             onChange={formik.handleChange}
             placeholder='Confirm Password'
-            type='password'
+            type={showPassword ? 'text' : 'password'}
             value={formik.values.confirm}
           />
 

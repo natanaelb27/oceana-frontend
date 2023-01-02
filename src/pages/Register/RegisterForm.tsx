@@ -195,9 +195,9 @@ const RegisterForm = ({
           ) : null}
         </InputGroup>
         <div className='md:flex md:justify-between'>
-          <InputGroup className='relative'>
+          <InputGroup className='relative md:max-w-[240px]'>
             <Input
-              className='input-sm md:input-md md:max-w-[240px]'
+              className='input-sm md:input-md'
               color='primary'
               name='password'
               onChange={formik.handleChange}
@@ -206,12 +206,11 @@ const RegisterForm = ({
               value={formik.values.password}
             />
             <Button
-              className={`absolute top-0 right-0 md:top-2 ${
-                formik.values.password ? 'md:right-5' : ''
-              }`}
+              className='absolute top-0 right-0 md:top-2'
               color='ghost'
               shape='circle'
               size='sm'
+              type='button'
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
