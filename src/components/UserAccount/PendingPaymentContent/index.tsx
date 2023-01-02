@@ -1,26 +1,52 @@
-import { Button, Card, Divider, Dropdown, Tooltip } from 'react-daisyui';
-import {
-  HiOutlineShoppingBag,
-  HiOutlineDotsVertical,
-  HiOutlineDotsHorizontal,
-} from 'react-icons/hi';
-import { useGetAllUserPendingPaymentQuery } from '../../../store/services/orderService';
-import { toRupiah, toStringDate } from '../../../utils/convert';
-import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
 import moment from 'moment';
-import NoData from '../../common/NoData';
-import DateCountdown from '../../common/DateCountdown';
+import { Button, Card, Divider, Tooltip } from 'react-daisyui';
+import { HiOutlineShoppingBag } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
+import { useGetAllUserPendingPaymentQuery } from '../../../store/services/orderService';
+import { useSealabsPayPaymentOTPMutation } from '../../../store/services/sealabsPayService';
+import { setTransactionID } from '../../../store/slices/checkoutSlice';
+import { useAppDispatch } from '../../../store/store';
+import { PendingPayment } from '../../../types/component';
+import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter';
+import { toRupiah, toStringDate } from '../../../utils/convert';
+import { toSealabsPayPaymentRequest } from '../../../utils/mapperDTO';
+import DateCountdown from '../../common/DateCountdown';
+import NoData from '../../common/NoData';
 
 const PendingPaymentContent = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const {
     data: getAllUserPendingPaymentData,
     isLoading: getAllUserPendingPaymentLoading,
   } = useGetAllUserPendingPaymentQuery();
+  const [sealabsPayPaymentOTP] = useSealabsPayPaymentOTPMutation();
 
   const handleStartShoppingClick = () => {
     navigate('/');
+  };
+
+  const handlePayClick = (transaction: PendingPayment) => {
+    dispatch(
+      setTransactionID({
+        transactionID: transaction.transaction_id,
+      })
+    );
+
+    sealabsPayPaymentOTP(
+      toSealabsPayPaymentRequest(
+        null,
+        transaction.card_number,
+        String(transaction.total_payment)
+      )
+    )
+      .unwrap()
+      .then((res) => {
+        if (!res?.data) return;
+        const { data: otpURLData } = res;
+        window.location.replace(otpURLData);
+      })
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -69,18 +95,6 @@ const PendingPaymentContent = () => {
                               ).toDate()}
                             ></DateCountdown>
                           </Tooltip>
-                          <Dropdown
-                            horizontal='left'
-                            vertical='end'
-                            className='flex md:hidden'
-                          >
-                            <Dropdown.Toggle color='ghost'>
-                              <HiOutlineDotsVertical></HiOutlineDotsVertical>
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu className='w-52'>
-                              <Dropdown.Item>Cancel Payment</Dropdown.Item>
-                            </Dropdown.Menu>
-                          </Dropdown>
                         </div>
                       </div>
                     </div>
@@ -135,6 +149,7 @@ const PendingPaymentContent = () => {
                         <Button
                           className='normal-case md:w-auto md:pl-7 md:pr-7 flex md:hidden'
                           color='primary'
+                          onClick={() => handlePayClick(transaction)}
                         >
                           Pay
                         </Button>
@@ -144,21 +159,10 @@ const PendingPaymentContent = () => {
                       <Button
                         className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
                         color='primary'
+                        onClick={() => handlePayClick(transaction)}
                       >
                         Pay
                       </Button>
-                      <Dropdown
-                        horizontal='left'
-                        vertical='end'
-                        className='hidden md:flex'
-                      >
-                        <Dropdown.Toggle color='ghost'>
-                          <HiOutlineDotsHorizontal></HiOutlineDotsHorizontal>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu className='w-52'>
-                          <Dropdown.Item>Cancel Payment</Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
                     </div>
                   </div>
                 </Card>
