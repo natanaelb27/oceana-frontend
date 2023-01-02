@@ -211,6 +211,10 @@ const Routes = () => {
               element: <ProductSnapshot />,
             },
             {
+              path: '/user/pending-payment',
+              element: <BuyerPendingPayment />,
+            },
+            {
               path: '/user/refund',
               element: <BuyerRefund />,
             },
