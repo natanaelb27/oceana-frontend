@@ -1071,7 +1071,7 @@ const Header = () => {
                 </Form>
               )}
             </div>
-            <div className='flex-none ml-4 gap-2'>
+            <div className='flex-none ml-4'>
               <div className='relative'>
                 <Button
                   color='ghost'
