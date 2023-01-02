@@ -144,10 +144,9 @@ const ProductModal = ({
 
   const handleClose = () => {
     setProductQuery({
+      ...productQuery,
       search: '',
       filterCategory: 0,
-      filterStartDatetime: null,
-      filterEndDatetime: null,
     });
     setSelectedProductMerchantPromotion({});
 

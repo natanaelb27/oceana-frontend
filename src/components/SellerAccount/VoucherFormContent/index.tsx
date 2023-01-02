@@ -120,6 +120,8 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
     startDate: false,
     endDate: false,
   });
+  const [ongoingVoucherStatus, setOngoingVoucherStatus] =
+    useState<boolean>(false);
 
   const [termsAndConditionsValue, setTermsAndConditionsValue] =
     useState<boolean>(false);
@@ -312,6 +314,7 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
         start: false,
         end: false,
       });
+      setOngoingVoucherStatus(false);
 
       return;
     }
@@ -358,6 +361,7 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
             start: false,
             end: false,
           });
+          setOngoingVoucherStatus(false);
         } else if (content === SellerAccountVoucherFormContent.Edit) {
           voucherFormik.setValues({
             code: data.code.slice(4),
@@ -398,6 +402,7 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
               start: false,
               end: false,
             });
+            setOngoingVoucherStatus(false);
           }
 
           if (stringCompare(data.voucher_status, VOUCHER_STATUS.ONGOING)) {
@@ -405,6 +410,7 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
               start: true,
               end: false,
             });
+            setOngoingVoucherStatus(true);
           }
 
           if (stringCompare(data.voucher_status, VOUCHER_STATUS.ENDED)) {
@@ -412,6 +418,7 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
               start: false,
               end: false,
             });
+            setOngoingVoucherStatus(true);
           }
 
           if (moment(data.start_datetime).isAfter(moment())) {
@@ -447,54 +454,58 @@ const VoucherFormContent = ({ profile, content }: ContentProps) => {
   }, [voucherID]);
 
   useEffect(() => {
-    setEndDateLimit({
-      min: moment(dateInput.startDate).add(1, 'h').toDate(),
-      max: moment(dateInput.startDate).add(3, 'M').toDate(),
-    });
-
-    if (moment(dateInput.endDate).diff(moment(dateInput.startDate), 'h') < 1) {
-      voucherFormik.setFieldValue(
-        'endDatetime',
-        moment(dateInput.startDate).add(1, 'h').toDate()
-      );
-
-      setDateInput({
-        ...dateInput,
-        endDate: moment(dateInput.startDate).add(1, 'h').toDate(),
+    if (!ongoingVoucherStatus) {
+      setEndDateLimit({
+        min: moment(dateInput.startDate).add(1, 'h').toDate(),
+        max: moment(dateInput.startDate).add(3, 'M').toDate(),
       });
-    }
 
-    if (moment(startDateLimit.min).isAfter(moment(dateInput.startDate))) {
-      voucherFormik.setFieldValue(
-        'startDatetime',
-        roundTimeToNearest30(startDateLimit.min)
-      );
+      if (
+        moment(dateInput.endDate).diff(moment(dateInput.startDate), 'h') < 1
+      ) {
+        voucherFormik.setFieldValue(
+          'endDatetime',
+          moment(dateInput.startDate).add(1, 'h').toDate()
+        );
 
-      setDateInput({
-        ...dateInput,
-        startDate: roundTimeToNearest30(startDateLimit.min),
-      });
-    }
+        setDateInput({
+          ...dateInput,
+          endDate: moment(dateInput.startDate).add(1, 'h').toDate(),
+        });
+      }
 
-    if (moment(startDateLimit.max).isBefore(moment(dateInput.startDate))) {
-      voucherFormik.setFieldValue(
-        'startDatetime',
-        roundTimeToFloor(startDateLimit.max)
-      );
+      if (moment(startDateLimit.min).isAfter(moment(dateInput.startDate))) {
+        voucherFormik.setFieldValue(
+          'startDatetime',
+          roundTimeToNearest30(startDateLimit.min)
+        );
 
-      setDateInput({
-        ...dateInput,
-        startDate: roundTimeToFloor(startDateLimit.max),
-      });
-    }
+        setDateInput({
+          ...dateInput,
+          startDate: roundTimeToNearest30(startDateLimit.min),
+        });
+      }
 
-    if (moment(endDateLimit.max).isBefore(moment(dateInput.endDate))) {
-      voucherFormik.setFieldValue('endDatetime', endDateLimit.max);
+      if (moment(startDateLimit.max).isBefore(moment(dateInput.startDate))) {
+        voucherFormik.setFieldValue(
+          'startDatetime',
+          roundTimeToFloor(startDateLimit.max)
+        );
 
-      setDateInput({
-        ...dateInput,
-        endDate: endDateLimit.max,
-      });
+        setDateInput({
+          ...dateInput,
+          startDate: roundTimeToFloor(startDateLimit.max),
+        });
+      }
+
+      if (moment(endDateLimit.max).isBefore(moment(dateInput.endDate))) {
+        voucherFormik.setFieldValue('endDatetime', endDateLimit.max);
+
+        setDateInput({
+          ...dateInput,
+          endDate: endDateLimit.max,
+        });
+      }
     }
   }, [dateInput.startDate, dateInput.endDate]);
 

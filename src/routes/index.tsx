@@ -328,7 +328,7 @@ const Routes = () => {
                 },
                 {
                   path: '/seller/marketing/vouchers/edit/:voucherID',
-                  element: <ShopAddVoucher />,
+                  element: <ShopEditVoucher />,
                 },
                 {
                   path: '/seller/marketing/vouchers/duplicate/:voucherID',
