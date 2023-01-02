@@ -9,8 +9,7 @@ export const formikProcessDayAnndPreorderDay = (
     return ctx.createError({
       message: 'Process Day cannot be empty',
     });
-  }
-  if (value < 2 || (value > 2 && value < 7) || value > 30) {
+  } else if (value < 2 || (value > 2 && value < 7) || value > 30) {
     return ctx.createError({
       message:
         'Process Day must be 2 days for non-Pre-order product or between 7 to 30 days for Pre-order product',
