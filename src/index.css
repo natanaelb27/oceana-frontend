@@ -111,3 +111,7 @@ input[type='number'] {
     @apply transition-all  duration-[500ms];
   }
 }
+
+.transition-carousel {
+  transition: transform 500ms, height 0ms linear 400ms;
+}
