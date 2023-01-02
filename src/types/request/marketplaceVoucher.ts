@@ -1,4 +1,5 @@
 export type CreateMarketplaceVoucherRequest = {
+  banner_url: string;
   name: string;
   start_datetime: string;
   end_datetime: string;
