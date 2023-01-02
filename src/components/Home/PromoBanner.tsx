@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Button, Carousel } from 'react-daisyui';
+import { useNavigate } from 'react-router-dom';
 import { useGetActiveMarketplaceVoucherQuery } from '../../store/services/marketplaceService';
 
 const PromoBanner = () => {
+  const navigate = useNavigate();
   const {
     data: getActiveMarketplaceVoucherData,
     isLoading: getActiveMarketplaceVoucherIsLoading,
@@ -22,8 +24,12 @@ const PromoBanner = () => {
     </Button>
   );
 
-  const [carouselSlide, setCarouselSlide] = useState<string>('slide-1');
+  const handleNavigateProductSearch = () => {
+    navigate('/search');
+  };
 
+  const [carouselSlide, setCarouselSlide] = useState<string>('slide-1');
+  console.log(process.env.REACT_APP_BANNER_DEFAULT_1);
   return (
     <>
       <div className='hidden md:grid grid-cols-12 gap-4'>
@@ -65,44 +71,62 @@ const PromoBanner = () => {
                       return (
                         <div
                           key={i}
-                          className={`carousel-item relative w-full ${
-                            'slide-' + i === carouselSlide ? 'block' : 'hidden'
+                          className={`transition-opacity duration-300 carousel-item relative w-full h-full opacity-100 ${
+                            'slide-' + i === carouselSlide
+                              ? 'opacity-100'
+                              : 'opacity-0 w-0'
                           }`}
                         >
-                          <img src={banner_url} className='w-full' />
-                          <div className='absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2'>
-                            <a
-                              className='btn btn-circle'
-                              onClick={() => {
-                                setCarouselSlide(
-                                  `slide-${
-                                    i === 0
-                                      ? (getActiveMarketplaceVoucherData?.data
-                                          ?.length || 1) - 1
-                                      : i - 1
-                                  }`
-                                );
-                              }}
+                          <div
+                            className={`${
+                              'slide-' + i === carouselSlide
+                                ? 'block'
+                                : 'hidden'
+                            }`}
+                          >
+                            <img
+                              src={banner_url}
+                              className='w-full cursor-pointer'
+                              onClick={handleNavigateProductSearch}
+                            />
+                            <div
+                              className={
+                                'absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2'
+                              }
                             >
-                              ❮
-                            </a>
-                            <a
-                              className='btn btn-circle'
-                              onClick={() => {
-                                setCarouselSlide(
-                                  `slide-${
-                                    i ===
-                                    (getActiveMarketplaceVoucherData?.data
-                                      ?.length || 1) -
-                                      1
-                                      ? 0
-                                      : i + 1
-                                  }`
-                                );
-                              }}
-                            >
-                              ❯
-                            </a>
+                              <a
+                                className='btn btn-circle'
+                                onClick={() => {
+                                  setCarouselSlide(
+                                    `slide-${
+                                      i === 0
+                                        ? (getActiveMarketplaceVoucherData?.data
+                                            ?.length || 1) - 1
+                                        : i - 1
+                                    }`
+                                  );
+                                }}
+                              >
+                                ❮
+                              </a>
+                              <a
+                                className='btn btn-circle'
+                                onClick={() => {
+                                  setCarouselSlide(
+                                    `slide-${
+                                      i ===
+                                      (getActiveMarketplaceVoucherData?.data
+                                        ?.length || 1) -
+                                        1
+                                        ? 0
+                                        : i + 1
+                                    }`
+                                  );
+                                }}
+                              >
+                                ❯
+                              </a>
+                            </div>
                           </div>
                         </div>
                       );
@@ -117,12 +141,12 @@ const PromoBanner = () => {
                 >
                   <Carousel.Item
                     className='w-full'
-                    src='https://images.tokopedia.net/img/cache/1208/NsjrJu/2022/11/20/08a2581b-2ccb-4908-a1cb-3b227835c53f.jpg.webp?ect=4g'
+                    src={process.env.REACT_APP_BANNER_DEFAULT_1}
                     alt='Promo'
                   />
                   <Carousel.Item
                     className='w-full'
-                    src='https://images.tokopedia.net/img/cache/1208/NsjrJu/2022/11/17/728337d2-8692-4e3a-8ad9-8121e110eed0.jpg.webp?ect=4g'
+                    src={process.env.REACT_APP_BANNER_DEFAULT_2}
                     alt='Promo'
                   />
                 </Carousel>
@@ -138,7 +162,11 @@ const PromoBanner = () => {
                 ({ banner_url }, i) => {
                   return (
                     <div key={i} className='carousel-item relative w-full'>
-                      <img src={banner_url} className='w-full' />
+                      <img
+                        src={banner_url}
+                        className='w-full'
+                        onClick={handleNavigateProductSearch}
+                      />
                     </div>
                   );
                 }
@@ -152,13 +180,15 @@ const PromoBanner = () => {
             >
               <Carousel.Item
                 className='w-full'
-                src='https://images.tokopedia.net/img/cache/1208/NsjrJu/2022/11/20/08a2581b-2ccb-4908-a1cb-3b227835c53f.jpg.webp?ect=4g'
+                src={process.env.REACT_APP_BANNER_DEFAULT_1}
                 alt='Promo'
+                onClick={handleNavigateProductSearch}
               />
               <Carousel.Item
                 className='w-full'
-                src='https://images.tokopedia.net/img/cache/1208/NsjrJu/2022/11/17/728337d2-8692-4e3a-8ad9-8121e110eed0.jpg.webp?ect=4g'
+                src={process.env.REACT_APP_BANNER_DEFAULT_2}
                 alt='Promo'
+                onClick={handleNavigateProductSearch}
               />
             </Carousel>
           )}
