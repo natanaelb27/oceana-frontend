@@ -673,16 +673,27 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
           <div className='col-span-12 md:col-span-9'>
             <div className='grid grid-cols-12 gap-4 gap-y-10'>
               <div className='col-span-12 md:col-span-4'>
-                <ProductMedia
-                  images={getProductDetailData.data.images}
-                  videos={[]}
-                  selectedVariantImage={selectedVariantImage}
-                  handleClickFavoriteProduct={handleClickFavoriteProduct}
-                  favoriteProductValue={Boolean(
-                    getFavoriteProductData?.data?.is_favorite
-                  )}
-                  productLikeCount={productLikeCount}
-                />
+                {getProductDetailData?.data && (
+                  <ProductMedia
+                    images={getProductDetailData?.data?.images}
+                    videos={getProductDetailData?.data?.videos}
+                    variantImages={
+                      getProductDetailData?.data?.product_variation?.[0]
+                        ?.image || []
+                    }
+                    selectedVariantImage={
+                      selectedVariantImage ===
+                      getProductDetailData?.data?.images?.[0]
+                        ? ''
+                        : selectedVariantImage
+                    }
+                    handleClickFavoriteProduct={handleClickFavoriteProduct}
+                    favoriteProductValue={Boolean(
+                      getFavoriteProductData?.data?.is_favorite
+                    )}
+                    productLikeCount={productLikeCount}
+                  />
+                )}
               </div>
               <div className='col-span-12 md:col-span-8'>
                 <ProductDescription

@@ -60,6 +60,7 @@ export interface ProductDetail {
   category_id: number;
   category: string;
   images: string[];
+  videos: string[];
   description: string;
   total_stock: number;
   like_count: number;
