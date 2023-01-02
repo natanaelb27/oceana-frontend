@@ -60,6 +60,7 @@ const CategoryModal = ({
                 }
                 marginLeft={0}
                 handleCategoryClick={handleCategoryOnClick}
+                childOnly={true}
               />
             )}
           </div>
