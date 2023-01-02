@@ -159,10 +159,6 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    console.log(windowSize);
-  }, [windowSize]);
-
-  useEffect(() => {
     getChatList();
     window.addEventListener('resize', handleResize);
     handleResize();
