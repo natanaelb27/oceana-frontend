@@ -35,8 +35,8 @@ import { validateUserRole } from '../../../utils/auth';
 import ClassNames from '../../../utils/classnames';
 import { toRupiah } from '../../../utils/convert';
 import { roleCodeToText } from '../../../utils/roleCodeToText';
-import Image from '../Image';
 import NoData from '../NoData';
+import Image from '../Image';
 
 const Header = () => {
   const role = useAppSelector(selectRole);
@@ -973,12 +973,17 @@ const Header = () => {
     );
   };
 
-  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSearchSubmit = (
+    e:
+      | FormEvent<HTMLFormElement>
+      | React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
     navigate({
       pathname: '/search',
       search: `?q=${search}`,
     });
+    setDisplaySearchBar(false);
   };
 
   const handleThemeClick = (theme: string) => {
@@ -1168,32 +1173,30 @@ const Header = () => {
               </div>
 
               <div className='flex flex-row flex-nowrap gap-1 items-center'>
-                {validateUserRole(role) !== Role.Admin && (
-                  <div className='flex'>
-                    <Form onSubmit={handleSearchSubmit}>
-                      <Input
-                        type='text'
-                        placeholder='Search...'
-                        color='ghost'
-                        className={`bg-base-100 bg-opacity-[13%] w-full border-none text-base-100 rounded-r-none focus:text-base-content placeholder:text-base-100 transition-all ${
-                          displaySearchBar
-                            ? 'w-full p-5 opacity-100'
-                            : 'w-0 p-0 opacity-30'
-                        }`}
-                        value={search}
-                        onChange={hanldeSearchChange}
-                      />
-                    </Form>
-                    <Button
-                      className={displaySearchBar ? 'rounded-l-none' : ''}
-                      shape='square'
+                <div className='flex'>
+                  <Form onSubmit={handleSearchSubmit}>
+                    <Input
+                      type='text'
+                      placeholder='Search...'
                       color='ghost'
-                      onClick={() => setDisplaySearchBar(!displaySearchBar)}
-                    >
-                      <FaSearch />
-                    </Button>
-                  </div>
-                )}
+                      className={`bg-base-100 bg-opacity-[13%] w-full border-none text-base-100 rounded-r-none focus:text-base-content placeholder:text-base-100 transition-all ${
+                        displaySearchBar
+                          ? 'w-full p-5 opacity-100'
+                          : 'w-0 p-0 opacity-30'
+                      }`}
+                      value={search}
+                      onChange={hanldeSearchChange}
+                    />
+                  </Form>
+                  <Button
+                    className={displaySearchBar ? 'rounded-l-none' : ''}
+                    shape='square'
+                    color='ghost'
+                    onClick={() => setDisplaySearchBar(!displaySearchBar)}
+                  >
+                    <FaSearch />
+                  </Button>
+                </div>
 
                 {theme === 'light' ? (
                   <Button

@@ -510,6 +510,19 @@ const Routes = () => {
       ),
     },
     {
+      path: '/checkout/success',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayPaymentRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
       path: '*',
       element: <NotFound />,
     },
