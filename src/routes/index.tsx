@@ -45,6 +45,7 @@ const BuyerReview = React.lazy(() => import('../pages/buyer/BuyerReview'));
 const BuyerReviewDetail = React.lazy(
   () => import('../pages/buyer/BuyerReviewDetail')
 );
+const BuyerWishlist = React.lazy(() => import('../pages/buyer/BuyerWishlist'));
 
 const SellerRegistration = React.lazy(
   () => import('../pages/buyer/SellerRegistration')
@@ -226,6 +227,10 @@ const Routes = () => {
               element: <BuyerReviewDetail />,
             },
             {
+              path: '/user/wishlist',
+              element: <BuyerWishlist />,
+            },
+            {
               path: '/cart',
               element: <BuyerCart />,
             },
@@ -323,7 +328,7 @@ const Routes = () => {
                 },
                 {
                   path: '/seller/marketing/vouchers/edit/:voucherID',
-                  element: <ShopAddVoucher />,
+                  element: <ShopEditVoucher />,
                 },
                 {
                   path: '/seller/marketing/vouchers/duplicate/:voucherID',
