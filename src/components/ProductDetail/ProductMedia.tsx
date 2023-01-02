@@ -102,8 +102,6 @@ const ProductMedia = ({
                     selectedVariantImageIndex = i;
                   }
                 });
-                console.log(images.length + videos.length);
-                console.log(selectedVariantImageIndex);
                 setIndexMediaOpen(
                   images.length +
                     videos.length +
@@ -124,6 +122,15 @@ const ProductMedia = ({
                 className='w-full rounded-lg'
                 alt={`Product Media ${index}`}
                 onClick={() => setIndexMediaOpen(index + 2)}
+              />
+            ))}
+            {videos.map((video, index) => (
+              <Image
+                key={'product-video-' + index}
+                src={video.replace('.mp4', '.jpg')}
+                className='w-full rounded-lg'
+                alt={`Product Media ${index}`}
+                onClick={() => setIndexMediaOpen(images.length + (index + 1))}
               />
             ))}
           </div>
