@@ -206,7 +206,9 @@ const RegisterForm = ({
               value={formik.values.password}
             />
             <Button
-              className='absolute top-0 right-0 md:top-2 md:right-5'
+              className={`absolute top-0 right-0 md:top-2 ${
+                formik.values.password ? 'md:right-5' : ''
+              }`}
               color='ghost'
               shape='circle'
               size='sm'
