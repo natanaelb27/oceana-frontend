@@ -90,10 +90,12 @@ const ProductDetail = ({ merchantID, productID }: ProductDetailProps) => {
   const [getReviews, { data: getReviewsData }] = useLazyGetAllReviewsQuery();
   const [updateUserCart] = useUpdateUserCartMutation();
   const [incrementUserCart] = useIncrementUserCartMutation();
+  
   const {
     data: getShopInformationData,
     isLoading: getShopInformationIsLoading,
-  } = useGetShopInformationQuery(merchantID);
+  } = useGetShopInformationQuery(String(getProductDetailData?.data?.merchant_id));
+
   const [getFavoriteData, { data: getFavoriteProductData }] =
     useLazyGetFavoriteProductQuery();
   const [

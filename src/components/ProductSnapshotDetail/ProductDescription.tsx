@@ -52,7 +52,7 @@ const ProductDescription = ({
   return (
     <div>
       <h5 className='text-xl font-medium md:line-clamp-2'>
-        {productSnapshotDetail.name}
+        {productSnapshotDetail.product_name}
       </h5>
       <h4 className='text-3xl font-bold mb-2.5'>
         {toRupiah(productSnapshotDetail.price)}

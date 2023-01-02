@@ -155,7 +155,7 @@ const ProductSnapshotDetail = ({
                     }
                     onClick={() => {
                       handleNavigateProductPage(
-                        productSnapshotData?.data?.name,
+                        productSnapshotData?.data?.current_product_name,
                         productSnapshotData?.data?.merchant_id,
                         productSnapshotData?.data?.product_id
                       );
@@ -182,7 +182,7 @@ const ProductSnapshotDetail = ({
               }
               onClick={() => {
                 handleNavigateProductPage(
-                  productSnapshotData?.data?.name,
+                  productSnapshotData?.data?.current_product_name,
                   productSnapshotData?.data?.merchant_id,
                   productSnapshotData?.data?.product_id
                 );

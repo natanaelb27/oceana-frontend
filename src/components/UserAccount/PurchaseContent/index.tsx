@@ -63,6 +63,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useUpdateCompleteOrderMutation } from '../../../store/services/profileService';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
 import { UpdateOrderStatusResponse } from '../../../types/response';
+import { toUrl } from '../../../utils/toUrl';
 
 type OpenModal = {
   completeOrder: boolean;
@@ -492,6 +493,14 @@ const PurchaseContent = () => {
 
   const handleNavigateShop = (merchantID: number) => {
     navigate(`/shops/${merchantID}`);
+  };
+
+  const handleNavigateProductPage = (
+    productName: string,
+    merchantID: number,
+    productID: number
+  ) => {
+    navigate(`/products/${toUrl(productName)}-i.${merchantID}-${productID}`);
   };
 
   return (
@@ -968,6 +977,13 @@ const PurchaseContent = () => {
                         <Button
                           className='normal-case md:w-auto md:pl-7 md:pr-7 hidden md:flex'
                           color='primary'
+                          onClick={()=>{
+                            handleNavigateProductPage(
+                              firstProduct?.current_product_name || '',
+                              transactionHistory?.merchant_id || 0,
+                              firstProduct?.product_id || 0,
+                            );
+                          }}
                         >
                           Buy Again
                         </Button>
@@ -1490,6 +1506,13 @@ const PurchaseContent = () => {
                                 <Button
                                   className='normal-case md:w-auto'
                                   color='primary'
+                                  onClick={() => {
+                                    handleNavigateProductPage(
+                                      orderDetail?.current_product_name,
+                                      getOrderDetailsData?.data?.merchant_id || 0,
+                                      orderDetail?.product_id,
+                                    );
+                                  }}
                                 >
                                   Buy Again
                                 </Button>
@@ -1508,6 +1531,13 @@ const PurchaseContent = () => {
                             <Button
                               className='normal-case md:w-auto'
                               color='primary'
+                              onClick={()=>{
+                                handleNavigateProductPage(
+                                  orderDetail?.current_product_name,
+                                  getOrderDetailsData?.data?.merchant_id || 0,
+                                  orderDetail?.product_id,
+                                );
+                              }}
                             >
                               Buy Again
                             </Button>

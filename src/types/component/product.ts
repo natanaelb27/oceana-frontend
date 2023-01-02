@@ -52,6 +52,7 @@ export interface ProductVariation {
 export interface ProductDetail {
   id: number;
   name: string;
+  merchant_id: number;
   is_hazardous: boolean;
   weight: number;
   package_size: string;
@@ -165,7 +166,8 @@ export type ProductSnapshot = {
   merchant_photo: string;
   merchant_id: number;
   shop_name: string;
-  name: string;
+  product_name: string;
+  current_product_name: string;
   is_hazardous: boolean;
   weight: number;
   package_size: string;
