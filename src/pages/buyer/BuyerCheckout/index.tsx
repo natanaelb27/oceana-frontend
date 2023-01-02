@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Button, Card, Divider, Textarea, Tooltip } from 'react-daisyui';
 import { AiOutlineHome, AiOutlineShop } from 'react-icons/ai';
 import { BiReceipt } from 'react-icons/bi';
-import { BsTruck } from 'react-icons/bs';
 import { FaAddressBook, FaListUl } from 'react-icons/fa';
 import {
   HiOutlineChevronDown,
