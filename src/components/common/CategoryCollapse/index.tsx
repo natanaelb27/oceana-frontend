@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
 import { HiOutlineChevronDown } from 'react-icons/hi';
 import { Category } from '../../../types/component';
+import ClassNames from '../../../utils/classnames';
 
 type CategoryCollapseProps = {
   category: Category[] | undefined;
   marginLeft: number;
   handleCategoryClick: (id: number, name: string) => void;
+  childOnly?: boolean;
 };
 const CategoryCollapse = ({
   category,
   marginLeft,
   handleCategoryClick,
+  childOnly,
 }: CategoryCollapseProps) => {
   const [subCategoryCollapse, setSubCategoryCollapse] = useState<boolean[]>([]);
 
@@ -45,8 +48,17 @@ const CategoryCollapse = ({
         <div key={'category-' + category.id} className={`ml-${marginLeft}`}>
           <div className='flex hover:bg-base-300 p-2 pr-1 rounded-md items-center justify-between'>
             <div
-              className='w-full cursor-pointer'
+              className={ClassNames([
+                'w-full',
+                childOnly && category.category?.length > 0
+                  ? ''
+                  : 'cursor-pointer',
+              ])}
               onClick={() => {
+                if (childOnly && category.category?.length > 0) {
+                  handleCollapseClick(i);
+                  return;
+                }
                 handleClick(category.id, category.name);
               }}
             >
@@ -71,6 +83,7 @@ const CategoryCollapse = ({
                 category={category?.category}
                 marginLeft={marginLeft + 2}
                 handleCategoryClick={handleCategoryClick}
+                childOnly={childOnly}
               ></CategoryCollapse>
             </div>
           ) : null}
