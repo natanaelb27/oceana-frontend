@@ -1198,25 +1198,17 @@ const Header = () => {
                   </Button>
                 </div>
 
-                {theme === 'light' ? (
+                <div className='relative'>
                   <Button
-                    shape='circle'
                     color='ghost'
                     size='sm'
-                    onClick={() => handleThemeClick('dark')}
+                    onMouseOver={handleHoverTheme}
+                    onMouseOut={handleUnhoverTheme}
                   >
-                    <HiSun className='text-lg' />
+                    <FaPalette className='text-lg' />
                   </Button>
-                ) : (
-                  <Button
-                    shape='circle'
-                    color='ghost'
-                    size='sm'
-                    onClick={() => handleThemeClick('light')}
-                  >
-                    <HiMoon className='text-lg' />
-                  </Button>
-                )}
+                  {renderHoverTheme()}
+                </div>
 
                 {validateUserRole(role) !== Role.Admin && (
                   <NavLink to='/cart'>
