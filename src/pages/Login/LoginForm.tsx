@@ -5,6 +5,7 @@ import GoogleLogin, {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { CgClose } from 'react-icons/cg';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -55,6 +56,7 @@ const LoginForm = ({
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useAppDispatch();
 
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [openResetPasswordModal, setOpenResetPasswordModal] =
     useState<boolean>(false);
   const [verifyResetPassword, { isLoading: verifyResetPasswordIsLoading }] =
@@ -145,15 +147,30 @@ const LoginForm = ({
             <FormErrorText>{loginFormik.errors.loginCredentials}</FormErrorText>
           ) : null}
         </InputGroup>
-        <InputGroup>
+        <InputGroup className='relative'>
           <Input
             color='primary'
             name='password'
             onChange={loginFormik.handleChange}
             placeholder='Password'
-            type='password'
+            type={showPassword ? 'text' : 'password'}
             value={loginFormik.values.password}
           />
+
+          <Button
+            className='absolute top-2 right-0'
+            color='ghost'
+            shape='circle'
+            size='sm'
+            type='button'
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+              <AiOutlineEyeInvisible />
+            ) : (
+              <AiOutlineEye className='text-primary' />
+            )}
+          </Button>
 
           {loginFormik.touched.password && loginFormik.errors.password ? (
             <FormErrorText>{loginFormik.errors.password}</FormErrorText>
