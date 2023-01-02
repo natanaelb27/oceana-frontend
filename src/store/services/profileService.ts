@@ -74,16 +74,6 @@ export const profileApi = baseApi.injectEndpoints({
       UpdateProfilePasswordRequest
     >({
       query: (request) => ({
-        getAllMerchantRefunds: builder.query<
-          GetAllRefundDetailsResponse,
-          string
-        >({
-          query: (query) => ({
-            url: `/my-shop/refunds?${query}`,
-            method: 'GET',
-          }),
-          providesTags: ['Refund'],
-        }),
         url: '/profile/password',
         method: 'PATCH',
         body: request,

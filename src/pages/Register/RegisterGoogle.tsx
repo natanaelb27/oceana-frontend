@@ -48,7 +48,13 @@ const RegisterGoogle = ({
       phoneNumber: Yup.string()
         .matches(PHONE_REGEX, 'Invalid phone number')
         .required('Please enter your phone number'),
-      password: Yup.string().required('Please enter your password'),
+      password: Yup.string()
+        .min(8, 'Too short, minimum 8 characters')
+        .matches(/[a-z]+/, 'Must contain at least one lowercase character')
+        .matches(/[A-Z]+/, 'Must contain at least one uppercase character')
+        .matches(/[@$!%*#?&]+/, 'Must contain at least one special character')
+        .matches(/\d+/, 'Must contain at least one number')
+        .required('Please enter your password'),
       confirm: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
         .required('Please confirm your password'),
