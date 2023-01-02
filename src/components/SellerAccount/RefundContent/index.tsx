@@ -31,6 +31,7 @@ import {
   HiOutlineX,
   HiSearch,
   HiOutlineChevronRight,
+  HiChat,
 } from 'react-icons/hi';
 import {
   LIMIT_REFUND,
@@ -63,6 +64,8 @@ import DateCountdown from '../../common/DateCountdown';
 import { useLazyGetRefundDetailsQuery } from '../../../store/services/refundService';
 import Zoom from 'react-medium-image-zoom';
 import { useNavigate } from 'react-router-dom';
+import { setChatBoxShown, setToUserID } from '../../../store/slices/chatSlice';
+import { useAppDispatch } from '../../../store/store';
 
 type OpenModal = {
   approveRefund: boolean;
@@ -72,6 +75,7 @@ type OpenModal = {
 
 const RefundContent = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [openModal, setOpenModal] = useState<OpenModal>({
     approveRefund: false,
     rejectRefund: false,
@@ -982,7 +986,26 @@ const RefundContent = () => {
           )}
           {getRefundDetailsData?.data?.refund_status ===
           REFUND_STATUS.ONGOING ? (
-            <div className='flex md:hidden gap-2 justify-end px-5 pb-5 mt-0'>
+            <div className='flex md:hidden gap-2 justify-between px-2 pb-2 mt-0'>
+              <Button
+                className='normal-case btn-info text-base-100'
+                startIcon={<HiChat />}
+                onClick={() => {
+                  setOpenModal({
+                    approveRefund: false,
+                    rejectRefund: false,
+                    detailRefund: false,
+                  });
+                  dispatch(
+                    setToUserID({
+                      toUserID: getRefundDetailsData?.data?.user_id || '',
+                    })
+                  );
+                  dispatch(setChatBoxShown({ chatBoxShown: true }));
+                }}
+              >
+                Chat Buyer
+              </Button>
               <Button
                 className='normal-case btn-primary'
                 startIcon={<HiOutlineCheck />}
@@ -1014,6 +1037,25 @@ const RefundContent = () => {
           REFUND_STATUS.ONGOING ? (
             <div className='hidden md:flex flex-col justify-between items-center'>
               <div className='flex flex-col p-5 gap-2 col-span-1 w-full'>
+                <Button
+                  className='normal-case btn-info text-base-100'
+                  startIcon={<HiChat />}
+                  onClick={() => {
+                    setOpenModal({
+                      approveRefund: false,
+                      rejectRefund: false,
+                      detailRefund: false,
+                    });
+                    dispatch(
+                      setToUserID({
+                        toUserID: getRefundDetailsData?.data?.user_id || '',
+                      })
+                    );
+                    dispatch(setChatBoxShown({ chatBoxShown: true }));
+                  }}
+                >
+                  Chat Buyer
+                </Button>
                 <Button
                   className='normal-case btn-primary'
                   startIcon={<HiOutlineCheck />}

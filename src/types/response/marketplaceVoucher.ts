@@ -19,6 +19,7 @@ export type GetMarketplaceVoucherDetailsResponse = {
 export type CreateMarketplaceVoucherResponse = {
   data: {
     id: number;
+    banner_url: string;
     name: string;
     start_datetime: string;
     end_datetime: string;
@@ -40,6 +41,7 @@ export type CreateMarketplaceVoucherResponse = {
 export type UpdateMarketplaceVoucherResponse = {
   data: {
     id: number;
+    banner_url: string;
     name: string;
     start_datetime: string;
     end_datetime: string;
@@ -61,6 +63,7 @@ export type UpdateMarketplaceVoucherResponse = {
 export type DeleteMarketplaceVoucherResponse = {
   data: {
     id: number;
+    banner_url: string;
     name: string;
     start_datetime: string;
     end_datetime: string;

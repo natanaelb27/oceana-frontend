@@ -1,9 +1,11 @@
 import { useFormik } from 'formik';
+import { useState } from 'react';
 import { Button, Form, Input } from 'react-daisyui';
 import GoogleLogin, {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
 import {
@@ -45,6 +47,7 @@ const RegisterForm = ({
   handleFailedRegister,
 }: RegisterFormProps) => {
   const [register, { isLoading }] = useRegisterMutation();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const formik = useFormik({
     initialValues: {
@@ -70,7 +73,13 @@ const RegisterForm = ({
       phoneNumber: Yup.string()
         .matches(PHONE_REGEX, 'Invalid phone number')
         .required('Please enter your phone number'),
-      password: Yup.string().required('Please enter your password'),
+      password: Yup.string()
+        .min(8, 'Too short, minimum 8 characters')
+        .matches(/[a-z]+/, 'Must contain at least one lowercase character')
+        .matches(/[A-Z]+/, 'Must contain at least one uppercase character')
+        .matches(/[@$!%*#?&]+/, 'Must contain at least one special character')
+        .matches(/\d+/, 'Must contain at least one number')
+        .required('Please enter your password'),
       confirm: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
         .required('Please confirm your password'),
@@ -186,16 +195,31 @@ const RegisterForm = ({
           ) : null}
         </InputGroup>
         <div className='md:flex md:justify-between'>
-          <InputGroup>
+          <InputGroup className='relative'>
             <Input
               className='input-sm md:input-md md:max-w-[240px]'
               color='primary'
               name='password'
               onChange={formik.handleChange}
               placeholder='Password'
-              type='password'
+              type={showPassword ? 'text' : 'password'}
               value={formik.values.password}
             />
+            <Button
+              className={`absolute top-0 right-0 md:top-2 ${
+                formik.values.password ? 'md:right-5' : ''
+              }`}
+              color='ghost'
+              shape='circle'
+              size='sm'
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <AiOutlineEyeInvisible />
+              ) : (
+                <AiOutlineEye className='text-primary' />
+              )}
+            </Button>
 
             {formik.touched.password && formik.errors.password ? (
               <FormErrorText>{formik.errors.password}</FormErrorText>
@@ -208,7 +232,7 @@ const RegisterForm = ({
               name='confirm'
               onChange={formik.handleChange}
               placeholder='Confirm Password'
-              type='password'
+              type={showPassword ? 'text' : 'password'}
               value={formik.values.confirm}
             />
 

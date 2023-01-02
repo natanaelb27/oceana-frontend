@@ -16,6 +16,7 @@ export const toMarketplaceVoucherQuery = (query: MarketplaceVoucherQuery) => {
 };
 
 export const toCreateMarketplaceVoucherRequest = (
+  banner_url: string,
   name: string,
   startDateTime: Date,
   endDateTime: Date,
@@ -25,6 +26,7 @@ export const toCreateMarketplaceVoucherRequest = (
   maximumDiscountAmount: number | null,
   maximumQuota: number
 ): CreateMarketplaceVoucherRequest => ({
+  banner_url,
   name,
   start_datetime: startDateTime.toISOString(),
   end_datetime: endDateTime.toISOString(),

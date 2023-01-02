@@ -12,6 +12,7 @@ import {
   RequestPasswordVerificationCodeResponse,
 } from '../../../types/response';
 import { notifyErrorToast, notifySuccessToast } from '../../../utils/toast';
+import { validatePassword } from '../../../utils/validation';
 
 type ChangePasswordModalProps = {
   open: boolean;
@@ -89,6 +90,12 @@ const ChangePasswordModal = ({ open, onClose }: ChangePasswordModalProps) => {
       password === '' ||
       password !== confirmPassword
     ) {
+      return;
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation[0]) {
+      notifyErrorToast(passwordValidation[1]);
       return;
     }
 

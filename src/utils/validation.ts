@@ -42,3 +42,23 @@ export const getCount = (data: any, level: number) => {
   }
   return count;
 };
+
+export const validatePassword = (password: string): [boolean, string] => {
+  if (!/[a-z]+/.test(password)) {
+    return [false, 'Must contain at least one lowercase character'];
+  }
+
+  if (!/[A-Z]+/.test(password)) {
+    return [false, 'Must contain at least one uppercase character'];
+  }
+
+  if (!/[@$!%*#?&]+/.test(password)) {
+    return [false, 'Must contain at least one special character'];
+  }
+
+  if (!/\d+/.test(password)) {
+    return [false, 'Must contain at least one number'];
+  }
+
+  return [true, ''];
+};

@@ -4,6 +4,7 @@ import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
 import { Layout } from '../components';
 import {
+  ProductSnapshot,
   BuyerRefundCreate,
   Login,
   NotFound,
@@ -11,7 +12,6 @@ import {
   ResetPassword,
   SealabsPayPaymentRedirect,
   SealabsPayRegisterRedirect,
-  SealabsPayTopup,
   SealabsPayTopupRedirect,
   ShopRefund,
 } from '../pages';
@@ -130,10 +130,6 @@ const Routes = () => {
           element: <Home />,
         },
         {
-          path: '/sealabs-pay',
-          element: <SealabsPayTopup />,
-        },
-        {
           path: '/category',
           element: <Category />,
         },
@@ -207,8 +203,12 @@ const Routes = () => {
               element: <BuyerPurchaseHistory />,
             },
             {
-              path: '/user/pending-payment',
-              element: <BuyerPendingPayment />,
+              path: '/user/purchase',
+              element: <BuyerPurchaseHistory />,
+            },
+            {
+              path: '/product-snapshot/:orderDetailID',
+              element: <ProductSnapshot />,
             },
             {
               path: '/user/refund',
@@ -328,7 +328,7 @@ const Routes = () => {
                 },
                 {
                   path: '/seller/marketing/vouchers/edit/:voucherID',
-                  element: <ShopAddVoucher />,
+                  element: <ShopEditVoucher />,
                 },
                 {
                   path: '/seller/marketing/vouchers/duplicate/:voucherID',
@@ -498,6 +498,19 @@ const Routes = () => {
     },
     {
       path: '/sealabs-pay/redirect/payment',
+      element: (
+        <ProtectedRoute
+          roleCode={roleCode}
+          isTokenExist={isTokenExist}
+          allowedRoles={[Role.Buyer, Role.Seller]}
+          redirectTo='/'
+        >
+          <SealabsPayPaymentRedirect />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/checkout/success',
       element: (
         <ProtectedRoute
           roleCode={roleCode}

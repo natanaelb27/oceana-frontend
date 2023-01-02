@@ -1,5 +1,6 @@
 export interface MarketplaceVoucher {
   id: number;
+  banner_url: string;
   name: string;
   start_datetime: string;
   end_datetime: string;

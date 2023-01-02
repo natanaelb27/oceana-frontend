@@ -25,7 +25,7 @@ const Layout = () => {
         shape='circle'
         className={`${
           scrollPosition > 0 ? 'fixed' : 'hidden'
-        } z-90 bottom-16 right-8 transition-all duration-100 shadow-xl hover:shadow-2xl`}
+        } z-90 bottom-16 right-[5%] transition-all duration-100 shadow-xl hover:shadow-2xl`}
         onClick={handleScrollToTop}
       >
         <HiArrowSmUp className='text-2xl' />

@@ -366,18 +366,25 @@ const PromotionFormContent = ({
               price_min,
               total_stock,
             }) => {
-              const availableProductOptions: ProductMerchantPromotionOption = {
-                product_id: product_id,
-                product_name: product_name,
-                product_image: product_image,
-                price_max: Number(price_max),
-                price_min: Number(price_min),
-                total_stock: Number(total_stock),
-              };
+              if (!products?.[product_id]) {
+                const availableProductOptions: ProductMerchantPromotionOption =
+                  {
+                    product_id: product_id,
+                    product_name: product_name,
+                    product_image: product_image,
+                    price_max: Number(price_max),
+                    price_min: Number(price_min),
+                    total_stock: Number(total_stock),
+                  };
 
-              availableProducts[product_id] = availableProductOptions;
+                availableProducts[product_id] = availableProductOptions;
 
-              availableProductsArray.push(product_id);
+                availableProductsArray.push(product_id);
+              } else {
+                availableProducts[product_id] = products[product_id];
+
+                availableProductsArray.push(product_id);
+              }
             }
           );
 
@@ -439,13 +446,20 @@ const PromotionFormContent = ({
               price_min,
               total_stock,
             }) => {
+              console.log({ product: products[product_id] });
               const availableProductOptions: ProductMerchantPromotionOption = {
                 product_id: product_id,
                 product_name: product_name,
                 product_image: product_image,
-                price_max: Number(price_max),
-                price_min: Number(price_min),
-                total_stock: Number(total_stock),
+                price_max: products?.[product_id]
+                  ? products[product_id].price_max
+                  : Number(price_max),
+                price_min: products?.[product_id]
+                  ? products[product_id].price_min
+                  : Number(price_min),
+                total_stock: products?.[product_id]
+                  ? products[product_id].total_stock
+                  : Number(total_stock),
               };
 
               availableProducts[product_id] = availableProductOptions;

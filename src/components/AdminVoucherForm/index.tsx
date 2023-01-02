@@ -1,14 +1,15 @@
+import { useFormik } from 'formik';
+import moment from 'moment';
 import {
   ChangeEvent,
-  createElement,
-  forwardRef,
   ReactNode,
   Ref,
+  createElement,
+  forwardRef,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import {
   Breadcrumbs,
   Button,
@@ -20,29 +21,34 @@ import {
   InputGroup,
   Radio,
 } from 'react-daisyui';
-import { HiOutlineCalendar } from 'react-icons/hi';
-import { DISCOUNT_TYPE, VOUCHER_STATUS } from '../../constants';
-import { roundTimeToNearest30 } from '../../utils/date';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import moment from 'moment';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
+import { HiOutlineCalendar } from 'react-icons/hi';
+import { useNavigate, useParams } from 'react-router-dom';
+import * as Yup from 'yup';
+import { DISCOUNT_TYPE, MEDIA_TYPE, VOUCHER_STATUS } from '../../constants';
 import { useOutsideAlerter } from '../../hooks';
-import { ConfirmationModal, Loading } from '../common';
-import { handleNumberInvalidKey, stringCompare } from '../../utils/validation';
 import {
-  useLazyGetMarketplaceVoucherDetailsQuery,
   useCreateMarketplaceVoucherMutation,
+  useLazyGetMarketplaceVoucherDetailsQuery,
   useUpdateMarketplaceVoucherMutation,
 } from '../../store/services/marketplaceService';
+import { useUploadMediaMutation } from '../../store/services/mediaService';
 import { SellerAccountVoucherFormContent } from '../../types/content';
-import { toCreateMarketplaceVoucherRequest } from '../../utils/mapperDTO';
-import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
 import {
   CreateMarketplaceVoucherResponse,
   GetMarketplaceVoucherResponse,
 } from '../../types/response';
+import { UploadMediaResponse } from '../../types/response/media';
 import { toRupiah } from '../../utils/convert';
+import { roundTimeToNearest30 } from '../../utils/date';
+import {
+  toCreateMarketplaceVoucherRequest,
+  toUploadMediaRequest,
+} from '../../utils/mapperDTO';
+import { notifyErrorToast, notifySuccessToast } from '../../utils/toast';
+import { handleNumberInvalidKey, stringCompare } from '../../utils/validation';
+import { ConfirmationModal, Loading } from '../common';
+import UploadFileCardPerFile from '../common/UploadFileCardPerFile/index';
 
 type ContentProps = {
   content: SellerAccountVoucherFormContent;
@@ -125,6 +131,7 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
 
   const voucherFormik = useFormik({
     initialValues: {
+      banner_url: '',
       name: '',
       startDatetime: roundTimeToNearest30(moment().add(1, 'd').toDate()),
       endDatetime: roundTimeToNearest30(moment().add(7, 'd').toDate()),
@@ -195,6 +202,7 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
     onSubmit: (values) => {
       if (content === SellerAccountVoucherFormContent.Add) {
         const {
+          banner_url,
           name,
           startDatetime,
           endDatetime,
@@ -207,6 +215,7 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
         } = values;
         createMarketplaceVoucher(
           toCreateMarketplaceVoucherRequest(
+            banner_url,
             name,
             startDatetime,
             endDatetime,
@@ -233,6 +242,7 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
       }
       if (content === SellerAccountVoucherFormContent.Edit) {
         const {
+          banner_url,
           name,
           startDatetime,
           endDatetime,
@@ -246,6 +256,7 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
         updateMarketplaceVoucher({
           id: Number(voucherID),
           request: toCreateMarketplaceVoucherRequest(
+            banner_url,
             name,
             startDatetime,
             endDatetime,
@@ -283,6 +294,7 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
     if (!voucherID || isNaN(Number(voucherID))) {
       if (content === SellerAccountVoucherFormContent.Add) {
         voucherFormik.setValues({
+          banner_url: '',
           name: '',
           startDatetime: roundTimeToNearest30(moment().add(1, 'd').toDate()),
           endDatetime: roundTimeToNearest30(moment().add(7, 'd').toDate()),
@@ -315,6 +327,7 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
 
         if (content === SellerAccountVoucherFormContent.Add) {
           voucherFormik.setValues({
+            banner_url: data.banner_url,
             name: '',
             startDatetime: roundTimeToNearest30(moment().add(1, 'd').toDate()),
             endDatetime: roundTimeToNearest30(moment().add(7, 'd').toDate()),
@@ -347,6 +360,7 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
           });
         } else if (content === SellerAccountVoucherFormContent.Edit) {
           voucherFormik.setValues({
+            banner_url: data.banner_url,
             name: data.name,
             startDatetime: moment(data.start_datetime).toDate(),
             endDatetime: moment(data.end_datetime).toDate(),
@@ -749,10 +763,39 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
     });
   };
 
+  const handleSetFileImage = (newFilesView: string[]) => {
+    voucherFormik.setFieldValue('banner_url', newFilesView?.[0] || '');
+  };
+
+  const [uploadMedia, { isLoading: uploadMediaIsLoading }] =
+    useUploadMediaMutation();
+
+  const handleUploadImage = (files: FileList) => {
+    uploadMedia({ formData: toUploadMediaRequest(files[0]) })
+      .unwrap()
+      .then(({ data }) => {
+        notifySuccessToast('Images has been uploaded!');
+        const filesURLs = data?.media_url;
+        voucherFormik.setFieldValue('banner_url', filesURLs);
+      })
+      .catch((err) => {
+        if ('data' in err) {
+          const response = err.data as UploadMediaResponse;
+          notifyErrorToast(response.message);
+        } else {
+          notifyErrorToast('upload image failed');
+        }
+      });
+  };
+
+  const handleImagesOnDelete = () => {
+    voucherFormik.setFieldValue('banner_url', '');
+  };
+
   if (getMarketplaceVoucherDetailsIsLoading) {
     return <Loading isLoading={getMarketplaceVoucherDetailsIsLoading} />;
   }
-
+  console.log(voucherFormik.values);
   return (
     <div className='container mx-auto'>
       <div className='p-4 md:p-10'>
@@ -789,6 +832,34 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
                 <div className='flex flex-col gap-7'>
                   <h5 className='font-bold text-xl'>Basic Information</h5>
                   <div className='flex flex-col gap-4'>
+                    <div className='grid grid-cols-7 items-start gap-4'>
+                      <Form.Label
+                        title='Banner Image'
+                        className='col-span-1 p-0'
+                      />
+                      <div className='flex flex-col gap-1 col-span-6'>
+                        <UploadFileCardPerFile
+                          files={
+                            voucherFormik.values.banner_url !== ''
+                              ? [voucherFormik.values.banner_url]
+                              : []
+                          }
+                          setFiles={handleSetFileImage}
+                          uploadLimit={1}
+                          upload={handleUploadImage}
+                          fileType={MEDIA_TYPE.IMAGE}
+                          multiple={false}
+                          onDelete={handleImagesOnDelete}
+                          loading={uploadMediaIsLoading}
+                        />
+                        {voucherFormik.touched.banner_url &&
+                          voucherFormik.errors.banner_url && (
+                            <label className='label-text-alt text-error'>
+                              {voucherFormik.errors.banner_url}
+                            </label>
+                          )}
+                      </div>
+                    </div>
                     <div className='grid grid-cols-7 items-start gap-4'>
                       <Form.Label
                         title='Voucher Name'
@@ -1184,6 +1255,7 @@ const AdminVoucherForm = ({ content }: ContentProps) => {
                   </div>
                   <div className='flex gap-5'>
                     <Button
+                      type='button'
                       color='ghost'
                       variant='outline'
                       onClick={handleCancelClick}
