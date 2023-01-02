@@ -72,7 +72,7 @@ const ShopDetailCard = ({ merchant, role }: ShopDetailCardProps) => {
           <div className='flex gap-1 items-center justify-center'>
             <AiFillStar className='text-2xl text-yellow-500' />
             <span className='text-xl font-semibold'>
-              {merchant?.rating_star}
+              {merchant?.rating_star?.toFixed(1)}
             </span>
           </div>
           <div>Rating &amp; Reviews</div>
